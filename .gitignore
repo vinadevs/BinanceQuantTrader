@@ -1,0 +1,83 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+*.exp
+
+# OS Generated Files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.Trash-*
+$RECYCLE.BIN/
+.TemporaryItems
+
+Source/BackTesting/x64
+Source/BinanceQuantTrader/x64
+Source/ComplianceNRegulatory/x64
+Source/HistoricalData/x64
+Source/KernelTrading/x64
+Source/LibraryUtils/x64
+Source/MacroData/x64
+Source/MarketData/x64
+Source/OrderManagement/x64
+Source/RealTimeSocket/x64
+Source/RestAPI/x64
+Source/RiskManagement/x64
+Source/Settings/x64
+Source/StaticData/x64
+Source/TradingStrategies/x64
+Source/ExchangeSimulator/x64
+Source/PortfolioManager/x64
+Source/IndicatorNSignals/x64
+Source/UserAccount/x64
+Source/SettingNConfig/x64
+Source/UnitTest/x64
+Source/PythonPlugin/x64
+Source/ExchangeConnectivity/x64
+Source/WindowsService/x64
+Source/BQTViewer/x64
+Source/MiddlewareMQ/x64
+Source/QuantitativeModel/x64
+Source/QuantLibrary/lib
+Source/QuantLibrary/build
+Source/QuantLibrary/x64
+Source/MessageHubServer/x64
+Source/SqlDatabase/x64
+Source/GrpcProtobufConnection/x64
+Source/OrderRouting/x64
+Source/Configurations/BQT/BinanceAKCfgTest.xml
+Source/Lib64
+.vs/
+x64/
