@@ -83,6 +83,6 @@ void BinanceExchangeSimulator::PrepareExchangeServices(const tinyxml2::XMLDocume
 	m_logger->Info("Initiating Bqt Message Server.");
 	const auto* messageServerCfg = configSimulatorXml->FirstChildElement("MessageServer");
 	assert(messageServerCfg);
-	m_bqtJsonMessageServer = std::make_unique<BqtJsonMessageServer>(messageServerCfg);
-	m_bqtJsonMessageServer->RegisterMessageHandler(m_matchingEngine.get());
+	m_bqtJsonMessageServer = std::make_unique<BqtJsonMessageServer>(messageServerCfg,
+		dynamic_cast<MiddlewareMQ::MessageHandler*>(m_matchingEngine.get()));
 }

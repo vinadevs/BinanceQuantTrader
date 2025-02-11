@@ -16,10 +16,13 @@
 using namespace ExchangeSimulator;
 using namespace MiddlewareMQ;
 
-BqtJsonMessageServer::BqtJsonMessageServer(const tinyxml2::XMLElement* messageServerCfg)
+BqtJsonMessageServer::BqtJsonMessageServer(
+	const tinyxml2::XMLElement* messageServerCfg
+	, MessageHandler* messageHandler)
 	: MessageReceiver(messageServerCfg),
 	m_logger{ std::make_unique<LibraryUtils::Logger>("BqtJsonMessageServer") }
 {
+	this->RegisterMessageHandler(messageHandler);
 }
 
 BqtJsonMessageServer::~BqtJsonMessageServer()

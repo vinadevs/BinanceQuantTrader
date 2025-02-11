@@ -32,7 +32,9 @@ namespace ExchangeSimulator {
 		  public ExchangeServiceInterface
 	{
 	public:
-		BqtJsonMessageServer(const tinyxml2::XMLElement* messageServerCfg);
+		BqtJsonMessageServer(
+			const tinyxml2::XMLElement* messageServerCfg,
+			MiddlewareMQ::MessageHandler* messageHandler);
 		~BqtJsonMessageServer() override;
 
 		void Start() override;
@@ -40,10 +42,10 @@ namespace ExchangeSimulator {
 
 		void OnReceivedMessage(const MiddlewareMQ::BqtJsonMessage& message) override;
 
-		void RegisterMessageHandler(MiddlewareMQ::MessageHandler* handler) override;
-
 		DISABLE_COPY_AND_ENABLE_MOVE(BqtJsonMessageServer);
 	private:
+		void RegisterMessageHandler(MiddlewareMQ::MessageHandler* handler) override;
+
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
 		MiddlewareMQ::MessageHandler* m_nessageHandler {nullptr};
 	};

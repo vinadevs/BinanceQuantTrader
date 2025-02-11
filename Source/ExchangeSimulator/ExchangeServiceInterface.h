@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <memory>
+
 namespace ExchangeSimulator {
 
     /**
@@ -21,5 +23,7 @@ namespace ExchangeSimulator {
         virtual void Start() = 0;
         virtual void Stop() = 0;
     };
+
+    using ExchangeService = std::unique_ptr<ExchangeServiceInterface>;
 };
 

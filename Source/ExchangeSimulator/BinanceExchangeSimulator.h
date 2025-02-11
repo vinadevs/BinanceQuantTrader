@@ -14,6 +14,7 @@
 #include <string>
 
 #include "../OrderManagement/Order.h"
+#include "ExchangeServiceInterface.h"
 
 namespace LibraryUtils {
     class Logger;
@@ -33,26 +34,28 @@ namespace tinyxml2 {
 
 namespace ExchangeSimulator {
 
-    class MatchingEngine;
-    class BqtJsonMessageServer;
-    class UserAccountManager;
-    class BinanceWalletServer;
-
     class DLL_CLASS_EXCHANGESIMULATOR_EXPORTS BinanceExchangeSimulator final
     {
     public:
         BinanceExchangeSimulator(const tinyxml2::XMLDocument* configSimulatorXml);
         ~BinanceExchangeSimulator();
         
+        // Start exchange services, now the simulator can receive test orders
+        // from upstream side and fill them
         void Run();
+        // Bring down the simulator when we finished the strategy benchmarking
         void Shutdown();
     private:
+        // All exchange services will be initiated in this function
+        // when we add new services, it should be initiated here
         void PrepareExchangeServices(const tinyxml2::XMLDocument* configSimulatorXml);
 
-        std::unique_ptr<MatchingEngine> m_matchingEngine;
-        std::unique_ptr<BqtJsonMessageServer> m_bqtJsonMessageServer;
+        // List exchange component services 
+        ExchangeService m_matchingEngine;
+        ExchangeService m_bqtJsonMessageServer;
+        ExchangeService m_binanceWalletServer;
+
         std::unique_ptr<UserAccountManager> m_userAccountManager;
-        std::unique_ptr<BinanceWalletServer> m_binanceWalletServer;
         std::unique_ptr<LibraryUtils::Logger> m_logger;
     };
 };
