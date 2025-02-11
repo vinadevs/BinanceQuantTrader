@@ -1,0 +1,11 @@
+-----------------------
+WINDOWS
+-----------------------
+1. Install necessary libraries by install_dependencies.bat (vcpkg)
+2. Go to Source/BinanceQuantTrader
+3. Open file BinanceQuantTrader.sln by Visual Studio 2022, right click on BinanceQuantTrader then build
+
+
+-----------------------
+LINUX
+-----------------------

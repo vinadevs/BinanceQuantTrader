@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<MessageServer>
+  <CommunicationChannel TopicName="AlgosToExchangeSimulator" SubscriberAddress="tcp://localhost:5559"/>
+</MessageServer>
+
+<MessageTransporter>
+  <CommunicationChannel TopicName="ExchangeSimulatorToAlgos" PublisherAddress="tcp://localhost:5557"/>
+</MessageTransporter>
+
+<MatchingEngine>
+  <UsingParticipant Name="RTMarketParticipant" MaximumDownstreamOrderBookSize="10"/>
+  <RealTimeMarketData>
+	  <Connection StreamBinanceCom="stream.binance.com" StreamConnectionPort="9443"/>
+	  <SubscriptionData IndividualBookTickerData="true" TradeData="true" IndividualMarketTickerData="true" AllMarketTickersData="true" IndividualMiniTickerData="true" AllMiniTickersData="true" AggregateTradeData="true" KlineCandleStickData="true" PartDepthData="true" DiffDepthData="true"/>
+	  <InterestingDataSymbols File="[ROOT_BQT_PATH]\Configurations\Common\BinanceAssets.txt"/>
+  </RealTimeMarketData>
+</MatchingEngine>
+
+<BinanceWalletServer>
+  <Connection ServerIpAddress="0.0.0.0" ServerPort="50051"/>
+</BinanceWalletServer>
+
+<UserAccountManager>
+  <GeneralSetting MaximumAccount="1"/>
+</UserAccountManager>

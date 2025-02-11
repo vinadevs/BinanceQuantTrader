@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Test Strategy">
+      <UniqueIdentifier>{8522a9c6-7099-4873-a354-69f96933c804}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base Strategy">
+      <UniqueIdentifier>{fdc90ef3-048f-408a-bf92-20622bbdef80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Auto Strategies">
+      <UniqueIdentifier>{81002735-9465-4068-a463-788edae95f97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Auto Strategies\Fomo Strategy">
+      <UniqueIdentifier>{607a619b-4967-4db9-9b41-f46e03302bfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Semi-Auto Strategies">
+      <UniqueIdentifier>{3c3943fb-8ccd-4cfe-8911-88520f8dd33f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Advising Strategies">
+      <UniqueIdentifier>{991ddf08-49c8-4702-a9fd-fc76ca0d4b02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Strategy Host">
+      <UniqueIdentifier>{dfa958fa-9bc8-4a43-8061-94f462c6fa92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Trading Component">
+      <UniqueIdentifier>{27739fa1-90fa-4dcd-ad72-19abff18dd30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Message Server">
+      <UniqueIdentifier>{b4b364c8-d6de-4f00-98a3-13be15371f58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Smart Order Routing">
+      <UniqueIdentifier>{77e1f31c-92c0-4994-a11b-5e97c5c6d2dc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dlldefine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FomoTradingStrategy.h">
+      <Filter>Auto Strategies\Fomo Strategy</Filter>
+    </ClInclude>
+    <ClInclude Include="TestTradingStrategy.h">
+      <Filter>Test Strategy</Filter>
+    </ClInclude>
+    <ClInclude Include="TradingStrategyBase.h">
+      <Filter>Base Strategy</Filter>
+    </ClInclude>
+    <ClInclude Include="SingleStrategyHost.h">
+      <Filter>Strategy Host</Filter>
+    </ClInclude>
+    <ClInclude Include="StrategyControler.h">
+      <Filter>Strategy Host</Filter>
+    </ClInclude>
+    <ClInclude Include="StrategyManager.h">
+      <Filter>Strategy Host</Filter>
+    </ClInclude>
+    <ClInclude Include="MutilpleStrategiesHost.h">
+      <Filter>Strategy Host</Filter>
+    </ClInclude>
+    <ClInclude Include="TradingComponent.h">
+      <Filter>Trading Component</Filter>
+    </ClInclude>
+    <ClInclude Include="CompilanceChecker.h">
+      <Filter>Trading Component</Filter>
+    </ClInclude>
+    <ClInclude Include="StrategyMessageServer.h">
+      <Filter>Message Server</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FomoTradingStrategy.cpp">
+      <Filter>Auto Strategies\Fomo Strategy</Filter>
+    </ClCompile>
+    <ClCompile Include="TestTradingStrategy.cpp">
+      <Filter>Test Strategy</Filter>
+    </ClCompile>
+    <ClCompile Include="TradingStrategyBase.cpp">
+      <Filter>Base Strategy</Filter>
+    </ClCompile>
+    <ClCompile Include="SingleStrategyHost.cpp">
+      <Filter>Strategy Host</Filter>
+    </ClCompile>
+    <ClCompile Include="StrategyControler.cpp">
+      <Filter>Strategy Host</Filter>
+    </ClCompile>
+    <ClCompile Include="StrategyManager.cpp">
+      <Filter>Strategy Host</Filter>
+    </ClCompile>
+    <ClCompile Include="MutilpleStrategiesHost.cpp">
+      <Filter>Strategy Host</Filter>
+    </ClCompile>
+    <ClCompile Include="StrategyMessageServer.cpp">
+      <Filter>Message Server</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

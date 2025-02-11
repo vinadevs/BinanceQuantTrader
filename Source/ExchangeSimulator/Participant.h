@@ -1,0 +1,63 @@
+/*#*******************************************************************************
+# COPYRIGHT NOTES
+# ---------------
+# This is a part of Binance Quant Trader Project
+# Copyright(C) - vinadevs
+# This source code can be used, distributed or modified under Apache license
+#*******************************************************************************/ 
+
+#pragma once
+
+#include "UpstreamOrder.h"
+#include "DownstreamOrderBook.h"
+
+#include <memory>
+#include <mutex>
+
+namespace LibraryUtils {
+    class Logger;
+};
+
+/**
+ * @class Participant
+ * @brief Represents a downstream trader in the order matching engine.
+ *
+ * The Participant class models a trader who submits buy and sell orders to the matching engine.
+ * Each participant has unique attributes, such as an identifier, account balance, and trading history,
+ * which influence their interactions with the engine. The class provides functionality to manage
+ * the participant's orders, track their activities, and integrate with the core matching process.
+ *
+ * Key Responsibilities:
+ * - Store and manage trader-specific data such as order history, account details, and trading preferences.
+ * - Facilitate order submission, modification, and cancellation.
+ * - Provide information for order matching, including available funds or asset holdings.
+ */
+
+namespace ExchangeSimulator {
+
+    enum class ParticipantType : unsigned
+    {
+        UNDEF,
+        SIMULATOR, // Participant is trader simulation
+        REAL_TIME_MARKET_DATA, // Participant is from live market data
+        HISTORICAL_DATA, // Participant is from historical market data
+    };
+
+    class UserAccountManager;
+    class Participant
+    {
+    public:
+        Participant(const ParticipantType& mode, UserAccountManager* userAccountManager);
+        virtual ~Participant();
+        virtual bool TryToMatchOrder(OrderManagement::BinanceNewOrder& ack) = 0;
+
+        ParticipantType GetParticipantType() const { return m_tradeMode; };
+    protected:
+        std::unique_ptr<LibraryUtils::Logger> m_logger;
+        std::unique_ptr<DownstreamOrderBook> m_downstreamOrderBook;
+        UserAccountManager* m_userAccountManager{ nullptr };
+        std::mutex m_mutex;
+        ParticipantType m_tradeMode{ ParticipantType::UNDEF };
+    };
+};
+

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<RealTimeMarketData>
+  <Connection StreamBinanceCom="stream.binance.com" StreamConnectionPort="9443"/>
+  <SubscriptionData IndividualBookTickerData="true" TradeData="true" IndividualMarketTickerData="true" AllMarketTickersData="true" IndividualMiniTickerData="true" AllMiniTickersData="true" AggregateTradeData="true" KlineCandleStickData="true" PartDepthData="true" DiffDepthData="true"/>
+  <InterestingDataSymbols File="[ROOT_BQT_PATH]\Configurations\Common\BinanceAssets.txt"/>
+</RealTimeMarketData>
+
+<BinanceAPI>
+  <Connection ApiBinanceCom="api.binance.com" ApiBinancePort="443" ConnectionTimeoutMs="10000"/>
+</BinanceAPI>
+
+<TradingStrategy>
+  <UsingStrategy Name="FomoStrategy" File="[ROOT_BQT_PATH]\Configurations\Strategy\Auto\FomoStrategy.xml"/>
+</TradingStrategy>
+
+<PortfolioInvestment>
+  <InvestmentManagement File="[ROOT_BQT_PATH]\Configurations\Common\BinanceAssets.txt"/>
+</PortfolioInvestment>
+
+<TradingModel>
+  <Field Setting1="xxx" Setting2="yyy"/>
+</TradingModel>
+
+<TraderInfo>
+  <UsingTrader Type="BinanceTrader"/>
+  <Report TradeReport="true" OrderReport="true" BalanceReport="true"/>
+</TraderInfo>
+
+<ComplianceNRegulatory>
+  <TradingLimits RequestWeightPerMinute="6000" OrdersPerTenSeconds="50" OrdersPerTwentyFourHours="1000"/>
+</ComplianceNRegulatory>
+
+<RiskManagement>
+  <StopLossManagement RiskPerTradePercent="1"/>
+</RiskManagement>
+
+<MessageServer>
+  <CommunicationChannel TopicName="ExchangeSimulatorToAlgos" SubscriberAddress="tcp://localhost:5556"/>
+</MessageServer>
+
+<MessageTransporter>
+  <CommunicationChannel TopicName="AlgosToExchangeSimulator" PublisherAddress="tcp://localhost:5558"/>
+</MessageTransporter>
+
+<BinanceWalletClient>
+  <Connection ServerIpAddress="0.0.0.0" ServerPort="50051"/>
+</BinanceWalletClient>

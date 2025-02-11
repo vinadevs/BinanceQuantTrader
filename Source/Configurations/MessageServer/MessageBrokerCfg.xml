@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+
+<Brokers>
+  <ExchangeSimulatorToAlgos TopicName="ExchangeSimulatorToAlgos" SubscriberAddress="tcp://*:5557" PublisherAddress="tcp://*:5556"/>
+  <AlgosToExchangeSimulator TopicName="AlgosToExchangeSimulator" SubscriberAddress="tcp://*:5558" PublisherAddress="tcp://*:5559"/>
+</Brokers>

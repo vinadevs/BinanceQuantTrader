@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<GeneralConfig>
+  <LifeTime LifeTimeForStrategy="IntraDay"/>
+</GeneralConfig>
+
+<IndicatorAndSignals>
+  <TrendDetectorParameters WindowSize="200" TriggerMaxiumUpTick="50" TriggerMaxiumDownTick="20"/>
+</IndicatorAndSignals>
+
+<LongBuy>
+  <Parameters TriggerMaxiumUpTick="50" TriggerMaxiumDownTick="20"/>
+</LongBuy>
+
+<ShortSell>
+  <Parameters TriggerMaxiumUpTick="50" TriggerMaxiumDownTick="20"/>
+</ShortSell>

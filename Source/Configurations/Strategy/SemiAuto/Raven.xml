@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<TrendDetector>
+  <Parameters WindowSize="20" TriggerMaxiumUpTick="20" TriggerMaxiumDownTick="2"/>
+</TrendDetector>
+
+<LongBuy>
+  <Parameters TriggerMaxiumUpTick="20" TriggerMaxiumDownTick="2"/>
+</LongBuy>
+
+<ShortSell>
+  <Parameters TriggerMaxiumUpTick="20" TriggerMaxiumDownTick="2"/>
+</ShortSell>

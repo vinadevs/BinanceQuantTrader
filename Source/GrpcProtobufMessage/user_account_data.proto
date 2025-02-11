@@ -1,0 +1,29 @@
+// user_account_data.proto
+syntax = "proto3";
+
+service UserAccountService {
+    rpc GetUserAccountData (UserAccountDataRequest) returns (UserAccountDataResponse);
+}
+
+message Balance {
+    string asset_symbol = 1; // Symbol of the asset (e.g., BTC, ETH).
+    double free_amount = 2;  // Amount available for trading.
+    double locked_amount = 3; // Amount currently locked.
+}
+
+message UserAccountDataRequest {
+    string user_id = 1; // User ID to request data for.
+}
+
+message UserAccountDataResponse {
+    string user_id = 1;              // User ID of the requested data.
+    uint32 maker_commission = 2;    // Maker commission rate.
+    uint32 taker_commission = 3;    // Taker commission rate.
+    uint32 buyer_commission = 4;    // Buyer commission rate.
+    uint32 seller_commission = 5;   // Seller commission rate.
+    uint64 update_time = 6;         // Last update time as a Unix timestamp.
+    bool can_trade = 7;             // Indicates if trading is allowed.
+    bool can_withdraw = 8;          // Indicates if withdrawal is allowed.
+    bool can_deposit = 9;           // Indicates if deposit is allowed.
+    map<string, Balance> balances = 10; // Map of asset symbol to Balance.
+}

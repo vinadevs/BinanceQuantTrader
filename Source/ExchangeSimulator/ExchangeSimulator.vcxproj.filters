@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Local Exchange Simulator">
+      <UniqueIdentifier>{638c2124-6019-4e34-b660-04e16fcbbe3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Binance Exchange Simulator">
+      <UniqueIdentifier>{1b2d9261-28d1-4408-91e9-155e2226604d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Binance Exchange Simulator\Participants">
+      <UniqueIdentifier>{db44705d-4d7a-430b-963e-6afa9cb82fb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Binance Exchange Simulator\Book">
+      <UniqueIdentifier>{773455ea-c6d4-44fe-a3aa-1bf65076b797}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Binance Exchange Simulator\Connectivity">
+      <UniqueIdentifier>{39d58c5f-16a9-4c27-a83a-b46e19c300bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Binance Exchange Simulator\Engine">
+      <UniqueIdentifier>{31e43ca4-7a6a-43d4-8717-13a69c287ef6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Binance Exchange Simulator\User Account Wallet">
+      <UniqueIdentifier>{087093b0-8147-44d1-a090-7d97de5527e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Binance Exchange Simulator\User Account Wallet\Protobuf">
+      <UniqueIdentifier>{a96dfb6b-083e-4d00-bf8b-627144c27b8a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dlldefine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BackTestLocalExchange.h">
+      <Filter>Local Exchange Simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="BinanceExchangeSimulator.h">
+      <Filter>Binance Exchange Simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="RTMarketParticipant.h">
+      <Filter>Binance Exchange Simulator\Participants</Filter>
+    </ClInclude>
+    <ClInclude Include="UpstreamOrderMatchedMgr.h">
+      <Filter>Binance Exchange Simulator\Book</Filter>
+    </ClInclude>
+    <ClInclude Include="Participant.h">
+      <Filter>Binance Exchange Simulator\Participants</Filter>
+    </ClInclude>
+    <ClInclude Include="AlgosConnectivity.h">
+      <Filter>Binance Exchange Simulator\Connectivity</Filter>
+    </ClInclude>
+    <ClInclude Include="BqtJsonMessageServer.h">
+      <Filter>Binance Exchange Simulator\Connectivity</Filter>
+    </ClInclude>
+    <ClInclude Include="MatchingEngine.h">
+      <Filter>Binance Exchange Simulator\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="DownstreamOrderAck.h">
+      <Filter>Binance Exchange Simulator\Connectivity</Filter>
+    </ClInclude>
+    <ClInclude Include="OrderAckManager.h">
+      <Filter>Binance Exchange Simulator\Connectivity</Filter>
+    </ClInclude>
+    <ClInclude Include="HistoricalParticipant.h">
+      <Filter>Binance Exchange Simulator\Participants</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulatorParticipant.h">
+      <Filter>Binance Exchange Simulator\Participants</Filter>
+    </ClInclude>
+    <ClInclude Include="UpstreamOrder.h">
+      <Filter>Binance Exchange Simulator\Connectivity</Filter>
+    </ClInclude>
+    <ClInclude Include="UserAccountManager.h">
+      <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
+    </ClInclude>
+    <ClInclude Include="BinanceWalletServer.h">
+      <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
+    </ClInclude>
+    <ClInclude Include="UserAccountHttpService.h">
+      <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\user_account_data.grpc.pb.h">
+      <Filter>Binance Exchange Simulator\User Account Wallet\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\user_account_data.pb.h">
+      <Filter>Binance Exchange Simulator\User Account Wallet\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="ExchangeServiceInterface.h">
+      <Filter>Binance Exchange Simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="UserAccount.h">
+      <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
+    </ClInclude>
+    <ClInclude Include="DownstreamOrderBook.h">
+      <Filter>Binance Exchange Simulator\Book</Filter>
+    </ClInclude>
+    <ClInclude Include="UpstreamOrderQueueMgr.h">
+      <Filter>Binance Exchange Simulator\Book</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BackTestLocalExchange.cpp">
+      <Filter>Local Exchange Simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="BinanceExchangeSimulator.cpp">
+      <Filter>Binance Exchange Simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="RTMarketParticipant.cpp">
+      <Filter>Binance Exchange Simulator\Participants</Filter>
+    </ClCompile>
+    <ClCompile Include="AlgosConnectivity.cpp">
+      <Filter>Binance Exchange Simulator\Connectivity</Filter>
+    </ClCompile>
+    <ClCompile Include="BqtJsonMessageServer.cpp">
+      <Filter>Binance Exchange Simulator\Connectivity</Filter>
+    </ClCompile>
+    <ClCompile Include="MatchingEngine.cpp">
+      <Filter>Binance Exchange Simulator\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="DownstreamOrderAck.cpp">
+      <Filter>Binance Exchange Simulator\Connectivity</Filter>
+    </ClCompile>
+    <ClCompile Include="OrderAckManager.cpp">
+      <Filter>Binance Exchange Simulator\Connectivity</Filter>
+    </ClCompile>
+    <ClCompile Include="HistoricalParticipant.cpp">
+      <Filter>Binance Exchange Simulator\Participants</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulatorParticipant.cpp">
+      <Filter>Binance Exchange Simulator\Participants</Filter>
+    </ClCompile>
+    <ClCompile Include="Participant.cpp">
+      <Filter>Binance Exchange Simulator\Participants</Filter>
+    </ClCompile>
+    <ClCompile Include="UserAccountManager.cpp">
+      <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
+    </ClCompile>
+    <ClCompile Include="BinanceWalletServer.cpp">
+      <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
+    </ClCompile>
+    <ClCompile Include="UserAccountHttpService.cpp">
+      <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\user_account_data.grpc.pb.cc">
+      <Filter>Binance Exchange Simulator\User Account Wallet\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\user_account_data.pb.cc">
+      <Filter>Binance Exchange Simulator\User Account Wallet\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="UserAccount.cpp">
+      <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
+    </ClCompile>
+    <ClCompile Include="DownstreamOrderBook.cpp">
+      <Filter>Binance Exchange Simulator\Book</Filter>
+    </ClCompile>
+    <ClCompile Include="UpstreamOrderQueueMgr.cpp">
+      <Filter>Binance Exchange Simulator\Book</Filter>
+    </ClCompile>
+    <ClCompile Include="UpstreamOrderMatchedMgr.cpp">
+      <Filter>Binance Exchange Simulator\Book</Filter>
+    </ClCompile>
+    <ClCompile Include="UpstreamOrder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

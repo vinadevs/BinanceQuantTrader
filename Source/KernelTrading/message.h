@@ -1,0 +1,34 @@
+/*#*******************************************************************************
+# COPYRIGHT NOTES
+# ---------------
+# This is a part of Binance Quant Trader Project
+# Copyright(C) - vinadevs
+# This source code can be used, distributed or modified under Apache license
+#*******************************************************************************/ 
+
+// ----------------------------------------------------------------------------
+// Feature updated,bug fixed and codebase ported to windows platform, tested on 
+// Visual Studio 2022
+// Visual Studio 2019
+// Visual Studio 2017
+// Developer: vinadevs
+// ----------------------------------------------------------------------------
+
+#ifndef __binapi__message_hpp
+#define __binapi__message_hpp
+
+#define __STRINGIZE_I(x) #x
+#define __STRINGIZE(x) __STRINGIZE_I(x)
+
+#define __MAKE_FILELINE \
+    __FILE__ "(" __STRINGIZE(__LINE__) ")"
+
+#define __MESSAGE(msg) \
+    std::strrchr(__FILE__, '/')+1 << "(" __STRINGIZE(__LINE__) "): " << msg << std::flush
+
+#define __MAKE_ERRMSG(res, msg) \
+    res.errmsg = __MAKE_FILELINE; \
+    res.errmsg += ": "; \
+    res.errmsg += msg;
+
+#endif // __binapi__message_hpp

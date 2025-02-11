@@ -1,0 +1,1 @@
+BinanceQuantTrader.exe --config_binance_quant_trader_path="Configurations\BinanceQuantTraderCfg.xml" --config_binance_access_key_path="Configurations\BinanceAKCfg.xml"
