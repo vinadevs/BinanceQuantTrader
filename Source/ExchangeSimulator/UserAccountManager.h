@@ -43,6 +43,7 @@ namespace tinyxml2 {
 namespace ExchangeSimulator {
 
     using Accounts = std::map<std::string, UserAccount>;
+    
     class UserAccountManager
     {
     public:

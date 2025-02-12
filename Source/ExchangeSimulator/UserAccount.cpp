@@ -9,6 +9,9 @@
 #include "pch.h"
 #include "UserAccount.h"
 
+#include <algorithm>
+#include <chrono>
+
 using namespace ExchangeSimulator;
 
 // Constructor with parameters
@@ -27,10 +30,29 @@ UserAccount::UserAccount(
     m_buyerCommission(buyerCommission),
     m_canWithdraw(canWithdraw),
     m_canDeposit(canDeposit),
-    m_updateTime(updateTime) {}
+    m_updateTime(updateTime) 
+{
+    m_updateTime = static_cast<std::size_t>(std::chrono::system_clock::now().time_since_epoch().count());
+}
+
+bool UserAccount::IsAccountEligibleToWithdraw() const
+{
+    return m_canWithdraw;
+}
+
+bool UserAccount::IsAccountEligibleToDeposit() const
+{
+    return m_canDeposit;
+}
 
 bool UserAccount::IsAccountEligibleToTrade() const
 {
-    return false;
+    return m_canTrade;
+}
+
+bool UserAccount::IsAccountHavingAssets() const
+{
+    return std::any_of(m_assetBalances.begin(), m_assetBalances.end(),
+        [](const auto& asset) { return asset.second.m_free > 0; });
 }
 

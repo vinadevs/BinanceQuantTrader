@@ -34,6 +34,8 @@ namespace tinyxml2 {
 
 namespace ExchangeSimulator {
 
+    class UserAccountManager;
+
     class DLL_CLASS_EXCHANGESIMULATOR_EXPORTS BinanceExchangeSimulator final
     {
     public:

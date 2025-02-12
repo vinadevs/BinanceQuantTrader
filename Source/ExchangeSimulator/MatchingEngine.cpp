@@ -345,7 +345,7 @@ void MatchingEngine::PostProcessingMatchedNewOrder(BinanceNewOrder& order)
 	// If the order does not have liquidity, insert the order into back of the order book to continue fill it later.
 	else if (order.GetOrderStatus() == BinanceNewOrderStatus::WAITING_FOR_FILL)
 	{
-		m_logger->Info("Tried to match but order has no liquidity: " + orderStr);
+		m_logger->Info("Tried to match but order has no liquidity from market: " + orderStr);
 	}
 }
 

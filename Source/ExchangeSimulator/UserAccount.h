@@ -16,13 +16,65 @@ namespace ExchangeSimulator {
 
     using AssetSymbol = std::string;
 
+    struct FiatBalance final
+    {
+        enum class CurrencyType : unsigned
+        {
+            VND,
+            YEN,
+            USD,
+        };
+
+        static std::string GetCurrencyTypeStr(const CurrencyType currencyType)
+        {
+
+        }
+
+        double m_cashAmount{ 0 }; // cash amount fiat
+        CurrencyType m_currencyType{ 0 }; // type of money
+
+        FiatBalance() = default;
+
+        FiatBalance(double cashAmount, const CurrencyType currencyType)
+            : m_cashAmount(cashAmount), m_currencyType(currencyType)
+        {}
+
+        friend std::ostream& operator<<(std::ostream& os, const FiatBalance& balance)
+        {
+            os << "FiatBalance { "
+                << "cashAmount: \"" << balance.m_cashAmount << "\", "
+                << "currencyType: " << FiatBalance::GetCurrencyTypeStr(balance.m_currencyType)
+                << " }";
+            return os;
+        }
+    };
+    
+    struct STableCoinUSDTBalance final
+    {
+        double m_usdtAmount{ 0 }; // amount usdt
+       
+        STableCoinUSDTBalance() = default;
+
+        STableCoinUSDTBalance(double usdtAmount)
+            : m_usdtAmount(usdtAmount)
+        {}
+
+        friend std::ostream& operator<<(std::ostream& os, const STableCoinUSDTBalance& balance)
+        {
+            os << "STableCoinUSDTBalance { "
+                << "usdtAmount: " << balance.m_usdtAmount
+                << " }";
+            return os;
+        }
+    };
+
     // A binance asset information
-    struct AssetBalance
+    struct AssetBalance final
     {
         AssetSymbol m_symbol; // asset name
         double m_free{ 0 }; // amount can be traded
         double m_locked{ 0 }; // amount is being locked
-
+        
         AssetBalance() = default;
 
         AssetBalance(const AssetSymbol& symbol, double free, double locked)
@@ -51,7 +103,7 @@ namespace ExchangeSimulator {
      * identification, balance tracking, and trading preferences.
     */
 
-    struct UserAccount 
+    struct UserAccount final
     {
         UserAccount() = default;
 
@@ -65,16 +117,20 @@ namespace ExchangeSimulator {
             bool canDeposit,
             std::size_t updateTime);
 
-        std::string m_userId;
-        std::size_t m_makerCommission{ 0 };
-        std::size_t m_takerCommission{ 0 };
-        std::size_t m_buyerCommission{ 0 };
-        std::size_t m_sellerCommission{ 0 };
+        std::string m_userId; // must be unique string ID
+        std::size_t m_makerCommission{ 0 }; // fee commission from binance
+        std::size_t m_takerCommission{ 0 }; // fee commission from binance
+        std::size_t m_buyerCommission{ 0 }; // fee commission from buy side
+        std::size_t m_sellerCommission{ 0 };// fee commission from sell side
         bool m_canWithdraw{ false };
         bool m_canDeposit { false };
-        std::size_t m_updateTime{ 0 };
+        bool m_canTrade{ false };
+        std::size_t m_updateTime{ 0 }; // when the user account data changed?
   
+        // balances
         AssetBalances m_assetBalances;
+        FiatBalance m_fiatBalance;
+        STableCoinUSDTBalance m_usdtBalance;
 
         friend std::ostream& operator<<(std::ostream& os, const UserAccount& account)
         {
@@ -99,6 +155,9 @@ namespace ExchangeSimulator {
             return os;
         }
 
+        bool IsAccountEligibleToWithdraw() const;
+        bool IsAccountEligibleToDeposit() const;
         bool IsAccountEligibleToTrade() const;
+        bool IsAccountHavingAssets() const;
     };
 };

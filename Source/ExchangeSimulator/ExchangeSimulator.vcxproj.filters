@@ -28,14 +28,14 @@
     <Filter Include="Binance Exchange Simulator\Connectivity">
       <UniqueIdentifier>{39d58c5f-16a9-4c27-a83a-b46e19c300bf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Binance Exchange Simulator\Engine">
-      <UniqueIdentifier>{31e43ca4-7a6a-43d4-8717-13a69c287ef6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Binance Exchange Simulator\User Account Wallet">
       <UniqueIdentifier>{087093b0-8147-44d1-a090-7d97de5527e1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Binance Exchange Simulator\User Account Wallet\Protobuf">
       <UniqueIdentifier>{a96dfb6b-083e-4d00-bf8b-627144c27b8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Binance Exchange Simulator\Matching Engine">
+      <UniqueIdentifier>{31e43ca4-7a6a-43d4-8717-13a69c287ef6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -70,7 +70,7 @@
       <Filter>Binance Exchange Simulator\Connectivity</Filter>
     </ClInclude>
     <ClInclude Include="MatchingEngine.h">
-      <Filter>Binance Exchange Simulator\Engine</Filter>
+      <Filter>Binance Exchange Simulator\Matching Engine</Filter>
     </ClInclude>
     <ClInclude Include="DownstreamOrderAck.h">
       <Filter>Binance Exchange Simulator\Connectivity</Filter>
@@ -138,7 +138,7 @@
       <Filter>Binance Exchange Simulator\Connectivity</Filter>
     </ClCompile>
     <ClCompile Include="MatchingEngine.cpp">
-      <Filter>Binance Exchange Simulator\Engine</Filter>
+      <Filter>Binance Exchange Simulator\Matching Engine</Filter>
     </ClCompile>
     <ClCompile Include="DownstreamOrderAck.cpp">
       <Filter>Binance Exchange Simulator\Connectivity</Filter>
@@ -183,7 +183,7 @@
       <Filter>Binance Exchange Simulator\Book</Filter>
     </ClCompile>
     <ClCompile Include="UpstreamOrder.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Binance Exchange Simulator\Connectivity</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
