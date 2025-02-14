@@ -156,26 +156,21 @@ void MatchingEngine::ProcessIncommingOrders()
 					else if (std::holds_alternative<BinanceCancelOrder>(order))
 					{
 						m_logger->Info("From upstream order queue, cancelling, " + orderInfoStr);
-
-						/*auto& cancelOrder = std::get<BinanceCancelOrder>(order);
+						auto& cancelOrder = std::get<BinanceCancelOrder>(order);
 						m_upstreamOrderQueueMgr->RemoveOrder(cancelOrder.GetOrigClientOrderId());
-						PostProcessingMatchedCancelOrder(cancelOrder);*/
 					}
 					else if (std::holds_alternative<BinanceReplaceOrder>(order))
 					{
 						m_logger->Info("From upstream order queue, replacing, " + orderInfoStr);
-
-						/*auto& replaceOrder = std::get<BinanceReplaceOrder>(order);
-						m_upstreamOrderQueueMgr->RemoveOrder(replaceOrder.GetOrigClientOrderId());
-						PostProcessingMatchedReplaceOrder(replaceOrder);*/
+						auto& replaceOrder = std::get<BinanceReplaceOrder>(order);
+						m_upstreamOrderQueueMgr->ReplaceOrder(replaceOrder.GetOrigClientOrderId(), replaceOrder);
 					}
 					else if (std::holds_alternative<BinanceQueryOrder>(order))
 					{
 						m_logger->Info("From upstream order queue, querying, " + orderInfoStr);
 
-						/*	auto& queryOrder = std::get<BinanceQueryOrder>(order);
-							m_upstreamOrderQueueMgr->LookupOrder(queryOrder.GetOrigClientOrderId());
-							PostProcessingMatchedQueryOrder(queryOrder);*/
+						auto& queryOrder = std::get<BinanceQueryOrder>(order);
+						m_upstreamOrderQueueMgr->LookupOrder(queryOrder.GetOrigClientOrderId());
 					}
 				}
 				lock.lock();  // Lock mutex again for the next iteration

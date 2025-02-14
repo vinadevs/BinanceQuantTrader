@@ -27,7 +27,17 @@ namespace ExchangeSimulator {
 
         static std::string GetCurrencyTypeStr(const CurrencyType currencyType)
         {
-
+            switch (currencyType)
+            {
+            case CurrencyType::VND:
+               return "VND";
+            case CurrencyType::YEN:
+               return "YEN";
+            case CurrencyType::USD:
+               return "USD";
+            default:
+               return "";
+            }
         }
 
         double m_cashAmount{ 0 }; // cash amount fiat
@@ -42,9 +52,9 @@ namespace ExchangeSimulator {
         friend std::ostream& operator<<(std::ostream& os, const FiatBalance& balance)
         {
             os << "FiatBalance { "
-                << "cashAmount: \"" << balance.m_cashAmount << "\", "
-                << "currencyType: " << FiatBalance::GetCurrencyTypeStr(balance.m_currencyType)
-                << " }";
+               << "cashAmount: \"" << balance.m_cashAmount << "\", "
+               << "currencyType: " << GetCurrencyTypeStr(balance.m_currencyType)
+               << " }";
             return os;
         }
     };
@@ -62,8 +72,8 @@ namespace ExchangeSimulator {
         friend std::ostream& operator<<(std::ostream& os, const STableCoinUSDTBalance& balance)
         {
             os << "STableCoinUSDTBalance { "
-                << "usdtAmount: " << balance.m_usdtAmount
-                << " }";
+               << "usdtAmount: " << balance.m_usdtAmount
+               << " }";
             return os;
         }
     };
@@ -84,10 +94,10 @@ namespace ExchangeSimulator {
         friend std::ostream& operator<<(std::ostream& os, const AssetBalance& balance)
         {
             os << "AssetBalance { "
-                << "symbol: \"" << balance.m_symbol << "\", "
-                << "free: " << balance.m_free << ", "
-                << "locked: " << balance.m_locked
-                << " }";
+               << "symbol: \"" << balance.m_symbol << "\", "
+               << "free: " << balance.m_free << ", "
+               << "locked: " << balance.m_locked
+               << " }";
             return os;
         }
     };
@@ -135,19 +145,19 @@ namespace ExchangeSimulator {
         friend std::ostream& operator<<(std::ostream& os, const UserAccount& account)
         {
             os << "UserAccount { "
-                << "userId: " << account.m_userId << ", "
-                << "makerCommission: " << account.m_makerCommission << ", "
-                << "takerCommission: " << account.m_takerCommission << ", "
-                << "buyerCommission: " << account.m_buyerCommission << ", "
-                << "sellerCommission: " << account.m_sellerCommission << ", "
-                << "canTrade: " << std::boolalpha << account.IsAccountEligibleToTrade() << ", "
-                << "canWithdraw: " << account.m_canWithdraw << ", "
-                << "canDeposit: " << account.m_canDeposit << ", "
-                << "updateTime: " << account.m_updateTime << ", ";
+               << "userId: " << account.m_userId << ", "
+               << "makerCommission: " << account.m_makerCommission << ", "
+               << "takerCommission: " << account.m_takerCommission << ", "
+               << "buyerCommission: " << account.m_buyerCommission << ", "
+               << "sellerCommission: " << account.m_sellerCommission << ", "
+               << "canTrade: " << std::boolalpha << account.IsAccountEligibleToTrade() << ", "
+               << "canWithdraw: " << account.m_canWithdraw << ", "
+               << "canDeposit: " << account.m_canDeposit << ", "
+               << "updateTime: " << account.m_updateTime << ", ";
 
             for (const auto& asset : account.m_assetBalances)
             {
-                os << asset.second << ", ";
+               os << asset.second << ", ";
             }
 
             os << " }";
