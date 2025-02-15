@@ -54,7 +54,6 @@ OrderBook* DownstreamOrderBook::LookupOrderBook(const std::string& symbol)
     auto it = m_orderBooks.find(symbol);
     if (it != m_orderBooks.end())
     {
-        LOG_INFO_STREAM(m_logger, "OrderBook with symbol '" << symbol << "' found successfully.");
         return it->second.get();
     }
     throw std::runtime_error("No OrderBook found with symbol '" + symbol + "'.");

@@ -43,7 +43,7 @@ void FomoTradingStrategy::InitializeParameters(const std::string& strategyCfgPat
 	if (errStrategyCfgPathXml != XML_SUCCESS)
 	{
 		throw std::runtime_error("FomoTradingStrategy: Load file Xml error=" 
-			+ std::string(XMLDocument::ErrorIDToName(errStrategyCfgPathXml)));
+			+ std::string(XMLDocument::ErrorIDToName(errStrategyCfgPathXml)) + ", error path:" + strategyCfgPath);
 	}
 	SetupStrategyLifeTime(strategyCfgPathXml.get());
 	const auto* signalXml = strategyCfgPathXml->FirstChildElement("IndicatorAndSignals");

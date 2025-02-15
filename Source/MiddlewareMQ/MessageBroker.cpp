@@ -38,7 +38,7 @@ void MessageBroker::CreateBrokers(const std::string& configFile)
     if (errMBXml != tinyxml2::XML_SUCCESS)
     {
         throw std::runtime_error("Load file Xml error: "
-            + std::string(tinyxml2::XMLDocument::ErrorIDToName(errMBXml)));
+            + std::string(tinyxml2::XMLDocument::ErrorIDToName(errMBXml)) + ", error path:" + configFile);
     }
     const auto* channelXml = configMBXml->FirstChildElement("Brokers");
     assert(channelXml);

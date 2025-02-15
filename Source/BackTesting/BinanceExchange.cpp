@@ -88,7 +88,7 @@ BINANCE_EXCHANGE_SIMULATOR
 		if (errSimulatorXml != tinyxml2::XML_SUCCESS)
 		{
 			logger->Error("Load file Xml error: "
-				+ std::string(tinyxml2::XMLDocument::ErrorIDToName(errSimulatorXml)));
+				+ std::string(tinyxml2::XMLDocument::ErrorIDToName(errSimulatorXml)) + ", error path:" + config_exchange_simulator_path);
 			return EXIT_FAILURE;
 		}
 

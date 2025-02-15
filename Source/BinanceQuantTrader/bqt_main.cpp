@@ -72,7 +72,7 @@ BINANCE_QUANT_TRADING_MODEL
 		if (errBQTXml != tinyxml2::XML_SUCCESS)
 		{
 			logger->Error("Load file Xml error: " 
-				+ std::string(tinyxml2::XMLDocument::ErrorIDToName(errBQTXml)));
+				+ std::string(tinyxml2::XMLDocument::ErrorIDToName(errBQTXml)) + ", error path:" + config_binance_quant_trader_path);
 			return EXIT_FAILURE;
 		}
 
@@ -81,7 +81,7 @@ BINANCE_QUANT_TRADING_MODEL
 		if (errAccessKeyXml != tinyxml2::XML_SUCCESS)
 		{
 			logger->Error("Load file Xml error: " 
-				+ std::string(tinyxml2::XMLDocument::ErrorIDToName(errAccessKeyXml)));
+				+ std::string(tinyxml2::XMLDocument::ErrorIDToName(errAccessKeyXml)) + ", error path:" + config_binance_access_key_path);
 			return EXIT_FAILURE;
 		}
 

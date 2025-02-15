@@ -67,7 +67,6 @@ const UserAccount& UserAccountManager::LookupUserAccount(const std::string& user
     const auto it = m_accounts.find(userId);
     if (it != m_accounts.end()) 
     {
-        LOG_INFO_STREAM(m_logger, "UserAccount with userId '" << userId << "' found successfully.");
         return it->second;
     }
     throw std::runtime_error("No UserAccount found with userId '" + userId + "'.");
@@ -79,7 +78,6 @@ UserAccount& UserAccountManager::OpenEditSessionForUserAccount(const std::string
     auto it = m_accounts.find(userId);
     if (it != m_accounts.end())
     {
-        LOG_INFO_STREAM(m_logger, "UserAccount with userId '" << userId << "' found successfully.");
         return it->second;
     }
     throw std::runtime_error("No UserAccount found with userId '" + userId + "'.");
