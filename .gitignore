@@ -77,6 +77,7 @@ Source/MessageHubServer/x64
 Source/SqlDatabase/x64
 Source/GrpcProtobufConnection/x64
 Source/OrderRouting/x64
+Source/MarketDataCapture/x64
 Source/Configurations/BQT/BinanceAKCfgTest.xml
 Source/Lib64
 .vs/
