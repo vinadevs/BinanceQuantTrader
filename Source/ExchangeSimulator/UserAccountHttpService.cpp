@@ -29,10 +29,10 @@ grpc::Status UserAccountHttpService::GetUserAccountData(grpc::ServerContext* con
     // Populate response
     m_logger->Info("Preparing UserAccountData response for User ID: " + request->user_id());
     response->set_user_id(request->user_id());
-    response->set_update_time(userAccount->m_updateTime);
+    response->set_update_time(userAccount->GetUpdateTime());
     response->set_can_trade(userAccount->IsAccountEligibleToTrade());
-    response->set_can_withdraw(userAccount->m_canWithdraw);
-    response->set_can_deposit(userAccount->m_canDeposit);
+    response->set_can_withdraw(userAccount->IsAccountEligibleToTrade());
+    response->set_can_deposit(userAccount->IsAccountEligibleToDeposit());
 
     for (const auto& asset : userAccount->m_assetBalances)
     {

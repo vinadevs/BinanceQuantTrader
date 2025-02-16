@@ -119,12 +119,6 @@ namespace ExchangeSimulator {
 
         UserAccount(std::string userId);
 
-        std::string m_userId; // must be unique string ID
-        bool m_canWithdraw{ false };
-        bool m_canDeposit { false };
-        bool m_canTrade{ false };
-        std::size_t m_updateTime{ 0 }; // when the user account data changed?
-  
         // balances
         AssetBalances m_assetBalances;
         FiatBalance m_fiatBalance;
@@ -149,9 +143,20 @@ namespace ExchangeSimulator {
             return os;
         }
 
+        const std::string& GetUserId() const { return m_userId; }
+        std::size_t GetUpdateTime() const { return m_updateTime; }
         bool IsAccountEligibleToWithdraw() const;
         bool IsAccountEligibleToDeposit() const;
         bool IsAccountEligibleToTrade() const;
         bool IsAccountHavingAssets() const;
+    private:
+        void EnableUserAccountControls();
+        void DisableUserAccountControls();
+
+        std::string m_userId; // must be unique string ID
+        std::size_t m_updateTime{ 0 }; // when the user account data changed?
+        bool m_canWithdraw{ false };
+        bool m_canDeposit{ false };
+        bool m_canTrade{ false };
     };
 };

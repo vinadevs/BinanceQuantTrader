@@ -42,6 +42,7 @@ namespace OrderManagement {
 		Order(const std::string& symbol, const BinanceOrderType binanceOrderType)
 			: m_symbol(symbol), m_binanceOrderType(binanceOrderType)
 		{
+			UpdateOrderTypeStr();
 #if USE_TEST_TRADING
 			m_userAccountID = ApiKeyInfoMgr->GetApiKeyInfo().m_userID;
 #endif
@@ -62,23 +63,7 @@ namespace OrderManagement {
 		}
 
 		std::string GetOrderTypeStr() const {
-			switch (m_binanceOrderType)
-			{
-			case OrderManagement::BinanceOrderType::UNDEF:
-				return "UNDEF";
-			case OrderManagement::BinanceOrderType::NEW:
-				return "NEW";
-			case OrderManagement::BinanceOrderType::CANCEL:
-				return "CANCEL";
-			case OrderManagement::BinanceOrderType::REPLACE:
-				return "REPLACE";
-			case OrderManagement::BinanceOrderType::QUERY:
-				return "QUERY";
-			case OrderManagement::BinanceOrderType::TEST:
-				return "TEST";
-			default:
-				throw std::runtime_error("BinanceOrder: undetected order type.");
-			}
+			return m_binanceOrderTypeStr;
 		}
 
 #if USE_TEST_TRADING
@@ -91,10 +76,42 @@ namespace OrderManagement {
 		}
 #endif
 	protected:
+		void UpdateOrderTypeStr() {
+			switch (m_binanceOrderType)
+			{
+			case OrderManagement::BinanceOrderType::UNDEF: {
+				m_binanceOrderTypeStr = "UNDEF";
+				break;
+			}
+			case OrderManagement::BinanceOrderType::NEW: {
+				m_binanceOrderTypeStr = "NEW";
+				break;
+			}
+			case OrderManagement::BinanceOrderType::CANCEL: {
+				m_binanceOrderTypeStr = "CANCEL";
+				break;
+			}
+			case OrderManagement::BinanceOrderType::REPLACE: {
+				m_binanceOrderTypeStr = "REPLACE";
+				break;
+			}
+			case OrderManagement::BinanceOrderType::QUERY: {
+				m_binanceOrderTypeStr = "QUERY";
+				break;
+			}
+			case OrderManagement::BinanceOrderType::TEST: {
+				m_binanceOrderTypeStr = "TEST";
+				break;
+			}
+			default:
+				throw std::runtime_error("BinanceOrder: undetected order type.");
+			}
+		}
 #if USE_TEST_TRADING
 		std::string m_userAccountID;
 #endif
 		std::string m_symbol;
+		std::string m_binanceOrderTypeStr;
 		BinanceOrderType m_binanceOrderType{ BinanceOrderType::UNDEF };
 	};
 };

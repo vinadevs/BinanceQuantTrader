@@ -25,7 +25,7 @@
  * @code
  * std::string message = FieldLabels::OrderID + ":12345," +
  *                       FieldLabels::Symbol + ":BTCUSD," +
- *                       FieldLabels::Price + ":50000.00";
+ *                       FieldLabels::LimitPrice + ":50000.00";
  * @endcode
  *
  * @note This class only provides field labels; it does not handle message formatting or validation.
@@ -46,7 +46,7 @@ namespace OrderManagement {
 		const std::string Type = "Type";
 		const std::string Time = "Time";
 		const std::string Amount = "Amount";
-		const std::string Price = "Price";
+		const std::string LimitPrice = "LimitPrice";
 		const std::string FilledAmount = "FilledAmount";
 		const std::string FilledPrice = "FilledPrice";
 		const std::string ClientOrderId = "ClientOrderId";

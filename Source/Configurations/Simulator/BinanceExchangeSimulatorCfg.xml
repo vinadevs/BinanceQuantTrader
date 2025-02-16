@@ -25,3 +25,7 @@
   <GeneralSetting MaximumAccount="1"/>
   <TestUserAccount ListUserID=""/>
 </UserAccountManager>
+
+<ExchangeRuleAndCompliance>
+  <TradeCommissions MakerCommission="0.01" TakerCommission="0.05" BuyerCommission="0" SellerCommission="0"/>
+</ExchangeRuleAndCompliance>

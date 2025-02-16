@@ -16,6 +16,7 @@
 #include <string>
 #include <atomic>
 
+#include <iostream>
 namespace LibraryUtils {
 	class Logger;
 };
@@ -29,7 +30,10 @@ namespace ExchangeSimulator {
 			Node* current = m_head.load();
 			while (current->next.load() != nullptr) {
 				Node* next = current->next.load();
-				if (UpstreamOrderUtils::GetOrderClientId(next->data) == clientOrderId) {
+				auto test = UpstreamOrderUtils::GetOrderClientId(next->data);
+				std::cout << "Debug test=" << test << std::endl;
+				std::cout << "Debug clientOrderId=" << clientOrderId << std::endl;
+				if (test == clientOrderId) {
 					Node* nextNext = next->next.load();
 					if (current->next.compare_exchange_weak(next, nextNext)) {
 						delete next;

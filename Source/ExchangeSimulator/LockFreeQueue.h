@@ -183,7 +183,7 @@ public:
 
     // Checks if the queue is empty
     bool IsEmpty() const {
-        return m_head.load()->next.load() == nullptr;
+        return m_head.load() == nullptr;
     }
 };
 };

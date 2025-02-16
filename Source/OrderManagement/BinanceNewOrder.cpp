@@ -65,7 +65,7 @@ std::string BinanceNewOrder::ToString() const
         ", Type: " + typeStr +
         ", Time: " + timeStr +
         ", Amount: " + GetAmountStr() +
-        ", Price: " + GetPriceStr() +
+        ", LimitPrice: " + GetPriceStr() +
         ", ClientOrderId: " + m_clientOrderId +
         ", StopPrice: " + m_stopPrice +
         ", IcebergAmount: " + m_icebergAmount +
@@ -92,7 +92,7 @@ MiddlewareMQ::BqtJsonMessage BinanceNewOrder::ToBqtJsonMessage()
     message.AddPair(FieldLabels::Type, TypeToStringUtils::ToString(m_type));
     message.AddPair(FieldLabels::Time, TypeToStringUtils::ToString(m_time));
     message.AddPair(FieldLabels::Amount, GetAmountStr());
-    message.AddPair(FieldLabels::Price, GetPriceStr());
+    message.AddPair(FieldLabels::LimitPrice, GetPriceStr());
     message.AddPair(FieldLabels::ClientOrderId, m_clientOrderId);
     message.AddPair(FieldLabels::StopPrice, m_stopPrice);
     message.AddPair(FieldLabels::IcebergAmount, m_icebergAmount);

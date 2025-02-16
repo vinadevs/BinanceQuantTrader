@@ -137,7 +137,7 @@ void MatchingEngine::ProcessIncommingOrders()
 					+ UpstreamOrderUtils::GetOrderSymbol(order) + ", OrderType="
 					+ UpstreamOrderUtils::GetOrderTypeName(order);
 
-				m_logger->Info("From upstream order queue, processing, " + orderInfoStr);
+				m_logger->Info("From upstream order queue, processing prioritied order: " + orderInfoStr);
 
 				lock.unlock();  // Unlock mutex during processing
 				if (IsOrderEligibleToProcess(order))
@@ -182,6 +182,7 @@ void MatchingEngine::ProcessIncommingOrders()
 	}
 }
 
+int count = 0;
 void MatchingEngine::OnHandlingReceivedMessage(const BqtJsonMessage& message)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
@@ -192,24 +193,26 @@ void MatchingEngine::OnHandlingReceivedMessage(const BqtJsonMessage& message)
 		{
 			auto newOrder = ConstructUpstreamNewOrder(message);
 			newOrder.SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
-			m_upstreamOrderQueueMgr->PushOrderToQueue(newOrder);
+			if (count == 0)
+				m_upstreamOrderQueueMgr->PushOrderToQueue(newOrder);
+			count++;
 		}
 		else if (messageType == Binance_Order_Type::Cancel_Order)
 		{
 			const auto cancelOrder = ConstructUpstreamCancelOrder(message);
-			//cancelOrder.SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
+			//cancelOrder.SetOrderStatus(BinanceCancelOrderStatus::WAITING_FOR_CANCEL);
 			m_upstreamOrderQueueMgr->PushOrderToQueue(cancelOrder);
 		}
 		else if (messageType == Binance_Order_Type::Replace_Order)
 		{
 			const auto replaceOrder = ConstructUpstreamReplaceOrder(message);
-			//cancelOrder.SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
+			//cancelOrder.SetOrderStatus(BinanceReplaceOrderStatus::WAITING_FOR_REPLACE);
 			m_upstreamOrderQueueMgr->PushOrderToQueue(replaceOrder);
 		}
 		else if (messageType == Binance_Order_Type::Query_Order)
 		{
 			const auto queryOrder = ConstructUpstreamQueryOrder(message);
-			//cancelOrder.SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
+			//cancelOrder.SetOrderStatus(BinanceQueryOrderStatus::WAITING_FOR_QUERY);
 			m_upstreamOrderQueueMgr->PushOrderToQueue(queryOrder);
 		}
 		else
@@ -354,7 +357,7 @@ BinanceNewOrder MatchingEngine::ConstructUpstreamNewOrder(
 	const binapi::e_type type = binapi::e_type_from_string(message.GetStringValueByTag(FieldLabels::Type).c_str());
 	const binapi::e_time time = binapi::e_time_from_string(message.GetStringValueByTag(FieldLabels::Time).c_str());
 	const double amount = message.GetDoubleValueByTag(FieldLabels::Amount);
-	const double price = message.GetDoubleValueByTag(FieldLabels::Price);
+	const double price = message.GetDoubleValueByTag(FieldLabels::LimitPrice);
 	const std::string clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
 	const std::string stopPrice = message.GetStringValueByTag(FieldLabels::StopPrice);
 	const std::string icebergAmount = message.GetStringValueByTag(FieldLabels::IcebergAmount);
