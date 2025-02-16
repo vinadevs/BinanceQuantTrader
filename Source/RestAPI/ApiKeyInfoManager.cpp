@@ -9,6 +9,8 @@
 #include "pch.h"
 #include "ApiKeyInfoManager.h"
 
+#include <stdexcept>
+
 using namespace RestAPI;
 
 ApiKeyInfoManager::~ApiKeyInfoManager() {}
@@ -24,6 +26,10 @@ void ApiKeyInfoManager::InitApiKeyInfo(
     const std::string& sk,
     const std::string& pk)
 {
+    if (userID.empty() || sk.empty() || pk.empty())
+    {
+        throw std::runtime_error("ApiKeyInfoManager: ApiKeyInfo(userID, sk, pk) from config is invalid.");
+    }
     m_ApiKeyInfo = ApiKeyInfo(userID, sk, pk);
 }
 

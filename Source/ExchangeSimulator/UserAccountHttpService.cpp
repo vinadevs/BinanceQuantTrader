@@ -29,16 +29,12 @@ grpc::Status UserAccountHttpService::GetUserAccountData(grpc::ServerContext* con
     // Populate response
     m_logger->Info("Preparing UserAccountData response for User ID: " + request->user_id());
     response->set_user_id(request->user_id());
-    response->set_maker_commission(userAccount.m_makerCommission);
-    response->set_taker_commission(userAccount.m_takerCommission);
-    response->set_buyer_commission(userAccount.m_buyerCommission);
-    response->set_seller_commission(userAccount.m_sellerCommission);
-    response->set_update_time(userAccount.m_updateTime);
-    response->set_can_trade(userAccount.IsAccountEligibleToTrade());
-    response->set_can_withdraw(userAccount.m_canWithdraw);
-    response->set_can_deposit(userAccount.m_canDeposit);
+    response->set_update_time(userAccount->m_updateTime);
+    response->set_can_trade(userAccount->IsAccountEligibleToTrade());
+    response->set_can_withdraw(userAccount->m_canWithdraw);
+    response->set_can_deposit(userAccount->m_canDeposit);
 
-    for (const auto& asset : userAccount.m_assetBalances)
+    for (const auto& asset : userAccount->m_assetBalances)
     {
         Balance balance;
         balance.set_asset_symbol(asset.second.m_symbol);

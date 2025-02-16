@@ -32,7 +32,6 @@
 #include "TraderFactory.h"
 #include "TradingModel.h"
 
-#include <exception>
 #include <string>
 
 using namespace BinanceQuantTrader;

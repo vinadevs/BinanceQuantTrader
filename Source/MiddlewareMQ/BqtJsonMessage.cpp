@@ -53,7 +53,8 @@ int BqtJsonMessage::GetIntValueByTag(const std::string& tag) const
 {
     if (m_message.contains(tag))
     {
-        return m_message.at(tag).get<int>();
+        auto value = m_message.at(tag).get<std::string>();
+        return std::stoi(value);
     }
     else
     {
@@ -65,7 +66,8 @@ double BqtJsonMessage::GetDoubleValueByTag(const std::string& tag) const
 {
     if (m_message.contains(tag))
     {
-        return m_message.at(tag).get<double>();
+        auto value = m_message.at(tag).get<std::string>();
+        return std::stod(value);
     }
     else
     {

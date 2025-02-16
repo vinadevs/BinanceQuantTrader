@@ -67,9 +67,9 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
                 //Execute Trades:
                 //  If a match is found (hasLiquidity), execute the trade and update the order book.
                 // open edit session for user wallet
-                auto& userAccount = m_userAccountManager->OpenEditSessionForUserAccount(newUpstreamOrder.GetUserAccountID());
+                auto* userAccount = m_userAccountManager->OpenEditSessionForUserAccount(newUpstreamOrder.GetUserAccountID());
                 // update amount for traded asset
-                userAccount.m_assetBalances[newUpstreamOrder.GetSymbol()].m_free += bestExchangeBidOrder.m_quantity;
+                userAccount->m_assetBalances[newUpstreamOrder.GetSymbol()].m_free += bestExchangeBidOrder.m_quantity;
                 if (bestExchangeBidOrder.m_quantity >= newUpstreamOrder.GetAmountDouble()) // FULL FILL ORDER
                 {
                     newUpstreamOrder.SetFilledAmount(newUpstreamOrder.GetAmountDouble());
@@ -104,9 +104,9 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
                 //Execute Trades:
                 //  If a match is found (hasLiquidity), execute the trade and update the order book.
                 // open edit session for user wallet
-                auto& userAccount = m_userAccountManager->OpenEditSessionForUserAccount(newUpstreamOrder.GetUserAccountID());
+                auto* userAccount = m_userAccountManager->OpenEditSessionForUserAccount(newUpstreamOrder.GetUserAccountID());
                 // update amount for traded asset
-                userAccount.m_assetBalances[newUpstreamOrder.GetSymbol()].m_free += bestExchangeAskOrder.m_quantity;
+                userAccount->m_assetBalances[newUpstreamOrder.GetSymbol()].m_free += bestExchangeAskOrder.m_quantity;
                 if (bestExchangeAskOrder.m_quantity >= newUpstreamOrder.GetAmountDouble()) // FULL FILL ORDER
                 {
                     newUpstreamOrder.SetFilledAmount(newUpstreamOrder.GetAmountDouble());

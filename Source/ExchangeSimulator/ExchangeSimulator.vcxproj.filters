@@ -37,6 +37,9 @@
     <Filter Include="Binance Exchange Simulator\Matching Engine">
       <UniqueIdentifier>{31e43ca4-7a6a-43d4-8717-13a69c287ef6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Binance Exchange Simulator\Rule">
+      <UniqueIdentifier>{f1b1b2ad-0820-4c6a-a1e9-e472e5279977}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -114,6 +117,12 @@
     <ClInclude Include="UpstreamOrderQueueMgr.h">
       <Filter>Binance Exchange Simulator\Book</Filter>
     </ClInclude>
+    <ClInclude Include="CommonDef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExchangeRuleAndCompliance.h">
+      <Filter>Binance Exchange Simulator\Rule</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -184,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="UpstreamOrder.cpp">
       <Filter>Binance Exchange Simulator\Connectivity</Filter>
+    </ClCompile>
+    <ClCompile Include="ExchangeRuleAndCompliance.cpp">
+      <Filter>Binance Exchange Simulator\Rule</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

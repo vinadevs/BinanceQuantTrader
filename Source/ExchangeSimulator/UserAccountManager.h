@@ -42,7 +42,7 @@ namespace tinyxml2 {
 
 namespace ExchangeSimulator {
 
-    using Accounts = std::map<std::string, UserAccount>;
+    using Accounts = std::map<std::string, std::unique_ptr<UserAccount>>;
     
     class UserAccountManager
     {
@@ -50,13 +50,13 @@ namespace ExchangeSimulator {
         UserAccountManager(const tinyxml2::XMLElement* userAccountManagerCfg);
         ~UserAccountManager();
 
-        void AddNewUserAccount(const std::string& userId, const UserAccount& userAccount);
+        void AddNewUserAccount(const std::string& userId);
 
         void RemoveUserAccount(const std::string& userId);
 
-        const UserAccount& LookupUserAccount(const std::string& userId);
+        const UserAccount* LookupUserAccount(const std::string& userId);
 
-        UserAccount& OpenEditSessionForUserAccount(const std::string& userId);
+        UserAccount* OpenEditSessionForUserAccount(const std::string& userId);
 
         void ClearAll();
 

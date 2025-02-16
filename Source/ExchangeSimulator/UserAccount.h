@@ -117,21 +117,9 @@ namespace ExchangeSimulator {
     {
         UserAccount() = default;
 
-        UserAccount(
-            std::string userId,
-            std::size_t makerCommission,
-            std::size_t takerCommission,
-            std::size_t buyerCommission,
-            std::size_t sellerCommission,
-            bool canWithdraw,
-            bool canDeposit,
-            std::size_t updateTime);
+        UserAccount(std::string userId);
 
         std::string m_userId; // must be unique string ID
-        std::size_t m_makerCommission{ 0 }; // fee commission from binance
-        std::size_t m_takerCommission{ 0 }; // fee commission from binance
-        std::size_t m_buyerCommission{ 0 }; // fee commission from buy side
-        std::size_t m_sellerCommission{ 0 };// fee commission from sell side
         bool m_canWithdraw{ false };
         bool m_canDeposit { false };
         bool m_canTrade{ false };
@@ -146,10 +134,6 @@ namespace ExchangeSimulator {
         {
             os << "UserAccount { "
                << "userId: " << account.m_userId << ", "
-               << "makerCommission: " << account.m_makerCommission << ", "
-               << "takerCommission: " << account.m_takerCommission << ", "
-               << "buyerCommission: " << account.m_buyerCommission << ", "
-               << "sellerCommission: " << account.m_sellerCommission << ", "
                << "canTrade: " << std::boolalpha << account.IsAccountEligibleToTrade() << ", "
                << "canWithdraw: " << account.m_canWithdraw << ", "
                << "canDeposit: " << account.m_canDeposit << ", "

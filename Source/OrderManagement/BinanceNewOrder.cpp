@@ -118,8 +118,8 @@ std::string OrderManagement::BinanceNewOrder::GetOrderStatusStr() const
 {
     switch (m_orderStatus)
     {
-    case OrderManagement::BinanceNewOrderStatus::UNDEF:
-        return "UNDEF";
+    case OrderManagement::BinanceNewOrderStatus::NEW:
+        return "NEW";
     case OrderManagement::BinanceNewOrderStatus::WAITING_FOR_FILL:
         return "WAITING_FOR_FILL";
     case OrderManagement::BinanceNewOrderStatus::PRTIAL_FILLED:
@@ -131,7 +131,7 @@ std::string OrderManagement::BinanceNewOrder::GetOrderStatusStr() const
     case OrderManagement::BinanceNewOrderStatus::REPLACED:
         return "REPLACED";
     default:
-        throw std::runtime_error("BinanceNewOrder: undetected order status.");
+        return "UNDEF";
     };
 }
 

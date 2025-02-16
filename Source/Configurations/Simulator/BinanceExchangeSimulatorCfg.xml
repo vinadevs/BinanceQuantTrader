@@ -23,4 +23,5 @@
 
 <UserAccountManager>
   <GeneralSetting MaximumAccount="1"/>
+  <TestUserAccount ListUserID=""/>
 </UserAccountManager>

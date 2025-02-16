@@ -25,6 +25,8 @@
 #include "HistoricalParticipant.h"
 #include "SimulatorParticipant.h"
 
+#include "CommonDef.h"
+
 using namespace ExchangeSimulator;
 using namespace MiddlewareMQ;
 using namespace OrderManagement;
@@ -130,9 +132,9 @@ void MatchingEngine::ProcessIncommingOrders()
 			{
 				auto order = m_upstreamOrderQueueMgr->GetNextOrder();
 
-				const auto orderInfoStr = "OrderClientId= "
-					+ UpstreamOrderUtils::GetOrderClientId(order) + "Symbol="
-					+ UpstreamOrderUtils::GetOrderSymbol(order) + "OrderType="
+				const auto orderInfoStr = "OrderClientId="
+					+ UpstreamOrderUtils::GetOrderClientId(order) + ", Symbol="
+					+ UpstreamOrderUtils::GetOrderSymbol(order) + ", OrderType="
 					+ UpstreamOrderUtils::GetOrderTypeName(order);
 
 				m_logger->Info("From upstream order queue, processing, " + orderInfoStr);
@@ -186,25 +188,25 @@ void MatchingEngine::OnHandlingReceivedMessage(const BqtJsonMessage& message)
 	if (message.IsValid())
 	{
 		const auto messageType = message.GetStringValueByTag(FieldLabels::BinanceOrderType);
-		if (messageType == "BinanceNewOrder")
+		if (messageType == Binance_Order_Type::New_Order)
 		{
 			auto newOrder = ConstructUpstreamNewOrder(message);
 			newOrder.SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
 			m_upstreamOrderQueueMgr->PushOrderToQueue(newOrder);
 		}
-		else if (messageType == "BinanceCancelOrder")
+		else if (messageType == Binance_Order_Type::Cancel_Order)
 		{
 			const auto cancelOrder = ConstructUpstreamCancelOrder(message);
 			//cancelOrder.SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
 			m_upstreamOrderQueueMgr->PushOrderToQueue(cancelOrder);
 		}
-		else if (messageType == "BinanceReplaceOrder")
+		else if (messageType == Binance_Order_Type::Replace_Order)
 		{
 			const auto replaceOrder = ConstructUpstreamReplaceOrder(message);
 			//cancelOrder.SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
 			m_upstreamOrderQueueMgr->PushOrderToQueue(replaceOrder);
 		}
-		else if (messageType == "BinanceQueryOrder")
+		else if (messageType == Binance_Order_Type::Query_Order)
 		{
 			const auto queryOrder = ConstructUpstreamQueryOrder(message);
 			//cancelOrder.SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
@@ -238,7 +240,7 @@ bool MatchingEngine::IsOrderEligibleToProcess(const UpstreamOrder& order)
 
 	// User account check:
 	const auto isAccountEligibleToTrade = m_userAccountManager->LookupUserAccount(
-		std::get<BinanceNewOrder>(order).GetUserAccountID()).IsAccountEligibleToTrade();
+		std::get<BinanceNewOrder>(order).GetUserAccountID())->IsAccountEligibleToTrade();
 
 	//if (m_userAccountManager->LookupUserAccount(
 	//	order.GetUserAccountID()).IsHoldingThisAsset(order.GetSymbol()))
@@ -351,12 +353,12 @@ BinanceNewOrder MatchingEngine::ConstructUpstreamNewOrder(
 	const binapi::e_side side = binapi::e_side_from_string(message.GetStringValueByTag(FieldLabels::Side).c_str());
 	const binapi::e_type type = binapi::e_type_from_string(message.GetStringValueByTag(FieldLabels::Type).c_str());
 	const binapi::e_time time = binapi::e_time_from_string(message.GetStringValueByTag(FieldLabels::Time).c_str());
-	const double amount = message.GetDoubleValueByTag(FieldLabels::Time);
+	const double amount = message.GetDoubleValueByTag(FieldLabels::Amount);
 	const double price = message.GetDoubleValueByTag(FieldLabels::Price);
 	const std::string clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
 	const std::string stopPrice = message.GetStringValueByTag(FieldLabels::StopPrice);
 	const std::string icebergAmount = message.GetStringValueByTag(FieldLabels::IcebergAmount);
-	return BinanceNewOrder(
+	BinanceNewOrder order(
 		symbol,
 		side,
 		type,
@@ -366,6 +368,10 @@ BinanceNewOrder MatchingEngine::ConstructUpstreamNewOrder(
 		clientOrderId,
 		stopPrice,
 		icebergAmount);
+
+	order.SetUserAccountID(message.GetStringValueByTag(FieldLabels::UserAccountID));
+
+	return order;
 }
 
 BinanceCancelOrder MatchingEngine::ConstructUpstreamCancelOrder(
@@ -375,11 +381,15 @@ BinanceCancelOrder MatchingEngine::ConstructUpstreamCancelOrder(
 	const std::string orderId = message.GetStringValueByTag(FieldLabels::OrderId);
 	const std::string origClientOrderId = message.GetStringValueByTag(FieldLabels::OrigClientOrderId);
 	const std::string clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
-	return BinanceCancelOrder(
+	BinanceCancelOrder order(
 		symbol,
 		std::stoull(orderId),
 		origClientOrderId,
 		clientOrderId);
+
+	order.SetUserAccountID(message.GetStringValueByTag(FieldLabels::UserAccountID));
+
+	return order;
 }
 
 BinanceReplaceOrder MatchingEngine::ConstructUpstreamReplaceOrder(
@@ -389,11 +399,15 @@ BinanceReplaceOrder MatchingEngine::ConstructUpstreamReplaceOrder(
 	const std::string orderId = message.GetStringValueByTag(FieldLabels::OrderId);
 	const std::string origClientOrderId = message.GetStringValueByTag(FieldLabels::OrigClientOrderId);
 	const std::string clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
-	return BinanceReplaceOrder(
+	BinanceReplaceOrder order(
 		symbol,
 		std::stoull(orderId),
 		origClientOrderId,
 		clientOrderId);
+
+	order.SetUserAccountID(message.GetStringValueByTag(FieldLabels::UserAccountID));
+
+	return order;
 }
 
 BinanceQueryOrder MatchingEngine::ConstructUpstreamQueryOrder(
@@ -403,9 +417,13 @@ BinanceQueryOrder MatchingEngine::ConstructUpstreamQueryOrder(
 	const std::string orderId = message.GetStringValueByTag(FieldLabels::OrderId);
 	const std::string origClientOrderId = message.GetStringValueByTag(FieldLabels::OrigClientOrderId);
 	const std::string clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
-	return BinanceQueryOrder(
+	BinanceQueryOrder order(
 		symbol,
 		std::stoull(orderId),
 		origClientOrderId,
 		clientOrderId);
+
+	order.SetUserAccountID(message.GetStringValueByTag(FieldLabels::UserAccountID));
+
+	return order;
 }

@@ -154,9 +154,11 @@
     <ClInclude Include="BqtJsonMessageServer.h" />
     <ClInclude Include="BinanceExchangeSimulator.h" />
     <ClInclude Include="BinanceWalletServer.h" />
+    <ClInclude Include="CommonDef.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="AlgosConnectivity.h" />
     <ClInclude Include="DownstreamOrderBook.h" />
+    <ClInclude Include="ExchangeRuleAndCompliance.h" />
     <ClInclude Include="UpstreamOrderMatchedMgr.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="HistoricalParticipant.h" />
@@ -184,6 +186,7 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="AlgosConnectivity.cpp" />
     <ClCompile Include="DownstreamOrderBook.cpp" />
+    <ClCompile Include="ExchangeRuleAndCompliance.cpp" />
     <ClCompile Include="HistoricalParticipant.cpp" />
     <ClCompile Include="MatchingEngine.cpp" />
     <ClCompile Include="OrderAckManager.cpp" />

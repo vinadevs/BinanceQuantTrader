@@ -9,6 +9,7 @@
 #pragma once
 
 #include "dlldefine.h"
+
 #include <string>
 
 namespace TimeUtils {

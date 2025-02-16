@@ -82,6 +82,10 @@ namespace OrderManagement {
 		}
 
 #if USE_TEST_TRADING
+		void SetUserAccountID(const std::string& userID) {
+			m_userAccountID = userID;
+		}
+
 		const std::string& GetUserAccountID() const {
 			return m_userAccountID;
 		}

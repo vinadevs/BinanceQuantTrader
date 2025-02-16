@@ -17,6 +17,7 @@
 #include "BinanceWalletServer.h"
 #include "BinanceExchangeSimulator.h"
 #include "AlgosConnectivity.h"
+#include "ExchangeRuleAndCompliance.h"
 
 using namespace ExchangeSimulator;
 
@@ -59,6 +60,10 @@ void BinanceExchangeSimulator::PrepareExchangeServices(const tinyxml2::XMLDocume
 {
 	// PRELOAD CONFIG XML FILE
 	assert(configSimulatorXml);
+	const auto* exchangeRuleAndComplianceCfg = configSimulatorXml->FirstChildElement("ExchangeRuleAndCompliance");
+	assert(exchangeRuleAndComplianceCfg);
+	m_logger->Info("Initiating ExchangeRuleAndCompliance.");
+	ExchangeRuleMgr->SetRuleAndCompliance(exchangeRuleAndComplianceCfg);
 
 	m_logger->Info("Initiating UserAccountManager.");
 	const auto* userAccountManagerCfg = configSimulatorXml->FirstChildElement("UserAccountManager");
@@ -70,7 +75,7 @@ void BinanceExchangeSimulator::PrepareExchangeServices(const tinyxml2::XMLDocume
 	assert(binanceWalletServerCfg);
 	m_binanceWalletServer = std::make_unique<BinanceWalletServer>(binanceWalletServerCfg, m_userAccountManager.get());
 
-	m_logger->Info("Initiating Exchange Matching Enginer.");
+	m_logger->Info("Initiating Exchange Matching Engine.");
 	const auto* matchingEngineCfg = configSimulatorXml->FirstChildElement("MatchingEngine");
 	assert(matchingEngineCfg);
 	m_matchingEngine = std::make_unique<MatchingEngine>(matchingEngineCfg, m_userAccountManager.get());
