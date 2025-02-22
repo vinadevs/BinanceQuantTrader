@@ -8,13 +8,10 @@
 
 #pragma once
 
-#include "LockFreeQueue.h"
-#include "UpstreamOrder.h"
+#include "UpstreamOrderQueue.h"
 
 #include <memory>
-#include <optional>
 #include <string>
-#include <atomic>
 
 #include <iostream>
 namespace LibraryUtils {
@@ -23,61 +20,13 @@ namespace LibraryUtils {
 
 namespace ExchangeSimulator {
 
-	class UpstreamOrderQueue final : public MultipleThreads::LockFreeQueue<UpstreamOrder>
-	{
-	public:
-		bool RemoveOrderWithClientOrderId(const std::string& clientOrderId) {
-			Node* current = m_head.load();
-			while (current->next.load() != nullptr) {
-				Node* next = current->next.load();
-				auto test = UpstreamOrderUtils::GetOrderClientId(next->data);
-				std::cout << "Debug test=" << test << std::endl;
-				std::cout << "Debug clientOrderId=" << clientOrderId << std::endl;
-				if (test == clientOrderId) {
-					Node* nextNext = next->next.load();
-					if (current->next.compare_exchange_weak(next, nextNext)) {
-						delete next;
-						return true;
-					}
-				}
-				else {
-					current = next;
-				}
-			}
-			return false;
-		}
-
-		std::optional<UpstreamOrder> LookupOrderWithClientOrderId(const std::string& clientOrderId) const {
-			Node* current = m_head.load()->next.load();  // Skip dummy node
-			while (current != nullptr) {
-				if (UpstreamOrderUtils::GetOrderClientId(current->data) == clientOrderId) {
-					return current->data;  // Return the found element
-				}
-				current = current->next.load();
-			}
-			return std::nullopt;  // Element not found
-		}
-
-		bool ReplaceOrderWithClientOrderId(const std::string& clientOrderId, const UpstreamOrder& newOrder) {
-			Node* current = m_head.load()->next.load();  // Skip the dummy node
-			while (current != nullptr) {
-				if (UpstreamOrderUtils::GetOrderClientId(current->data) == clientOrderId) {
-					current->data = newOrder; // replace old order by new order
-					return true;
-				}
-				current = current->next.load();
-			}
-			return false;
-		}
-	};
-
 	class UpstreamOrderQueueMgr final
 	{
 	public:
 		UpstreamOrderQueueMgr();
 		~UpstreamOrderQueueMgr();
 
-		void PushOrderToQueue(const UpstreamOrder& order);
+		void PushOrderToQueue(const std::string& clientOrderId, const UpstreamOrder& order);
 		bool RemoveOrder(const std::string& clientOrderId);
 		bool ReplaceOrder(const std::string& clientOrderId, const UpstreamOrder& order);
 		const UpstreamOrder& LookupOrder(const std::string& clientOrderId) const;

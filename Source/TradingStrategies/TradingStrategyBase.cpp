@@ -127,6 +127,6 @@ void TradingStrategyBase::OnAlarmTriggered(const int passToDerived)
 #if USE_TEST_TRADING  
 void TradingStrategyBase::OnHandlingReceivedMessage(const BqtJsonMessage& message)
 {
-	
+	m_logger->Info("Received simulator ack=" + message.SerializeMessage());
 }
 #endif

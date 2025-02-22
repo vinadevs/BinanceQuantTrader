@@ -123,6 +123,9 @@
     <ClInclude Include="ExchangeRuleAndCompliance.h">
       <Filter>Binance Exchange Simulator\Rule</Filter>
     </ClInclude>
+    <ClInclude Include="UpstreamOrderQueue.h">
+      <Filter>Binance Exchange Simulator\Book</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

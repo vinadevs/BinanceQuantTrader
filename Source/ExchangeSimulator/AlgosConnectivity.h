@@ -31,8 +31,20 @@ namespace tinyxml2 {
 
 namespace ExchangeSimulator {
 
-	// Connecting to Strategy/Algo system by this SINGLETON class allows us
-	// to send acks for orders from upstream side
+/**
+ * @class AlgosConnectivity
+ * @brief Handles acknowledgment messages sent to the upstream system.
+
+ * The UpstreamAck class is responsible for generating and sending acknowledgment
+ * messages to the upstream side after processing incoming requests or orders.
+ * This class allow connecting to Strategy/Algo system to send acks for orders from upstream side.
+ * 
+ * Key responsibilities:
+ * - Constructing acknowledgment messages with relevant metadata.
+ * - Sending acknowledgments to the upstream system.
+ * - Handling retries in case of communication failures.
+ * - Ensuring message integrity and correct sequencing.
+ */
 
 	class OrderAckManager;
 	class AlgosConnectivity

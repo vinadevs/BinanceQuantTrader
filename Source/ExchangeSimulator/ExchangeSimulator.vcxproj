@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -167,6 +167,7 @@
     <ClInclude Include="HistoricalParticipant.h" />
     <ClInclude Include="MatchingEngine.h" />
     <ClInclude Include="OrderAckManager.h" />
+    <ClInclude Include="UpstreamOrderQueue.h" />
     <ClInclude Include="UpstreamOrderQueueMgr.h" />
     <ClInclude Include="Participant.h" />
     <ClInclude Include="pch.h" />

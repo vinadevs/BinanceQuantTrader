@@ -33,12 +33,16 @@ DownstreamOrderAck AckUtils::CreateErrorOrderAck(
 
 DownstreamOrderAck AckUtils::CreateNewOrderAck(const OrderManagement::BinanceNewOrder& order)
 {
-	return DownstreamOrderAck();
+	DownstreamOrderAck ack = order.ToBqtJsonMessage();
+	ack.AddPair(FieldLabels::SimulatorAck::AckType, DownstreamAckTypes::NewOrderAck);
+	return ack;
 }
 
 DownstreamOrderAck AckUtils::CreateFilledOrderAck(const OrderManagement::BinanceNewOrder& order)
 {
-	return DownstreamOrderAck();
+	DownstreamOrderAck ack = order.ToBqtJsonMessage();
+	ack.AddPair(FieldLabels::SimulatorAck::AckType, DownstreamAckTypes::FilledNewOrderAck);
+	return ack;
 }
 
 DownstreamOrderAck AckUtils::CreateCancelOrderAck(const OrderManagement::BinanceCancelOrder& order)

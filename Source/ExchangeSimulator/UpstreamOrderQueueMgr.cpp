@@ -23,9 +23,9 @@ UpstreamOrderQueueMgr::~UpstreamOrderQueueMgr()
 {
 }
 
-void UpstreamOrderQueueMgr::PushOrderToQueue(const UpstreamOrder& order)
+void UpstreamOrderQueueMgr::PushOrderToQueue(const std::string& clientOrderId, const UpstreamOrder& order)
 {
-	m_upstreamOrderQueue.Enqueue(order);
+	m_upstreamOrderQueue.EnqueueOrder(clientOrderId, order);
 }
 
 bool UpstreamOrderQueueMgr::RemoveOrder(const std::string& clientOrderId)
@@ -47,13 +47,13 @@ const UpstreamOrder& UpstreamOrderQueueMgr::LookupOrder(const std::string& clien
 	}
 	else
 	{
-		throw std::runtime_error("UpstreamOrderQueueMgr: could not found order with clientOrderId=" + clientOrderId); \
+		throw std::runtime_error("UpstreamOrderQueueMgr: could not found order with clientOrderId=" + clientOrderId);
 	}
 }
 
 void UpstreamOrderQueueMgr::ClearAll()
 {
-	m_upstreamOrderQueue.ClearAll();
+	m_upstreamOrderQueue.Clear();
 }
 
 bool UpstreamOrderQueueMgr::HasNoOrders()
@@ -63,13 +63,13 @@ bool UpstreamOrderQueueMgr::HasNoOrders()
 
 UpstreamOrder UpstreamOrderQueueMgr::GetNextOrder()
 {
-	auto result = m_upstreamOrderQueue.Dequeue();
+	auto result = m_upstreamOrderQueue.DequeueOrder();
 	if (result)
 	{
 		return *result;
 	}
 	else
 	{
-		throw std::runtime_error("UpstreamOrderQueueMgr: empty order queue"); \
+		throw std::runtime_error("UpstreamOrderQueueMgr: empty order queue");
 	}
 }

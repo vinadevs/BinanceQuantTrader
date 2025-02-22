@@ -182,7 +182,6 @@ void MatchingEngine::ProcessIncommingOrders()
 	}
 }
 
-int count = 0;
 void MatchingEngine::OnHandlingReceivedMessage(const BqtJsonMessage& message)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
@@ -193,27 +192,25 @@ void MatchingEngine::OnHandlingReceivedMessage(const BqtJsonMessage& message)
 		{
 			auto newOrder = ConstructUpstreamNewOrder(message);
 			newOrder.SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
-			if (count == 0)
-				m_upstreamOrderQueueMgr->PushOrderToQueue(newOrder);
-			count++;
+			m_upstreamOrderQueueMgr->PushOrderToQueue(newOrder.GetClientOrderId(), newOrder);
 		}
 		else if (messageType == Binance_Order_Type::Cancel_Order)
 		{
 			const auto cancelOrder = ConstructUpstreamCancelOrder(message);
 			//cancelOrder.SetOrderStatus(BinanceCancelOrderStatus::WAITING_FOR_CANCEL);
-			m_upstreamOrderQueueMgr->PushOrderToQueue(cancelOrder);
+			m_upstreamOrderQueueMgr->PushOrderToQueue(cancelOrder.GetClientOrderId(), cancelOrder);
 		}
 		else if (messageType == Binance_Order_Type::Replace_Order)
 		{
 			const auto replaceOrder = ConstructUpstreamReplaceOrder(message);
 			//cancelOrder.SetOrderStatus(BinanceReplaceOrderStatus::WAITING_FOR_REPLACE);
-			m_upstreamOrderQueueMgr->PushOrderToQueue(replaceOrder);
+			m_upstreamOrderQueueMgr->PushOrderToQueue(replaceOrder.GetClientOrderId(), replaceOrder);
 		}
 		else if (messageType == Binance_Order_Type::Query_Order)
 		{
 			const auto queryOrder = ConstructUpstreamQueryOrder(message);
 			//cancelOrder.SetOrderStatus(BinanceQueryOrderStatus::WAITING_FOR_QUERY);
-			m_upstreamOrderQueueMgr->PushOrderToQueue(queryOrder);
+			m_upstreamOrderQueueMgr->PushOrderToQueue(queryOrder.GetClientOrderId(), queryOrder);
 		}
 		else
 		{
@@ -321,26 +318,21 @@ void MatchingEngine::PostProcessingMatchedNewOrder(BinanceNewOrder& order)
 	const auto orderStr = order.ToString();
 	if (order.GetOrderStatus() == BinanceNewOrderStatus::FULL_FILLED)
 	{
-		if (m_upstreamOrderQueueMgr->RemoveOrder(clientOrderId))
-		{
-			m_logger->Info("Full filled order info: " + orderStr);
-			m_logger->Info("Removed filled order from upstream order queue.");
-			// Notify the involved parties of the trade execution.
-			const auto ack = AckUtils::CreateFilledOrderAck(order);
-			UpstreamGateWay->SendDownstreamOrderAck(ack);
-		}
+		m_logger->Info("Full filled order info: " + orderStr);
+		m_logger->Info("Sending full fill execution ack to upstream...");
+		// Notify the involved parties of the trade execution.
+		const auto ack = AckUtils::CreateFilledOrderAck(order);
+		UpstreamGateWay->SendDownstreamOrderAck(ack);
 	}
 	// If the order is not fully matched, insert the order into back of the order book to continue fill it later.
 	else if (order.GetOrderStatus() == BinanceNewOrderStatus::PRTIAL_FILLED)
 	{
-		if (m_upstreamOrderQueueMgr->RemoveOrder(clientOrderId)) // remove order first
-		{
-			m_logger->Info("Partial filled order info: " + orderStr);
-			m_upstreamOrderQueueMgr->PushOrderToQueue(order); // move to back of the queue
-			// Notify the involved parties of the trade execution.
-			const auto ack = AckUtils::CreateFilledOrderAck(order);
-			UpstreamGateWay->SendDownstreamOrderAck(ack);
-		}
+		m_logger->Info("Partial filled order info: " + orderStr);
+		m_upstreamOrderQueueMgr->PushOrderToQueue(order.GetClientOrderId(), order); // move to back of the queue
+		// Notify the involved parties of the trade execution.
+		m_logger->Info("Sending partial fill execution ack to upstream...");
+		const auto ack = AckUtils::CreateFilledOrderAck(order);
+		UpstreamGateWay->SendDownstreamOrderAck(ack);
 	}
 	// If the order does not have liquidity, insert the order into back of the order book to continue fill it later.
 	else if (order.GetOrderStatus() == BinanceNewOrderStatus::WAITING_FOR_FILL)

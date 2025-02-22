@@ -82,7 +82,7 @@ void BinanceNewOrder::SetExecutionResult(
     m_executionResult = executionResult;
 }
 
-MiddlewareMQ::BqtJsonMessage BinanceNewOrder::ToBqtJsonMessage()
+MiddlewareMQ::BqtJsonMessage BinanceNewOrder::ToBqtJsonMessage() const
 {
     MiddlewareMQ::BqtJsonMessage message;
     message.AddPair(FieldLabels::UserAccountID, m_userAccountID);

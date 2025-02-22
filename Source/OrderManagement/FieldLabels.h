@@ -53,17 +53,15 @@ namespace OrderManagement {
 		const std::string StopPrice = "StopPrice";
 		const std::string IcebergAmount = "IcebergAmount";
 		const std::string OrderStatus = "OrderStatus";
-		
+		const std::string OrigQuoteOrderQuantity = "OrigQuoteOrderQuantity";
+		const std::string CummulativeQuoteQty = "CummulativeQuoteQty";
+		const std::string TimeInForce = "TimeInForce";
+
 		// Simulator Ack
 		namespace SimulatorAck {
 			const std::string AckType = "DownstreamAckType";
 			const std::string ErrorCode = "ErrorCode";
 			const std::string ErrorMessage = "ErrorMessage";
-			const std::string OriginalQty = "OriginalQty";
-			const std::string ExecutedQty = "ExecutedQty";
-			const std::string CummulativeQuoteQty = "CummulativeQuoteQty";
-			const std::string Status = "Status";
-			const std::string TimeInForce = "TimeInForce";
 		};
 	};
 };

@@ -20,6 +20,7 @@
 #include "Order.h"
 
 #include <string>
+#include <unordered_set>
 
 namespace OrderManagement {
 
@@ -98,7 +99,7 @@ namespace OrderManagement {
 
 #if USE_TEST_TRADING
         // Simulator test
-        MiddlewareMQ::BqtJsonMessage ToBqtJsonMessage();
+        MiddlewareMQ::BqtJsonMessage ToBqtJsonMessage() const;
         void SetExecutionResult(const MiddlewareMQ::MiddlewareMQResult& executionResult);
 #else
     // Execution Result
@@ -106,18 +107,25 @@ namespace OrderManagement {
         const binapi::rest::api::result<binapi::rest::new_order_resp_type>& executionResult);
 #endif
     private:
-        binapi::e_side m_side;
-        binapi::e_type m_type;
-        binapi::e_time m_time;
-        double m_amount{ 0 };
-        double m_filledAmount{ 0 };
-        double m_price{ 0 };
-        double m_filledPrice{ 0 };
-        // m_clientOrderId is new order ID from us
-        std::string m_clientOrderId;
+        binapi::e_side m_side; // buy side or sell side
+        binapi::e_type m_type; // order type: limit or market,..
+        binapi::e_time m_time; // Time In Force of Order at the Exchange
+        double m_amount{ 0 }; // Original Quantity
+        double m_filledAmount{ 0 }; // Executed Quantity
+        /* m_price specifies the maximum price a buyer is willing to pay(for buy orders) or 
+        the minimum price a seller is willing to accept(for sell orders).*/
+        double m_price{ 0 }; // limit price to execute order
+        double m_filledPrice{ 0 }; // executed price of order at the Exchange
+        double m_origQuoteOrderQuantity{ 0 }; // m_price * m_amount (Order PreTrade Volume)
+        double m_cumulativeQuoteQuantity{ 0 }; // m_filledPrice * m_filledAmount  (Order Traded Volume)
+        double m_updateTime{ 0 }; // Time order changed status
+        std::string m_clientOrderId; // m_clientOrderId is new order ID from us
+        /* m_stopPrice acts as a trigger : When the market price reaches m_stopPrice, the order converts into a market
+        order(for stop orders) or a limit order(for stop - limit orders).*/
         std::string m_stopPrice;
         std::string m_icebergAmount;
-
+        // If we trade with a basket of orders
+        std::unordered_set<std::string> m_clientOrderIdList;
         BinanceNewOrderStatus m_orderStatus{ BinanceNewOrderStatus::NEW };
 
 #if USE_TEST_TRADING

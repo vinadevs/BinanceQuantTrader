@@ -24,6 +24,9 @@ namespace ExchangeSimulator {
 		const std::string CancelOrderAck = "CancelOrderAck";
 		const std::string ReplaceOrderAck = "ReplaceOrderAck";
 		const std::string QueryOrderAck = "QueryOrderAck";
+		const std::string FilledNewOrderAck = "FilledNewOrderAck";
+		const std::string CancelledOrderAck = "CancelledOrderAck";
+		const std::string ReplacedOrderAck = "ReplacedOrderAck";
 	};
 
 	using DownstreamOrderAck = MiddlewareMQ::BqtJsonMessage;
