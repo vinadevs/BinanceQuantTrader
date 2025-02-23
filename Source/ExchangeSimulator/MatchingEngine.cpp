@@ -130,6 +130,8 @@ void MatchingEngine::ProcessIncommingOrders()
 		{
 			while (!m_upstreamOrderQueueMgr->HasNoOrders())
 			{
+				// -Dequeue order from waiting list, so the order is not in the queue anymore
+				// -We have to push it back to the end of the queue if it can not be filled by the matching engine
 				auto order = m_upstreamOrderQueueMgr->GetNextOrder();
 
 				const auto orderInfoStr = "OrderClientId="
@@ -139,42 +141,39 @@ void MatchingEngine::ProcessIncommingOrders()
 
 				m_logger->Info("From upstream order queue, processing prioritied order: " + orderInfoStr);
 
-				lock.unlock();  // Unlock mutex during processing
-				if (IsOrderEligibleToProcess(order))
+				lock.unlock();  // Unlock mutex during processing			
+				m_logger->Info("From upstream order pre-trade checker, passed, " + orderInfoStr);
+
+				if (std::holds_alternative<BinanceNewOrder>(order))
 				{
-					m_logger->Info("From upstream order pre-trade checker, passed, " + orderInfoStr);
+					m_logger->Info("From order matching engine, looking for liquidity, " + orderInfoStr);
 
-					if (std::holds_alternative<BinanceNewOrder>(order))
+					auto& newOrder = std::get<BinanceNewOrder>(order);
+					if (m_participant->TryToMatchOrder(newOrder))
 					{
-						m_logger->Info("From order matching engine, looking for liquidity, " + orderInfoStr);
-
-						auto& newOrder = std::get<BinanceNewOrder>(order);
-						if (m_participant->TryToMatchOrder(newOrder))
-						{
-							m_upstreamOrderMatchedMgr->AddOrder(newOrder.GetClientOrderId(), order);
-						}
-						PostProcessingMatchedNewOrder(newOrder);
+						m_upstreamOrderMatchedMgr->AddOrder(newOrder.GetClientOrderId(), order);
 					}
-					else if (std::holds_alternative<BinanceCancelOrder>(order))
-					{
-						m_logger->Info("From upstream order queue, cancelling, " + orderInfoStr);
-						auto& cancelOrder = std::get<BinanceCancelOrder>(order);
-						m_upstreamOrderQueueMgr->RemoveOrder(cancelOrder.GetOrigClientOrderId());
-					}
-					else if (std::holds_alternative<BinanceReplaceOrder>(order))
-					{
-						m_logger->Info("From upstream order queue, replacing, " + orderInfoStr);
-						auto& replaceOrder = std::get<BinanceReplaceOrder>(order);
-						m_upstreamOrderQueueMgr->ReplaceOrder(replaceOrder.GetOrigClientOrderId(), replaceOrder);
-					}
-					else if (std::holds_alternative<BinanceQueryOrder>(order))
-					{
-						m_logger->Info("From upstream order queue, querying, " + orderInfoStr);
-
-						auto& queryOrder = std::get<BinanceQueryOrder>(order);
-						m_upstreamOrderQueueMgr->LookupOrder(queryOrder.GetOrigClientOrderId());
-					}
+					PostProcessingMatchedNewOrder(newOrder);
 				}
+				else if (std::holds_alternative<BinanceCancelOrder>(order))
+				{
+					m_logger->Info("From upstream order queue, cancelling, " + orderInfoStr);
+					auto& cancelOrder = std::get<BinanceCancelOrder>(order);
+					m_upstreamOrderQueueMgr->RemoveOrder(cancelOrder.GetOrigClientOrderId());
+				}
+				else if (std::holds_alternative<BinanceReplaceOrder>(order))
+				{
+					m_logger->Info("From upstream order queue, replacing, " + orderInfoStr);
+					auto& replaceOrder = std::get<BinanceReplaceOrder>(order);
+					m_upstreamOrderQueueMgr->ReplaceOrder(replaceOrder.GetOrigClientOrderId(), replaceOrder);
+				}
+				else if (std::holds_alternative<BinanceQueryOrder>(order))
+				{
+					m_logger->Info("From upstream order queue, querying, " + orderInfoStr);
+
+					auto& queryOrder = std::get<BinanceQueryOrder>(order);
+					m_upstreamOrderQueueMgr->LookupOrder(queryOrder.GetOrigClientOrderId());
+				}		
 				lock.lock();  // Lock mutex again for the next iteration
 			}
 			m_hasNewOrder.store(false); // Reset the flag after processing
@@ -182,7 +181,7 @@ void MatchingEngine::ProcessIncommingOrders()
 	}
 }
 
-void MatchingEngine::OnHandlingReceivedMessage(const BqtJsonMessage& message)
+void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& message)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	if (message.IsValid())
@@ -191,32 +190,62 @@ void MatchingEngine::OnHandlingReceivedMessage(const BqtJsonMessage& message)
 		if (messageType == Binance_Order_Type::New_Order)
 		{
 			auto newOrder = ConstructUpstreamNewOrder(message);
-			newOrder.SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
-			m_upstreamOrderQueueMgr->PushOrderToQueue(newOrder.GetClientOrderId(), newOrder);
+		
+			// User account check:
+			const bool isAccountEligibleToTrade = m_userAccountManager->LookupUserAccount(
+				newOrder.GetUserAccountID())->IsAccountEligibleToTrade();
+
+			if (!isAccountEligibleToTrade)
+			{
+				const auto errMsg = "User account is not eligibe to execute new order.";
+				m_logger->Error(errMsg);
+				const auto ack = AckUtils::CreateErrorRejectOrderAck(newOrder.GetSymbol(), newOrder.GetClientOrderId(), errMsg);
+				UpstreamGateWay->SendDownstreamOrderAck(ack);
+				return;
+			}
+
+			if (VerifyUpstreamBinanceNewOrder(newOrder))
+			{
+				newOrder.SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
+				m_upstreamOrderQueueMgr->PushOrderToQueue(newOrder.GetClientOrderId(), newOrder);
+			}
+			else return;
 		}
 		else if (messageType == Binance_Order_Type::Cancel_Order)
 		{
 			const auto cancelOrder = ConstructUpstreamCancelOrder(message);
-			//cancelOrder.SetOrderStatus(BinanceCancelOrderStatus::WAITING_FOR_CANCEL);
-			m_upstreamOrderQueueMgr->PushOrderToQueue(cancelOrder.GetClientOrderId(), cancelOrder);
+			if (VerifyUpstreamBinanceCancelOrder(cancelOrder))
+			{
+				//cancelOrder.SetOrderStatus(BinanceCancelOrderStatus::WAITING_FOR_CANCEL);
+				m_upstreamOrderQueueMgr->PushOrderToQueue(cancelOrder.GetClientOrderId(), cancelOrder);
+			}
+			else return;
 		}
 		else if (messageType == Binance_Order_Type::Replace_Order)
 		{
 			const auto replaceOrder = ConstructUpstreamReplaceOrder(message);
-			//cancelOrder.SetOrderStatus(BinanceReplaceOrderStatus::WAITING_FOR_REPLACE);
-			m_upstreamOrderQueueMgr->PushOrderToQueue(replaceOrder.GetClientOrderId(), replaceOrder);
+			if (VerifyUpstreamBinanceReplaceOrder(replaceOrder))
+			{
+				//cancelOrder.SetOrderStatus(BinanceReplaceOrderStatus::WAITING_FOR_REPLACE);
+				m_upstreamOrderQueueMgr->PushOrderToQueue(replaceOrder.GetClientOrderId(), replaceOrder);
+			}
+			else return;
 		}
 		else if (messageType == Binance_Order_Type::Query_Order)
 		{
 			const auto queryOrder = ConstructUpstreamQueryOrder(message);
-			//cancelOrder.SetOrderStatus(BinanceQueryOrderStatus::WAITING_FOR_QUERY);
-			m_upstreamOrderQueueMgr->PushOrderToQueue(queryOrder.GetClientOrderId(), queryOrder);
+			if (VerifyUpstreamBinanceQueryOrder(queryOrder))
+			{
+				//cancelOrder.SetOrderStatus(BinanceQueryOrderStatus::WAITING_FOR_QUERY);
+				m_upstreamOrderQueueMgr->PushOrderToQueue(queryOrder.GetClientOrderId(), queryOrder);
+			}
+			else return;
 		}
 		else
 		{
 			const auto errMsg = "Unsupported BinanceOrder =" + messageType;
 			m_logger->Error(errMsg);
-			const auto ack = AckUtils::CreateErrorOrderAck(message.GetStringValueByTag(FieldLabels::Symbol),
+			const auto ack = AckUtils::CreateErrorRejectOrderAck(message.GetStringValueByTag(FieldLabels::Symbol),
 				message.GetStringValueByTag(FieldLabels::ClientOrderId), errMsg);
 			UpstreamGateWay->SendDownstreamOrderAck(ack);
 			return; // dont process if message is invalid
@@ -227,41 +256,10 @@ void MatchingEngine::OnHandlingReceivedMessage(const BqtJsonMessage& message)
 	{
 		const auto errMsg = "Received an invalid BqtJsonMessage=" + message.SerializeMessage();
 		m_logger->Error(errMsg);
-		const auto ack = AckUtils::CreateErrorOrderAck(message.GetStringValueByTag(FieldLabels::Symbol),
+		const auto ack = AckUtils::CreateErrorRejectOrderAck(message.GetStringValueByTag(FieldLabels::Symbol),
 			message.GetStringValueByTag(FieldLabels::ClientOrderId), errMsg);
 		UpstreamGateWay->SendDownstreamOrderAck(ack);
 	}
-}
-
-bool MatchingEngine::IsOrderEligibleToProcess(const UpstreamOrder& order)
-{
-	//Order Validation:
-	//  Ensure the order is valid (e.g., sufficient funds, correct format).
-
-	// User account check:
-	const auto isAccountEligibleToTrade = m_userAccountManager->LookupUserAccount(
-		std::get<BinanceNewOrder>(order).GetUserAccountID())->IsAccountEligibleToTrade();
-	
-	// Upstream order check:
-	auto isOrderEligibleToProcess{ false };
-	if (std::holds_alternative<BinanceNewOrder>(order))
-	{
-		isOrderEligibleToProcess = VerifyUpstreamBinanceNewOrder(std::get<BinanceNewOrder>(order));
-	}
-	else if (std::holds_alternative<BinanceCancelOrder>(order)) 
-	{
-		isOrderEligibleToProcess = VerifyUpstreamBinanceCancelOrder(std::get<BinanceCancelOrder>(order));
-	}
-	else if (std::holds_alternative<BinanceReplaceOrder>(order)) 
-	{
-		isOrderEligibleToProcess = VerifyUpstreamBinanceReplaceOrder(std::get<BinanceReplaceOrder>(order));
-	}
-	else if (std::holds_alternative<BinanceQueryOrder>(order))
-	{
-		isOrderEligibleToProcess = VerifyUpstreamBinanceQueryOrder(std::get<BinanceQueryOrder>(order));
-
-	}
-	return isOrderEligibleToProcess && isAccountEligibleToTrade;
 }
 
 bool MatchingEngine::VerifyUpstreamBinanceNewOrder(const BinanceNewOrder& order)
@@ -270,7 +268,7 @@ bool MatchingEngine::VerifyUpstreamBinanceNewOrder(const BinanceNewOrder& order)
 	{
 		const auto errMsg = "Received an invalid BinanceNewOrder with ammount is less than zero.";
 		m_logger->Error(errMsg);
-		const auto ack = AckUtils::CreateErrorOrderAck(order.GetSymbol(), order.GetClientOrderId(), errMsg);
+		const auto ack = AckUtils::CreateErrorRejectOrderAck(order.GetSymbol(), order.GetClientOrderId(), errMsg);
 		UpstreamGateWay->SendDownstreamOrderAck(ack);
 		return false;
 	}
@@ -278,7 +276,7 @@ bool MatchingEngine::VerifyUpstreamBinanceNewOrder(const BinanceNewOrder& order)
 	{
 		const auto errMsg = "Received an invalid BinanceNewOrder with price is less than zero.";
 		m_logger->Error(errMsg);
-		const auto ack = AckUtils::CreateErrorOrderAck(order.GetSymbol(), order.GetClientOrderId(), errMsg);
+		const auto ack = AckUtils::CreateErrorRejectOrderAck(order.GetSymbol(), order.GetClientOrderId(), errMsg);
 		UpstreamGateWay->SendDownstreamOrderAck(ack);
 		return false;
 	}
@@ -305,29 +303,30 @@ void MatchingEngine::PostProcessingMatchedNewOrder(BinanceNewOrder& order)
 	//Update the Order Book:
 	// If the order is fully matched, remove the order from the order book.
 	const auto& clientOrderId = order.GetClientOrderId();
-	const auto orderStr = order.ToString();
+	const auto ackStr = order.ToStringAck();
 	if (order.GetOrderStatus() == BinanceNewOrderStatus::FULL_FILLED)
 	{
-		m_logger->Info("Full filled order info: " + orderStr);
+		m_logger->Info("Full filled order info: " + ackStr);
 		m_logger->Info("Sending full fill execution ack to upstream...");
 		// Notify the involved parties of the trade execution.
-		const auto ack = AckUtils::CreateFilledOrderAck(order);
+		const auto ack = AckUtils::CreateFilledOrderAck(order, "Filled");
 		UpstreamGateWay->SendDownstreamOrderAck(ack);
 	}
 	// If the order is not fully matched, insert the order into back of the order book to continue fill it later.
 	else if (order.GetOrderStatus() == BinanceNewOrderStatus::PRTIAL_FILLED)
 	{
-		m_logger->Info("Partial filled order info: " + orderStr);
+		m_logger->Info("Partial filled order info: " + ackStr);
 		m_upstreamOrderQueueMgr->PushOrderToQueue(order.GetClientOrderId(), order); // move to back of the queue
 		// Notify the involved parties of the trade execution.
 		m_logger->Info("Sending partial fill execution ack to upstream...");
-		const auto ack = AckUtils::CreateFilledOrderAck(order);
+		const auto ack = AckUtils::CreateFilledOrderAck(order, "Parital filled");
 		UpstreamGateWay->SendDownstreamOrderAck(ack);
 	}
 	// If the order does not have liquidity, insert the order into back of the order book to continue fill it later.
 	else if (order.GetOrderStatus() == BinanceNewOrderStatus::WAITING_FOR_FILL)
 	{
-		m_logger->Info("Tried to match but order has no liquidity from market: " + orderStr);
+		m_logger->Info("Tried to match but order has no liquidity from market: " + ackStr);
+		m_upstreamOrderQueueMgr->PushOrderToQueue(order.GetClientOrderId(), order); // move to back of the queue
 	}
 }
 

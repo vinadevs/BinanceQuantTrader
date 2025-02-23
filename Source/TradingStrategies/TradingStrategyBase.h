@@ -127,7 +127,7 @@ namespace TradingStrategies {
 	protected:
 		void OnAlarmTriggered(const int passToDerived = 0) override; // to reset rule counters
 #if USE_TEST_TRADING  
-		void OnHandlingReceivedMessage(
+		void OnHandlingReceivedSimulatorMessage(
 			const MiddlewareMQ::BqtJsonMessage& message) override; // process exchange simulator message
 #endif
 		/// <strategy data members>

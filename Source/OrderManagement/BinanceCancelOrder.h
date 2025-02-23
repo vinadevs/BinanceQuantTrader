@@ -30,10 +30,10 @@ namespace OrderManagement {
         BinanceCancelOrder() = default;
 
         BinanceCancelOrder(
-              const std::string& symbol
+              const std::string& clientOrderId
+            , const std::string& symbol
             , std::size_t orderId
-            , const std::string& origClientOrderId
-            , const std::string& clientOrderId);
+            , const std::string& origClientOrderId);
 
         ~BinanceCancelOrder() override;
 

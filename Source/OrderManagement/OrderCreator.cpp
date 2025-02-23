@@ -17,47 +17,57 @@ using namespace OrderManagement;
 using namespace RestAPI;
 
 std::unique_ptr<BinanceNewOrder> OrderCreator::CreateNewBinanceOrderFull(
-      const std::string& symbol
+      const std::string& clientOrderId
+    , const std::string& symbol
     , const binapi::e_side side
     , const binapi::e_type type
     , const binapi::e_time time
     , const double amount
     , const double price
-    , const std::string& clientOrderId
-    , const std::string& stopPrice
-    , const std::string& icebergAmount)
+    , const double stopPrice
+    , const double icebergAmount)
 {
-    return std::make_unique<BinanceNewOrder>(symbol, side, type, time, amount, price, clientOrderId, stopPrice, icebergAmount);
+    return std::make_unique<BinanceNewOrder>(clientOrderId, symbol, side, type, time, amount, price, stopPrice, icebergAmount);
 }
 
 std::unique_ptr<BinanceNewOrder> OrderCreator::CreateNewBinanceTestOrderFull(
-      const std::string& symbol
+      const std::string& clientOrderId
+    , const std::string& symbol
     , const binapi::e_side side
     , const binapi::e_type type
     , const binapi::e_time time
     , const double amount
     , const double price
-    , const std::string& clientOrderId
-    , const std::string& stopPrice
-    , const std::string& icebergAmount)
+    , const double stopPrice
+    , const double icebergAmount)
 {
-    return std::make_unique<BinanceNewOrder>(symbol, side, type, time, amount, price, clientOrderId, stopPrice, icebergAmount);
+    return std::make_unique<BinanceNewOrder>(clientOrderId, symbol, side, type, time, amount, price, stopPrice, icebergAmount);
 }
 
 std::unique_ptr<BinanceCancelOrder> OrderCreator::CreateCancelBinanceOrder(
-      const std::string& symbol
+      const std::string& clientOrderId
+    , const std::string& symbol
     , const std::size_t orderId
-    , const std::string& origClientOrderId
-    , const std::string& clientOrderId)
+    , const std::string& origClientOrderId)
 {
-    return std::make_unique<BinanceCancelOrder>(symbol, orderId, origClientOrderId, clientOrderId);
+    return std::make_unique<BinanceCancelOrder>(clientOrderId, symbol, orderId, origClientOrderId);
 }
 
-std::unique_ptr<BinanceReplaceOrder> OrderCreator::CreateCancelReplaceBinanceOrder(
-      const std::string& symbol
+std::unique_ptr<BinanceReplaceOrder> OrderCreator::CreateReplaceBinanceOrder(
+      const std::string& clientOrderId
+    , const std::string& symbol
     , const std::size_t orderId
-    , const std::string& origClientOrderId
-    , const std::string& clientOrderId)
+    , const std::string& origClientOrderId)
 {
-    return std::make_unique<BinanceReplaceOrder>(symbol, orderId, origClientOrderId, clientOrderId);
+    return std::make_unique<BinanceReplaceOrder>(clientOrderId, symbol, orderId, origClientOrderId);
 }
+
+std::unique_ptr<BinanceQueryOrder> OrderCreator::CreateBinanceQueryOrder(
+    const std::string& clientOrderId
+    , const std::string& symbol
+    , const std::size_t orderId
+    , const std::string& origClientOrderId)
+{
+    return std::make_unique<BinanceQueryOrder>(clientOrderId, symbol, orderId, origClientOrderId);
+}
+

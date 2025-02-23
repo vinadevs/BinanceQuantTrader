@@ -11,6 +11,7 @@
 #include "../RestAPI/RestAPI.h"
 #include "../RestAPI/BinanceAPI.h"
 #include "../LibraryUtils/Logger.h"
+#include "../SettingNConfig/tinyxml2.h"
 
 #include "ReportAPIs.h"
 #include "BinanceReporter.h"
@@ -20,7 +21,7 @@
 using namespace UserAccount;
 using namespace RestAPI;
 
-BinanceReporter::BinanceReporter() 
+BinanceReporter::BinanceReporter(const tinyxml2::XMLElement* reportConfigXml)
 	: m_logger{ std::make_unique<LibraryUtils::Logger>("BinanceReporter") } {}
 
 BinanceReporter::~BinanceReporter() {}

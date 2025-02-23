@@ -46,7 +46,7 @@ MiddlewareMQ::MiddlewareMQResult
 ExchangeSimulatorConnectivity::SendNewSimulatorOrderFull(
     OrderManagement::BinanceNewOrder* newOrder)
 {
-    const auto& message = newOrder->ToBqtJsonMessage();
+    const auto& message = newOrder->ToBqtJsonMessageOrder();
     const auto newOrderResult = m_messageDelivery->DeliveryMessage(message);
     if (!newOrderResult.m_result)
     {

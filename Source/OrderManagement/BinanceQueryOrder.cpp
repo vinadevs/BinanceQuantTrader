@@ -14,10 +14,10 @@
 using namespace OrderManagement;
 
 BinanceQueryOrder::BinanceQueryOrder(
-	const std::string& symbol,
-	std::size_t orderId,
-	const std::string& origClientOrderId,
-	const std::string& clientOrderId)
+	  const std::string& clientOrderId
+	, const std::string& symbol
+	, std::size_t orderId
+	, const std::string& origClientOrderId)
 	: Order(symbol, BinanceOrderType::QUERY),
 	m_orderId(orderId),
 	m_origClientOrderId(origClientOrderId),

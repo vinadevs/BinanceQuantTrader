@@ -14,12 +14,18 @@ namespace LibraryUtils {
 	class Logger;
 };
 
+namespace tinyxml2 {
+	class XMLElement;
+};
+
 namespace UserAccount {
 	class BinanceReporter
 	{
 	public:
-		BinanceReporter();
+		BinanceReporter(const tinyxml2::XMLElement* reportConfigXml);
+		BinanceReporter() = default;
 		~BinanceReporter();
+
 		void ReportTrades(const std::string& symbol);
 		void ReportOpenOrders(const std::string& symbol);
 		void ReportAccountBalance(const std::string& symbol);

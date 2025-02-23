@@ -15,6 +15,7 @@
 #include "BinanceNewOrder.h"
 #include "BinanceCancelOrder.h"
 #include "BinanceReplaceOrder.h"
+#include "BinanceQueryOrder.h"
 
 #include <string>
 #include <memory>
@@ -26,37 +27,43 @@ namespace OrderManagement {
 	{
 	public:
 		std::unique_ptr<BinanceNewOrder> CreateNewBinanceOrderFull(
-			  const std::string& symbol
+			  const std::string& clientOrderId
+			, const std::string& symbol
 			, const binapi::e_side side
 			, const binapi::e_type type
 			, const binapi::e_time time
 			, const double amount
 			, const double price
-			, const std::string& clientOrderId
-			, const std::string& stopPrice
-			, const std::string& icebergAmount);
+			, const double stopPrice
+			, const double icebergAmount);
 
 		std::unique_ptr<BinanceNewOrder> CreateNewBinanceTestOrderFull(
-			  const std::string& symbol
+			  const std::string& clientOrderId
+			, const std::string& symbol
 			, const binapi::e_side side
 			, const binapi::e_type type
 			, const binapi::e_time time
 			, const double amount
 			, const double price
-			, const std::string& clientOrderId
-			, const std::string& stopPrice
-			, const std::string& icebergAmount);
+			, const double stopPrice
+			, const double icebergAmount);
 
 		std::unique_ptr<BinanceCancelOrder> CreateCancelBinanceOrder(
-			  const std::string& symbol
+			  const std::string& clientOrderId
+			, const std::string& symbol
 			, const std::size_t orderId
-			, const std::string& origClientOrderId
-			, const std::string& clientOrderId);
+			, const std::string& origClientOrderId);
 
-		std::unique_ptr<BinanceReplaceOrder> CreateCancelReplaceBinanceOrder(
-			  const std::string& symbol
+		std::unique_ptr<BinanceReplaceOrder> CreateReplaceBinanceOrder(
+			  const std::string& clientOrderId
+			, const std::string& symbol
 			, const std::size_t orderId
-			, const std::string& origClientOrderId
-			, const std::string& clientOrderId);
+			, const std::string& origClientOrderId);
+
+		std::unique_ptr<BinanceQueryOrder> CreateBinanceQueryOrder(
+			const std::string& clientOrderId
+			, const std::string& symbol
+			, const std::size_t orderId
+			, const std::string& origClientOrderId);
 	};
 };

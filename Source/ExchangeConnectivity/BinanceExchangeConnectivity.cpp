@@ -44,8 +44,8 @@ BinanceExchangeConnectivity::SendNewBinanceOrderFull(
         , newOrder->GetAmountStr()
         , newOrder->GetPriceStr()
         , newOrder->GetClientOrderId()
-        , newOrder->GetStopPrice()
-        , newOrder->GetIcebergAmount()
+        , newOrder->GetStopPriceStr()
+        , newOrder->GetIcebergAmountStr()
     );
     if (!static_cast<bool>(newOrderResult) && !newOrderResult.v.is_full_response_type())
     {
@@ -71,8 +71,8 @@ BinanceExchangeConnectivity::SendNewBinanceTestOrderFull(
         , newTestOrder->GetAmountStr()
         , newTestOrder->GetPriceStr()
         , newTestOrder->GetClientOrderId()
-        , newTestOrder->GetStopPrice()
-        , newTestOrder->GetIcebergAmount()
+        , newTestOrder->GetStopPriceStr()
+        , newTestOrder->GetIcebergAmountStr()
     );
     if (!static_cast<bool>(newTestOrderResult) && !newTestOrderResult.v.is_full_response_type())
     {

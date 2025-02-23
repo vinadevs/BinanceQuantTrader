@@ -11,10 +11,15 @@
 #include "dlldefine.h"
 
 #include "../KernelTrading/double_type.h"
+#include "../OrderManagement/BinanceWorkedOrderManager.h"
 #include "../OrderManagement/PositionManager.h"
 
-#include "Trader.h"
+#if USE_TEST_TRADING
+#include "../MiddlewareMQ/BqtJsonMessage.h"
+#endif
+
 #include "BinanceReporter.h"
+#include "Trader.h"
 
 #include <string>
 #include <memory>
@@ -32,7 +37,7 @@ namespace tinyxml2 {
 };
 
 namespace UserAccount {
-	class BinanceReporter;
+
 	class DLL_CLASS_USERACCOUNT_EXPORTS
 		BinanceTrader : public Trader
 	{
@@ -40,6 +45,8 @@ namespace UserAccount {
 		BinanceTrader(const tinyxml2::XMLElement* reportCfg, 
 			          PortfolioManager::PortfolioInvestmentBinance* portfolio,
 					  RiskManagement::RiskManager* riskManager);
+
+		////////////// UPSTREAM PROCESSING /////////////////////////////
 
 		bool Buy(const std::string& symbol,
 			const binapi::double_type quality,
@@ -54,12 +61,18 @@ namespace UserAccount {
 		void UpdateAccountInfo();
 
 		PortfolioManager::PortfolioInvestmentBinance* GetPortfolio() const { return m_portfolio; }
+		
+		////////////// DOWNSTREAM PROCESSING /////////////////////////////
+#if USE_TEST_TRADING  
+		void HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage& message);
+#endif
 	private:
 		void SetupReporter(const tinyxml2::XMLElement* reportCfg) override;
 
 		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr };
 		RiskManagement::RiskManager* m_riskManager{ nullptr };  // stop loss
 		std::unique_ptr<OrderManagement::PositionManager> m_positionManager;
+		std::unique_ptr<OrderManagement::BinanceWorkedOrderManager> m_workedOrderManager;
 		std::unique_ptr<BinanceReporter> m_reporter;
 
 		bool m_enableTradeReporter{ false };

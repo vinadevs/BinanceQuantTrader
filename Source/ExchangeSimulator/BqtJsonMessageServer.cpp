@@ -43,7 +43,7 @@ void BqtJsonMessageServer::Stop()
 void BqtJsonMessageServer::OnReceivedMessage(const BqtJsonMessage& message)
 {
 	m_logger->Debug("Received: " + message.SerializeMessage());
-	m_nessageHandler->OnHandlingReceivedMessage(message);
+	m_nessageHandler->OnHandlingReceivedSimulatorMessage(message);
 }
 
 void BqtJsonMessageServer::RegisterMessageHandler(MessageHandler* handler)

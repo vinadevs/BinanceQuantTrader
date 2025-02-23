@@ -14,75 +14,78 @@
 using namespace OrderManagement;
 
 BinanceNewOrder::BinanceNewOrder(
+    const std::string& clientOrderId,
     const std::string& symbol,
     const binapi::e_side side,
     const binapi::e_type type,
     const binapi::e_time time,
     const double amount,
     const double price,
-    const std::string& clientOrderId,
-    const std::string& stopPrice,
-    const std::string& icebergAmount)
+    const double stopPrice,
+    const double icebergAmount)
     : Order(symbol, BinanceOrderType::NEW),
     m_side(side),
     m_type(type),
     m_time(time),
     m_amount(amount),
     m_price(price),
-    m_clientOrderId(clientOrderId),
     m_stopPrice(stopPrice),
-    m_icebergAmount(icebergAmount) {}
+    m_icebergAmount(icebergAmount),
+    m_clientOrderId(clientOrderId) {}
 
 BinanceNewOrder::~BinanceNewOrder() {}
 
-std::string BinanceNewOrder::ToString() const
+std::string BinanceNewOrder::ToStringOrder() const
 {
-    const std::string sideStr = (m_side == binapi::e_side::buy) ? "BUY" : "SELL";
-    std::string typeStr;
-    switch (m_type) 
-    {
-        case binapi::e_type::limit: typeStr = "LIMIT"; break;
-        case binapi::e_type::market: typeStr = "MARKET"; break;
-        case binapi::e_type::stop_loss: typeStr = "STOP_LOST"; break;
-        case binapi::e_type::stop_loss_limit: typeStr = "STOP_LOST_LIMIT"; break;
-        case binapi::e_type::take_profit: typeStr = "TAKE_PROFIT"; break;
-        case binapi::e_type::take_profit_limit: typeStr = "TAKE_PROFIT_LIMIT"; break;
-        case binapi::e_type::limit_maker: typeStr = "LIMIT_MAKER"; break;
-    }
-    std::string timeStr;
-    switch (m_time) 
-    {
-        case binapi::e_time::GTC: timeStr = "GTC"; break;
-        case binapi::e_time::IOC: timeStr = "IOC"; break;
-        case binapi::e_time::FOK: timeStr = "FOK"; break;
-    }
     return "BinanceNewOrder("
     "Symbol: " + m_symbol +
 #if USE_TEST_TRADING
         "UserAccountID: " + m_userAccountID +
 #endif
-        ", Side: " + sideStr +
-        ", Type: " + typeStr +
-        ", Time: " + timeStr +
+        ", Side: " + TypeToStringUtils::ToString(m_side) +
+        ", Type: " + TypeToStringUtils::ToString(m_type) +
+        ", Time: " + TypeToStringUtils::ToString(m_time) +
         ", Amount: " + GetAmountStr() +
         ", LimitPrice: " + GetPriceStr() +
         ", ClientOrderId: " + m_clientOrderId +
-        ", StopPrice: " + m_stopPrice +
-        ", IcebergAmount: " + m_icebergAmount +
+        ", StopPrice: " + GetStopPriceStr() +
+        ", IcebergAmount: " + GetIcebergAmountStr() +
+        ", OrderStatus: " + GetOrderStatusStr() +
+        ", UpdateTime: " + GetUpdateTimeStr() +
+        ")";
+}
+
+std::string BinanceNewOrder::ToStringAck() const
+{
+    return "BinanceNewOrderAck("
+        "Symbol: " + m_symbol +
+#if USE_TEST_TRADING
+        "UserAccountID: " + m_userAccountID +
+#endif
+        ", Side: " + TypeToStringUtils::ToString(m_side) +
+        ", Type: " + TypeToStringUtils::ToString(m_type) +
+        ", Time: " + TypeToStringUtils::ToString(m_time) +
+        ", Amount: " + GetAmountStr() +
+        ", LimitPrice: " + GetPriceStr() +
+        ", ClientOrderId: " + m_clientOrderId +
+        ", StopPrice: " + GetStopPriceStr() +
+        ", IcebergAmount: " + GetIcebergAmountStr() +
         ", OrderStatus: " + GetOrderStatusStr() +
         ", FilledAmount: " + GetFilledAmountStr() +
+        ", FilledAmount: " + GetFilledAmountStr() +
         ", FilledPrice: " + GetFilledPriceStr() +
+        ", RemainingAmount: " + GetRemainingAmountStr() +
         ")";
 }
 
 #if USE_TEST_TRADING
-void BinanceNewOrder::SetExecutionResult(
-    const MiddlewareMQ::MiddlewareMQResult& executionResult)
+void BinanceNewOrder::SetSendingOrderResult(
+    const MiddlewareMQ::MiddlewareMQResult& sendingOrderResult)
 {
-    m_executionResult = executionResult;
+    m_sendingOrderResult = sendingOrderResult;
 }
 
-MiddlewareMQ::BqtJsonMessage BinanceNewOrder::ToBqtJsonMessage() const
+MiddlewareMQ::BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrder() const
 {
     MiddlewareMQ::BqtJsonMessage message;
     message.AddPair(FieldLabels::UserAccountID, m_userAccountID);
@@ -90,22 +93,45 @@ MiddlewareMQ::BqtJsonMessage BinanceNewOrder::ToBqtJsonMessage() const
     message.AddPair(FieldLabels::Symbol, m_symbol);
     message.AddPair(FieldLabels::Side, TypeToStringUtils::ToString(m_side));
     message.AddPair(FieldLabels::Type, TypeToStringUtils::ToString(m_type));
-    message.AddPair(FieldLabels::Time, TypeToStringUtils::ToString(m_time));
+    message.AddPair(FieldLabels::TimeInForce, TypeToStringUtils::ToString(m_time));
     message.AddPair(FieldLabels::Amount, GetAmountStr());
     message.AddPair(FieldLabels::LimitPrice, GetPriceStr());
     message.AddPair(FieldLabels::ClientOrderId, m_clientOrderId);
-    message.AddPair(FieldLabels::StopPrice, m_stopPrice);
-    message.AddPair(FieldLabels::IcebergAmount, m_icebergAmount);
+    message.AddPair(FieldLabels::StopPrice, GetStopPriceStr());
+    message.AddPair(FieldLabels::IcebergAmount, GetIcebergAmountStr());
+    message.AddPair(FieldLabels::OrderStatus, GetOrderStatusStr());
+    message.AddPair(FieldLabels::UpdateTime, GetUpdateTimeStr());
+    return message;
+}
+
+MiddlewareMQ::BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageAck() const
+{
+    MiddlewareMQ::BqtJsonMessage message;
+    message.AddPair(FieldLabels::UserAccountID, m_userAccountID);
+    message.AddPair(FieldLabels::BinanceOrderType, "BinanceNewOrderAck");
+    message.AddPair(FieldLabels::Symbol, m_symbol);
+    message.AddPair(FieldLabels::Side, TypeToStringUtils::ToString(m_side));
+    message.AddPair(FieldLabels::Type, TypeToStringUtils::ToString(m_type));
+    message.AddPair(FieldLabels::TimeInForce, TypeToStringUtils::ToString(m_time));
+    message.AddPair(FieldLabels::Amount, GetAmountStr());
+    message.AddPair(FieldLabels::LimitPrice, GetPriceStr());
+    message.AddPair(FieldLabels::ClientOrderId, m_clientOrderId);
+    message.AddPair(FieldLabels::StopPrice, GetStopPriceStr());
+    message.AddPair(FieldLabels::IcebergAmount, GetIcebergAmountStr());
     message.AddPair(FieldLabels::OrderStatus, GetOrderStatusStr());
     message.AddPair(FieldLabels::FilledAmount, GetFilledAmountStr());
     message.AddPair(FieldLabels::FilledPrice, GetFilledPriceStr());
+    message.AddPair(FieldLabels::OrigQuoteOrderQuantity, GetOrigQuoteOrderQuantityStr());
+    message.AddPair(FieldLabels::CummulativeQuoteQty, GetFilledAmountStr());
+    message.AddPair(FieldLabels::UpdateTime, GetUpdateTimeStr());
     return message;
 }
+
 #else
-void BinanceNewOrder::SetExecutionResult(
-    const binapi::rest::api::result<binapi::rest::new_order_resp_type>& executionResult)
+void BinanceNewOrder::SetSendingOrderResult(
+    const binapi::rest::api::result<binapi::rest::new_order_resp_type>& sendingOrderResult)
 {
-    m_executionResult = executionResult;
+    m_sendingOrderResult = sendingOrderResult;
 }
 #endif
 

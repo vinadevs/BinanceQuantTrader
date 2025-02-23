@@ -13,8 +13,10 @@
 #include "../LibraryUtils/StringUtils.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../ComplianceNRegulatory/BinanceTradingRules.h"
+#include "../UserAccount/BinanceTrader.h"
 
 using namespace TradingStrategies;
+using namespace UserAccount;
 using namespace MiddlewareMQ;
 using namespace MarketData;
 using namespace LibraryUtils;
@@ -125,8 +127,9 @@ void TradingStrategyBase::OnAlarmTriggered(const int passToDerived)
 }
 
 #if USE_TEST_TRADING  
-void TradingStrategyBase::OnHandlingReceivedMessage(const BqtJsonMessage& message)
+void TradingStrategyBase::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& message)
 {
-	m_logger->Info("Received simulator ack=" + message.SerializeMessage());
+	// forward order acks to trader, they know what to do with it not strategy
+	m_trader->HandleDownstreamAckMessage(message);
 }
 #endif

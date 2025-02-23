@@ -19,11 +19,13 @@
 #include "../OrderManagement/BinanceCancelOrder.h"
 #include "../OrderManagement/BinanceReplaceOrder.h"
 #include "../RiskManagement/RiskManager.h"
+
 #include "../LibraryUtils/SourceBuildFlags.h"
 #include "../LibraryUtils/StringUtils.h"
 #if USE_TEST_TRADING
 #include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
 #endif
+
 #include "BinanceTrader.h"
 
 #include <exception>
@@ -51,9 +53,12 @@ BinanceTrader::BinanceTrader(
     // Query all assets from remote Binance account and manage them locally for our trading
     m_portfolio->UpdateBinanceAccountInfo();
 	m_positionManager = std::make_unique<PositionManager>();
+	m_workedOrderManager = std::make_unique<BinanceWorkedOrderManager>();
 	m_logger->Info("setting up config for trader.");
 	SetupReporter(reportCfg);
 }
+
+////////////// UPSTREAM PROCESSING /////////////////////////////
 
 void BinanceTrader::SetupReporter(const XMLElement* reportCfg)
 {
@@ -78,15 +83,15 @@ bool BinanceTrader::Buy(
 {
 	if (m_portfolio->GetBinanceTradingPair(symbol)->GetCash(symbol) > quality * refPrice)
 	{
-		auto newSingleLongOrder = m_positionManager->CreateLongPositionOrder(symbol, quality, refPrice);
+		auto newSingleLongOrder = m_positionManager->OpenLongPositionUpstreamOrder(symbol, quality, refPrice);
 #if USE_TEST_TRADING
 		const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleLongOrder.get());
 #else
 		const auto result = BinanceExchangeGateWay->SendNewBinanceOrderFull(newSingleLongOrder.get());
 #endif
-		newSingleLongOrder->SetExecutionResult(result);
+		newSingleLongOrder->SetSendingOrderResult(result);
 		const auto clientOrderId = newSingleLongOrder->GetClientOrderId();
-		m_positionManager->AddNewOrder(clientOrderId, std::move(newSingleLongOrder));
+		m_workedOrderManager->AddNewOrder(clientOrderId, std::move(newSingleLongOrder));
 		return static_cast<bool>(result);
 	}
 	else
@@ -103,15 +108,15 @@ bool BinanceTrader::Sell(
 {
 	if (m_portfolio->GetBinanceTradingPair(symbol)->GetQuantity() > 0)
 	{
-		auto newSingleShortOrder = m_positionManager->CreateShortPositionOrder(symbol, quality, refPrice);
+		auto newSingleShortOrder = m_positionManager->OpenShortPositionUpstreamOrder(symbol, quality, refPrice);
 #if USE_TEST_TRADING
 		const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleShortOrder.get());
 #else
 		const auto result = BinanceExchangeGateWay->SendNewBinanceOrderFull(newSingleShortOrder.get());
 #endif
-		newSingleShortOrder->SetExecutionResult(result);
+		newSingleShortOrder->SetSendingOrderResult(result);
 		const auto clientOrderId = newSingleShortOrder->GetClientOrderId();
-		m_positionManager->AddNewOrder(clientOrderId, std::move(newSingleShortOrder));
+		m_workedOrderManager->AddNewOrder(clientOrderId, std::move(newSingleShortOrder));
 		return static_cast<bool>(result);
 	}
 	else
@@ -140,4 +145,12 @@ void BinanceTrader::ReportTradeData(const std::string& symbol)
 void BinanceTrader::UpdateAccountInfo()
 {
 	m_portfolio->UpdateBinanceAccountInfo();
+}
+
+////////////// DOWNSTREAM PROCESSING /////////////////////////////
+
+void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage& message)
+{
+	m_logger->Info("Received simulator ack=" + message.SerializeMessage());
+	// Updates the trader’s position and portfolio.
 }

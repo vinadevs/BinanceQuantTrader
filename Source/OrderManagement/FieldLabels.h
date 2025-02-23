@@ -44,7 +44,7 @@ namespace OrderManagement {
 		const std::string OrigClientOrderId = "OrigClientOrderId";
 		const std::string Side = "Side";
 		const std::string Type = "Type";
-		const std::string Time = "Time";
+		const std::string TimeInForce = "TimeInForce";
 		const std::string Amount = "Amount";
 		const std::string LimitPrice = "LimitPrice";
 		const std::string FilledAmount = "FilledAmount";
@@ -55,13 +55,13 @@ namespace OrderManagement {
 		const std::string OrderStatus = "OrderStatus";
 		const std::string OrigQuoteOrderQuantity = "OrigQuoteOrderQuantity";
 		const std::string CummulativeQuoteQty = "CummulativeQuoteQty";
-		const std::string TimeInForce = "TimeInForce";
+		const std::string UpdateTime = "UpdateTime";
 
 		// Simulator Ack
 		namespace SimulatorAck {
 			const std::string AckType = "DownstreamAckType";
 			const std::string ErrorCode = "ErrorCode";
-			const std::string ErrorMessage = "ErrorMessage";
+			const std::string ExchangeText = "ExchangeText";
 		};
 	};
 };

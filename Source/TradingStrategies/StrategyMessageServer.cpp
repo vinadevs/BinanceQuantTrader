@@ -33,7 +33,7 @@ void StrategyMessageServer::Start()
 
 void StrategyMessageServer::OnReceivedMessage(const BqtJsonMessage& message)
 {
-	m_nessageHandler->OnHandlingReceivedMessage(message);
+	m_nessageHandler->OnHandlingReceivedSimulatorMessage(message);
 }
 
 void StrategyMessageServer::RegisterMessageHandler(MiddlewareMQ::MessageHandler* handler)

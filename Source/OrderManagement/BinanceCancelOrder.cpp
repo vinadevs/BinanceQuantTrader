@@ -14,10 +14,10 @@
 using namespace OrderManagement;
 
 BinanceCancelOrder::BinanceCancelOrder(
-	const std::string& symbol,
-	std::size_t orderId,
-	const std::string& origClientOrderId,
-	const std::string& clientOrderId)
+	  const std::string& clientOrderId
+	, const std::string& symbol
+	, std::size_t orderId
+	, const std::string& origClientOrderId)
 	: Order(symbol, BinanceOrderType::CANCEL),
 	m_orderId(orderId),
 	m_origClientOrderId(origClientOrderId),

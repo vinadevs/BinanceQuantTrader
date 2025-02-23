@@ -36,20 +36,20 @@ namespace ExchangeSimulator {
 		static constexpr std::size_t ErrorOrderCode = -1;
 		static std::string ErrorOrderCodeStr = "-1";
 
-		DownstreamOrderAck CreateErrorOrderAck(
+		DownstreamOrderAck CreateErrorRejectOrderAck(
 			const std::string& symbol,
 			const std::string& clientOrderId,
 			const std::string& errorMsg);
 
-		DownstreamOrderAck CreateNewOrderAck(const OrderManagement::BinanceNewOrder& order);
-		DownstreamOrderAck CreateFilledOrderAck(const OrderManagement::BinanceNewOrder& order);
+		DownstreamOrderAck CreateNewOrderAck(const OrderManagement::BinanceNewOrder& order, const std::string& text);
+		DownstreamOrderAck CreateFilledOrderAck(const OrderManagement::BinanceNewOrder& order, const std::string& text);
 
-		DownstreamOrderAck CreateCancelOrderAck(const OrderManagement::BinanceCancelOrder& order);
-		DownstreamOrderAck CreateCancelledOrderAck(const OrderManagement::BinanceCancelOrder& order);
+		DownstreamOrderAck CreateCancelOrderAck(const OrderManagement::BinanceCancelOrder& order, const std::string& text);
+		DownstreamOrderAck CreateCancelledOrderAck(const OrderManagement::BinanceCancelOrder& order, const std::string& text);
 
-		DownstreamOrderAck CreateReplaceOrderAck(const OrderManagement::BinanceReplaceOrder& order);
-		DownstreamOrderAck CreateReplacedOrderAck(const OrderManagement::BinanceReplaceOrder& order);
+		DownstreamOrderAck CreateReplaceOrderAck(const OrderManagement::BinanceReplaceOrder& order, const std::string& text);
+		DownstreamOrderAck CreateReplacedOrderAck(const OrderManagement::BinanceReplaceOrder& order, const std::string& text);
 
-		DownstreamOrderAck CreateQueryOrderAck(const OrderManagement::BinanceQueryOrder& order);
+		DownstreamOrderAck CreateQueryOrderAck(const OrderManagement::BinanceQueryOrder& order, const std::string& text);
 	};
 };

@@ -42,15 +42,15 @@ namespace OrderManagement {
         BinanceNewOrder() = default;
 
         BinanceNewOrder(
+            const std::string& clientOrderId,
             const std::string& symbol,
             const binapi::e_side side,
             const binapi::e_type type,
             const binapi::e_time time,
             const double amount,
             const double price,
-            const std::string& clientOrderId,
-            const std::string& stopPrice,
-            const std::string& icebergAmount);
+            const double stopPrice,
+            const double icebergAmount);
 
         ~BinanceNewOrder() override;
 
@@ -66,11 +66,19 @@ namespace OrderManagement {
         double GetFilledPriceDouble() const { return m_filledPrice; }
         std::string GetFilledPriceStr() const { return std::to_string(m_filledPrice); }
         double GetPriceDouble() const { return m_price; }
-        const std::string& GetClientOrderId() const { return m_clientOrderId; }
-        const std::string& GetStopPrice() const { return m_stopPrice; }
-        double GetStopPriceDouble() const { return std::stod(m_stopPrice); }
-        const std::string& GetIcebergAmount() const { return m_icebergAmount; }
-        double GetIcebergAmountDouble() const { return std::stod(m_icebergAmount); }
+        std::string GetClientOrderId() const { return m_clientOrderId; }
+        std::string GetStopPriceStr() const { return std::to_string(m_stopPrice); }
+        double GetStopPrice() const { return m_stopPrice; }
+        std::string GetIcebergAmountStr() const { return std::to_string(m_icebergAmount); }
+        double GetIcebergAmount() const { return m_icebergAmount; }
+        std::string GetOrigQuoteOrderQuantityStr() const { return std::to_string(m_origQuoteOrderQuantity); }
+        double GetOrigQuoteOrderQuantity() const { return m_origQuoteOrderQuantity; }
+        std::string GetCumulativeQuoteQuantityStr() const { return std::to_string(m_cumulativeQuoteQuantity); }
+        double GetCumulativeQuoteQuantity() const { return m_cumulativeQuoteQuantity; }
+        std::string GetUpdateTimeStr() const { return std::to_string(m_updateTime); }
+        double GetUpdateTime() const { return m_updateTime; }
+        std::string GetRemainingAmountStr() const { return std::to_string(m_remainingAmount); }
+        double GetRemainingAmount() const { return m_remainingAmount; }
 
         // Setters
         void SetSide(binapi::e_side side) { m_side = side; }
@@ -81,8 +89,12 @@ namespace OrderManagement {
         void SetPrice(const double price) { m_price = price; }
         void SetFilledPrice(const double filledPrice) { m_filledAmount = filledPrice; }
         void SetClientOrderId(const std::string& clientOrderId) { m_clientOrderId = clientOrderId; }
-        void SetStopPrice(const std::string& stopPrice) { m_stopPrice = stopPrice; }
-        void SetIcebergAmount(const std::string& icebergAmount) { m_icebergAmount = icebergAmount; }
+        void SetStopPrice(const double stopPrice) { m_stopPrice = stopPrice; }
+        void SetIcebergAmount(const double icebergAmount) { m_icebergAmount = icebergAmount; }
+        void SetOrigQuoteOrderQuantity(const double origQuoteOrderQuantity) { m_origQuoteOrderQuantity = origQuoteOrderQuantity; }
+        void SetCumulativeQuoteQuantity(const double cumulativeQuoteQuantity) { m_cumulativeQuoteQuantity = cumulativeQuoteQuantity; }
+        void SetUpdateTime(const double updateTime) { m_updateTime = updateTime; }
+        void SetRemainingAmount(const double remainingAmount) { m_remainingAmount = remainingAmount; }
 
         // Execution
         BinanceNewOrderStatus GetOrderStatus() const;
@@ -90,28 +102,32 @@ namespace OrderManagement {
         void SetOrderStatus(const BinanceNewOrderStatus status);
 
         // Serialization
-        std::string ToString() const;
+        std::string ToStringOrder() const;
+        std::string ToStringAck() const;
         friend std::ostream& operator<<(std::ostream& os, const BinanceNewOrder& order)
         {
-            os << order.ToString();
+            os << order.ToStringOrder();
             return os;
         }
 
 #if USE_TEST_TRADING
         // Simulator test
-        MiddlewareMQ::BqtJsonMessage ToBqtJsonMessage() const;
-        void SetExecutionResult(const MiddlewareMQ::MiddlewareMQResult& executionResult);
+        MiddlewareMQ::BqtJsonMessage ToBqtJsonMessageOrder() const;
+        MiddlewareMQ::BqtJsonMessage ToBqtJsonMessageAck () const;
+        void SetSendingOrderResult(const MiddlewareMQ::MiddlewareMQResult& sendingOrderResult);
 #else
     // Execution Result
-    void SetExecutionResult(
-        const binapi::rest::api::result<binapi::rest::new_order_resp_type>& executionResult);
+    void SetSendingOrderResult(
+        const binapi::rest::api::result<binapi::rest::new_order_resp_type>& sendingOrderResult);
 #endif
     private:
-        binapi::e_side m_side; // buy side or sell side
-        binapi::e_type m_type; // order type: limit or market,..
-        binapi::e_time m_time; // Time In Force of Order at the Exchange
+        binapi::e_side m_side { binapi::e_side::buy}; // buy side or sell side
+        binapi::e_type m_type { binapi::e_type::limit }; // order type: limit or market,..
+        // https://www.binance.com/en/support/faq/detail/5d3fa5e5709f47e0b5f186b350da1655?hl=en
+        binapi::e_time m_time{ binapi::e_time::GTC }; // Time In Force of Order at the Exchange
         double m_amount{ 0 }; // Original Quantity
         double m_filledAmount{ 0 }; // Executed Quantity
+        double m_remainingAmount{ 0 }; // Partial Fill
         /* m_price specifies the maximum price a buyer is willing to pay(for buy orders) or 
         the minimum price a seller is willing to accept(for sell orders).*/
         double m_price{ 0 }; // limit price to execute order
@@ -119,20 +135,20 @@ namespace OrderManagement {
         double m_origQuoteOrderQuantity{ 0 }; // m_price * m_amount (Order PreTrade Volume)
         double m_cumulativeQuoteQuantity{ 0 }; // m_filledPrice * m_filledAmount  (Order Traded Volume)
         double m_updateTime{ 0 }; // Time order changed status
-        std::string m_clientOrderId; // m_clientOrderId is new order ID from us
         /* m_stopPrice acts as a trigger : When the market price reaches m_stopPrice, the order converts into a market
         order(for stop orders) or a limit order(for stop - limit orders).*/
-        std::string m_stopPrice;
-        std::string m_icebergAmount;
+        double m_stopPrice{ 0 };
+        double m_icebergAmount{ 0 };
+        std::string m_clientOrderId; // m_clientOrderId is new order ID from us
         // If we trade with a basket of orders
         std::unordered_set<std::string> m_clientOrderIdList;
         BinanceNewOrderStatus m_orderStatus{ BinanceNewOrderStatus::NEW };
 
 #if USE_TEST_TRADING
-        MiddlewareMQ::MiddlewareMQResult m_executionResult;
+        MiddlewareMQ::MiddlewareMQResult m_sendingOrderResult;
 #else
         // Execution Result
-        binapi::rest::api::result<binapi::rest::new_order_resp_type> m_executionResult;
+        binapi::rest::api::result<binapi::rest::new_order_resp_type> m_sendingOrderResult;
 #endif
     };
 };

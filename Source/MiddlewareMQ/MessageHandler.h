@@ -13,12 +13,12 @@
 
 namespace MiddlewareMQ {
 
-    /* This base class has single one method OnHandlingReceivedMessage
+    /* This base class has single one method OnHandlingReceivedSimulatorMessage
         that will be used to pass through BqtJsonMessage to target handler. */
     class MessageHandler
     {
     public:
-        virtual void OnHandlingReceivedMessage(const BqtJsonMessage& message) = 0;
+        virtual void OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& message) = 0;
     };
 };
 

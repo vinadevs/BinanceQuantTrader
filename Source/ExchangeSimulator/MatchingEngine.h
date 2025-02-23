@@ -87,10 +87,9 @@ namespace ExchangeSimulator {
         void Start() override;
         void Stop() override;
 
-        void OnHandlingReceivedMessage(const MiddlewareMQ::BqtJsonMessage& message) override;
+        void OnHandlingReceivedSimulatorMessage(const MiddlewareMQ::BqtJsonMessage& message) override;
     private:
         void ProcessIncommingOrders();
-        bool IsOrderEligibleToProcess(const UpstreamOrder& order);
         bool VerifyUpstreamBinanceNewOrder(const OrderManagement::BinanceNewOrder& order);
         bool VerifyUpstreamBinanceCancelOrder(const OrderManagement::BinanceCancelOrder& order);
         bool VerifyUpstreamBinanceReplaceOrder(const OrderManagement::BinanceReplaceOrder& order);
