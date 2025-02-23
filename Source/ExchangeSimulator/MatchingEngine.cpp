@@ -241,16 +241,6 @@ bool MatchingEngine::IsOrderEligibleToProcess(const UpstreamOrder& order)
 	// User account check:
 	const auto isAccountEligibleToTrade = m_userAccountManager->LookupUserAccount(
 		std::get<BinanceNewOrder>(order).GetUserAccountID())->IsAccountEligibleToTrade();
-
-	//if (m_userAccountManager->LookupUserAccount(
-	//	order.GetUserAccountID()).IsHoldingThisAsset(order.GetSymbol()))
-	//{
-	//	const auto errMsg = "Received an invalid BinanceNewOrder with ammount is less than zero.";
-	//	m_logger->Error(errMsg);
-	//	const auto ack = AckUtils::CreateErrorOrderAck(order.GetSymbol(), order.GetClientOrderId(), errMsg);
-	//	UpstreamGateWay->SendDownstreamOrderAck(ack);
-	//	return false;
-	//}
 	
 	// Upstream order check:
 	auto isOrderEligibleToProcess{ false };
@@ -344,23 +334,23 @@ void MatchingEngine::PostProcessingMatchedNewOrder(BinanceNewOrder& order)
 BinanceNewOrder MatchingEngine::ConstructUpstreamNewOrder(
 	const BqtJsonMessage& message)
 {
+	const std::string clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
 	const std::string symbol = message.GetStringValueByTag(FieldLabels::Symbol);
 	const binapi::e_side side = binapi::e_side_from_string(message.GetStringValueByTag(FieldLabels::Side).c_str());
 	const binapi::e_type type = binapi::e_type_from_string(message.GetStringValueByTag(FieldLabels::Type).c_str());
-	const binapi::e_time time = binapi::e_time_from_string(message.GetStringValueByTag(FieldLabels::Time).c_str());
+	const binapi::e_time time = binapi::e_time_from_string(message.GetStringValueByTag(FieldLabels::TimeInForce).c_str());
 	const double amount = message.GetDoubleValueByTag(FieldLabels::Amount);
 	const double price = message.GetDoubleValueByTag(FieldLabels::LimitPrice);
-	const std::string clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
-	const std::string stopPrice = message.GetStringValueByTag(FieldLabels::StopPrice);
-	const std::string icebergAmount = message.GetStringValueByTag(FieldLabels::IcebergAmount);
+	const double stopPrice = message.GetDoubleValueByTag(FieldLabels::StopPrice);
+	const double icebergAmount = message.GetDoubleValueByTag(FieldLabels::IcebergAmount);
 	BinanceNewOrder order(
+		clientOrderId,
 		symbol,
 		side,
 		type,
 		time,
 		amount,
 		price,
-		clientOrderId,
 		stopPrice,
 		icebergAmount);
 
@@ -377,10 +367,10 @@ BinanceCancelOrder MatchingEngine::ConstructUpstreamCancelOrder(
 	const std::string origClientOrderId = message.GetStringValueByTag(FieldLabels::OrigClientOrderId);
 	const std::string clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
 	BinanceCancelOrder order(
+		clientOrderId,
 		symbol,
 		std::stoull(orderId),
-		origClientOrderId,
-		clientOrderId);
+		origClientOrderId);
 
 	order.SetUserAccountID(message.GetStringValueByTag(FieldLabels::UserAccountID));
 
@@ -395,10 +385,10 @@ BinanceReplaceOrder MatchingEngine::ConstructUpstreamReplaceOrder(
 	const std::string origClientOrderId = message.GetStringValueByTag(FieldLabels::OrigClientOrderId);
 	const std::string clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
 	BinanceReplaceOrder order(
+		clientOrderId,
 		symbol,
 		std::stoull(orderId),
-		origClientOrderId,
-		clientOrderId);
+		origClientOrderId);
 
 	order.SetUserAccountID(message.GetStringValueByTag(FieldLabels::UserAccountID));
 
@@ -413,10 +403,10 @@ BinanceQueryOrder MatchingEngine::ConstructUpstreamQueryOrder(
 	const std::string origClientOrderId = message.GetStringValueByTag(FieldLabels::OrigClientOrderId);
 	const std::string clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
 	BinanceQueryOrder order(
+		clientOrderId,
 		symbol,
 		std::stoull(orderId),
-		origClientOrderId,
-		clientOrderId);
+		origClientOrderId);
 
 	order.SetUserAccountID(message.GetStringValueByTag(FieldLabels::UserAccountID));
 
