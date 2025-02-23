@@ -29,7 +29,7 @@ void DownstreamOrderBook::CreateNewOrderBook(const std::string& symbol)
     const auto result = m_orderBooks.try_emplace(symbol, std::make_unique<OrderBook>());
     if (!result.second)
     {
-        LOG_WARNING_STREAM(m_logger, "OrderBook with symbol '" << symbol << "' already exists.");
+        LOG_WARNING_STREAM(m_logger, "OrderBook with symbol='" << symbol << "' already exists.");
     }
 }
 
@@ -40,11 +40,11 @@ void DownstreamOrderBook::RemoveOrderBook(const std::string& symbol)
     if (it != m_orderBooks.end())
     {
         m_orderBooks.erase(it);
-        LOG_INFO_STREAM(m_logger, "OrderBook with symbol '" << symbol << "' removed successfully.");
+        LOG_INFO_STREAM(m_logger, "OrderBook with symbol='" << symbol << "' removed successfully.");
     }
     else
     {
-        throw std::runtime_error("No OrderBook found with symbol '" + symbol + "'.");
+        throw std::runtime_error("No OrderBook found with symbol='" + symbol + "'.");
     }
 }
 
@@ -56,7 +56,7 @@ OrderBook* DownstreamOrderBook::LookupOrderBook(const std::string& symbol)
     {
         return it->second.get();
     }
-    throw std::runtime_error("No OrderBook found with symbol '" + symbol + "'.");
+    throw std::runtime_error("No OrderBook found with symbol='" + symbol + "'.");
 }
 
 void DownstreamOrderBook::ClearAll()

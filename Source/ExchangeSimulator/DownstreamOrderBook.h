@@ -10,7 +10,7 @@
 
 #include "../LibraryUtils/BQTDeque.h"
 
-#include <map>
+#include <unordered_map>
 #include <memory>
 #include <string>
 #include <mutex>
@@ -51,7 +51,7 @@ namespace ExchangeSimulator {
 		}
 	};
 
-	using OrderBooks = std::map<std::string, std::unique_ptr<OrderBook>>;
+	using OrderBooks = std::unordered_map<std::string, std::unique_ptr<OrderBook>>;
 
 	/**
 	 * @class DownstreamOrderBook
@@ -70,13 +70,9 @@ namespace ExchangeSimulator {
 		~DownstreamOrderBook();
 
 		void CreateNewOrderBook(const std::string& symbol);
-
 		void RemoveOrderBook(const std::string& symbol);
-
 		OrderBook* LookupOrderBook(const std::string& symbol);
-
 		void ClearAll();
-
 		const OrderBooks& GetOrderBooks();
 	private:
 		std::unique_ptr<LibraryUtils::Logger> m_logger;

@@ -10,6 +10,8 @@
 
 #include <unordered_map>
 #include <memory>
+#include <string>
+#include <mutex>
 
 #include "UpstreamOrder.h"
 
@@ -29,9 +31,11 @@ namespace ExchangeSimulator {
 
 		void AddOrder(const std::string clientOrderId, const UpstreamOrder& order);
 		void RemoveOrder(const std::string& clientOrderId);
-		const UpstreamOrder& LookupOrder(const std::string& clientOrderId) const;
+		const UpstreamOrder& LookupOrder(const std::string& clientOrderId);
 		void ClearAll();
+		const MatchedOrders& GetMatchedOrders();
 	private:
+		std::mutex m_mutex;
 		MatchedOrders m_matchedOrders;
 	};
 };

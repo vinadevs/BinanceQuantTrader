@@ -40,6 +40,12 @@
     <Filter Include="Binance Exchange Simulator\Rule">
       <UniqueIdentifier>{f1b1b2ad-0820-4c6a-a1e9-e472e5279977}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Binance Exchange Simulator\Report">
+      <UniqueIdentifier>{6540c68b-d09b-4840-b8a8-aed946b9b091}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Binance Exchange Simulator\Monitor">
+      <UniqueIdentifier>{a1976277-3882-4313-a351-9e5e23882e9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
