@@ -23,15 +23,14 @@ BinanceNewOrder::BinanceNewOrder(
     const double price,
     const double stopPrice,
     const double icebergAmount)
-    : Order(symbol, BinanceOrderType::NEW),
+    : Order(symbol, clientOrderId, BinanceOrderType::NEW),
     m_side(side),
     m_type(type),
     m_time(time),
     m_amount(amount),
     m_price(price),
     m_stopPrice(stopPrice),
-    m_icebergAmount(icebergAmount),
-    m_clientOrderId(clientOrderId) {}
+    m_icebergAmount(icebergAmount) {}
 
 BinanceNewOrder::~BinanceNewOrder() {}
 
@@ -140,25 +139,36 @@ BinanceNewOrderStatus BinanceNewOrder::GetOrderStatus() const
     return m_orderStatus;
 }
 
-std::string OrderManagement::BinanceNewOrder::GetOrderStatusStr() const
+std::string BinanceNewOrder::GetOrderStatusStr() const
 {
     switch (m_orderStatus)
     {
-    case OrderManagement::BinanceNewOrderStatus::NEW:
+    case BinanceNewOrderStatus::NEW:
         return "NEW";
-    case OrderManagement::BinanceNewOrderStatus::WAITING_FOR_FILL:
+    case BinanceNewOrderStatus::WAITING_FOR_FILL:
         return "WAITING_FOR_FILL";
-    case OrderManagement::BinanceNewOrderStatus::PRTIAL_FILLED:
+    case BinanceNewOrderStatus::PRTIAL_FILLED:
         return "PRTIAL_FILLED";
-    case OrderManagement::BinanceNewOrderStatus::FULL_FILLED:
+    case BinanceNewOrderStatus::FULL_FILLED:
         return "FULL_FILLED";
-    case OrderManagement::BinanceNewOrderStatus::CANCELLED:
+    case BinanceNewOrderStatus::CANCELLED:
         return "CANCELLED";
-    case OrderManagement::BinanceNewOrderStatus::REPLACED:
+    case BinanceNewOrderStatus::REPLACED:
         return "REPLACED";
     default:
         return "UNDEF";
     };
+}
+
+BinanceNewOrderStatus BinanceNewOrder::GetOrderStatusEnum(const std::string status)
+{
+    if (status == "NEW") return BinanceNewOrderStatus::NEW;
+    else if (status == "WAITING_FOR_FILL") return BinanceNewOrderStatus::WAITING_FOR_FILL;
+    else if (status == "PRTIAL_FILLED") return BinanceNewOrderStatus::PRTIAL_FILLED;
+    else if (status == "FULL_FILLED") return BinanceNewOrderStatus::FULL_FILLED;
+    else if (status == "CANCELLED") return BinanceNewOrderStatus::CANCELLED;
+    else if (status == "REPLACED") return BinanceNewOrderStatus::REPLACED;
+    return BinanceNewOrderStatus::UNDEF;
 }
 
 void BinanceNewOrder::SetOrderStatus(const BinanceNewOrderStatus status)

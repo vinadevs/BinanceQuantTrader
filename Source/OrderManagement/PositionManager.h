@@ -15,6 +15,7 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
+#include <mutex>
 
 namespace LibraryUtils {
     class Logger;
@@ -31,36 +32,47 @@ namespace OrderManagement {
 	// -This class will manage all worked trading postions
 	// -It can create new, cancel, replace, amend, an order... 
 
+	enum class PositionSide : unsigned
+	{
+		LONG, // buy side
+		SHORT, // sell side
+	};
+
+	enum class PositionType : unsigned
+	{
+		OPENING, // new positions
+		FILLING, // position in middle of trade (filled, partial filled)
+		REJECTED, // positions were rejected by downstream
+	};
+
 	class OrderCreator;
+	class BinanceWorkedOrderManager;
 
 	class DLL_CLASS_ORDERMANAGEMENT_EXPORTS PositionManager final
 	{
 	public:
-		PositionManager();
+		PositionManager(BinanceWorkedOrderManager* workedOrderManager);
 		~PositionManager();
-
-        enum class PositionSide : unsigned
-        {
-            LONG,
-            SHORT,
-        };
 
         ////////////////////// postion ////////////////////////////////////////
 
-        // Add new long postion
-        std::unique_ptr<BinanceNewOrder> OpenLongPositionUpstreamOrder(
+        // Add new postion
+        std::unique_ptr<BinanceNewOrder> OpenNewPositionUpstreamOrder(
 			const std::string& symbol,
+			const PositionSide posSide,
 			const binapi::double_type quality,
 			const binapi::double_type refPrice);
 
-        // Add new short postion
-        std::unique_ptr<BinanceNewOrder> OpenShortPositionUpstreamOrder(
-			const std::string& symbol,
-			const binapi::double_type quality,
-			const binapi::double_type refPrice);
+		bool CloseOpenedPositionUpstreamOrder(const std::string& clientOrderId);
+		bool CloseAllOpenedPositionUpstreamOrder(const PositionSide posSide, const PositionType posType);
 	private:
+		bool CloseWorkedPosition(const std::string& clientOrderId);
+		bool CloseWorkeOrder(const std::string& clientOrderId);
+
+		std::mutex m_mutex;
         std::unordered_map <std::string, PositionSide> m_workedPositions;
         std::unique_ptr<LibraryUtils::Logger> m_logger;
 		std::unique_ptr<OrderCreator> m_orderCreator;
+		BinanceWorkedOrderManager* m_workedOrderManager {nullptr};
 	};
 };

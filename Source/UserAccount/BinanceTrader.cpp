@@ -18,12 +18,14 @@
 #include "../OrderManagement/BinanceNewOrder.h"
 #include "../OrderManagement/BinanceCancelOrder.h"
 #include "../OrderManagement/BinanceReplaceOrder.h"
+#include "../OrderManagement/FieldLabels.h"
 #include "../RiskManagement/RiskManager.h"
 
 #include "../LibraryUtils/SourceBuildFlags.h"
 #include "../LibraryUtils/StringUtils.h"
 #if USE_TEST_TRADING
 #include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
+#include "../ExchangeSimulator/DownstreamOrderAck.h"
 #endif
 
 #include "BinanceTrader.h"
@@ -37,6 +39,9 @@ using namespace OrderManagement;
 using namespace RestAPI;
 using namespace StaticData;
 using namespace ExchangeConnectivity;
+#if USE_TEST_TRADING
+using namespace ExchangeSimulator;
+#endif
 using namespace tinyxml2;
 
 BinanceTrader::BinanceTrader(
@@ -52,8 +57,8 @@ BinanceTrader::BinanceTrader(
     m_logger->Info("querying Binance remote account info.");
     // Query all assets from remote Binance account and manage them locally for our trading
     m_portfolio->UpdateBinanceAccountInfo();
-	m_positionManager = std::make_unique<PositionManager>();
 	m_workedOrderManager = std::make_unique<BinanceWorkedOrderManager>();
+	m_positionManager = std::make_unique<PositionManager>(m_workedOrderManager.get());
 	m_logger->Info("setting up config for trader.");
 	SetupReporter(reportCfg);
 }
@@ -83,7 +88,7 @@ bool BinanceTrader::Buy(
 {
 	if (m_portfolio->GetBinanceTradingPair(symbol)->GetCash(symbol) > quality * refPrice)
 	{
-		auto newSingleLongOrder = m_positionManager->OpenLongPositionUpstreamOrder(symbol, quality, refPrice);
+		auto newSingleLongOrder = m_positionManager->OpenNewPositionUpstreamOrder(symbol, PositionSide::LONG, quality, refPrice);
 #if USE_TEST_TRADING
 		const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleLongOrder.get());
 #else
@@ -108,7 +113,7 @@ bool BinanceTrader::Sell(
 {
 	if (m_portfolio->GetBinanceTradingPair(symbol)->GetQuantity() > 0)
 	{
-		auto newSingleShortOrder = m_positionManager->OpenShortPositionUpstreamOrder(symbol, quality, refPrice);
+		auto newSingleShortOrder = m_positionManager->OpenNewPositionUpstreamOrder(symbol, PositionSide::SHORT, quality, refPrice);
 #if USE_TEST_TRADING
 		const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleShortOrder.get());
 #else
@@ -149,8 +154,52 @@ void BinanceTrader::UpdateAccountInfo()
 
 ////////////// DOWNSTREAM PROCESSING /////////////////////////////
 
+#if USE_TEST_TRADING  
 void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage& message)
 {
 	m_logger->Info("Received simulator ack=" + message.SerializeMessage());
-	// Updates the trader’s position and portfolio.
+	const std::string simulatorAckType = message.GetStringValueByTag(FieldLabels::SimulatorAck::AckType);
+	if (simulatorAckType == DownstreamAckTypes::NewOrderAck)
+	{
+		
+	}
+	else if (simulatorAckType == DownstreamAckTypes::CancelOrderAck)
+	{
+
+	}
+	else if (simulatorAckType == DownstreamAckTypes::ReplaceOrderAck)
+	{
+
+	}
+	else if (simulatorAckType == DownstreamAckTypes::QueryOrderAck)
+	{
+
+	}
+	else if (simulatorAckType == DownstreamAckTypes::FilledNewOrderAck)
+	{
+		const std::string clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
+		const std::string orderStatus = message.GetStringValueByTag(FieldLabels::OrderStatus);
+		// Updates the trader’s position.
+		if (BinanceNewOrder::GetOrderStatusEnum(orderStatus) == BinanceNewOrderStatus::FULL_FILLED &&
+			m_positionManager->CloseOpenedPositionUpstreamOrder(clientOrderId))
+		{
+			m_logger->Info("Closed full filled upstream position for clientOrderId=" + clientOrderId);
+			// Updates the trader’s portfolio, balancing asset holding.
+			// Updates the trader’s cash, PNL report.
+		}
+	}
+	else if (simulatorAckType == DownstreamAckTypes::CancelledOrderAck)
+	{
+
+	}
+	else if (simulatorAckType == DownstreamAckTypes::ReplacedOrderAck)
+	{
+
+	}
+	else if (simulatorAckType == DownstreamAckTypes::ErrorOrderAck)
+	{
+
+	}
+	m_logger->Error("Received simulator ack with unknown type=" + simulatorAckType);
 }
+#endif

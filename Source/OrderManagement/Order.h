@@ -33,14 +33,14 @@ namespace OrderManagement {
 
 	// -In trading, an "order" is an instruction given by a trader to a broker
 	// or trading platform to buy or sell an asset
-	// -This is base class for all Order option types (NEW/CANCEL/REPLACE)
+	// -This is base class for all Order option types (NEW/CANCEL/REPLACE/QUERRY/TEST)
 	class DLL_CLASS_ORDERMANAGEMENT_EXPORTS Order
 	{
 	public:
 		Order() = default;
 
-		Order(const std::string& symbol, const BinanceOrderType binanceOrderType)
-			: m_symbol(symbol), m_binanceOrderType(binanceOrderType)
+		Order(const std::string& symbol, const std::string& clientOrderId, const BinanceOrderType binanceOrderType)
+			: m_symbol(symbol), m_clientOrderId(clientOrderId), m_binanceOrderType(binanceOrderType)
 		{
 			UpdateOrderTypeStr();
 #if USE_TEST_TRADING
@@ -62,9 +62,13 @@ namespace OrderManagement {
 			return m_binanceOrderType;
 		}
 
-		std::string GetOrderTypeStr() const {
+		const std::string& GetOrderTypeStr() const {
 			return m_binanceOrderTypeStr;
 		}
+
+		const std::string& GetClientOrderId() const { return m_clientOrderId; }
+
+		void SetClientOrderId(const std::string& clientOrderId) { m_clientOrderId = clientOrderId; }
 
 #if USE_TEST_TRADING
 		void SetUserAccountID(const std::string& userID) {
@@ -111,6 +115,7 @@ namespace OrderManagement {
 		std::string m_userAccountID;
 #endif
 		std::string m_symbol;
+		std::string m_clientOrderId; // m_clientOrderId is new order ID from us
 		std::string m_binanceOrderTypeStr;
 		BinanceOrderType m_binanceOrderType{ BinanceOrderType::UNDEF };
 	};

@@ -132,6 +132,9 @@
     <ClInclude Include="UpstreamOrderQueue.h">
       <Filter>Binance Exchange Simulator\Book</Filter>
     </ClInclude>
+    <ClInclude Include="TimeInForceHandler.h">
+      <Filter>Binance Exchange Simulator\Participants</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -205,6 +208,9 @@
     </ClCompile>
     <ClCompile Include="ExchangeRuleAndCompliance.cpp">
       <Filter>Binance Exchange Simulator\Rule</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeInForceHandler.cpp">
+      <Filter>Binance Exchange Simulator\Participants</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

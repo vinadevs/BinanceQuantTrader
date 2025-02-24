@@ -11,11 +11,12 @@
 
 using namespace OrderManagement;
 
-TestOrder::TestOrder(const std::string& symbol,
+TestOrder::TestOrder(const std::string& clientOrderId, 
+					 const std::string& symbol,
 					 const binapi::double_type quality,
 					 const binapi::double_type referencePrice,
 					 const TestOrderSide side)
-	: Order(m_symbol, BinanceOrderType::TEST),
+	: Order(m_symbol, clientOrderId, BinanceOrderType::TEST),
 	m_assetQty(quality),
 	m_assetReferencePrice(referencePrice),
 	m_orderSide(side)

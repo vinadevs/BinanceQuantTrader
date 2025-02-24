@@ -65,25 +65,28 @@ namespace OrderManagement {
         void AddReplaceOrder(const std::string& clientOrderId, std::unique_ptr<BinanceReplaceOrder> order);
 
         // Remove an order by clientOrderId
-        void RemoveNewOrder(const std::string& clientOrderId);
+        bool RemoveNewOrder(const std::string& clientOrderId);
 
         // Lookup an order by clientOrderId
         BinanceNewOrder* LookupOrder(const std::string& clientOrderId);
 
         // Remove a cancel order by clientOrderId
-        void RemoveCancelOrder(const std::string& clientOrderId);
+        bool RemoveCancelOrder(const std::string& clientOrderId);
 
         // Lookup a cancel order by clientOrderId
         BinanceCancelOrder* LookupCancelOrder(const std::string& clientOrderId);
 
         // Remove a replace order by clientOrderId
-        void RemoveReplaceOrder(const std::string& clientOrderId);
+        bool RemoveReplaceOrder(const std::string& clientOrderId);
 
         // Lookup a replace order by clientOrderId
         BinanceReplaceOrder* LookupReplaceOrder(const std::string& clientOrderId);
 
         // Clear all orders
         void ClearAll();
+
+        // Clear all new orders
+        void ClearAllNewOrders();
 
         // Clear all cancel orders
         void ClearAllCancelOrders();

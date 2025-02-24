@@ -71,8 +71,8 @@ namespace UserAccount {
 
 		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr };
 		RiskManagement::RiskManager* m_riskManager{ nullptr };  // stop loss
-		std::unique_ptr<OrderManagement::PositionManager> m_positionManager;
 		std::unique_ptr<OrderManagement::BinanceWorkedOrderManager> m_workedOrderManager;
+		std::unique_ptr<OrderManagement::PositionManager> m_positionManager;
 		std::unique_ptr<BinanceReporter> m_reporter;
 
 		bool m_enableTradeReporter{ false };

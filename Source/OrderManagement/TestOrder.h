@@ -24,7 +24,9 @@ namespace OrderManagement {
 		TestOrder final : public Order
 	{
 	public:
-		TestOrder(const std::string& symbol,
+		TestOrder(
+			const std::string& clientOrderId,
+			const std::string& symbol,
 			const binapi::double_type quality,
 			const binapi::double_type referencePrice,
 			const TestOrderSide side);

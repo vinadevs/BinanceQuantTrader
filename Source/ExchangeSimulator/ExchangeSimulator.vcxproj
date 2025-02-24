@@ -162,6 +162,7 @@
     <ClInclude Include="AlgosConnectivity.h" />
     <ClInclude Include="DownstreamOrderBook.h" />
     <ClInclude Include="ExchangeRuleAndCompliance.h" />
+    <ClInclude Include="TimeInForceHandler.h" />
     <ClInclude Include="UpstreamOrderMatchedMgr.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="HistoricalParticipant.h" />
@@ -194,6 +195,7 @@
     <ClCompile Include="HistoricalParticipant.cpp" />
     <ClCompile Include="MatchingEngine.cpp" />
     <ClCompile Include="OrderAckManager.cpp" />
+    <ClCompile Include="TimeInForceHandler.cpp" />
     <ClCompile Include="UpstreamOrder.cpp" />
     <ClCompile Include="UpstreamOrderMatchedMgr.cpp" />
     <ClCompile Include="UpstreamOrderQueueMgr.cpp" />

@@ -28,7 +28,7 @@ namespace PortfolioManager {
 						   const MarketData::RealTimeMarketData* marketData,
 						   const BinanceBalance& balance);
 		void UpdateTradingPair(const BinanceBalance& balance);
-		std::string GetSymbol() const { return m_tradingPairName; }
+		const std::string& GetTradingPairName() const { return m_tradingPairName; }
 		binapi::double_type GetCash(const std::string& tradingPair) const;
 		binapi::double_type GetQuantity() const;
 	private:

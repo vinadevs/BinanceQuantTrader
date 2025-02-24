@@ -40,12 +40,10 @@ namespace OrderManagement {
         // Getters
         std::size_t GetOrderId() const { return m_orderId; }
         const std::string& GetOrigClientOrderId() const { return m_origClientOrderId; }
-        const std::string& GetClientOrderId() const { return m_clientOrderId; }
 
         // Setters
         void SetOrderId(std::size_t orderId) { m_orderId = orderId; }
         void SetOrigClientOrderId(const std::string& origClientOrderId) { m_origClientOrderId = origClientOrderId; }
-        void SetClientOrderId(const std::string& clientOrderId) { m_clientOrderId = clientOrderId; }
 
 #if USE_TEST_TRADING
         // Simulator test
@@ -56,7 +54,5 @@ namespace OrderManagement {
         std::size_t m_orderId {0};
         // m_origClientOrderId is original order ID from us
         std::string m_origClientOrderId;
-        // m_clientOrderId is new replace order ID from us
-        std::string m_clientOrderId;
     };
 };

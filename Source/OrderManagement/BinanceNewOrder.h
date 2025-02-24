@@ -65,8 +65,7 @@ namespace OrderManagement {
         std::string GetPriceStr() const { return std::to_string(m_price); }
         double GetFilledPriceDouble() const { return m_filledPrice; }
         std::string GetFilledPriceStr() const { return std::to_string(m_filledPrice); }
-        double GetPriceDouble() const { return m_price; }
-        std::string GetClientOrderId() const { return m_clientOrderId; }
+        double GetPriceDouble() const { return m_price; } 
         std::string GetStopPriceStr() const { return std::to_string(m_stopPrice); }
         double GetStopPrice() const { return m_stopPrice; }
         std::string GetIcebergAmountStr() const { return std::to_string(m_icebergAmount); }
@@ -88,7 +87,6 @@ namespace OrderManagement {
         void SetFilledAmount(const double filledAmount) { m_filledAmount = filledAmount; }
         void SetPrice(const double price) { m_price = price; }
         void SetFilledPrice(const double filledPrice) { m_filledAmount = filledPrice; }
-        void SetClientOrderId(const std::string& clientOrderId) { m_clientOrderId = clientOrderId; }
         void SetStopPrice(const double stopPrice) { m_stopPrice = stopPrice; }
         void SetIcebergAmount(const double icebergAmount) { m_icebergAmount = icebergAmount; }
         void SetOrigQuoteOrderQuantity(const double origQuoteOrderQuantity) { m_origQuoteOrderQuantity = origQuoteOrderQuantity; }
@@ -99,6 +97,7 @@ namespace OrderManagement {
         // Execution
         BinanceNewOrderStatus GetOrderStatus() const;
         std::string GetOrderStatusStr() const;
+        static BinanceNewOrderStatus GetOrderStatusEnum(const std::string status);
         void SetOrderStatus(const BinanceNewOrderStatus status);
 
         // Serialization
@@ -139,7 +138,6 @@ namespace OrderManagement {
         order(for stop orders) or a limit order(for stop - limit orders).*/
         double m_stopPrice{ 0 };
         double m_icebergAmount{ 0 };
-        std::string m_clientOrderId; // m_clientOrderId is new order ID from us
         // If we trade with a basket of orders
         std::unordered_set<std::string> m_clientOrderIdList;
         BinanceNewOrderStatus m_orderStatus{ BinanceNewOrderStatus::NEW };

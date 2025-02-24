@@ -28,7 +28,7 @@ void BinanceWorkedOrderManager::AddNewOrder(const std::string& clientOrderId, st
     std::lock_guard<std::mutex> lock(m_mutex);
     const auto result = m_newWorkedOrders.try_emplace(clientOrderId, std::move(order));
     if (!result.second) { // Check if the insertion was successful
-        LOG_WARNING_STREAM(m_logger, "Order with clientOrderId '" << clientOrderId << "' already exists.");
+        LOG_WARNING_STREAM(m_logger, "New order with clientOrderId '" << clientOrderId << "' already exists.");
     }
 }
 
@@ -49,16 +49,16 @@ void BinanceWorkedOrderManager::AddReplaceOrder(const std::string& clientOrderId
 }
 
 // Remove an order by clientOrderId
-void BinanceWorkedOrderManager::RemoveNewOrder(const std::string& clientOrderId) {
+bool BinanceWorkedOrderManager::RemoveNewOrder(const std::string& clientOrderId) {
     std::lock_guard<std::mutex> lock(m_mutex);
     auto it = m_newWorkedOrders.find(clientOrderId);
     if (it != m_newWorkedOrders.end()) {
         m_newWorkedOrders.erase(it);
-        LOG_INFO_STREAM(m_logger, "Order with clientOrderId '" << clientOrderId << "' removed successfully.");
+        LOG_INFO_STREAM(m_logger, "New order with clientOrderId '" << clientOrderId << "' removed successfully.");
+        return true;
     }
-    else {
-        LOG_WARNING_STREAM(m_logger, "No order found with clientOrderId '" << clientOrderId << "'.");
-    }
+    LOG_WARNING_STREAM(m_logger, "No new order found with clientOrderId '" << clientOrderId << "'.");
+    return false;
 }
 
 // Lookup an order by clientOrderId
@@ -68,21 +68,21 @@ BinanceNewOrder* BinanceWorkedOrderManager::LookupOrder(const std::string& clien
     if (it != m_newWorkedOrders.end()) {
         return it->second.get(); // Return the raw pointer
     }
-    LOG_WARNING_STREAM(m_logger, "No order found with clientOrderId '" << clientOrderId << "'.");
+    LOG_WARNING_STREAM(m_logger, "No new order found with clientOrderId '" << clientOrderId << "'.");
     return nullptr; // Return nullptr if not found
 }
 
 // Remove a cancel order by clientOrderId
-void BinanceWorkedOrderManager::RemoveCancelOrder(const std::string& clientOrderId) {
+bool BinanceWorkedOrderManager::RemoveCancelOrder(const std::string& clientOrderId) {
     std::lock_guard<std::mutex> lock(m_mutex);
     auto it = m_workedCancelOrders.find(clientOrderId);
     if (it != m_workedCancelOrders.end()) {
         m_workedCancelOrders.erase(it);
         LOG_INFO_STREAM(m_logger, "Cancel order with clientOrderId '" << clientOrderId << "' removed successfully.");
+        return true;
     }
-    else {
-        LOG_WARNING_STREAM(m_logger, "No cancel order found with clientOrderId '" << clientOrderId << "'.");
-    }
+    LOG_WARNING_STREAM(m_logger, "No cancel order found with clientOrderId '" << clientOrderId << "'.");
+    return false;
 }
 
 // Lookup a cancel order by clientOrderId
@@ -97,16 +97,16 @@ BinanceCancelOrder* BinanceWorkedOrderManager::LookupCancelOrder(const std::stri
 }
 
 // Remove a replace order by clientOrderId
-void BinanceWorkedOrderManager::RemoveReplaceOrder(const std::string& clientOrderId) {
+bool BinanceWorkedOrderManager::RemoveReplaceOrder(const std::string& clientOrderId) {
     std::lock_guard<std::mutex> lock(m_mutex);
     auto it = m_workedReplaceOrders.find(clientOrderId);
     if (it != m_workedReplaceOrders.end()) {
         m_workedReplaceOrders.erase(it);
         LOG_INFO_STREAM(m_logger, "Replace order with clientOrderId '" << clientOrderId << "' removed successfully.");
+        return true;
     }
-    else {
-        LOG_WARNING_STREAM(m_logger, "No replace order found with clientOrderId '" << clientOrderId << "'.");
-    }
+    LOG_WARNING_STREAM(m_logger, "No replace order found with clientOrderId '" << clientOrderId << "'.");
+    return false;
 }
 
 // Lookup a replace order by clientOrderId
@@ -127,6 +127,13 @@ void BinanceWorkedOrderManager::ClearAll() {
     m_workedCancelOrders.clear();
     m_workedReplaceOrders.clear();
     LOG_INFO_STREAM(m_logger, "All orders cleared successfully.");
+}
+
+void BinanceWorkedOrderManager::ClearAllNewOrders()
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_newWorkedOrders.clear();
+    LOG_INFO_STREAM(m_logger, "All new orders cleared successfully.");
 }
 
 // Clear all cancel orders
