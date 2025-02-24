@@ -10,7 +10,6 @@
 
 #include "../SettingNConfig/tinyxml2.h"
 #include "../MarketData/RealTimeMarketData.h"
-#include "../UserAccount/TestTrader.h"
 #include "../TradingStrategies/TradingStrategyBase.h"
 #include "../TradingStrategies/FomoTradingStrategy.h"
 #include "../TradingStrategies/TestTradingStrategy.h"

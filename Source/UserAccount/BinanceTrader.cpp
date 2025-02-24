@@ -44,6 +44,8 @@ using namespace ExchangeSimulator;
 #endif
 using namespace tinyxml2;
 
+static constexpr double ZERO_DOUBLE_VALUE = 0;
+
 BinanceTrader::BinanceTrader(
 	const XMLElement* reportCfg,
 	PortfolioInvestmentBinance* portfolio,
@@ -81,12 +83,19 @@ void BinanceTrader::SetupReporter(const XMLElement* reportCfg)
 	}
 }
 
+binapi::double_type BinanceTrader::CalculateTradeValue(
+	const binapi::double_type quality,
+	const binapi::double_type refPrice)
+{
+	return quality * refPrice;
+}
+
 bool BinanceTrader::Buy(
 	const std::string& symbol,
 	const binapi::double_type quality, 
 	const binapi::double_type refPrice)
 {
-	if (m_portfolio->GetBinanceTradingPair(symbol)->GetCash(symbol) > quality * refPrice)
+	if (m_portfolio->GetBinanceTradingPair(symbol)->GetTradingPairValue(symbol) > CalculateTradeValue(quality, refPrice))
 	{
 		auto newSingleLongOrder = m_positionManager->OpenNewPositionUpstreamOrder(symbol, PositionSide::LONG, quality, refPrice);
 #if USE_TEST_TRADING
@@ -111,7 +120,7 @@ bool BinanceTrader::Sell(
 	const binapi::double_type quality, 
 	const binapi::double_type refPrice)
 {
-	if (m_portfolio->GetBinanceTradingPair(symbol)->GetQuantity() > 0)
+	if (m_portfolio->GetBinanceTradingPair(symbol)->GetQuantity() > ZERO_DOUBLE_VALUE)
 	{
 		auto newSingleShortOrder = m_positionManager->OpenNewPositionUpstreamOrder(symbol, PositionSide::SHORT, quality, refPrice);
 #if USE_TEST_TRADING

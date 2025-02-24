@@ -23,13 +23,13 @@ void BinanceTradingPair::UpdateTradingPair(const BinanceBalance& balance)
 	m_balance = balance;
 }
 
-binapi::double_type BinanceTradingPair::GetCash(const std::string& tradingPair) const
+binapi::double_type BinanceTradingPair::GetTradingPairValue(const std::string& tradingPair) const
 {
 	const auto* syncedData = m_marketData->GetFeedHandler()->GetSynchronousMarketData(tradingPair);
 	if (syncedData)
 	{
-		const auto* data = syncedData->GetFeed(FeedID::BEST_ASK_PRICE);
-		return data->GetDoubleMultiprecisionData() * m_balance.free;
+		const auto* data = syncedData->GetFeed(FeedID::BEST_ASK_PRICE); // TODO: replace BEST_ASK_PRICE  by MARKET_PRICE
+		return data->GetDoubleMultiprecisionData() * m_balance.free; // current asset value = market price * asset quantity
 	}
 	throw std::runtime_error("BinanceTradingPair: sycnchronous feed does not exit with symbol=" + tradingPair);
 }

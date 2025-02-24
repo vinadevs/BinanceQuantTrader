@@ -68,6 +68,9 @@ namespace UserAccount {
 #endif
 	private:
 		void SetupReporter(const tinyxml2::XMLElement* reportCfg) override;
+		binapi::double_type CalculateTradeValue(
+			const binapi::double_type quality,
+			const binapi::double_type refPrice);
 
 		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr };
 		RiskManagement::RiskManager* m_riskManager{ nullptr };  // stop loss

@@ -29,7 +29,7 @@ namespace PortfolioManager {
 						   const BinanceBalance& balance);
 		void UpdateTradingPair(const BinanceBalance& balance);
 		const std::string& GetTradingPairName() const { return m_tradingPairName; }
-		binapi::double_type GetCash(const std::string& tradingPair) const;
+		binapi::double_type GetTradingPairValue(const std::string& tradingPair) const;
 		binapi::double_type GetQuantity() const;
 	private:
 		const std::string m_tradingPairName;

@@ -159,7 +159,6 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ReportAPIs.h" />
-    <ClInclude Include="TestTrader.h" />
     <ClInclude Include="Trader.h" />
   </ItemGroup>
   <ItemGroup>
@@ -173,7 +172,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ReportAPIs.cpp" />
-    <ClCompile Include="TestTrader.cpp" />
     <ClCompile Include="Trader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
