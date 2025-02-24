@@ -12,6 +12,7 @@
 #include "Protobuf/user_account_data.grpc.pb.h"
 #undef max
 #undef min
+#include "../KernelTrading/types.h"
 #include <grpcpp/grpcpp.h>
 
 #include <memory>
@@ -27,20 +28,28 @@ namespace tinyxml2 {
 
 namespace ExchangeConnectivity {
 
-	class BinanceWalletClient final
+	struct GrpcConnection final
 	{
-	public:
-		BinanceWalletClient(const tinyxml2::XMLElement* binanceWalletClientXmlCfg);
-		~BinanceWalletClient();
-
-		void GetUserAccountDataResponse(const std::string& user_id);
-	private:
-		std::unique_ptr<LibraryUtils::Logger> m_logger;
 		std::unique_ptr<UserAccountService::Stub> m_grpcStub;
 		std::shared_ptr<grpc::Channel> m_grpcChannel;
 		grpc::ClientContext m_context;
 		std::string m_serverIpAddress;
 		std::string m_serverPort;
 		std::string m_serverConnection;
+	};
+
+	class BinanceWalletClient final
+	{
+	public:
+		BinanceWalletClient(const tinyxml2::XMLElement* binanceWalletClientXmlCfg);
+		~BinanceWalletClient();
+
+		bool GetUserAccountDataResponse(
+			const std::string& userId,
+			binapi::rest::account_info_t& accountInfo,
+			std::string& errorMessage);
+	private:
+		std::unique_ptr<LibraryUtils::Logger> m_logger;
+		GrpcConnection m_grpcConnection;
 	};
 };

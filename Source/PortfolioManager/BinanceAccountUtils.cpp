@@ -12,28 +12,49 @@
 #include "../KernelTrading/errors.h"
 #include "../RestAPI/RestAPI.h"
 #include "../RestAPI/BinanceAPI.h"
+#include "../RestAPI/ApiKeyInfoManager.h"
 #include "../LibraryUtils/Logger.h"
+#include "../LibraryUtils/SourceBuildFlags.h"
 
+#if USE_TEST_TRADING
+#include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
+#endif
+
+#if USE_TEST_TRADING
+using namespace ExchangeConnectivity;
+#else
 using namespace RestAPI;
+#endif
 
 bool BinanceAccountUtils::QueryBinanceAccount(
     binapi::rest::account_info_t& accountInfo,
     LibraryUtils::Logger* logger)
 {
+#if USE_TEST_TRADING // use simulator protobuf message
+    std::string errorMessage;
+    if (ExchangeSimulatorGateWay->GetUserAccountInfo(
+        ApiKeyInfoMgr->GetApiKeyInfo().m_userID, accountInfo, errorMessage))
+    {
+        //LOG_DEBUG_STREAM(logger, "AccountInfo=" << accountInfo);
+        return true;
+    }
+    else
+    {
+        logger->Error("AccountError:" + errorMessage);
+        return false;
+    }
+#else // use Binance HTTP API
     if (BinanceApiGateWay)
     {
         const auto accountInfoResult = BinanceApiGateWay->account_info();
         if (!binapi::rest::e_error_equal(accountInfoResult.ec, binapi::rest::e_error::OK))
         {
-            if (logger)
-            {
-                // If you are seeing the error:
-                // "Timestamp for this request was 1000ms ahead of the server"
-                // Please try to sycn your system time again in Date&Time setting
-                logger->Error("AccountError: ec=" + std::to_string(accountInfoResult.ec)
-                    + ", ename=" + binapi::rest::e_error_to_string(accountInfoResult.ec)
-                    + ", emsg=" + accountInfoResult.errmsg);
-            }
+            // If you are seeing the error:
+            // "Timestamp for this request was 1000ms ahead of the server"
+            // Please try to sycn your system time again in Date&Time setting
+            logger->Error("AccountError: ec=" + std::to_string(accountInfoResult.ec)
+                + ", ename=" + binapi::rest::e_error_to_string(accountInfoResult.ec)
+                + ", emsg=" + accountInfoResult.errmsg);
             return false;
         }
         else
@@ -42,13 +63,11 @@ bool BinanceAccountUtils::QueryBinanceAccount(
             {
                 return false;
             }
-            if (logger)
-            {
-                //LOG_DEBUG_STREAM(logger, "AccountInfo=" << accountInfoResult.v);
-                accountInfo = accountInfoResult.v;
-                return true;
-            }
+            //LOG_DEBUG_STREAM(logger, "AccountInfo=" << accountInfoResult.v);
+            accountInfo = accountInfoResult.v;
+            return true;
         }
     }
     return false;
+#endif
 }

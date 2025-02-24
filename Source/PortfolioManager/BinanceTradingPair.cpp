@@ -29,8 +29,7 @@ binapi::double_type BinanceTradingPair::GetCash(const std::string& tradingPair) 
 	if (syncedData)
 	{
 		const auto* data = syncedData->GetFeed(FeedID::BEST_ASK_PRICE);
-		//return data->GetDoubleMultiprecisionData() * m_balance.free;
-		return binapi::double_type(10000);
+		return data->GetDoubleMultiprecisionData() * m_balance.free;
 	}
 	throw std::runtime_error("BinanceTradingPair: sycnchronous feed does not exit with symbol=" + tradingPair);
 }

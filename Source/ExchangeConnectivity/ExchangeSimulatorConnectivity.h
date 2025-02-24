@@ -12,6 +12,7 @@
 
 #include "../MiddlewareMQ/MessageDelivery.h"
 #include "../LibraryUtils/MacroUtils.h"
+#include "../KernelTrading/types.h"
 
 #include <string>
 
@@ -19,6 +20,7 @@ namespace OrderManagement {
 	class BinanceNewOrder;
 	class BinanceCancelOrder;
 	class BinanceReplaceOrder;
+	class BinanceQueryOrder;
 }
 
 namespace LibraryUtils {
@@ -52,15 +54,18 @@ namespace ExchangeConnectivity {
 			SendNewSimulatorOrderFull(OrderManagement::BinanceNewOrder* newOrder);
 
 		MiddlewareMQ::MiddlewareMQResult
-			QuerySimulatorOrderStatus(const std::string& symbol);
-
-		MiddlewareMQ::MiddlewareMQResult
 			SendCancelSimulatorOrder(OrderManagement::BinanceCancelOrder* cancelOrder);
 
 		MiddlewareMQ::MiddlewareMQResult
 			SendCancelReplaceSimulatorOrder(OrderManagement::BinanceReplaceOrder* replaceOrder);
 
-		void GetUserAccountData(const std::string& user_id);
+		MiddlewareMQ::MiddlewareMQResult
+			QuerySimulatorOrderStatus(OrderManagement::BinanceQueryOrder* queryOrder);
+
+		bool GetUserAccountInfo(
+			const std::string& userId,
+			binapi::rest::account_info_t& accountInfo,
+			std::string& errorMessage);
 	private:
 		ExchangeSimulatorConnectivity();
 		~ExchangeSimulatorConnectivity();

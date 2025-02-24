@@ -11,6 +11,7 @@
 #include "../OrderManagement/BinanceNewOrder.h"
 #include "../OrderManagement/BinanceCancelOrder.h"
 #include "../OrderManagement/BinanceReplaceOrder.h"
+#include "../OrderManagement/BinanceQueryOrder.h"
 #include "../LibraryUtils/StringDefinitions.h"
 #include "../LibraryUtils/Logger.h"
 #include "../SettingNConfig/tinyxml2.h"
@@ -19,6 +20,7 @@
 #include "ExchangeSimulatorConnectivity.h"
 
 using namespace ExchangeConnectivity;
+using namespace OrderManagement;
 using namespace tinyxml2;
 
 ExchangeSimulatorConnectivity::ExchangeSimulatorConnectivity()
@@ -44,7 +46,7 @@ void ExchangeSimulatorConnectivity::InitBinanceWalletClient(const XMLElement* bi
 
 MiddlewareMQ::MiddlewareMQResult
 ExchangeSimulatorConnectivity::SendNewSimulatorOrderFull(
-    OrderManagement::BinanceNewOrder* newOrder)
+    BinanceNewOrder* newOrder)
 {
     const auto& message = newOrder->ToBqtJsonMessageOrder();
     const auto newOrderResult = m_messageDelivery->DeliveryMessage(message);
@@ -61,14 +63,8 @@ ExchangeSimulatorConnectivity::SendNewSimulatorOrderFull(
 }
 
 MiddlewareMQ::MiddlewareMQResult
-ExchangeSimulatorConnectivity::QuerySimulatorOrderStatus(const std::string& symbol)
-{
-    return MiddlewareMQ::MiddlewareMQResult("", true);
-}
-
-MiddlewareMQ::MiddlewareMQResult
 ExchangeSimulatorConnectivity::SendCancelSimulatorOrder(
-    OrderManagement::BinanceCancelOrder* cancelOrder)
+    BinanceCancelOrder* cancelOrder)
 {
     const auto& message = cancelOrder->ToBqtJsonMessage();
     const auto cancelOrderResult = m_messageDelivery->DeliveryMessage(message);
@@ -79,30 +75,50 @@ ExchangeSimulatorConnectivity::SendCancelSimulatorOrder(
     }
     else
     {
-        LOG_INFO_STREAM(m_logger, "cancelled order=" << message);
+        LOG_INFO_STREAM(m_logger, "sent cancel order=" << message);
     }
     return cancelOrderResult;
 }
 
 MiddlewareMQ::MiddlewareMQResult
 ExchangeSimulatorConnectivity::SendCancelReplaceSimulatorOrder(
-    OrderManagement::BinanceReplaceOrder* replaceOrder)
+    BinanceReplaceOrder* replaceOrder)
 {
     const auto& message = replaceOrder->ToBqtJsonMessage();
     const auto replaceOrderResult = m_messageDelivery->DeliveryMessage(message);
     if (!replaceOrderResult.m_result)
     {
-        LOG_ERROR_STREAM(m_logger, "could not cancel order="
+        LOG_ERROR_STREAM(m_logger, "could not replace order="
             << message << ", reason=" << replaceOrderResult.m_errMsg);
     }
     else
     {
-        LOG_INFO_STREAM(m_logger, "cancelled order=" << message);
+        LOG_INFO_STREAM(m_logger, "sent replace order=" << message);
     }
     return replaceOrderResult;
 }
 
-void ExchangeSimulatorConnectivity::GetUserAccountData(const std::string& user_id) 
+MiddlewareMQ::MiddlewareMQResult
+ExchangeSimulatorConnectivity::QuerySimulatorOrderStatus(BinanceQueryOrder* queryOrder)
 {
-    m_binanceWalletClient->GetUserAccountDataResponse(user_id);
+    const auto& message = queryOrder->ToBqtJsonMessage();
+    const auto queryOrderResult = m_messageDelivery->DeliveryMessage(message);
+    if (!queryOrderResult.m_result)
+    {
+        LOG_ERROR_STREAM(m_logger, "could not query order="
+            << message << ", reason=" << queryOrderResult.m_errMsg);
+    }
+    else
+    {
+        LOG_INFO_STREAM(m_logger, "sent query order=" << message);
+    }
+    return queryOrderResult;
+}
+
+bool ExchangeSimulatorConnectivity::GetUserAccountInfo(
+    const std::string& userId,
+    binapi::rest::account_info_t& accountInfo,
+    std::string& errorMessage)
+{
+    return m_binanceWalletClient->GetUserAccountDataResponse(userId, accountInfo, errorMessage);
 }

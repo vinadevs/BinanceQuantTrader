@@ -124,7 +124,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>MarketDataD.lib;RestAPID.lib;StaticDataD.lib;SettingNConfigD.lib;KernelTradingD.lib;LibraryUtilsD.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ExchangeConnectivityD.lib;MarketDataD.lib;RestAPID.lib;StaticDataD.lib;SettingNConfigD.lib;KernelTradingD.lib;LibraryUtilsD.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <MergeSections>
       </MergeSections>
@@ -149,7 +149,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>MarketData.lib;RestAPI.lib;StaticData.lib;SettingNConfig.lib;KernelTrading.lib;LibraryUtils.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ExchangeConnectivity.lib;MarketData.lib;RestAPI.lib;StaticData.lib;SettingNConfig.lib;KernelTrading.lib;LibraryUtils.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <MergeSections>
       </MergeSections>

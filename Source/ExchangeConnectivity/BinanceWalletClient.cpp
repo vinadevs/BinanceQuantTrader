@@ -22,28 +22,32 @@ BinanceWalletClient::BinanceWalletClient(const tinyxml2::XMLElement* binanceWall
     const auto* connectionXml = binanceWalletClientXmlCfg->FirstChildElement("Connection");
     assert(connectionXml);
     m_logger->Info("Creating new Http connection...");
-    m_serverIpAddress = std::string(connectionXml->Attribute("ServerIpAddress"));
-    m_serverPort = std::string(connectionXml->Attribute("ServerPort"));
-    m_serverConnection = m_serverIpAddress + ":" + m_serverPort;
-    m_grpcChannel = grpc::CreateChannel(m_serverConnection, grpc::InsecureChannelCredentials());
-    m_grpcStub = UserAccountService::NewStub(m_grpcChannel);
+    m_grpcConnection.m_serverIpAddress = std::string(connectionXml->Attribute("ServerIpAddress"));
+    m_grpcConnection.m_serverPort = std::string(connectionXml->Attribute("ServerPort"));
+    m_grpcConnection.m_serverConnection = m_grpcConnection.m_serverIpAddress + ":" + m_grpcConnection.m_serverPort;
+    m_grpcConnection.m_grpcChannel = grpc::CreateChannel(m_grpcConnection.m_serverConnection, grpc::InsecureChannelCredentials());
+    m_grpcConnection.m_grpcStub = UserAccountService::NewStub(m_grpcConnection.m_grpcChannel);
 }
 
 BinanceWalletClient::~BinanceWalletClient()
 {
 }
 
-void BinanceWalletClient::GetUserAccountDataResponse(const std::string& user_id)
+bool BinanceWalletClient::GetUserAccountDataResponse(
+    const std::string& userId,
+    binapi::rest::account_info_t& accountInfo,
+    std::string& errorMessage)
 {
     UserAccountDataRequest request;
-    request.set_user_id(user_id);
+    request.set_user_id(userId);
 
     UserAccountDataResponse response;
     grpc::ClientContext context;
 
-    const grpc::Status status = m_grpcStub->GetUserAccountData(&context, request, &response);
+    const grpc::Status status = m_grpcConnection.m_grpcStub->GetUserAccountData(&context, request, &response);
 
-    if (status.ok()) {
+    if (status.ok()) 
+    {
         std::cout << "Response received from server:\n"
             << "User ID: " << response.user_id() << "\n"
             << "Maker Commission: " << response.maker_commission() << "\n"
@@ -61,8 +65,11 @@ void BinanceWalletClient::GetUserAccountDataResponse(const std::string& user_id)
                 << "  Free Amount: " << balance.free_amount() << "\n"
                 << "  Locked Amount: " << balance.locked_amount() << "\n";
         }
+        return true;
     }
-    else {
-        std::cout << "RPC failed: " << status.error_message() << std::endl;
+    else 
+    {
+        errorMessage = status.error_message();
+        return false;
     }
 }

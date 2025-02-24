@@ -134,6 +134,10 @@ struct DLL_CLASS account_info_t {
         double_type locked;
 
         static balance_t construct(const flatjson::fjson &json);
+        static balance_t construct(
+            const std::string& asset,
+            const double_type free,
+            const double_type locked);
         friend DLL_CLASS std::ostream &operator<<(std::ostream &os, const balance_t &f);
     };
     std::map<std::string, balance_t> balances;
@@ -151,6 +155,18 @@ struct DLL_CLASS account_info_t {
     const double_type& sub_balance(const char *symbol, const double_type &amount);
 
     static account_info_t construct(const flatjson::fjson &json);
+    static account_info_t construct(
+        const std::size_t makerCommission,
+        const std::size_t takerCommission,
+        const std::size_t buyerCommission,
+        const std::size_t sellerCommission,
+        const bool canTrade,
+        const bool canWithdraw,
+        const bool canDeposit,
+        const std::size_t updateTime,
+        const std::map<std::string, balance_t>& balances
+        );
+
     friend DLL_CLASS std::ostream &operator<<(std::ostream &os, const account_info_t &f);
 };
 
