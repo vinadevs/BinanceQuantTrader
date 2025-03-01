@@ -25,6 +25,9 @@
 #if USE_TEST_TRADING
 #include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
 #include "../ExchangeSimulator/DownstreamOrderAck.h"
+#include "BackTestReporter.h"
+#else
+#include "BinanceReporter.h"
 #endif
 
 #include "BinanceTrader.h"
@@ -50,8 +53,7 @@ BinanceTrader::BinanceTrader(
 	PortfolioInvestmentBinance* portfolio,
 	RiskManager* riskManager)
     : m_portfolio(portfolio),
-	  m_riskManager(riskManager),
-	  m_reporter{ std::make_unique<BinanceReporter>() }
+	  m_riskManager(riskManager)
 {
     m_logger = std::make_unique<LibraryUtils::Logger>("BinanceTrader");
     m_logger->Info("using BinanceTrader.");
@@ -63,27 +65,14 @@ BinanceTrader::BinanceTrader(
 	m_portfolio->SetUserAccountInfo(m_binanceAccountInfo.get());
 	m_portfolio->UpdateBinanceAccountInfo();
 	m_logger->Info("querying account info finished.");
-	SetupReporter(reportCfg);
-	m_logger->Info("setting up trading reporter finished.");
+#if USE_TEST_TRADING
+	m_exchangeReporter = std::make_unique<BackTestReporter>(reportCfg, m_portfolio);
+#else
+	m_exchangeReporter = std::make_unique<BinanceReporter>(reportCfg, m_portfolio);
+#endif
 }
 
 ////////////// UPSTREAM PROCESSING /////////////////////////////
-
-void BinanceTrader::SetupReporter(const XMLElement* reportCfg)
-{
-	if (reportCfg->BoolAttribute("TradeReport"))
-	{
-		m_enableTradeReporter = true;
-	}
-	if (reportCfg->BoolAttribute("OrderReport"))
-	{
-		m_enableOpenOrderReporter = true;
-	}
-	if (reportCfg->BoolAttribute("BalanceReport"))
-	{
-		m_enableBalanceReporter = true;
-	}
-}
 
 binapi::double_type BinanceTrader::CalculateTradeValue(
 	const binapi::double_type quality,
@@ -142,22 +131,6 @@ bool BinanceTrader::CreateShortPosition(
 	}
 }
 
-void BinanceTrader::ReportTradeData(const std::string& symbol)
-{
-	if (m_enableTradeReporter)
-	{
-		m_reporter->ReportTrades(symbol);
-	}
-	if (m_enableOpenOrderReporter)
-	{
-		m_reporter->ReportOpenOrders(symbol);
-	}
-	if (m_enableBalanceReporter)
-	{
-		m_reporter->ReportAccountBalance(symbol);
-	}
-}
-
 void BinanceTrader::UpdateAccountInfo()
 {
 	m_portfolio->UpdateBinanceAccountInfo();
@@ -198,7 +171,7 @@ void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessag
 			// Updates the trader’s portfolio, balancing asset holding.
 			m_portfolio->UpdateBinanceAccountInfo();
 			// Updates PNL report.
-
+			m_exchangeReporter->DoTradeExecutionReport();
 		}
 	}
 	else if (simulatorAckType == DownstreamAckTypes::CancelledOrderAck)

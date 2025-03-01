@@ -18,7 +18,7 @@
 #include "../MiddlewareMQ/BqtJsonMessage.h"
 #endif
 
-#include "BinanceReporter.h"
+#include "ExchangeReporter.h"
 #include "Trader.h"
 
 #include <string>
@@ -56,8 +56,6 @@ namespace UserAccount {
 			const binapi::double_type quality,
 			const binapi::double_type refPrice) override;
 
-		void ReportTradeData(const std::string& symbol) override;
-
 		void UpdateAccountInfo();
 
 		PortfolioManager::PortfolioInvestmentBinance* GetPortfolio() const { return m_portfolio; }
@@ -67,7 +65,6 @@ namespace UserAccount {
 		void HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage& message);
 #endif
 	private:
-		void SetupReporter(const tinyxml2::XMLElement* reportCfg) override;
 		binapi::double_type CalculateTradeValue(
 			const binapi::double_type quality,
 			const binapi::double_type refPrice);
@@ -77,10 +74,6 @@ namespace UserAccount {
 		std::unique_ptr<binapi::rest::account_info_t> m_binanceAccountInfo;
 		std::unique_ptr<OrderManagement::BinanceWorkedOrderManager> m_workedOrderManager;
 		std::unique_ptr<OrderManagement::PositionManager> m_positionManager;
-		std::unique_ptr<BinanceReporter> m_reporter;
-
-		bool m_enableTradeReporter{ false };
-		bool m_enableOpenOrderReporter{ false };
-		bool m_enableBalanceReporter{ false };
+		std::unique_ptr<ExchangeReporter> m_exchangeReporter;
 	};
 };

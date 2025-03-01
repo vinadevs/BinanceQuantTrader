@@ -40,10 +40,7 @@ namespace UserAccount {
 		virtual bool CreateShortPosition(const std::string& symbol,
 			const binapi::double_type quality,
 			const binapi::double_type refPrice) = 0;
-
-		virtual void ReportTradeData(const std::string& symbol) = 0;
 	protected:
-		virtual void SetupReporter(const tinyxml2::XMLElement* reportCfg) = 0;
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
 	};
 };

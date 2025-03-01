@@ -4,7 +4,7 @@
 # This is a part of Binance Quant Trader Project
 # Copyright(C) - vinadevs
 # This source code can be used, distributed or modified under Apache license
-#*******************************************************************************/ 
+#*******************************************************************************/
 
 #pragma once
 
@@ -21,14 +21,14 @@ namespace PortfolioManager {
 }
 
 namespace UserAccount {
-	class BinanceReporter final : public ExchangeReporter
+	class BackTestReporter final : public ExchangeReporter
 	{
 	public:
-		BinanceReporter(
+		BackTestReporter(
 			const tinyxml2::XMLElement* reportConfigXml,
 			PortfolioManager::PortfolioInvestmentBinance* portfolio);
-		BinanceReporter() = default;
-		~BinanceReporter() override;
+		BackTestReporter() = default;
+		~BackTestReporter() override;
 		void SetupReporter(const tinyxml2::XMLElement* reportCfg) override;
 		void UpdateRemoteReportTrades(const std::string& symbol) override;
 		void UpdateRemoteReportOpenOrders(const std::string& symbol) override;

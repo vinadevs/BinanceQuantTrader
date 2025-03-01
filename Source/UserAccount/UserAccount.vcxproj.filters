@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Trader">
+      <UniqueIdentifier>{020f22ac-1f1e-46df-8f56-eb51c96132b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Report">
+      <UniqueIdentifier>{a71f3ea3-bb12-4832-aab6-595df018b640}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -24,17 +30,23 @@
     <ClInclude Include="dlldefine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Trader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ReportAPIs.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="BinanceReporter.h">
+      <Filter>Report</Filter>
     </ClInclude>
     <ClInclude Include="BinanceTrader.h">
-      <Filter>Header Files</Filter>
+      <Filter>Trader</Filter>
     </ClInclude>
-    <ClInclude Include="BinanceReporter.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="ReportAPIs.h">
+      <Filter>Report</Filter>
+    </ClInclude>
+    <ClInclude Include="Trader.h">
+      <Filter>Trader</Filter>
+    </ClInclude>
+    <ClInclude Include="ExchangeReporter.h">
+      <Filter>Report</Filter>
+    </ClInclude>
+    <ClInclude Include="BackTestReporter.h">
+      <Filter>Report</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -44,17 +56,20 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ReportAPIs.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BinanceTrader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Trader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Trader</Filter>
     </ClCompile>
     <ClCompile Include="BinanceReporter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Report</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportAPIs.cpp">
+      <Filter>Report</Filter>
+    </ClCompile>
+    <ClCompile Include="Trader.cpp">
+      <Filter>Trader</Filter>
+    </ClCompile>
+    <ClCompile Include="BackTestReporter.cpp">
+      <Filter>Report</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

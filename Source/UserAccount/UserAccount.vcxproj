@@ -153,15 +153,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BackTestReporter.h" />
     <ClInclude Include="BinanceReporter.h" />
     <ClInclude Include="BinanceTrader.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ReportAPIs.h" />
+    <ClInclude Include="ExchangeReporter.h" />
     <ClInclude Include="Trader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BackTestReporter.cpp" />
     <ClCompile Include="BinanceReporter.cpp" />
     <ClCompile Include="BinanceTrader.cpp" />
     <ClCompile Include="dllmain.cpp" />
