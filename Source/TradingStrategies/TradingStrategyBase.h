@@ -134,7 +134,7 @@ namespace TradingStrategies {
 		const std::string m_strategyName; // what is algo's name?
 		const std::string m_strategyDescription; // what will algo do?
 		const std::string m_strategyID; // must be unique ID, we may use it for routing orders
-		const std::string& m_strategyCfgPath{ nullptr }; // strategy config paramters
+		const std::string& m_strategyCfgPath; // strategy config paramters file
 		MarketData::RealTimeMarketData* m_marketData {nullptr}; // real time market data
 		UserAccount::BinanceTrader* m_trader{ nullptr }; // user account and trade actions
 		ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr }; // exchange compliance and regulatory

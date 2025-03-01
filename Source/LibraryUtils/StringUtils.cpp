@@ -9,7 +9,10 @@
 #include "pch.h"
 #include "StringUtils.h"
 
-std::vector<std::string> StringUtils::SplitAndTrimString(const std::string& str, char separator) {
+#include <regex>
+
+std::vector<std::string> 
+StringUtils::SplitAndTrimString(const std::string& str, char separator) {
     std::vector<std::string> result;
     std::string temp;
 
@@ -31,5 +34,20 @@ std::vector<std::string> StringUtils::SplitAndTrimString(const std::string& str,
         result.push_back(temp);
     }
 
+    return result;
+}
+
+// a function to parse string format to get list of pair of data 
+// sample: {"A", "B"}; {"C", "D"};
+std::vector<std::pair<std::string, std::string>>
+StringUtils::ParseStringPairs(const std::string& input) {
+    std::vector<std::pair<std::string, std::string>> result;
+    const std::regex pairRegex(R"(\{([^,]+), ([^}]+)\})");
+    std::sregex_iterator iter(input.begin(), input.end(), pairRegex);
+    const std::sregex_iterator end;
+    while (iter != end) {
+        result.emplace_back((*iter)[1].str(), (*iter)[2].str());
+        ++iter;
+    }
     return result;
 }

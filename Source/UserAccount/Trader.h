@@ -33,11 +33,11 @@ namespace UserAccount {
 		Trader() {};
 		virtual ~Trader();
 
-		virtual bool Buy(const std::string& symbol,
+		virtual bool CreateLongPosition(const std::string& symbol,
 			const binapi::double_type quality,
 			const binapi::double_type refPrice) = 0;
 
-		virtual bool Sell(const std::string& symbol,
+		virtual bool CreateShortPosition(const std::string& symbol,
 			const binapi::double_type quality,
 			const binapi::double_type refPrice) = 0;
 

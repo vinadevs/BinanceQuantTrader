@@ -32,7 +32,10 @@ namespace ExchangeSimulator {
         UserAccountHttpService(UserAccountManager* userAccountManager);
         ~UserAccountHttpService() override;
     private:
-        grpc::Status GetUserAccountData(grpc::ServerContext* context, const UserAccountDataRequest* request, UserAccountDataResponse* response) override;
+        grpc::Status GetUserAccountData(
+            grpc::ServerContext* context,
+            const UserAccountDataRequest* request,
+            UserAccountDataResponse* response) override;
 
         std::unique_ptr<LibraryUtils::Logger> m_logger;
         UserAccountManager* m_userAccountManager{ nullptr };

@@ -20,14 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bqt_main.cpp" />
-    <ClCompile Include="PortfolioFactory.cpp" />
     <ClCompile Include="StrategyFactory.cpp" />
     <ClCompile Include="TraderFactory.cpp" />
     <ClCompile Include="TradingModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="PortfolioFactory.h" />
     <ClInclude Include="StrategyFactory.h" />
     <ClInclude Include="TraderFactory.h" />
     <ClInclude Include="TradingModel.h" />

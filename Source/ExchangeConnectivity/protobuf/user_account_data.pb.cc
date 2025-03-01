@@ -112,6 +112,7 @@ inline constexpr UserAccountDataResponse::Impl_::Impl_(
         buyer_commission_{0u},
         seller_commission_{0u},
         update_time_{::uint64_t{0u}},
+        stable_coin_amount_{0},
         can_trade_{false},
         can_withdraw_{false},
         can_deposit_{false},
@@ -192,6 +193,7 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _impl_.can_trade_),
         PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _impl_.can_withdraw_),
         PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _impl_.can_deposit_),
+        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _impl_.stable_coin_amount_),
         PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _impl_.balances_),
 };
 
@@ -213,24 +215,25 @@ const char descriptor_table_protodef_user_5faccount_5fdata_2eproto[] ABSL_ATTRIB
     "\n\027user_account_data.proto\"K\n\007Balance\022\024\n\014"
     "asset_symbol\030\001 \001(\t\022\023\n\013free_amount\030\002 \001(\001\022"
     "\025\n\rlocked_amount\030\003 \001(\001\")\n\026UserAccountDat"
-    "aRequest\022\017\n\007user_id\030\001 \001(\t\"\333\002\n\027UserAccoun"
+    "aRequest\022\017\n\007user_id\030\001 \001(\t\"\367\002\n\027UserAccoun"
     "tDataResponse\022\017\n\007user_id\030\001 \001(\t\022\030\n\020maker_"
     "commission\030\002 \001(\r\022\030\n\020taker_commission\030\003 \001"
     "(\r\022\030\n\020buyer_commission\030\004 \001(\r\022\031\n\021seller_c"
     "ommission\030\005 \001(\r\022\023\n\013update_time\030\006 \001(\004\022\021\n\t"
     "can_trade\030\007 \001(\010\022\024\n\014can_withdraw\030\010 \001(\010\022\023\n"
-    "\013can_deposit\030\t \001(\010\0228\n\010balances\030\n \003(\0132&.U"
-    "serAccountDataResponse.BalancesEntry\0329\n\r"
-    "BalancesEntry\022\013\n\003key\030\001 \001(\t\022\027\n\005value\030\002 \001("
-    "\0132\010.Balance:\0028\0012]\n\022UserAccountService\022G\n"
-    "\022GetUserAccountData\022\027.UserAccountDataReq"
-    "uest\032\030.UserAccountDataResponseb\006proto3"
+    "\013can_deposit\030\t \001(\010\022\032\n\022stable_coin_amount"
+    "\030\n \001(\001\0228\n\010balances\030\013 \003(\0132&.UserAccountDa"
+    "taResponse.BalancesEntry\0329\n\rBalancesEntr"
+    "y\022\013\n\003key\030\001 \001(\t\022\027\n\005value\030\002 \001(\0132\010.Balance:"
+    "\0028\0012]\n\022UserAccountService\022G\n\022GetUserAcco"
+    "untData\022\027.UserAccountDataRequest\032\030.UserA"
+    "ccountDataResponseb\006proto3"
 };
 static ::absl::once_flag descriptor_table_user_5faccount_5fdata_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_user_5faccount_5fdata_2eproto = {
     false,
     false,
-    598,
+    626,
     descriptor_table_protodef_user_5faccount_5fdata_2eproto,
     "user_account_data.proto",
     &descriptor_table_user_5faccount_5fdata_2eproto_once,
@@ -984,15 +987,15 @@ const ::google::protobuf::internal::ClassData* UserAccountDataResponse::GetClass
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<4, 10, 2, 55, 2> UserAccountDataResponse::_table_ = {
+const ::_pbi::TcParseTable<4, 11, 2, 55, 2> UserAccountDataResponse::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    10, 120,  // max_field_number, fast_idx_mask
+    11, 120,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294966272,  // skipmap
+    4294965248,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    10,  // num_field_entries
+    11,  // num_field_entries
     2,  // num_aux_entries
     offsetof(decltype(_table_), aux_entries),
     _class_data_.base(),
@@ -1030,7 +1033,9 @@ const ::_pbi::TcParseTable<4, 10, 2, 55, 2> UserAccountDataResponse::_table_ = {
     // bool can_deposit = 9;
     {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(UserAccountDataResponse, _impl_.can_deposit_), 63>(),
      {72, 63, 0, PROTOBUF_FIELD_OFFSET(UserAccountDataResponse, _impl_.can_deposit_)}},
-    {::_pbi::TcParser::MiniParse, {}},
+    // double stable_coin_amount = 10;
+    {::_pbi::TcParser::FastF64S1,
+     {81, 63, 0, PROTOBUF_FIELD_OFFSET(UserAccountDataResponse, _impl_.stable_coin_amount_)}},
     {::_pbi::TcParser::MiniParse, {}},
     {::_pbi::TcParser::MiniParse, {}},
     {::_pbi::TcParser::MiniParse, {}},
@@ -1066,7 +1071,10 @@ const ::_pbi::TcParseTable<4, 10, 2, 55, 2> UserAccountDataResponse::_table_ = {
     // bool can_deposit = 9;
     {PROTOBUF_FIELD_OFFSET(UserAccountDataResponse, _impl_.can_deposit_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kBool)},
-    // map<string, .Balance> balances = 10;
+    // double stable_coin_amount = 10;
+    {PROTOBUF_FIELD_OFFSET(UserAccountDataResponse, _impl_.stable_coin_amount_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
+    // map<string, .Balance> balances = 11;
     {PROTOBUF_FIELD_OFFSET(UserAccountDataResponse, _impl_.balances_), 0, 0,
     (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
   }}, {{
@@ -1076,7 +1084,7 @@ const ::_pbi::TcParseTable<4, 10, 2, 55, 2> UserAccountDataResponse::_table_ = {
         11)},
     {::_pbi::TcParser::GetTable<::Balance>()},
   }}, {{
-    "\27\7\0\0\0\0\0\0\0\0\10\0\0\0\0\0"
+    "\27\7\0\0\0\0\0\0\0\0\0\10\0\0\0\0"
     "UserAccountDataResponse"
     "user_id"
     "balances"
@@ -1177,7 +1185,14 @@ PROTOBUF_NOINLINE void UserAccountDataResponse::Clear() {
                 9, this_._internal_can_deposit(), target);
           }
 
-          // map<string, .Balance> balances = 10;
+          // double stable_coin_amount = 10;
+          if (::absl::bit_cast<::uint64_t>(this_._internal_stable_coin_amount()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+                10, this_._internal_stable_coin_amount(), target);
+          }
+
+          // map<string, .Balance> balances = 11;
           if (!this_._internal_balances().empty()) {
             using MapType = ::google::protobuf::Map<std::string, ::Balance>;
             using WireHelper = _pbi::MapEntryFuncs<std::string, ::Balance,
@@ -1188,7 +1203,7 @@ PROTOBUF_NOINLINE void UserAccountDataResponse::Clear() {
             if (stream->IsSerializationDeterministic() && field.size() > 1) {
               for (const auto& entry : ::google::protobuf::internal::MapSorterPtr<MapType>(field)) {
                 target = WireHelper::InternalSerialize(
-                    10, entry.first, entry.second, target, stream);
+                    11, entry.first, entry.second, target, stream);
                 ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
                     entry.first.data(), static_cast<int>(entry.first.length()),
  ::google::protobuf::internal::WireFormatLite::SERIALIZE, "UserAccountDataResponse.balances");
@@ -1196,7 +1211,7 @@ PROTOBUF_NOINLINE void UserAccountDataResponse::Clear() {
             } else {
               for (const auto& entry : field) {
                 target = WireHelper::InternalSerialize(
-                    10, entry.first, entry.second, target, stream);
+                    11, entry.first, entry.second, target, stream);
                 ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
                     entry.first.data(), static_cast<int>(entry.first.length()),
  ::google::protobuf::internal::WireFormatLite::SERIALIZE, "UserAccountDataResponse.balances");
@@ -1229,7 +1244,7 @@ PROTOBUF_NOINLINE void UserAccountDataResponse::Clear() {
 
           ::_pbi::Prefetch5LinesFrom7Lines(&this_);
            {
-            // map<string, .Balance> balances = 10;
+            // map<string, .Balance> balances = 11;
             {
               total_size +=
                   1 * ::google::protobuf::internal::FromIntSize(this_._internal_balances_size());
@@ -1270,6 +1285,10 @@ PROTOBUF_NOINLINE void UserAccountDataResponse::Clear() {
             if (this_._internal_update_time() != 0) {
               total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
                   this_._internal_update_time());
+            }
+            // double stable_coin_amount = 10;
+            if (::absl::bit_cast<::uint64_t>(this_._internal_stable_coin_amount()) != 0) {
+              total_size += 9;
             }
             // bool can_trade = 7;
             if (this_._internal_can_trade() != 0) {
@@ -1314,6 +1333,9 @@ void UserAccountDataResponse::MergeImpl(::google::protobuf::MessageLite& to_msg,
   }
   if (from._internal_update_time() != 0) {
     _this->_impl_.update_time_ = from._impl_.update_time_;
+  }
+  if (::absl::bit_cast<::uint64_t>(from._internal_stable_coin_amount()) != 0) {
+    _this->_impl_.stable_coin_amount_ = from._impl_.stable_coin_amount_;
   }
   if (from._internal_can_trade() != 0) {
     _this->_impl_.can_trade_ = from._impl_.can_trade_;

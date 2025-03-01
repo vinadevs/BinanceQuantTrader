@@ -26,5 +26,8 @@ namespace StringUtils {
 		boost::algorithm::trim(str);
 	}
 
-	std::vector<std::string> DLL_CLASS_LIBRARYUTILS_EXPORTS SplitAndTrimString(const std::string& str, char separator);
+	std::vector<std::string> DLL_CLASS_LIBRARYUTILS_EXPORTS 
+		SplitAndTrimString(const std::string& str, char separator);
+	std::vector<std::pair<std::string, std::string>> DLL_CLASS_LIBRARYUTILS_EXPORTS
+		ParseStringPairs(const std::string& input);
 };

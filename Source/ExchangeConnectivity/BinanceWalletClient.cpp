@@ -8,6 +8,7 @@
 
 #include "pch.h"
 
+#include "../KernelTrading/types.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../LibraryUtils/Logger.h"
 
@@ -35,37 +36,45 @@ BinanceWalletClient::~BinanceWalletClient()
 
 bool BinanceWalletClient::GetUserAccountDataResponse(
     const std::string& userId,
-    binapi::rest::account_info_t& accountInfo,
+    binapi::rest::account_info_t* account,
     std::string& errorMessage)
 {
+    m_logger->Info("Sending request data for user account id=" + userId);
+
     UserAccountDataRequest request;
     request.set_user_id(userId);
 
-    UserAccountDataResponse response;
+    UserAccountDataResponse response; 
     grpc::ClientContext context;
 
     const grpc::Status status = m_grpcConnection.m_grpcStub->GetUserAccountData(&context, request, &response);
 
     if (status.ok()) 
     {
-        std::cout << "Response received from server:\n"
-            << "User ID: " << response.user_id() << "\n"
-            << "Maker Commission: " << response.maker_commission() << "\n"
-            << "Taker Commission: " << response.taker_commission() << "\n"
-            << "Buyer Commission: " << response.buyer_commission() << "\n"
-            << "Seller Commission: " << response.seller_commission() << "\n"
-            << "Update Time: " << response.update_time() << "\n"
-            << "Can Trade: " << (response.can_trade() ? "true" : "false") << "\n"
-            << "Can Withdraw: " << (response.can_withdraw() ? "true" : "false") << "\n"
-            << "Can Deposit: " << (response.can_deposit() ? "true" : "false") << "\n";
+        if (response.user_id() == userId)
+        {
+            account->makerCommission = response.maker_commission();
+            account->takerCommission = response.taker_commission();
+            account->buyerCommission = response.buyer_commission();
+            account->sellerCommission = response.seller_commission();
+            account->canTrade = response.can_trade();
+            account->canWithdraw = response.can_withdraw();
+            account->canDeposit = response.can_deposit();
+            account->updateTime = response.update_time();
+            account->stableCoinAmount = response.stable_coin_amount();
 
-        for (const auto& balance_pair : response.balances()) {
-            const auto& balance = balance_pair.second;
-            std::cout << "Asset: " << balance.asset_symbol() << "\n"
-                << "  Free Amount: " << balance.free_amount() << "\n"
-                << "  Locked Amount: " << balance.locked_amount() << "\n";
+            for (const auto& balancePair : response.balances()) {
+                const auto& balance = balancePair.second;
+                binapi::rest::account_info_t::balance_t value {
+                    balance.asset_symbol(),
+                    balance.free_amount(),
+                    balance.locked_amount() };
+                account->balances.try_emplace(balance.asset_symbol(), value);
+            }
+            return true;
         }
-        return true;
+        errorMessage = "Account user ID does not match.";
+        return false;
     }
     else 
     {

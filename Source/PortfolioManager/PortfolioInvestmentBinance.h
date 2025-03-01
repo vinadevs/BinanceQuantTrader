@@ -61,12 +61,15 @@ namespace PortfolioManager {
 		PortfolioInvestmentBinance(const tinyxml2::XMLElement* portfolioCfg,
 								   const MarketData::RealTimeMarketData* marketData);
 		~PortfolioInvestmentBinance() override;
+		
+		void SetUserAccountInfo(binapi::rest::account_info_t* account);
+
 		// NOTE: PLEASE DO NOT CALL UPDATES MANY TIMES/SECONDS
 		// AS BINANCE WILL BAN THE LOCAL IP FOR THAT SPAM
 		// PLEASE CHECK IN ComplianceNRegulatory CODE
 		void UpdateBinanceAccountInfo();
 		void UpdateBinanceTradingPairs();
-		const binapi::rest::account_info_t& GetBinanceAccountInfo() const;
+		binapi::rest::account_info_t* GetBinanceAccountInfo();
 		BinanceTradingPairManager& GetBinanceTradingPairManager(bool updateNewData = false);
 		BinanceTradingPair* GetBinanceTradingPair(const std::string& asset, bool updateNewData = false);
 		
@@ -80,7 +83,7 @@ namespace PortfolioManager {
 		bool IsCryptoAssetAbleToTrade(const BinanceBalance& asset) const;
 		bool IsCryptoAssetHasMarketData(const std::string& asset) const;
 
-		binapi::rest::account_info_t m_binanceAccountInfo;
+		binapi::rest::account_info_t* m_binanceAccountInfo {nullptr};
 		BinanceTradingPairManager m_binanceTradingPairMgr;
 		const MarketData::RealTimeMarketData* m_marketData{nullptr};
 	};

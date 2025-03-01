@@ -59,19 +59,19 @@ namespace ExchangeSimulator {
         }
     };
     
-    struct STableCoinUSDTBalance final
+    struct StableCoinUSDTBalance final
     {
-        double m_usdtAmount{ 0 }; // amount usdt
+        double m_usdtAmount{ 10000 }; // amount usdt
        
-        STableCoinUSDTBalance() = default;
+        StableCoinUSDTBalance() = default;
 
-        STableCoinUSDTBalance(double usdtAmount)
+        StableCoinUSDTBalance(double usdtAmount)
             : m_usdtAmount(usdtAmount)
         {}
 
-        friend std::ostream& operator<<(std::ostream& os, const STableCoinUSDTBalance& balance)
+        friend std::ostream& operator<<(std::ostream& os, const StableCoinUSDTBalance& balance)
         {
-            os << "STableCoinUSDTBalance { "
+            os << "StableCoinUSDTBalance { "
                << "usdtAmount: " << balance.m_usdtAmount
                << " }";
             return os;
@@ -117,12 +117,12 @@ namespace ExchangeSimulator {
     {
         UserAccount() = default;
 
-        UserAccount(std::string userId);
+        UserAccount(const std::string& userConfigPath);
 
         // balances
         AssetBalances m_assetBalances;
         FiatBalance m_fiatBalance;
-        STableCoinUSDTBalance m_usdtBalance;
+        StableCoinUSDTBalance m_usdtBalance;
 
         friend std::ostream& operator<<(std::ostream& os, const UserAccount& account)
         {

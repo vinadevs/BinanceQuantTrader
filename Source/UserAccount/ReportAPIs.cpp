@@ -18,7 +18,7 @@
 
 #include <boost/format.hpp>
 
-#include <iostream> // TODO: comment out
+#include <iostream>
 
 namespace binapi {
 

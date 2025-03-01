@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Local Exchange Simulator">
-      <UniqueIdentifier>{638c2124-6019-4e34-b660-04e16fcbbe3a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Binance Exchange Simulator">
       <UniqueIdentifier>{1b2d9261-28d1-4408-91e9-155e2226604d}</UniqueIdentifier>
     </Filter>
@@ -46,6 +43,9 @@
     <Filter Include="Binance Exchange Simulator\Monitor">
       <UniqueIdentifier>{a1976277-3882-4313-a351-9e5e23882e9f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Binance Exchange Simulator\Finance">
+      <UniqueIdentifier>{99d85b07-5023-45d7-8e30-c0c7b2cdd67d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -56,9 +56,6 @@
     </ClInclude>
     <ClInclude Include="dlldefine.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BackTestLocalExchange.h">
-      <Filter>Local Exchange Simulator</Filter>
     </ClInclude>
     <ClInclude Include="BinanceExchangeSimulator.h">
       <Filter>Binance Exchange Simulator</Filter>
@@ -135,6 +132,9 @@
     <ClInclude Include="TimeInForceHandler.h">
       <Filter>Binance Exchange Simulator\Participants</Filter>
     </ClInclude>
+    <ClInclude Include="TradeUtils.h">
+      <Filter>Binance Exchange Simulator\Finance</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -142,9 +142,6 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BackTestLocalExchange.cpp">
-      <Filter>Local Exchange Simulator</Filter>
     </ClCompile>
     <ClCompile Include="BinanceExchangeSimulator.cpp">
       <Filter>Binance Exchange Simulator</Filter>

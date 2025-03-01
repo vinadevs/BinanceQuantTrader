@@ -18,12 +18,12 @@
 </MatchingEngine>
 
 <BinanceWalletServer>
-  <Connection ServerIpAddress="0.0.0.0" ServerPort="50051"/>
+  <Connection ServerIpAddress="0.0.0.0" ServerPort="12345"/>
 </BinanceWalletServer>
 
 <UserAccountManager>
   <GeneralSetting MaximumAccount="1"/>
-  <TestUserAccount ListUserID=""/>
+  <TestUserAccount ListUserID="{user_id,path_to_config};{user_id,path_to_config}"/>
 </UserAccountManager>
 
 <ExchangeRuleAndCompliance>

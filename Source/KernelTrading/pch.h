@@ -12,14 +12,6 @@
 // However, files listed here are ALL re-compiled if any one of them is updated between builds.
 // Do not add files here that you will be updating frequently as this negates the performance advantage.
 
-// ----------------------------------------------------------------------------
-// Feature updated,bug fixed and codebase ported to windows platform, tested on 
-// Visual Studio 2022
-// Visual Studio 2019
-// Visual Studio 2017
-// Developer: vinadevs
-// ----------------------------------------------------------------------------
-
 #ifndef PCH_H
 #define PCH_H
 

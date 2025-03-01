@@ -11,10 +11,12 @@
 #include "../SettingNConfig/tinyxml2.h"
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/StringUtils.h"
+#include "../LibraryUtils/PathUtils.h"
 
 #include "UserAccountManager.h"
 
 #include <cassert>
+#include <filesystem>
 
 using namespace ExchangeSimulator;
 
@@ -28,11 +30,18 @@ UserAccountManager::UserAccountManager(const tinyxml2::XMLElement* userAccountMa
     const auto* testUserAccountXml = userAccountManagerCfg->FirstChildElement("TestUserAccount");
     assert(testUserAccountXml);
     const auto* listUserIDStr = testUserAccountXml->Attribute("ListUserID");
-    const auto listUserID = StringUtils::SplitAndTrimString(listUserIDStr, ',');
-    for (const auto userId : listUserID) 
+    auto listUserID = StringUtils::ParseStringPairs(listUserIDStr);
+    for (auto& userPair : listUserID) 
     {
-        if (!userId.empty())
-            AddNewUserAccount(userId);
+        PathUtils::ReplaceSubString(userPair.second, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
+        if (std::filesystem::exists(userPair.second))
+        {
+            AddNewUserAccount(userPair.first, userPair.second);
+        }
+        else
+        {
+            std::cout << "Path does not exist=" << userPair.second << "\n";
+        }
     }
 }
 
@@ -40,12 +49,12 @@ UserAccountManager::~UserAccountManager()
 {
 }
 
-void UserAccountManager::AddNewUserAccount(const std::string& userId)
+void UserAccountManager::AddNewUserAccount(const std::string& userId, const std::string& configPath)
 {
     std::unique_lock<std::mutex> lock(m_mutex);
     if (m_accounts.size() <= m_maxAccount)
     {
-        const auto result = m_accounts.try_emplace(userId, std::make_unique<UserAccount>(userId));
+        const auto result = m_accounts.try_emplace(userId, std::make_unique<UserAccount>(configPath));
         if (!result.second)
         {
             LOG_WARNING_STREAM(m_logger, "UserAccount with userId '" << userId << "' already exists.");

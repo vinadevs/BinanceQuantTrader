@@ -48,11 +48,11 @@ namespace UserAccount {
 
 		////////////// UPSTREAM PROCESSING /////////////////////////////
 
-		bool Buy(const std::string& symbol,
+		bool CreateLongPosition(const std::string& symbol,
 			const binapi::double_type quality,
 			const binapi::double_type refPrice) override;
 
-		bool Sell(const std::string& symbol,
+		bool CreateShortPosition(const std::string& symbol,
 			const binapi::double_type quality,
 			const binapi::double_type refPrice) override;
 
@@ -74,6 +74,7 @@ namespace UserAccount {
 
 		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr };
 		RiskManagement::RiskManager* m_riskManager{ nullptr };  // stop loss
+		std::unique_ptr<binapi::rest::account_info_t> m_binanceAccountInfo;
 		std::unique_ptr<OrderManagement::BinanceWorkedOrderManager> m_workedOrderManager;
 		std::unique_ptr<OrderManagement::PositionManager> m_positionManager;
 		std::unique_ptr<BinanceReporter> m_reporter;

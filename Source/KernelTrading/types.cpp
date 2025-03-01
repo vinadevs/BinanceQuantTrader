@@ -290,9 +290,12 @@ account_info_t::balance_t account_info_t::balance_t::construct(const flatjson::f
 account_info_t::balance_t account_info_t::balance_t::construct(
     const std::string& asset,
     const double_type free,
-    const double_type locked)
-{
-    return balance_t();
+    const double_type locked) {
+    account_info_t::balance_t res{};
+    res.asset = asset;
+    res.free = free;
+    res.locked = locked;
+    return res;
 }
 
 std::ostream &operator<<(std::ostream &os, const account_info_t::balance_t &o) {
@@ -343,11 +346,17 @@ account_info_t account_info_t::construct(
     const bool canWithdraw,
     const bool canDeposit,
     const std::size_t updateTime,
-    const std::map<std::string,
-    balance_t>& balances)
-{
+    const std::map<std::string, balance_t>& balances) {
     account_info_t res{};
     res.makerCommission = makerCommission;
+    res.takerCommission = takerCommission;
+    res.buyerCommission = buyerCommission;
+    res.sellerCommission = sellerCommission;
+    res.canTrade = canTrade;
+    res.canWithdraw = canWithdraw;
+    res.canDeposit = canDeposit;
+    res.updateTime = updateTime;
+    res.balances = balances;
     return res;
 }
 

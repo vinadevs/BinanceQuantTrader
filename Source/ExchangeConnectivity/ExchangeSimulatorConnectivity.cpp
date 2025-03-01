@@ -8,6 +8,7 @@
 
 #include "pch.h"
 
+#include "../KernelTrading/types.h"
 #include "../OrderManagement/BinanceNewOrder.h"
 #include "../OrderManagement/BinanceCancelOrder.h"
 #include "../OrderManagement/BinanceReplaceOrder.h"
@@ -117,8 +118,8 @@ ExchangeSimulatorConnectivity::QuerySimulatorOrderStatus(BinanceQueryOrder* quer
 
 bool ExchangeSimulatorConnectivity::GetUserAccountInfo(
     const std::string& userId,
-    binapi::rest::account_info_t& accountInfo,
+    binapi::rest::account_info_t* account,
     std::string& errorMessage)
 {
-    return m_binanceWalletClient->GetUserAccountDataResponse(userId, accountInfo, errorMessage);
+    return m_binanceWalletClient->GetUserAccountDataResponse(userId, account, errorMessage);
 }

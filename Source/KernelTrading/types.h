@@ -14,8 +14,11 @@
 #pragma warning(disable : 4715)
 
 #include "dlldefine.h"
+
 #include "double_type.h"
 #include "enums.h"
+
+#include "../LibraryUtils/SourceBuildFlags.h"
 
 #include <boost/variant.hpp>
 
@@ -127,6 +130,9 @@ struct DLL_CLASS account_info_t {
     bool canWithdraw;
     bool canDeposit;
     std::size_t updateTime;
+#if USE_TEST_TRADING
+    double_type stableCoinAmount; // USDT/Tether
+#endif
 
     struct DLL_CLASS balance_t {
         std::string asset;

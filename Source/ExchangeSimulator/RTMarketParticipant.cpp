@@ -14,6 +14,7 @@
 
 #include "RTMarketParticipant.h"
 #include "UserAccountManager.h"
+#include "TradeUtils.h"
 
 using namespace ExchangeSimulator;
 using namespace OrderManagement;
@@ -36,7 +37,7 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
     // at here, the order matching logic happened...
 
     /* Order Matching Algorithms: First-in, first-out (FIFO).
-    Also known as "first-come, first-serve"(FCFS), 
+    Also known as "first-come, first-serve" (FCFS), 
     FIFO represents the classic algorithm that prioritizes orders based
     on their priceand creation time.When multiple orders are created at the same price,
     the order that arrived first gets matched first, ensuring fairness in execution.*/
@@ -46,7 +47,7 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
     //Check the Order Book:
     //  Compare the upstream incoming order against the existing orders in the order book of the target symbol.
     bool hasLiquidity{ false };
-    if (newUpstreamOrder.GetSide() == binapi::e_side::buy)
+    if (newUpstreamOrder.GetSide() == binapi::e_side::buy) // long positions
     {
         // For a Buy Side:
         //  Look at the sell-side of the order book (asks).
@@ -69,7 +70,13 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
                 // open edit session for user wallet
                 auto* userAccount = m_userAccountManager->OpenEditSessionForUserAccount(newUpstreamOrder.GetUserAccountID());
                 // update amount for traded asset
+                // 1. increasing crypto asset coin amount
                 userAccount->m_assetBalances[newUpstreamOrder.GetSymbol()].m_free += bestExchangeBidOrder.m_quantity;
+                // 2. decreasing stable coin amount
+                userAccount->m_usdtBalance.m_usdtAmount 
+                    -= Finance::CalculateTradeValue(bestExchangeBidOrder.m_quantity, bestExchangeBidOrder.m_price);
+                // update order ack to upstream
+                newUpstreamOrder.SetFilledPrice(bestExchangeBidOrder.m_price);
                 if (bestExchangeBidOrder.m_quantity >= newUpstreamOrder.GetAmountDouble()) // FULL FILL ORDER
                 {
                     newUpstreamOrder.SetFilledAmount(newUpstreamOrder.GetAmountDouble());
@@ -83,7 +90,7 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
             }
         }
     }
-    else if (newUpstreamOrder.GetSide() == binapi::e_side::sell)
+    else if (newUpstreamOrder.GetSide() == binapi::e_side::sell) // short positions
     {
         // For a Sell Side:
         //  Look at the buy-side of the order book (bids).
@@ -106,7 +113,13 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
                 // open edit session for user wallet
                 auto* userAccount = m_userAccountManager->OpenEditSessionForUserAccount(newUpstreamOrder.GetUserAccountID());
                 // update amount for traded asset
-                userAccount->m_assetBalances[newUpstreamOrder.GetSymbol()].m_free += bestExchangeAskOrder.m_quantity;
+                // 1. decreasing crypto asset coin amount
+                userAccount->m_assetBalances[newUpstreamOrder.GetSymbol()].m_free -= bestExchangeAskOrder.m_quantity;
+                // 2. increasing stable coin amount
+                userAccount->m_usdtBalance.m_usdtAmount
+                    += Finance::CalculateTradeValue(bestExchangeAskOrder.m_quantity, bestExchangeAskOrder.m_price);
+                // update order ack to upstream
+                newUpstreamOrder.SetFilledPrice(bestExchangeAskOrder.m_price);
                 if (bestExchangeAskOrder.m_quantity >= newUpstreamOrder.GetAmountDouble()) // FULL FILL ORDER
                 {
                     newUpstreamOrder.SetFilledAmount(newUpstreamOrder.GetAmountDouble());

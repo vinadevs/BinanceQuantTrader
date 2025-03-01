@@ -89,11 +89,20 @@ void TradingModel::PrepareTradingComponents(
 	assert(userAccountXml);
 	const auto* keyXml = userAccountXml->FirstChildElement("Key");
 	assert(keyXml);
-	const auto* sk = keyXml->Attribute("SK");
-	const auto* pk = keyXml->Attribute("PK");
+	const auto* sk = keyXml->Attribute("SK"); // can be empty for test trading
+	const auto* pk = keyXml->Attribute("PK"); // can be empty for test trading
+	const auto* userID = keyXml->Attribute("UserID"); // must be always exist
+	ApiKeyInfoMgr->InitApiKeyInfo(userID, pk, sk);
+
 #if USE_TEST_TRADING
-	const auto* userID = keyXml->Attribute("UserID");
-#endif
+	m_logger->Info("Initiating Message Transporter.");
+	const auto* messageTransporterCfg = configBQTXml->FirstChildElement("MessageTransporter");
+	ExchangeSimulatorGateWay->InitMessageTransporter(messageTransporterCfg);
+
+	m_logger->Info("Initiating Binance Wallet Client.");
+	const auto* binanceWalletClientCfg = configBQTXml->FirstChildElement("BinanceWalletClient");
+	ExchangeSimulatorGateWay->InitBinanceWalletClient(binanceWalletClientCfg);
+#else
 	const auto* binanceAPICfg = configBQTXml->FirstChildElement("BinanceAPI");
 	assert(binanceAPICfg);
 	const auto* connectionXml = binanceAPICfg->FirstChildElement("Connection");
@@ -101,11 +110,8 @@ void TradingModel::PrepareTradingComponents(
 	const auto* apiBinanceCom = connectionXml->Attribute("ApiBinanceCom");
 	const auto* apiBinancePort = connectionXml->Attribute("ApiBinancePort");
 	const auto* connectionTimeoutMs = connectionXml->Attribute("ConnectionTimeoutMs");
-#if USE_TEST_TRADING
-	ApiKeyInfoMgr->InitApiKeyInfo(userID, pk, sk);
-#endif
 	BinanceAPI::GetInstance()->InitiateAPI(apiBinanceCom, apiBinancePort, pk, sk, connectionTimeoutMs);
-
+#endif
 	m_logger->Info("Initiating Static Data.");
 	const auto* staticDataCfg = configBQTXml->FirstChildElement("StaticData");
 	StaticDataMgr->LoadStaticDatabase(staticDataCfg);
@@ -146,14 +152,6 @@ void TradingModel::PrepareTradingComponents(
 	const auto* messageServerCfg = configBQTXml->FirstChildElement("MessageServer");
 	m_strategyMessageServer = std::make_unique<StrategyMessageServer>(messageServerCfg);
 	m_strategyMessageServer->RegisterMessageHandler(m_strategy.get());
-
-	m_logger->Info("Initiating Message Transporter.");
-	const auto* messageTransporterCfg = configBQTXml->FirstChildElement("MessageTransporter");
-	ExchangeSimulatorGateWay->InitMessageTransporter(messageTransporterCfg);
-
-	m_logger->Info("Initiating Binance Wallet Client.");
-	const auto* binanceWalletClientCfg = configBQTXml->FirstChildElement("BinanceWalletClient");
-	ExchangeSimulatorGateWay->InitBinanceWalletClient(binanceWalletClientCfg);
 #endif
 }
 

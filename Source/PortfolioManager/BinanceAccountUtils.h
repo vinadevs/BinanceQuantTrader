@@ -10,16 +10,20 @@
 
 #include "dlldefine.h"
 
-#include "../KernelTrading/types.h"
-
 #include <string>
 
 namespace LibraryUtils {
 	class Logger;
 };
 
+namespace binapi {
+	namespace rest {
+		class account_info_t;
+	};
+};
+
 namespace BinanceAccountUtils {
 	bool QueryBinanceAccount(
-		binapi::rest::account_info_t& accountInfo,
+		binapi::rest::account_info_t* account,
 		LibraryUtils::Logger* logger = nullptr);
 };

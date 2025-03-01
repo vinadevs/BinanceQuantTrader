@@ -12,7 +12,6 @@
 #include "Protobuf/user_account_data.grpc.pb.h"
 #undef max
 #undef min
-#include "../KernelTrading/types.h"
 #include <grpcpp/grpcpp.h>
 
 #include <memory>
@@ -24,6 +23,12 @@ namespace LibraryUtils {
 
 namespace tinyxml2 {
 	class XMLElement;
+};
+
+namespace binapi {
+	namespace rest {
+		struct account_info_t;
+	};
 };
 
 namespace ExchangeConnectivity {
@@ -46,7 +51,7 @@ namespace ExchangeConnectivity {
 
 		bool GetUserAccountDataResponse(
 			const std::string& userId,
-			binapi::rest::account_info_t& accountInfo,
+			binapi::rest::account_info_t* account,
 			std::string& errorMessage);
 	private:
 		std::unique_ptr<LibraryUtils::Logger> m_logger;

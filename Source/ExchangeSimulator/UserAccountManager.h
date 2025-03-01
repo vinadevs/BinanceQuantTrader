@@ -50,7 +50,7 @@ namespace ExchangeSimulator {
         UserAccountManager(const tinyxml2::XMLElement* userAccountManagerCfg);
         ~UserAccountManager();
 
-        void AddNewUserAccount(const std::string& userId);
+        void AddNewUserAccount(const std::string& userId, const std::string& configPath);
 
         void RemoveUserAccount(const std::string& userId);
 

@@ -39,11 +39,11 @@ FomoTradingStrategy::FomoTradingStrategy(
 void FomoTradingStrategy::InitializeParameters(const std::string& strategyCfgPath)
 {
 	auto strategyCfgPathXml = std::make_unique<XMLDocument>();
-	const auto errStrategyCfgPathXml = strategyCfgPathXml->LoadFile(strategyCfgPath.c_str());
-	if (errStrategyCfgPathXml != XML_SUCCESS)
+	const auto errLoadFileXml = strategyCfgPathXml->LoadFile(strategyCfgPath.c_str());
+	if (errLoadFileXml != XML_SUCCESS)
 	{
 		throw std::runtime_error("FomoTradingStrategy: Load file Xml error=" 
-			+ std::string(XMLDocument::ErrorIDToName(errStrategyCfgPathXml)) + ", error path:" + strategyCfgPath);
+			+ std::string(XMLDocument::ErrorIDToName(errLoadFileXml)) + ", error path:" + strategyCfgPath);
 	}
 	SetupStrategyLifeTime(strategyCfgPathXml.get());
 	const auto* signalXml = strategyCfgPathXml->FirstChildElement("IndicatorAndSignals");
@@ -82,7 +82,7 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 			{
 				if (hints->isUpTrend)
 				{
-					if (m_trader->Buy(hints->symbol, hints->longSuggestionQuantity, hints->windowBestBidPrice))
+					if (m_trader->CreateLongPosition(hints->symbol, hints->longSuggestionQuantity, hints->windowBestBidPrice))
 					{
 						IncreaseOrderCounter(); // register a sent order request to ComplianceNRegulatory
 						ReportTradeResults(hints->symbol);
@@ -90,7 +90,7 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 				}
 				else if (hints->isDownTrend)
 				{
-					if (m_trader->Sell(hints->symbol, hints->shortSuggestionQuantity, hints->windowBestAskPrice))
+					if (m_trader->CreateShortPosition(hints->symbol, hints->shortSuggestionQuantity, hints->windowBestAskPrice))
 					{
 						IncreaseOrderCounter(); // register a sent order request to ComplianceNRegulatory
 						ReportTradeResults(hints->symbol);

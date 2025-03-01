@@ -72,16 +72,29 @@ TradingTrendDetector* IndicatorAndSignalManager::GetTrendindAnalyzer(const std::
 
 TradingSignalService::TradingSignalService(PortfolioInvestmentBinance* portfolio, const tinyxml2::XMLElement* signalXml)
     : m_signalMgr{ std::make_unique<IndicatorAndSignalManager>() },
+      m_portfolio(portfolio),
       m_logger{ std::make_unique<LibraryUtils::Logger>("TradingSignalService") }
 {
     const XMLElement* trendDetectorParametersXml = signalXml->FirstChildElement("TrendDetectorParameters");
     assert(trendDetectorParametersXml);
     m_logger->Info("Creating trending services.");
-    for (const auto& pairs : portfolio->GetBinanceTradingPairManager().GetTradingPairs())
+    if (IsInvestmentPortfolioAssetEmpty())
+    {
+        // WE MUST START EXCHANGE SIMULATOR TO BY PASS THIS EXCEPTION IN BACK TESTING TRADE
+        throw std::runtime_error(
+            "TradingSignalService: Investment portfolio asset bracket is empty."
+            "Could not query remote binance info or have no available asset.");
+    }
+    for (const auto& pairs : m_portfolio->GetBinanceTradingPairManager().GetTradingPairs())
     {
         m_signalMgr->CreateNewTrendingAnalyzer(pairs.first, trendDetectorParametersXml);
         m_logger->Info("Created trending analyzer for symbol=" + pairs.first);
     }
+}
+
+bool TradingSignalService::IsInvestmentPortfolioAssetEmpty() const
+{
+    return m_portfolio->GetBinanceTradingPairManager().GetTradingPairs().empty();
 }
 
 bool TradingSignalService::OnIndividualBookTickerChange(

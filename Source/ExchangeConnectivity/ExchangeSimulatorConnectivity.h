@@ -12,7 +12,6 @@
 
 #include "../MiddlewareMQ/MessageDelivery.h"
 #include "../LibraryUtils/MacroUtils.h"
-#include "../KernelTrading/types.h"
 
 #include <string>
 
@@ -29,6 +28,12 @@ namespace LibraryUtils {
 
 namespace tinyxml2 {
 	class XMLElement;
+};
+
+namespace binapi {
+	namespace rest {
+		struct account_info_t;
+	};
 };
 
 namespace ExchangeConnectivity {
@@ -64,7 +69,7 @@ namespace ExchangeConnectivity {
 
 		bool GetUserAccountInfo(
 			const std::string& userId,
-			binapi::rest::account_info_t& accountInfo,
+			binapi::rest::account_info_t* account,
 			std::string& errorMessage);
 	private:
 		ExchangeSimulatorConnectivity();

@@ -25,5 +25,6 @@ message UserAccountDataResponse {
     bool can_trade = 7;             // Indicates if trading is allowed.
     bool can_withdraw = 8;          // Indicates if withdrawal is allowed.
     bool can_deposit = 9;           // Indicates if deposit is allowed.
-    map<string, Balance> balances = 10; // Map of asset symbol to Balance.
+       double stable_coin_amount = 10; // Amount currently stable coin.
+    map<string, Balance> balances = 11; // Map of asset symbol to Balance.
 }

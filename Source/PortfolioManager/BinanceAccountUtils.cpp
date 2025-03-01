@@ -10,6 +10,7 @@
 #include "BinanceAccountUtils.h"
 
 #include "../KernelTrading/errors.h"
+#include "../KernelTrading/types.h"
 #include "../RestAPI/RestAPI.h"
 #include "../RestAPI/BinanceAPI.h"
 #include "../RestAPI/ApiKeyInfoManager.h"
@@ -27,13 +28,13 @@ using namespace RestAPI;
 #endif
 
 bool BinanceAccountUtils::QueryBinanceAccount(
-    binapi::rest::account_info_t& accountInfo,
+    binapi::rest::account_info_t* account,
     LibraryUtils::Logger* logger)
 {
 #if USE_TEST_TRADING // use simulator protobuf message
     std::string errorMessage;
     if (ExchangeSimulatorGateWay->GetUserAccountInfo(
-        ApiKeyInfoMgr->GetApiKeyInfo().m_userID, accountInfo, errorMessage))
+        ApiKeyInfoMgr->GetApiKeyInfo().m_userID, account, errorMessage))
     {
         //LOG_DEBUG_STREAM(logger, "AccountInfo=" << accountInfo);
         return true;
@@ -64,7 +65,7 @@ bool BinanceAccountUtils::QueryBinanceAccount(
                 return false;
             }
             //LOG_DEBUG_STREAM(logger, "AccountInfo=" << accountInfoResult.v);
-            accountInfo = accountInfoResult.v;
+            *account = accountInfoResult.v;
             return true;
         }
     }

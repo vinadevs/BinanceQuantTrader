@@ -43,5 +43,5 @@
 </MessageTransporter>
 
 <BinanceWalletClient>
-  <Connection ServerIpAddress="0.0.0.0" ServerPort="50051"/>
+  <Connection ServerIpAddress="localhost" ServerPort="50051"/>
 </BinanceWalletClient>

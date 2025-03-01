@@ -54,11 +54,14 @@ namespace IndicatorNSignals {
     // -This Service will manage signals and indicators for trading trend
     // -It will receive data feed from market data handlers and dispatch
     // data to trend detector...
+
     class DLL_CLASS_INDICATORNSIGNALS_EXPORTS
         TradingSignalService : public MarketData::MarketDataObserver
     {
     public:
-        TradingSignalService(PortfolioManager::PortfolioInvestmentBinance* portfolio, const tinyxml2::XMLElement* signalXml);
+        TradingSignalService(
+            PortfolioManager::PortfolioInvestmentBinance* portfolio,
+            const tinyxml2::XMLElement* signalXml);
 
         void RegisterTradingHintsListener(TradingHintsListener* listener);
         void UnregisterTradingHintsListener(TradingHintsListener* listener);
@@ -67,7 +70,10 @@ namespace IndicatorNSignals {
             MarketData::MarketDataSubject* marketData,
             const std::string& symbol) override;
     private:
+        bool IsInvestmentPortfolioAssetEmpty() const;
+
         std::unique_ptr<IndicatorAndSignalManager> m_signalMgr;
+        PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr };
         std::unique_ptr<LibraryUtils::Logger> m_logger;
     };
 };

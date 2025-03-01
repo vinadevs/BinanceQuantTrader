@@ -10,6 +10,7 @@
 
 #include "UserAccountManager.h"
 #include "UserAccountHttpService.h"
+#include "ExchangeRuleAndCompliance.h"
 
 #include "../LibraryUtils/Logger.h"
 
@@ -21,18 +22,26 @@ UserAccountHttpService::UserAccountHttpService(UserAccountManager* userAccountMa
 
 UserAccountHttpService::~UserAccountHttpService() {}
 
-grpc::Status UserAccountHttpService::GetUserAccountData(grpc::ServerContext* context, const UserAccountDataRequest* request, UserAccountDataResponse* response)
+grpc::Status UserAccountHttpService::GetUserAccountData(
+    grpc::ServerContext* context,
+    const UserAccountDataRequest* request,
+    UserAccountDataResponse* response)
 {
-    m_logger->Info("Received UserAccountData request for User ID: " + request->user_id());
+    m_logger->Info("Received UserAccountData request for User ID=" + request->user_id());
+   
     const auto userAccount = m_userAccountManager->LookupUserAccount(request->user_id());
 
     // Populate response
-    m_logger->Info("Preparing UserAccountData response for User ID: " + request->user_id());
     response->set_user_id(request->user_id());
     response->set_update_time(userAccount->GetUpdateTime());
     response->set_can_trade(userAccount->IsAccountEligibleToTrade());
     response->set_can_withdraw(userAccount->IsAccountEligibleToTrade());
     response->set_can_deposit(userAccount->IsAccountEligibleToDeposit());
+    response->set_stable_coin_amount(userAccount->m_usdtBalance.m_usdtAmount);
+    response->set_maker_commission(ExchangeRuleMgr->GetMakerCommission());
+    response->set_taker_commission(ExchangeRuleMgr->GetTakerCommission());
+    response->set_buyer_commission(ExchangeRuleMgr->GetBuyerCommission());
+    response->set_seller_commission(ExchangeRuleMgr->GetSellerCommission());
 
     for (const auto& asset : userAccount->m_assetBalances)
     {
@@ -42,6 +51,8 @@ grpc::Status UserAccountHttpService::GetUserAccountData(grpc::ServerContext* con
         balance.set_locked_amount(asset.second.m_locked);
         response->mutable_balances()->emplace(asset.second.m_symbol, balance);
     }
+
+    m_logger->Info("Sending UserAccountData response for User ID=" + request->user_id());
 
     return grpc::Status::OK;
 }

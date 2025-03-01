@@ -10,7 +10,6 @@
 
 #include "../SettingNConfig/tinyxml2.h"
 #include "../PortfolioManager/PortfolioInvestmentBinance.h"
-#include "../ExchangeSimulator/BackTestLocalExchange.h"
 #include "../ExchangeConnectivity/BinanceExchangeConnectivity.h"
 #include "../RestAPI/RestAPI.h"
 #include "../RestAPI/BinanceAPI.h"
@@ -56,13 +55,16 @@ BinanceTrader::BinanceTrader(
 {
     m_logger = std::make_unique<LibraryUtils::Logger>("BinanceTrader");
     m_logger->Info("using BinanceTrader.");
-    m_logger->Info("querying Binance remote account info.");
-    // Query all assets from remote Binance account and manage them locally for our trading
-    m_portfolio->UpdateBinanceAccountInfo();
+	m_binanceAccountInfo = std::make_unique<binapi::rest::account_info_t>();
 	m_workedOrderManager = std::make_unique<BinanceWorkedOrderManager>();
 	m_positionManager = std::make_unique<PositionManager>(m_workedOrderManager.get());
-	m_logger->Info("setting up config for trader.");
+	m_logger->Info("querying Binance remote account info...");
+	// Query all assets from remote Binance account and manage them locally for our trading
+	m_portfolio->SetUserAccountInfo(m_binanceAccountInfo.get());
+	m_portfolio->UpdateBinanceAccountInfo();
+	m_logger->Info("querying account info finished.");
 	SetupReporter(reportCfg);
+	m_logger->Info("setting up trading reporter finished.");
 }
 
 ////////////// UPSTREAM PROCESSING /////////////////////////////
@@ -90,12 +92,12 @@ binapi::double_type BinanceTrader::CalculateTradeValue(
 	return quality * refPrice;
 }
 
-bool BinanceTrader::Buy(
+bool BinanceTrader::CreateLongPosition(
 	const std::string& symbol,
 	const binapi::double_type quality, 
 	const binapi::double_type refPrice)
 {
-	if (m_portfolio->GetBinanceTradingPair(symbol)->GetTradingPairValue(symbol) > CalculateTradeValue(quality, refPrice))
+	if (m_binanceAccountInfo->stableCoinAmount > CalculateTradeValue(quality, refPrice))
 	{
 		auto newSingleLongOrder = m_positionManager->OpenNewPositionUpstreamOrder(symbol, PositionSide::LONG, quality, refPrice);
 #if USE_TEST_TRADING
@@ -110,12 +112,12 @@ bool BinanceTrader::Buy(
 	}
 	else
 	{
-		m_logger->Info("Sorry.. we are out of money, could not trade!");
+		m_logger->Info("User account has no stable coin available, could not trade!");
 		return false;
 	}
 }
 
-bool BinanceTrader::Sell(
+bool BinanceTrader::CreateShortPosition(
 	const std::string& symbol,
 	const binapi::double_type quality, 
 	const binapi::double_type refPrice)
@@ -135,7 +137,7 @@ bool BinanceTrader::Sell(
 	}
 	else
 	{
-		m_logger->Info("Sorry.. we are out of asset, could not trade!");
+		m_logger->Info("User account has no asset available, could not trade!");
 		return false;
 	}
 }
@@ -194,7 +196,9 @@ void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessag
 		{
 			m_logger->Info("Closed full filled upstream position for clientOrderId=" + clientOrderId);
 			// Updates the trader’s portfolio, balancing asset holding.
-			// Updates the trader’s cash, PNL report.
+			m_portfolio->UpdateBinanceAccountInfo();
+			// Updates PNL report.
+
 		}
 	}
 	else if (simulatorAckType == DownstreamAckTypes::CancelledOrderAck)

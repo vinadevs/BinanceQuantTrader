@@ -73,6 +73,12 @@ PortfolioInvestmentBinance::PortfolioInvestmentBinance(const XMLElement* portfol
 
 PortfolioInvestmentBinance::~PortfolioInvestmentBinance() {}
 
+void PortfolioInvestmentBinance::SetUserAccountInfo(binapi::rest::account_info_t* account)
+{
+    assert(account);
+    m_binanceAccountInfo = account;
+}
+
 bool PortfolioInvestmentBinance::IsCryptoAssetHasMarketData(const std::string& asset) const
 {
     assert(m_marketData);
@@ -100,7 +106,7 @@ void PortfolioInvestmentBinance::UpdateBinanceAccountInfo()
 
 void PortfolioInvestmentBinance::UpdateBinanceTradingPairs()
 {
-    for (const auto& balance : m_binanceAccountInfo.balances)
+    for (const auto& balance : m_binanceAccountInfo->balances)
     {
         if (IsCryptoAssetAbleToTrade(balance.second))
         {
@@ -113,13 +119,17 @@ void PortfolioInvestmentBinance::UpdateBinanceTradingPairs()
             }
             else if (m_binanceTradingPairMgr.CreateNewTradingPair(tradingPairPair, m_marketData, balance.second))
             {
-                m_logger->Info("Created new Binance Trading Pair=" + tradingPairPair);
+                m_logger->Info("Created new binance trading pair=" + tradingPairPair);
             }
+        }
+        else
+        {
+            m_logger->Warning("Invalid binance trading pair=" + balance.first);
         }
     }
 }
 
-const binapi::rest::account_info_t& PortfolioInvestmentBinance::GetBinanceAccountInfo() const
+binapi::rest::account_info_t* PortfolioInvestmentBinance::GetBinanceAccountInfo()
 {
     return m_binanceAccountInfo;
 }
@@ -153,7 +163,7 @@ const BinanceBalances& PortfolioInvestmentBinance::GetAllBinanceBalances(bool up
     {
         UpdateBinanceAccountInfo();
     }
-    return m_binanceAccountInfo.balances;
+    return m_binanceAccountInfo->balances;
 }
 
 BinanceBalances PortfolioInvestmentBinance::GetTradableBinanceBalances(bool updateNewData /*= false*/)
@@ -163,11 +173,15 @@ BinanceBalances PortfolioInvestmentBinance::GetTradableBinanceBalances(bool upda
         UpdateBinanceAccountInfo();
     }
     BinanceBalances tradableBalances;
-    for (const auto& balance : m_binanceAccountInfo.balances)
+    for (const auto& balance : m_binanceAccountInfo->balances)
     {
         if (IsCryptoAssetAbleToTrade(balance.second))
         {
             tradableBalances.try_emplace(balance.first, balance.second);
+        }
+        else
+        {
+            m_logger->Warning("Invalid binance trading pair=" + balance.first);
         }
     }
     return tradableBalances;
@@ -179,7 +193,7 @@ const BinanceBalance& PortfolioInvestmentBinance::GetBinanceBalance(const std::s
     {
         UpdateBinanceAccountInfo();
     }
-    for (const auto& balance : m_binanceAccountInfo.balances)
+    for (const auto& balance : m_binanceAccountInfo->balances)
     {
         if (balance.first == asset)
         {

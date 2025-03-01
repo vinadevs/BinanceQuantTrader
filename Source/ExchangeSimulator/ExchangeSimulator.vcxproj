@@ -153,7 +153,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BackTestLocalExchange.h" />
     <ClInclude Include="BqtJsonMessageServer.h" />
     <ClInclude Include="BinanceExchangeSimulator.h" />
     <ClInclude Include="BinanceWalletServer.h" />
@@ -163,6 +162,7 @@
     <ClInclude Include="DownstreamOrderBook.h" />
     <ClInclude Include="ExchangeRuleAndCompliance.h" />
     <ClInclude Include="TimeInForceHandler.h" />
+    <ClInclude Include="TradeUtils.h" />
     <ClInclude Include="UpstreamOrderMatchedMgr.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="HistoricalParticipant.h" />
@@ -184,7 +184,6 @@
     <ClInclude Include="UserAccountManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BackTestLocalExchange.cpp" />
     <ClCompile Include="BqtJsonMessageServer.cpp" />
     <ClCompile Include="BinanceExchangeSimulator.cpp" />
     <ClCompile Include="BinanceWalletServer.cpp" />

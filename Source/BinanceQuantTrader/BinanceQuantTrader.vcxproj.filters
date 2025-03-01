@@ -30,9 +30,6 @@
     <ClCompile Include="StrategyFactory.cpp">
       <Filter>Trading Model</Filter>
     </ClCompile>
-    <ClCompile Include="PortfolioFactory.cpp">
-      <Filter>Trading Model</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -45,9 +42,6 @@
       <Filter>Trading Model</Filter>
     </ClInclude>
     <ClInclude Include="TradingModel.h">
-      <Filter>Trading Model</Filter>
-    </ClInclude>
-    <ClInclude Include="PortfolioFactory.h">
       <Filter>Trading Model</Filter>
     </ClInclude>
   </ItemGroup>

@@ -45,6 +45,8 @@ namespace MiddlewareMQ {
 
         std::unique_ptr<PublisherCommunicationChannel> m_chanel;
         std::unique_ptr<LibraryUtils::Logger> m_logger;
+        // TODO: implement heartbeat query to check server is on/off
+        bool m_isServerSideReady{ true };
     };
 };
 

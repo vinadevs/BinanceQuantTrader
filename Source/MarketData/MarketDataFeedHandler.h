@@ -40,6 +40,7 @@ namespace MarketData {
 		// - All handling feed functions are ansynchronous calls, it means each
 		// handling function will be called back from a seperated worker thread.
 		// - After we processed market data feed, we will notify changes to subscribed listeners
+		// - We are using "pass by value" in param for std::move later
 		bool HandleIndividualBookTickerData(const char* fl,
 			int ec, std::string emsg, binapi::ws::book_ticker_t book);
 		bool HandleTradeData(const char* fl,

@@ -15,6 +15,8 @@
 
 using namespace MiddlewareMQ;
 
+////////////////////////////////////////////////////////////////////////////////
+
 BrokerCommunicationChannel::BrokerCommunicationChannel(
 	const std::string& topicName,
 	const std::string& publisherAddress,
