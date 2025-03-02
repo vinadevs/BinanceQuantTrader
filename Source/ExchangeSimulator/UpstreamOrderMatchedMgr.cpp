@@ -35,7 +35,7 @@ void UpstreamOrderMatchedMgr::RemoveOrder(const std::string& clientOrderId)
     }
     else
     {
-        throw std::runtime_error("No UpstreamOrder found with symbol='" + clientOrderId + "'.");
+        throw std::runtime_error("No UpstreamOrder found with clientOrderId='" + clientOrderId + "'.");
     }
 }
 
@@ -47,7 +47,7 @@ const UpstreamOrder& UpstreamOrderMatchedMgr::LookupOrder(const std::string& cli
     {
         return it->second;
     }
-    throw std::runtime_error("No UpstreamOrder found with symbol='" + clientOrderId + "'.");
+    throw std::runtime_error("No UpstreamOrder found with clientOrderId='" + clientOrderId + "'.");
 }
 
 void UpstreamOrderMatchedMgr::ClearAll()

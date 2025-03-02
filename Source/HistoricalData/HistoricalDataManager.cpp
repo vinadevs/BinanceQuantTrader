@@ -10,6 +10,7 @@
 #include "../SettingNConfig/tinyxml2.h"
 
 #include "HistoricalDataManager.h"
+#include <cassert>
 
 using namespace HistoricalData;
 using namespace tinyxml2;
@@ -22,6 +23,7 @@ HistoricalDataManager* HistoricalDataManager::GetInstance()
     return &instance;
 }
 
-void HistoricalDataManager::LoadHistoricalDatabase(const XMLElement* staticDataConfigXml)
+void HistoricalDataManager::LoadHistoricalDatabase(const XMLElement* historicalDataConfigXml)
 {
+    assert(historicalDataConfigXml);
 }

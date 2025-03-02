@@ -48,7 +48,7 @@ namespace HistoricalData {
 
 		static HistoricalDataManager* GetInstance();
 
-		void LoadHistoricalDatabase(const tinyxml2::XMLElement* staticDataConfigXml);
+		void LoadHistoricalDatabase(const tinyxml2::XMLElement* historicalDataConfigXml);
 	};
 };
 // Lets shorten the code line!

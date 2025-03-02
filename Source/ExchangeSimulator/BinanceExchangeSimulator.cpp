@@ -10,6 +10,7 @@
 
 #include "../SettingNConfig/tinyxml2.h"
 #include "../LibraryUtils/Logger.h"
+#include "../StaticData/StaticDataManager.h"
 
 #include "MatchingEngine.h"
 #include "BqtJsonMessageServer.h"
@@ -64,6 +65,10 @@ void BinanceExchangeSimulator::PrepareExchangeServices(const tinyxml2::XMLDocume
 	assert(exchangeRuleAndComplianceCfg);
 	m_logger->Info("Initiating ExchangeRuleAndCompliance.");
 	ExchangeRuleMgr->SetRuleAndCompliance(exchangeRuleAndComplianceCfg);
+
+	m_logger->Info("Initiating Static Data.");
+	const auto* staticDataCfg = configSimulatorXml->FirstChildElement("StaticData");
+	StaticDataMgr->LoadStaticDatabase(staticDataCfg);
 
 	m_logger->Info("Initiating UserAccountManager.");
 	const auto* userAccountManagerCfg = configSimulatorXml->FirstChildElement("UserAccountManager");

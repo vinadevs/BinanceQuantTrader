@@ -205,5 +205,5 @@ const BinanceBalance& PortfolioInvestmentBinance::GetBinanceBalance(const std::s
 
 std::string PortfolioInvestmentBinance::CreateTradingPairSymbol(const std::string& tartgetSymbol)
 {
-    return tartgetSymbol + StaticDataManager::GetInstance()->GetStableCoinUSDTSymbol();
+    return tartgetSymbol + StaticDataMgr->GetStableCoinUSDTSymbol();
 }

@@ -58,7 +58,7 @@ MarketDataEvents::MarketDataEvents(
 
 MarketDataEvents::~MarketDataEvents()
 {
-    m_logger->Info("Unsubscribe all symbols.");
+    m_logger->Info("Shutdown update events and unsubscribe all symbols.");
     AsyncUnsubscribeAll();
 }
 

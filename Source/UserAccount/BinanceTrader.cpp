@@ -186,6 +186,6 @@ void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessag
 	{
 
 	}
-	m_logger->Error("Received simulator ack with unknown type=" + simulatorAckType);
+	else m_logger->Error("Received simulator ack with unknown type=" + simulatorAckType);
 }
 #endif

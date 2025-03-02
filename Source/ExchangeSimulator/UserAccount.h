@@ -9,8 +9,9 @@
 #pragma once
 
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <iostream>
+#include <mutex>
 
 namespace ExchangeSimulator {
 
@@ -102,7 +103,7 @@ namespace ExchangeSimulator {
         }
     };
 
-    using AssetBalances = std::map<AssetSymbol, AssetBalance>;
+    using AssetBalances = std::unordered_map<AssetSymbol, AssetBalance>;
 
     /**
      * @struct UserAccount
@@ -149,6 +150,8 @@ namespace ExchangeSimulator {
         bool IsAccountEligibleToDeposit() const;
         bool IsAccountEligibleToTrade() const;
         bool IsAccountHavingAssets() const;
+
+        AssetBalance& LookupAssetBalance(const AssetSymbol& symbol);
     private:
         void EnableUserAccountControls();
         void DisableUserAccountControls();
@@ -158,5 +161,6 @@ namespace ExchangeSimulator {
         bool m_canWithdraw{ false };
         bool m_canDeposit{ false };
         bool m_canTrade{ false };
+        std::mutex m_mutex;
     };
 };

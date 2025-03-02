@@ -17,6 +17,9 @@
   </RealTimeMarketData>
 </MatchingEngine>
 
+<StaticData>
+</StaticData>
+
 <BinanceWalletServer>
   <Connection ServerIpAddress="0.0.0.0" ServerPort="12345"/>
 </BinanceWalletServer>

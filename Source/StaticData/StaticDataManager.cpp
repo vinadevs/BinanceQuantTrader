@@ -12,6 +12,8 @@
 
 #include "StaticDataManager.h"
 
+#include <cassert>
+
 using namespace StaticData;
 using namespace tinyxml2;
 
@@ -25,6 +27,7 @@ StaticDataManager* StaticDataManager::GetInstance()
 
 void StaticDataManager::LoadStaticDatabase(const XMLElement* staticDataConfigXml)
 {
+    assert(staticDataConfigXml);
     m_stablecoinUSDT = "USDT";
 }
 

@@ -5,6 +5,12 @@
   <InterestingDataSymbols File="[ROOT_BQT_PATH]\Configurations\Common\BinanceAssets.txt"/>
 </RealTimeMarketData>
 
+<StaticData>
+</StaticData>
+
+<HistoricalData>
+</HistoricalData>
+
 <BinanceAPI>
   <Connection ApiBinanceCom="api.binance.com" ApiBinancePort="443" ConnectionTimeoutMs="10000"/>
 </BinanceAPI>

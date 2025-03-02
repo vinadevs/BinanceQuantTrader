@@ -9,6 +9,8 @@
 #include "pch.h"
 
 #include "../SettingNConfig/tinyxml2.h"
+#include "../StaticData/StaticDataManager.h"
+
 #include "UserAccount.h"
 
 #include <algorithm>
@@ -66,6 +68,19 @@ bool UserAccount::IsAccountHavingAssets() const
 {
     return std::any_of(m_assetBalances.begin(), m_assetBalances.end(),
         [](const auto& asset) { return asset.second.m_free > 0; });
+}
+
+// Order symsol from upstream side is trading pair format
+// BTCUSDT not BTC only so we have to parse symbol before lookup
+static std::string GetSymbolFromTradingPair(const std::string& input) {
+    size_t pos = input.find(StaticDataMgr->GetStableCoinUSDTSymbol()); // Find "USDT" in the string
+    return (pos != std::string::npos) ? input.substr(0, pos) : input;
+}
+
+AssetBalance& UserAccount::LookupAssetBalance(const AssetSymbol& symbol)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_assetBalances.at(GetSymbolFromTradingPair(symbol)); // Throws std::out_of_range if symbol not found
 }
 
 void UserAccount::EnableUserAccountControls()

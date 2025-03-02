@@ -69,16 +69,18 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
                 //  If a match is found (hasLiquidity), execute the trade and update the order book.
                 // open edit session for user wallet
                 auto* userAccount = m_userAccountManager->OpenEditSessionForUserAccount(newUpstreamOrder.GetUserAccountID());
-                // update amount for traded asset
-                // 1. increasing crypto asset coin amount
-                userAccount->m_assetBalances[newUpstreamOrder.GetSymbol()].m_free += bestExchangeBidOrder.m_quantity;
-                // 2. decreasing stable coin amount
-                userAccount->m_usdtBalance.m_usdtAmount 
-                    -= Finance::CalculateTradeValue(bestExchangeBidOrder.m_quantity, bestExchangeBidOrder.m_price);
                 // update order ack to upstream
                 newUpstreamOrder.SetFilledPrice(bestExchangeBidOrder.m_price);
                 if (bestExchangeBidOrder.m_quantity >= newUpstreamOrder.GetAmountDouble()) // FULL FILL ORDER
                 {
+                    // update amount for traded asset
+                    // 1. increasing crypto asset coin amount
+                    auto& assetBalance = userAccount->LookupAssetBalance(newUpstreamOrder.GetSymbol());
+                    assetBalance.m_free += newUpstreamOrder.GetAmountDouble();
+                    // 2. decreasing stable coin amount
+                    userAccount->m_usdtBalance.m_usdtAmount
+                        -= Finance::CalculateTradeValue(newUpstreamOrder.GetAmountDouble(), bestExchangeBidOrder.m_price);
+                    // 3. update filled ack
                     newUpstreamOrder.SetFilledAmount(newUpstreamOrder.GetAmountDouble());
                     newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::FULL_FILLED);
                 }
@@ -112,16 +114,18 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
                 //  If a match is found (hasLiquidity), execute the trade and update the order book.
                 // open edit session for user wallet
                 auto* userAccount = m_userAccountManager->OpenEditSessionForUserAccount(newUpstreamOrder.GetUserAccountID());
-                // update amount for traded asset
-                // 1. decreasing crypto asset coin amount
-                userAccount->m_assetBalances[newUpstreamOrder.GetSymbol()].m_free -= bestExchangeAskOrder.m_quantity;
-                // 2. increasing stable coin amount
-                userAccount->m_usdtBalance.m_usdtAmount
-                    += Finance::CalculateTradeValue(bestExchangeAskOrder.m_quantity, bestExchangeAskOrder.m_price);
                 // update order ack to upstream
                 newUpstreamOrder.SetFilledPrice(bestExchangeAskOrder.m_price);
                 if (bestExchangeAskOrder.m_quantity >= newUpstreamOrder.GetAmountDouble()) // FULL FILL ORDER
                 {
+                    // update amount for traded asset
+                    // 1. decreasing crypto asset coin amount
+                    auto& assetBalance = userAccount->LookupAssetBalance(newUpstreamOrder.GetSymbol());
+                    assetBalance.m_free -= newUpstreamOrder.GetAmountDouble();
+                    // 2. increasing stable coin amount
+                    userAccount->m_usdtBalance.m_usdtAmount
+                        += Finance::CalculateTradeValue(newUpstreamOrder.GetAmountDouble(), bestExchangeAskOrder.m_price);
+
                     newUpstreamOrder.SetFilledAmount(newUpstreamOrder.GetAmountDouble());
                     newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::FULL_FILLED);
                 }
