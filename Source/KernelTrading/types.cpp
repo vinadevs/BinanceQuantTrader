@@ -400,7 +400,7 @@ std::ostream &operator<<(std::ostream &os, const account_info_t &o) {
     << "\"canWithdraw\":" << (o.canWithdraw ? "true" : "false") << ","
     << "\"canDeposit\":" << (o.canDeposit ? "true" : "false") << ","
     << "\"updateTime\":" << o.updateTime << ","
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
     << "\"stableCoinAmount\":" << o.stableCoinAmount << ","
 #endif
     << "\"balances\":[";

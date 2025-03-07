@@ -100,11 +100,11 @@ bool TradingSignalService::IsInvestmentPortfolioAssetEmpty() const
 bool TradingSignalService::OnIndividualBookTickerChange(
     MarketDataSubject* marketData, const std::string& symbol)
 {
-    if (const auto* data = marketData->GetSynchronousMarketData(symbol))
+    if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
         if (auto* analyzer = m_signalMgr->GetTrendindAnalyzer(symbol))
         {
-            analyzer->AnalysisIndividualBookTicker(data);
+            analyzer->AnalysisIndividualBookTicker(syncedData);
             return true;
         }
     }

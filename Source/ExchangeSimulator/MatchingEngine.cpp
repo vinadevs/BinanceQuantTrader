@@ -56,10 +56,10 @@ MatchingEngine::MatchingEngine(
 		m_logger->Info("Initiating Real Time Market Data.");
 		const auto* realTimeMarketDataCfg = matchingEngineXmlCfg->FirstChildElement("RealTimeMarketData");
 		m_marketData = std::make_unique<RealTimeMarketData>(realTimeMarketDataCfg);
-		auto* rtMarketParticipant = dynamic_cast<RTMarketParticipant*>(m_participant.get());
-		assert(rtMarketParticipant);
-		rtMarketParticipant->CreateDownstreamOrderBooks(m_marketData->GetSubscribingSymbols());
-		m_marketData->RegisterDataStream(rtMarketParticipant);
+		m_rtMarketDataParticipant = dynamic_cast<RTMarketParticipant*>(m_participant.get());
+		assert(m_rtMarketDataParticipant);
+		m_rtMarketDataParticipant->CreateDownstreamOrderBooks(m_marketData->GetSubscribingSymbols());
+		m_marketData->RegisterDataListener(m_rtMarketDataParticipant);
 	}
 	else if (StringUtils::IsConfigAttributeMatched(usingParticipantXml->Attribute("Name"), "HistoricalParticipant"))
 	{
@@ -99,6 +99,13 @@ void MatchingEngine::Start()
 
 void MatchingEngine::Stop()
 {
+	if (m_participant
+		&& m_participant->GetParticipantType() == ParticipantType::REAL_TIME_MARKET_DATA
+		&& m_marketData) // if using RTMarketParticipant
+	{
+		// Start receive real time market data
+		m_marketData->UnRegisterDataListener(m_rtMarketDataParticipant);
+	}
 	m_isRunning.store(false);
 	m_thread.join();
 }

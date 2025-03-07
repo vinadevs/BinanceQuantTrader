@@ -22,7 +22,7 @@
 
 #include "../LibraryUtils/SourceBuildFlags.h"
 #include "../LibraryUtils/StringUtils.h"
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 #include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
 #include "../ExchangeSimulator/DownstreamOrderAck.h"
 #include "BackTestReporter.h"
@@ -41,7 +41,7 @@ using namespace OrderManagement;
 using namespace RestAPI;
 using namespace StaticData;
 using namespace ExchangeConnectivity;
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 using namespace ExchangeSimulator;
 #endif
 using namespace tinyxml2;
@@ -65,7 +65,7 @@ BinanceTrader::BinanceTrader(
 	m_portfolio->SetUserAccountInfo(m_binanceAccountInfo.get());
 	m_portfolio->UpdateBinanceAccountInfo();
 	m_logger->Info("querying account info finished.");
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 	m_exchangeReporter = std::make_unique<BackTestReporter>(reportCfg, m_portfolio);
 #else
 	m_exchangeReporter = std::make_unique<BinanceReporter>(reportCfg, m_portfolio);
@@ -89,9 +89,10 @@ bool BinanceTrader::CreateLongPosition(
 	if (m_binanceAccountInfo->stableCoinAmount > CalculateTradeValue(quality, refPrice))
 	{
 		auto newSingleLongOrder = m_positionManager->OpenNewPositionUpstreamOrder(symbol, PositionSide::LONG, quality, refPrice);
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 		const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleLongOrder.get());
 #else
+		//const auto result = BinanceExchangeGateWay->SendNewBinanceTestOrderFull(newSingleLongOrder.get());
 		const auto result = BinanceExchangeGateWay->SendNewBinanceOrderFull(newSingleLongOrder.get());
 #endif
 		newSingleLongOrder->SetSendingOrderResult(result);
@@ -114,9 +115,10 @@ bool BinanceTrader::CreateShortPosition(
 	if (m_portfolio->GetBinanceTradingPair(symbol)->GetQuantity() > ZERO_DOUBLE_VALUE)
 	{
 		auto newSingleShortOrder = m_positionManager->OpenNewPositionUpstreamOrder(symbol, PositionSide::SHORT, quality, refPrice);
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 		const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleShortOrder.get());
 #else
+		//const auto result = BinanceExchangeGateWay->SendNewBinanceTestOrderFull(newSingleShortOrder.get());
 		const auto result = BinanceExchangeGateWay->SendNewBinanceOrderFull(newSingleShortOrder.get());
 #endif
 		newSingleShortOrder->SetSendingOrderResult(result);
@@ -138,7 +140,7 @@ void BinanceTrader::UpdateAccountInfo()
 
 ////////////// DOWNSTREAM PROCESSING /////////////////////////////
 
-#if USE_TEST_TRADING  
+#if USE_BACK_TEST_TRADING  
 void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage& message)
 {
 	m_logger->Info("Received simulator ack=" + message.SerializeMessage());
@@ -188,4 +190,10 @@ void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessag
 	}
 	else m_logger->Error("Received simulator ack with unknown type=" + simulatorAckType);
 }
+#elif
+void BinanceTrader::ReportTradeData(const std::string& symbol)
+{
+	m_exchangeReporter->DoTradeExecutionReport();
+}
 #endif
+

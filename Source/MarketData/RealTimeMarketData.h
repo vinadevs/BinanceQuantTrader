@@ -75,8 +75,8 @@ public:
 
 	// These 2 functions must be called at the class
 	// wants to use real time market data
-	void RegisterDataStream(MarketDataObserver* observer);
-	void UnregisterDataStream(MarketDataObserver* observer);
+	void RegisterDataListener(MarketDataObserver* observer);
+	void UnRegisterDataListener(MarketDataObserver* observer);
 
 	void StartStreamingData();
 	const std::unordered_set<std::string>& GetSubscribingSymbols() const;

@@ -38,7 +38,7 @@ std::string BinanceNewOrder::ToStringOrder() const
 {
     return "BinanceNewOrder("
     "Symbol: " + m_symbol +
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
         "UserAccountID: " + m_userAccountID +
 #endif
         ", Side: " + TypeToStringUtils::ToString(m_side) +
@@ -58,7 +58,7 @@ std::string BinanceNewOrder::ToStringAck() const
 {
     return "BinanceNewOrderAck("
         "Symbol: " + m_symbol +
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
         "UserAccountID: " + m_userAccountID +
 #endif
         ", Side: " + TypeToStringUtils::ToString(m_side) +
@@ -77,7 +77,7 @@ std::string BinanceNewOrder::ToStringAck() const
         ")";
 }
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 void BinanceNewOrder::SetSendingOrderResult(
     const MiddlewareMQ::MiddlewareMQResult& sendingOrderResult)
 {
@@ -125,7 +125,6 @@ MiddlewareMQ::BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageAck() const
     message.AddPair(FieldLabels::UpdateTime, GetUpdateTimeStr());
     return message;
 }
-
 #else
 void BinanceNewOrder::SetSendingOrderResult(
     const binapi::rest::api::result<binapi::rest::new_order_resp_type>& sendingOrderResult)

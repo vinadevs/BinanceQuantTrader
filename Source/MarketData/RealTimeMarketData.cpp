@@ -24,12 +24,12 @@ RealTimeMarketData::RealTimeMarketData(
 
 RealTimeMarketData::~RealTimeMarketData() {}
 
-void RealTimeMarketData::RegisterDataStream(MarketDataObserver* observer)
+void RealTimeMarketData::RegisterDataListener(MarketDataObserver* observer)
 {
 	m_feedHandler->RegisterObserver(observer);
 }
 
-void RealTimeMarketData::UnregisterDataStream(MarketDataObserver* observer)
+void RealTimeMarketData::UnRegisterDataListener(MarketDataObserver* observer)
 {
 	m_feedHandler->UnregisterObserver(observer);
 }

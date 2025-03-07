@@ -29,12 +29,12 @@ void MarketDataFeedHandler::UnregisterObserver(MarketDataObserver* observer)
 
 bool MarketDataFeedHandler::CreateNewMarketDataFeed(const std::string& symbol)
 {
-    return m_synchronousFeedMgr->CreateNewFeed(symbol);
+    return m_synchronousFeedMgr->CreateNewSynchronousFeed(symbol);
 }
 
 void MarketDataFeedHandler::RemoveMarketDataFeed(const std::string& symbol)
 {
-    m_synchronousFeedMgr->RemoveFeed(symbol);
+    m_synchronousFeedMgr->RemoveSynchronousFeed(symbol);
 }
 
 bool MarketDataFeedHandler::HandleIndividualBookTickerData(const char* fl,

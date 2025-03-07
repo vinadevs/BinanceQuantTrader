@@ -23,7 +23,7 @@
 #include "../RestAPI/ApiKeyInfoManager.h"
 #include "../RestAPI/BinanceAPI.h"
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 #include "../TradingStrategies/StrategyMessageServer.h"
 #include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
 #endif
@@ -94,7 +94,7 @@ void TradingModel::PrepareTradingComponents(
 	const auto* userID = keyXml->Attribute("UserID"); // must be always exist
 	ApiKeyInfoMgr->InitApiKeyInfo(userID, pk, sk);
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 	m_logger->Info("Initiating Message Transporter.");
 	const auto* messageTransporterCfg = configBQTXml->FirstChildElement("MessageTransporter");
 	ExchangeSimulatorGateWay->InitMessageTransporter(messageTransporterCfg);
@@ -147,7 +147,7 @@ void TradingModel::PrepareTradingComponents(
 		m_trader.get(),
 		m_tradingRules.get());
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 	m_logger->Info("Initiating Message Server.");
 	const auto* messageServerCfg = configBQTXml->FirstChildElement("MessageServer");
 	m_strategyMessageServer = std::make_unique<StrategyMessageServer>(messageServerCfg);
@@ -157,7 +157,7 @@ void TradingModel::PrepareTradingComponents(
 
 void TradingModel::RunModel()
 {
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 	// -This message receiver is a BQT Json Message server
 	// We will use it to receive acks from the Exchange Simulator
 	// for testing trade

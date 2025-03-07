@@ -41,8 +41,8 @@ namespace MarketData {
 	public:
 		MarketDataFeedManager() = default;
 		// Thread safe methods
-		bool CreateNewFeed(const std::string& symbol);
-		bool RemoveFeed(const std::string& symbol);
+		bool CreateNewSynchronousFeed(const std::string& symbol);
+		bool RemoveSynchronousFeed(const std::string& symbol);
 		SynchronousMarketDataFeed* GetSynchronousFeed(const std::string& symbol);
 		SingleMarketDataFeed* GetSingleFeed(const std::string& symbol, const FeedID id);
 	private:

@@ -131,8 +131,10 @@ void BinanceReporter::DoLocalExecutionReport(const std::string& symbol)
 
 void BinanceReporter::DoTradeExecutionReport()
 {
-	MergeLocalAndRemmoteReport();
-	LOG_INFO_STREAM(m_logger, "BinanceAccountInfo=" << *m_portfolio->GetBinanceAccountInfo());
+	if (MergeLocalAndRemmoteReport())
+	{
+		LOG_INFO_STREAM(m_logger, "BinanceAccountInfo=" << *m_portfolio->GetBinanceAccountInfo());
+	}
 }
 
 bool BinanceReporter::MergeLocalAndRemmoteReport()

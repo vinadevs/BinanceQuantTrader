@@ -10,7 +10,7 @@
 
 #include "../LibraryUtils/SourceBuildFlags.h"
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 #include "../RestAPI/ApiKeyInfoManager.h"
 #endif
 
@@ -43,7 +43,7 @@ namespace OrderManagement {
 			: m_symbol(symbol), m_clientOrderId(clientOrderId), m_binanceOrderType(binanceOrderType)
 		{
 			UpdateOrderTypeStr();
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 			m_userAccountID = ApiKeyInfoMgr->GetApiKeyInfo().m_userID;
 #endif
 		}
@@ -70,7 +70,7 @@ namespace OrderManagement {
 
 		void SetClientOrderId(const std::string& clientOrderId) { m_clientOrderId = clientOrderId; }
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 		void SetUserAccountID(const std::string& userID) {
 			m_userAccountID = userID;
 		}
@@ -111,7 +111,7 @@ namespace OrderManagement {
 				throw std::runtime_error("BinanceOrder: undetected order type.");
 			}
 		}
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 		std::string m_userAccountID;
 #endif
 		std::string m_symbol;

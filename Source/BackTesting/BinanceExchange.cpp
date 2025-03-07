@@ -12,6 +12,7 @@
 #include "../LibraryUtils/ProgramLogo.h"
 #include "../LibraryUtils/GeneralUtils.h"
 #include "../SettingNConfig/tinyxml2.h"
+
 #include "../ExchangeSimulator/BinanceExchangeSimulator.h"
 
 #include <memory>

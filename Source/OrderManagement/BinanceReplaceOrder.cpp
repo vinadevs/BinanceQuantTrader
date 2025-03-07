@@ -24,7 +24,7 @@ BinanceReplaceOrder::BinanceReplaceOrder(
 
 BinanceReplaceOrder::~BinanceReplaceOrder() {}
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 MiddlewareMQ::BqtJsonMessage BinanceReplaceOrder::ToBqtJsonMessage()
 {
 	MiddlewareMQ::BqtJsonMessage message;

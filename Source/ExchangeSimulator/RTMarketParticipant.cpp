@@ -147,10 +147,10 @@ bool RTMarketParticipant::OnIndividualBookTickerChange(MarketDataSubject* market
     {
         UpdateBestMarketBidOrderBook(symbol,
             data->GetFeed(FeedID::BEST_BID_PRICE)->GetDoubleData(),
-            data->GetFeed(FeedID::BEST_BID_QUANTY)->GetDoubleData());
+            data->GetFeed(FeedID::BEST_BID_QUANTITY)->GetDoubleData());
         UpdateBestMarketAskOrderBook(symbol,
             data->GetFeed(FeedID::BEST_ASK_PRICE)->GetDoubleData(),
-            data->GetFeed(FeedID::BEST_ASK_QUANTY)->GetDoubleData());
+            data->GetFeed(FeedID::BEST_ASK_QUANTITY)->GetDoubleData());
     }
     else
     {

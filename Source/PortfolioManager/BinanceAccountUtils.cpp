@@ -17,11 +17,11 @@
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/SourceBuildFlags.h"
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 #include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
 #endif
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 using namespace ExchangeConnectivity;
 #else
 using namespace RestAPI;
@@ -31,7 +31,7 @@ bool BinanceAccountUtils::QueryBinanceAccount(
     binapi::rest::account_info_t* account,
     LibraryUtils::Logger* logger)
 {
-#if USE_TEST_TRADING // use simulator protobuf message
+#if USE_BACK_TEST_TRADING // use simulator protobuf message
     std::string errorMessage;
     if (ExchangeSimulatorGateWay->GetUserAccountInfo(
         ApiKeyInfoMgr->GetApiKeyInfo().m_userID, account, errorMessage))

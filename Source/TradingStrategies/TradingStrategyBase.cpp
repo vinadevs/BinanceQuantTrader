@@ -126,7 +126,7 @@ void TradingStrategyBase::OnAlarmTriggered(const int passToDerived)
 	m_tradingRules->ResetOrdersPerTenSecondsCounter();
 }
 
-#if USE_TEST_TRADING  
+#if USE_BACK_TEST_TRADING  
 void TradingStrategyBase::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& message)
 {
 	// forward order acks to trader, they know what to do with it not strategy

@@ -29,6 +29,7 @@ namespace ProgramUtils {
         BQT, // auto trading system
         EXCHANGE_SIMULATOR, // exchange simulator
         MESSAGE_HUB_SERVER, // message broker
+        MARKET_DATA_CAPTURE, // market data capture tool
         // If you add new type here, you have to update PRINT_PROGRAM_HEADER() below too!
     };
 
@@ -48,13 +49,16 @@ namespace ProgramUtils {
         else if (exe == Programs::MESSAGE_HUB_SERVER) {
             std::cout << "     BINANCE MESSAGE HUB SERVER" << std::endl;;
         }
+        else if (exe == Programs::MARKET_DATA_CAPTURE) {
+            std::cout << "     BINANCE DATA CAPTURE TOOL" << std::endl;;
+        }
         else {
             throw std::runtime_error("Header: Invalid program type...");
         }
 
         // Print start time
 
-        std::cout << "StartTime: " << TimeUtils::GetCurrentTimestamp() << std::endl;
+        std::cout << "StartTime: " << TimeUtils::GetCurrentTimestampString() << std::endl;
 
         // Print system info
         char computerName[MAX_COMPUTERNAME_LENGTH + 1];
@@ -118,3 +122,11 @@ int main(int argc, char** argv)
 #define BINANCE_MESSAGE_HUB_SERVER \
 int main(int argc, char** argv)
 #endif // BINANCE_MESSAGE_HUB_SERVER
+
+/*************************************************************************************************/
+
+#ifndef BINANCE_MARKET_DATA_CAPTURE_TOOL
+#define BINANCE_MARKET_DATA_CAPTURE_TOOL_TITLE "BINANCE_MARKET_DATA_CAPTURE_TOOL"
+#define BINANCE_MARKET_DATA_CAPTURE_TOOL \
+int main(int argc, char** argv)
+#endif // BINANCE_DATA_CAPTURE_TOOL

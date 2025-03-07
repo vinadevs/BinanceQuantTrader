@@ -1,8 +1,9 @@
 -----------------------
 WINDOWS
 -----------------------
-1. Go to Source/BinanceQuantTrader
-2. Open file BinanceQuantTrader.sln by Visual Studio 2022, right click on BinanceQuantTrader then build
+1.  Go to vcpkg folder and run the following command:  ./vcpkg.exe integrate install
+2. Go to Source/BinanceQuantTrader
+3. Open file BinanceQuantTrader.sln by Visual Studio 2022, right click on BinanceQuantTrader then build
 
 
 -----------------------

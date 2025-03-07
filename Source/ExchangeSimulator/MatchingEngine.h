@@ -71,6 +71,7 @@ namespace ExchangeSimulator {
     };
 
     class Participant; // fake traders
+    class RTMarketParticipant; // fake traders
     class UserAccountManager; // user wallet info 
     class UpstreamOrderQueueMgr; // lisst pre-orders matching process
     class UpstreamOrderMatchedMgr; // list post-orders matching process
@@ -119,6 +120,7 @@ namespace ExchangeSimulator {
         std::unique_ptr<UpstreamOrderMatchedMgr> m_upstreamOrderMatchedMgr;
         UserAccountManager* m_userAccountManager{ nullptr };
         std::unique_ptr<Participant> m_participant;
+        RTMarketParticipant* m_rtMarketDataParticipant{ nullptr };
         std::unique_ptr<MarketData::RealTimeMarketData> m_marketData;
         DownstreamAckBehaviour m_downstreamAckBehaviour{ DownstreamAckBehaviour::USING_HTTP_REQUEST };
     };

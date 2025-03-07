@@ -50,13 +50,13 @@ void FomoTradingStrategy::InitializeParameters(const std::string& strategyCfgPat
 	assert(signalXml);
 	m_tradingSignalService = std::make_unique<TradingSignalService>(m_trader->GetPortfolio(), signalXml);
 	m_tradingSignalService->RegisterTradingHintsListener(this);
-	m_marketData->RegisterDataStream(m_tradingSignalService.get());
+	m_marketData->RegisterDataListener(m_tradingSignalService.get());
 }
 
 FomoTradingStrategy::~FomoTradingStrategy()
 {
 	m_tradingSignalService->UnregisterTradingHintsListener(this);
-	m_marketData->UnregisterDataStream(m_tradingSignalService.get());
+	m_marketData->UnRegisterDataListener(m_tradingSignalService.get());
 }
 
 bool FomoTradingStrategy::OnReceivedTradingHints(const TradingHints* hints)
@@ -85,7 +85,6 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 					if (m_trader->CreateLongPosition(hints->symbol, hints->longSuggestionQuantity, hints->windowBestBidPrice))
 					{
 						IncreaseOrderCounter(); // register a sent order request to ComplianceNRegulatory
-						ReportTradeResults(hints->symbol);
 					}
 				}
 				else if (hints->isDownTrend)
@@ -93,7 +92,6 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 					if (m_trader->CreateShortPosition(hints->symbol, hints->shortSuggestionQuantity, hints->windowBestAskPrice))
 					{
 						IncreaseOrderCounter(); // register a sent order request to ComplianceNRegulatory
-						ReportTradeResults(hints->symbol);
 					}
 				}
 			}
@@ -120,10 +118,12 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 	return true;
 }
 
+#ifndef USE_BACK_TEST_TRADING
 void FomoTradingStrategy::ReportTradeResults(const std::string& symbol)
 {
-	//m_trader->ReportTradeData(symbol);
+	m_trader->ReportTradeData(symbol);
 }
+#endif
 
 void FomoTradingStrategy::StartLive()
 {

@@ -14,7 +14,7 @@
 #include "../OrderManagement/BinanceWorkedOrderManager.h"
 #include "../OrderManagement/PositionManager.h"
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 #include "../MiddlewareMQ/BqtJsonMessage.h"
 #endif
 
@@ -61,8 +61,10 @@ namespace UserAccount {
 		PortfolioManager::PortfolioInvestmentBinance* GetPortfolio() const { return m_portfolio; }
 		
 		////////////// DOWNSTREAM PROCESSING /////////////////////////////
-#if USE_TEST_TRADING  
+#if USE_BACK_TEST_TRADING  
 		void HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage& message);
+#else
+		void ReportTradeData(const std::string& symbol);
 #endif
 	private:
 		binapi::double_type CalculateTradeValue(

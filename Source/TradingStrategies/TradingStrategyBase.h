@@ -12,7 +12,7 @@
 
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/SourceBuildFlags.h"
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 #include "../MiddlewareMQ/MessageHandler.h"
 #include "../MiddlewareMQ/BqtJsonMessage.h"
 #endif
@@ -86,7 +86,7 @@ namespace TradingStrategies {
 	class DLL_CLASS_TRADING_TRATEGIES_EXPORTS
 		TradingStrategyBase : 
 		  public OrdersPerTenSecondsChecker
-#if USE_TEST_TRADING  
+#if USE_BACK_TEST_TRADING  
 		, public MiddlewareMQ::MessageHandler
 #endif
 	{
@@ -111,8 +111,9 @@ namespace TradingStrategies {
 		// We need to set these variables to unlive, m_strategyRunStatus,
 		// m_isThreadTradeOngoing (in case we use mutiple threads)
 		virtual void StopLive() = 0;
-
+#ifndef USE_BACK_TEST_TRADING
 		virtual void ReportTradeResults(const std::string& symbol) = 0;
+#endif
 		// -We will control strategy parameters from external file...
 		virtual void InitializeParameters(const std::string& strategyCfgPath) = 0;
 		// -Can we trade now?
@@ -126,7 +127,7 @@ namespace TradingStrategies {
 		void IncreaseOrderCounter();
 	protected:
 		void OnAlarmTriggered(const int passToDerived = 0) override; // to reset rule counters
-#if USE_TEST_TRADING  
+#if USE_BACK_TEST_TRADING  
 		void OnHandlingReceivedSimulatorMessage(
 			const MiddlewareMQ::BqtJsonMessage& message) override; // process exchange simulator message
 #endif

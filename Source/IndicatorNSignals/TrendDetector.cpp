@@ -35,8 +35,8 @@ void TradingTrendDetector::AnalysisIndividualBookTicker(const SynchronousMarketD
 {
     UpdateBestBidPrice(data->GetFeed(FeedID::BEST_BID_PRICE)->GetDoubleMultiprecisionData());
     UpdateBestAskPrice(data->GetFeed(FeedID::BEST_ASK_PRICE)->GetDoubleMultiprecisionData());
-    UpdateBestBidQuality(data->GetFeed(FeedID::BEST_BID_QUANTY)->GetDoubleMultiprecisionData());
-    UpdateBestAskQuality(data->GetFeed(FeedID::BEST_ASK_QUANTY)->GetDoubleMultiprecisionData());
+    UpdateBestBidQuality(data->GetFeed(FeedID::BEST_BID_QUANTITY)->GetDoubleMultiprecisionData());
+    UpdateBestAskQuality(data->GetFeed(FeedID::BEST_ASK_QUANTITY)->GetDoubleMultiprecisionData());
     // update trading hints
     m_tradingHints->isInvertedTrend = IsInvertedTrend();
     m_tradingHints->isUpTrend = IsUpTrend();

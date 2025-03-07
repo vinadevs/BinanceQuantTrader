@@ -24,7 +24,7 @@ BinanceQueryOrder::BinanceQueryOrder(
 
 BinanceQueryOrder::~BinanceQueryOrder() {}
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 MiddlewareMQ::BqtJsonMessage BinanceQueryOrder::ToBqtJsonMessage()
 {
 	MiddlewareMQ::BqtJsonMessage message;

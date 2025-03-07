@@ -20,7 +20,8 @@ namespace TimeUtils {
         Nanoseconds
     };
 
-    std::string DLL_CLASS_LIBRARYUTILS_EXPORTS GetCurrentTimestamp();
+    std::string DLL_CLASS_LIBRARYUTILS_EXPORTS GetCurrentTimestampString();
     std::size_t DLL_CLASS_LIBRARYUTILS_EXPORTS GetCurrentTimeChrono(const TimeUnit unit);
+    std::string DLL_CLASS_LIBRARYUTILS_EXPORTS GetTimestampString(const std::size_t ms);
 };
 

@@ -42,6 +42,8 @@ std::string PathUtils::GetConfigFolderPath(const Path_Type type)
         return PathUtils::GetApplicationFolderPath() + "\\Configurations\\Simulator";
     case Path_Type::MESSAGE_SERVER:
         return PathUtils::GetApplicationFolderPath() + "\\Configurations\\MessageServer";
+    case Path_Type::MARKET_DATA_CAPTURE:
+        return PathUtils::GetApplicationFolderPath() + "\\Configurations\\MarketData";
     default:
         throw std::runtime_error("Error: GetConfigFolderPath failed, wrong path type.");
     }

@@ -73,11 +73,13 @@ void BackTestReporter::DoLocalExecutionReport(const std::string& symbol)
 
 void BackTestReporter::DoTradeExecutionReport()
 {
-	MergeLocalAndRemmoteReport();
-	LOG_INFO_STREAM(m_logger, "BinanceAccountInfo=" << *m_portfolio->GetBinanceAccountInfo());
+	if (MergeLocalAndRemmoteReport())
+	{
+		LOG_INFO_STREAM(m_logger, "BinanceAccountInfo=" << *m_portfolio->GetBinanceAccountInfo());
+	}
 }
 
 bool BackTestReporter::MergeLocalAndRemmoteReport()
 {
-	return false;
+	return true;
 }

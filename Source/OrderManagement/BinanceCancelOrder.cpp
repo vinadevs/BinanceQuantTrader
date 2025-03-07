@@ -24,7 +24,7 @@ BinanceCancelOrder::BinanceCancelOrder(
 
 BinanceCancelOrder::~BinanceCancelOrder() {}
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 MiddlewareMQ::BqtJsonMessage BinanceCancelOrder::ToBqtJsonMessage()
 {
 	MiddlewareMQ::BqtJsonMessage message;

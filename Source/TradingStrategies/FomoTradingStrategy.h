@@ -56,9 +56,9 @@ namespace TradingStrategies {
 		virtual ~FomoTradingStrategy();
 
 		bool OnReceivedTradingHints(const IndicatorNSignals::TradingHints* hints) override;
-
+#ifndef USE_BACK_TEST_TRADING
 		void ReportTradeResults(const std::string& symbol) override;
-
+#endif
 		void InitializeParameters(const std::string& strategyCfgPath) override;
 
 		void StartLive() override;

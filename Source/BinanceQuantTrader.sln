@@ -192,6 +192,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QuantLib", "QuantLibrary\QuantLib.vcxproj", "{AD0A27DA-91DA-46A2-ACBD-296C419ED3AA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MarketDataCapture", "MarketDataCapture\MarketDataCapture.vcxproj", "{96AFA504-0373-404C-B505-D8AC17F245B2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{076F8746-1B3B-48BE-9932-FF30D5C8B356} = {076F8746-1B3B-48BE-9932-FF30D5C8B356}
+		{47C37C7D-89BD-4D0E-B91A-FF56A619002F} = {47C37C7D-89BD-4D0E-B91A-FF56A619002F}
+		{4F6CD413-1E79-4E87-AB9A-7ED769A36201} = {4F6CD413-1E79-4E87-AB9A-7ED769A36201}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

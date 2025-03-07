@@ -13,7 +13,7 @@
 #include "../LibraryUtils/SourceBuildFlags.h"
 #include "../KernelTrading/double_type.h"
 #include "../RestAPI/RestAPI.h"
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 #include "../MiddlewareMQ/MessageDelivery.h"
 #include "../MiddlewareMQ/BqtJsonMessage.h"
 #endif
@@ -109,7 +109,7 @@ namespace OrderManagement {
             return os;
         }
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
         // Simulator test
         MiddlewareMQ::BqtJsonMessage ToBqtJsonMessageOrder() const;
         MiddlewareMQ::BqtJsonMessage ToBqtJsonMessageAck () const;
@@ -142,7 +142,7 @@ namespace OrderManagement {
         std::unordered_set<std::string> m_clientOrderIdList;
         BinanceNewOrderStatus m_orderStatus{ BinanceNewOrderStatus::NEW };
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
         MiddlewareMQ::MiddlewareMQResult m_sendingOrderResult;
 #else
         // Execution Result

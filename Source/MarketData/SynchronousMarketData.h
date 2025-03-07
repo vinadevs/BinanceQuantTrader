@@ -28,6 +28,7 @@ namespace MarketData {
 	{
 	public:
 		DECLARE_SINGLE_FEED_POINTER(m_updateId);
+		DECLARE_SINGLE_FEED_POINTER(m_eventTimeMs); // There is no event time from Binance API, this is internal update time
 		DECLARE_SINGLE_FEED_POINTER(m_bestBidPrice);
 		DECLARE_SINGLE_FEED_POINTER(m_bestBidQty);
 		DECLARE_SINGLE_FEED_POINTER(m_bestAskPrice);
@@ -38,6 +39,7 @@ namespace MarketData {
 			os
 				<< "{"
 				<< "\"updateId\":\"" << o.m_updateId->GetUnsignedIntData() << "\","
+				<< "\"eventTime\":\"" << o.m_eventTimeMs->GetUnsignedIntData() << "\","
 				<< "\"bestBidPrice\":\"" << o.m_bestBidPrice->GetDoubleMultiprecisionData() << "\","
 				<< "\"bestBidQt\":\"" << o.m_bestBidQty->GetDoubleMultiprecisionData() << "\","
 				<< "\"bestAskPrice\":\"" << o.m_bestAskPrice->GetDoubleMultiprecisionData() << "\","
@@ -52,7 +54,7 @@ namespace MarketData {
 	class TradeData
 	{
 	public:
-		DECLARE_SINGLE_FEED_POINTER(m_evenTime);
+		DECLARE_SINGLE_FEED_POINTER(m_eventTimeMs);
 		DECLARE_SINGLE_FEED_POINTER(m_tradeId);
 		DECLARE_SINGLE_FEED_POINTER(m_price);
 		DECLARE_SINGLE_FEED_POINTER(m_quantity);
@@ -65,14 +67,14 @@ namespace MarketData {
 		{
 			os
 				<< "{"
-				<< "\"bestBidPrice\":\"" << o.m_evenTime->GetUnsignedIntData() << "\","
-				<< "\"bestBidQt\":\"" << o.m_tradeId->GetUnsignedIntData() << "\","
-				<< "\"bestAskPrice\":\"" << o.m_price->GetDoubleMultiprecisionData() << "\","
-				<< "\"bestAskQty\":\"" << o.m_quantity->GetDoubleMultiprecisionData() << "\","
-				<< "\"bestAskPrice\":\"" << o.m_buyerOrderID->GetUnsignedIntData() << "\","
-				<< "\"bestAskPrice\":\"" << o.m_sellerOrderID->GetUnsignedIntData() << "\","
-				<< "\"bestAskPrice\":\"" << o.m_tradeTime->GetUnsignedIntData() << "\","
-				<< "\"bestAskPrice\":\"" << o.m_isBuyerTheMarketMaker->GetBooleanData() << "\""
+				<< "\"eventTime\":\"" << o.m_eventTimeMs->GetUnsignedIntData() << "\","
+				<< "\"tradeId\":\"" << o.m_tradeId->GetUnsignedIntData() << "\","
+				<< "\"price\":\"" << o.m_price->GetDoubleMultiprecisionData() << "\","
+				<< "\"quantity\":\"" << o.m_quantity->GetDoubleMultiprecisionData() << "\","
+				<< "\"buyerOrderID\":\"" << o.m_buyerOrderID->GetUnsignedIntData() << "\","
+				<< "\"sellerOrderID\":\"" << o.m_sellerOrderID->GetUnsignedIntData() << "\","
+				<< "\"tradeTime\":\"" << o.m_tradeTime->GetUnsignedIntData() << "\","
+				<< "\"isBuyerTheMarketMaker\":\"" << o.m_isBuyerTheMarketMaker->GetBooleanData() << "\""
 				<< "}";
 
 			return os;
@@ -119,6 +121,24 @@ namespace MarketData {
 
 	};
 
+	///////////////////////////////////////////////////////////////
+
+	class LevelOneMarketData
+	{
+
+	};
+
+	class LevelTwoMarketData
+	{
+
+	};
+
+	class LevelThreeMarketData
+	{
+
+	};
+
+	///////////////////////////////////////////////////////////////
 	// This class contains all of single feed data is available from the exchange
 	class DLL_CLASS_MARKETDATA_EXPORTS SynchronousMarketData
 	{

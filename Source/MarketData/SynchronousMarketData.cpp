@@ -20,12 +20,14 @@ SingleMarketDataFeed* SynchronousMarketData::GetFeed(const FeedID id) const
 	{
 	case FeedID::BEST_BID_PRICE:
 		return m_individualBookTickerData.m_bestBidPrice.get();
-	case FeedID::BEST_BID_QUANTY:
+	case FeedID::BEST_BID_QUANTITY:
 		return m_individualBookTickerData.m_bestBidQty.get();
 	case FeedID::BEST_ASK_PRICE:
 		return m_individualBookTickerData.m_bestAskPrice.get();
-	case FeedID::BEST_ASK_QUANTY:
+	case FeedID::BEST_ASK_QUANTITY:
 		return m_individualBookTickerData.m_bestAskQty.get();
+	case FeedID::EVENT_TIME:
+		return m_individualBookTickerData.m_eventTimeMs.get();
 	default:
 		break;
 	}

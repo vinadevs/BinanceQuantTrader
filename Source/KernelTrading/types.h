@@ -130,7 +130,7 @@ struct DLL_CLASS account_info_t {
     bool canWithdraw;
     bool canDeposit;
     std::size_t updateTime;
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
     double_type stableCoinAmount; // USDT/Tether
 #endif
 
