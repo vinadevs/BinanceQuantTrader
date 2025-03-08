@@ -17,10 +17,12 @@
 
 using namespace TradingStrategies;
 using namespace UserAccount;
-using namespace MiddlewareMQ;
 using namespace MarketData;
 using namespace LibraryUtils;
 using namespace tinyxml2;
+#if USE_BACK_TEST_TRADING 
+using namespace MiddlewareMQ;
+#endif
 
 TradingStrategyBase::TradingStrategyBase(
 	const std::string& strategyName,

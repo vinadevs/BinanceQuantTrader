@@ -24,8 +24,7 @@ BinanceReplaceOrder::BinanceReplaceOrder(
 
 BinanceReplaceOrder::~BinanceReplaceOrder() {}
 
-#if USE_BACK_TEST_TRADING
-MiddlewareMQ::BqtJsonMessage BinanceReplaceOrder::ToBqtJsonMessage()
+MiddlewareMQ::BqtJsonMessage BinanceReplaceOrder::ToBqtJsonMessageOrder()
 {
 	MiddlewareMQ::BqtJsonMessage message;
 	message.AddPair(FieldLabels::BinanceOrderType, "BinanceReplaceOrder");
@@ -35,4 +34,3 @@ MiddlewareMQ::BqtJsonMessage BinanceReplaceOrder::ToBqtJsonMessage()
 	message.AddPair(FieldLabels::ClientOrderId, m_clientOrderId);
 	return message;
 }
-#endif

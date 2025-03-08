@@ -24,8 +24,7 @@ BinanceCancelOrder::BinanceCancelOrder(
 
 BinanceCancelOrder::~BinanceCancelOrder() {}
 
-#if USE_BACK_TEST_TRADING
-MiddlewareMQ::BqtJsonMessage BinanceCancelOrder::ToBqtJsonMessage()
+MiddlewareMQ::BqtJsonMessage BinanceCancelOrder::ToBqtJsonMessageOrder()
 {
 	MiddlewareMQ::BqtJsonMessage message;
 	message.AddPair(FieldLabels::BinanceOrderType, "BinanceCancelOrder");
@@ -35,4 +34,3 @@ MiddlewareMQ::BqtJsonMessage BinanceCancelOrder::ToBqtJsonMessage()
 	message.AddPair(FieldLabels::ClientOrderId, m_clientOrderId);
 	return message;
 }
-#endif

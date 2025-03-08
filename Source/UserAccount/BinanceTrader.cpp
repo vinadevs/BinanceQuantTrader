@@ -86,8 +86,13 @@ bool BinanceTrader::CreateLongPosition(
 	const binapi::double_type quality, 
 	const binapi::double_type refPrice)
 {
+#if USE_BACK_TEST_TRADING
 	if (m_binanceAccountInfo->stableCoinAmount > CalculateTradeValue(quality, refPrice))
 	{
+#else
+	if (m_portfolio->GetBinanceTradingPair(symbol))
+	{
+#endif
 		auto newSingleLongOrder = m_positionManager->OpenNewPositionUpstreamOrder(symbol, PositionSide::LONG, quality, refPrice);
 #if USE_BACK_TEST_TRADING
 		const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleLongOrder.get());
@@ -190,7 +195,7 @@ void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessag
 	}
 	else m_logger->Error("Received simulator ack with unknown type=" + simulatorAckType);
 }
-#elif
+#else
 void BinanceTrader::ReportTradeData(const std::string& symbol)
 {
 	m_exchangeReporter->DoTradeExecutionReport();

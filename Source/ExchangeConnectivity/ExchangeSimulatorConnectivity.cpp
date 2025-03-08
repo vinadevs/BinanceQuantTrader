@@ -67,7 +67,7 @@ MiddlewareMQ::MiddlewareMQResult
 ExchangeSimulatorConnectivity::SendCancelSimulatorOrder(
     BinanceCancelOrder* cancelOrder)
 {
-    const auto& message = cancelOrder->ToBqtJsonMessage();
+    const auto& message = cancelOrder->ToBqtJsonMessageOrder();
     const auto cancelOrderResult = m_messageDelivery->DeliveryMessage(message);
     if (!cancelOrderResult.m_result)
     {
@@ -85,7 +85,7 @@ MiddlewareMQ::MiddlewareMQResult
 ExchangeSimulatorConnectivity::SendCancelReplaceSimulatorOrder(
     BinanceReplaceOrder* replaceOrder)
 {
-    const auto& message = replaceOrder->ToBqtJsonMessage();
+    const auto& message = replaceOrder->ToBqtJsonMessageOrder();
     const auto replaceOrderResult = m_messageDelivery->DeliveryMessage(message);
     if (!replaceOrderResult.m_result)
     {
@@ -102,7 +102,7 @@ ExchangeSimulatorConnectivity::SendCancelReplaceSimulatorOrder(
 MiddlewareMQ::MiddlewareMQResult
 ExchangeSimulatorConnectivity::QuerySimulatorOrderStatus(BinanceQueryOrder* queryOrder)
 {
-    const auto& message = queryOrder->ToBqtJsonMessage();
+    const auto& message = queryOrder->ToBqtJsonMessageOrder();
     const auto queryOrderResult = m_messageDelivery->DeliveryMessage(message);
     if (!queryOrderResult.m_result)
     {

@@ -14,9 +14,7 @@
 #include "../KernelTrading/double_type.h"
 #include "../RestAPI/RestAPI.h"
 
-#if USE_BACK_TEST_TRADING
 #include "../MiddlewareMQ/BqtJsonMessage.h"
-#endif
 
 #include "Order.h"
 
@@ -45,10 +43,8 @@ namespace OrderManagement {
         void SetOrderId(std::size_t orderId) { m_orderId = orderId; }
         void SetOrigClientOrderId(const std::string& origClientOrderId) { m_origClientOrderId = origClientOrderId; }
 
-#if USE_BACK_TEST_TRADING
         // Simulator test
-        MiddlewareMQ::BqtJsonMessage ToBqtJsonMessage();
-#endif
+        MiddlewareMQ::BqtJsonMessage ToBqtJsonMessageOrder();
     private:
         // m_orderId is order ID from Binance
         std::size_t m_orderId {0};

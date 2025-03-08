@@ -13,10 +13,8 @@
 #include "../LibraryUtils/SourceBuildFlags.h"
 #include "../KernelTrading/double_type.h"
 #include "../RestAPI/RestAPI.h"
-#if USE_BACK_TEST_TRADING
 #include "../MiddlewareMQ/MessageDelivery.h"
 #include "../MiddlewareMQ/BqtJsonMessage.h"
-#endif
 #include "Order.h"
 
 #include <string>
@@ -109,16 +107,14 @@ namespace OrderManagement {
             return os;
         }
 
-#if USE_BACK_TEST_TRADING
         // Simulator test
         MiddlewareMQ::BqtJsonMessage ToBqtJsonMessageOrder() const;
         MiddlewareMQ::BqtJsonMessage ToBqtJsonMessageAck () const;
         void SetSendingOrderResult(const MiddlewareMQ::MiddlewareMQResult& sendingOrderResult);
-#else
-    // Execution Result
-    void SetSendingOrderResult(
-        const binapi::rest::api::result<binapi::rest::new_order_resp_type>& sendingOrderResult);
-#endif
+        // Execution Result
+        void SetSendingOrderResult(
+            const binapi::rest::api::result<binapi::rest::new_order_resp_type>& sendingOrderResult);
+
     private:
         binapi::e_side m_side { binapi::e_side::buy}; // buy side or sell side
         binapi::e_type m_type { binapi::e_type::limit }; // order type: limit or market,..
@@ -141,12 +137,8 @@ namespace OrderManagement {
         // If we trade with a basket of orders
         std::unordered_set<std::string> m_clientOrderIdList;
         BinanceNewOrderStatus m_orderStatus{ BinanceNewOrderStatus::NEW };
-
-#if USE_BACK_TEST_TRADING
-        MiddlewareMQ::MiddlewareMQResult m_sendingOrderResult;
-#else
         // Execution Result
-        binapi::rest::api::result<binapi::rest::new_order_resp_type> m_sendingOrderResult;
-#endif
+        MiddlewareMQ::MiddlewareMQResult m_sendingSimulatorOrderResult;
+        binapi::rest::api::result<binapi::rest::new_order_resp_type> m_sendingBinananceOrderResult;
     };
 };
