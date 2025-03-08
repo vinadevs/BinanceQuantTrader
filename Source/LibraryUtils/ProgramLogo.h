@@ -11,7 +11,9 @@
 // TODO: WE ASSUMED THAT ALL APPLICATIONS WILL RUN ON WINDOWS
 // PLATFORM ONLY, BUT WE SHOULD HAVE SUPPORTED FOR LINUX AS WELL
 // SOMETHING LIKE #IFDEF WINDOWS_ ELSE LINUX_
+#ifdef _WIN32
 #include <windows.h>
+#endif
 #include <Lmcons.h>
 #include <iostream>
 #include <cstdio>
@@ -59,7 +61,7 @@ namespace ProgramUtils {
         // Print start time
 
         std::cout << "StartTime: " << TimeUtils::GetCurrentTimestampString() << std::endl;
-
+#ifdef _WIN32
         // Print system info
         char computerName[MAX_COMPUTERNAME_LENGTH + 1];
         DWORD size = sizeof(computerName) / sizeof(computerName[0]);
@@ -94,7 +96,7 @@ namespace ProgramUtils {
         {
             std::cout << "Error getting executable path" << std::endl;
         }
-
+#endif
         std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n" << std::endl;
     }
 };

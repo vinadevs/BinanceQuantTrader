@@ -64,12 +64,13 @@ BINANCE_EXCHANGE_SIMULATOR
 	// SYSTEMS
 	// if the binary has been terminated by signal, exit(), ctrl + C,... then
 	// destructors will never be called, this hooker will clean up resources
+#ifdef _WIN32
 	if (!SetConsoleCtrlHandler(GeneralUtils::ConsoleCtrlHandler, TRUE))
 	{
 		logger->Error("Failed to set exit control handler.");
 		return EXIT_FAILURE;
 	}
-
+#endif
 	try
 	{
 	#ifdef _DEBUG
