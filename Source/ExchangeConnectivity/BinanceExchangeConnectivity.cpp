@@ -35,21 +35,25 @@ binapi::rest::api::result<binapi::rest::new_order_resp_type>
 BinanceExchangeConnectivity::SendNewBinanceOrderFull(
     OrderManagement::BinanceNewOrder* newOrder)
 {
+    // IMPORTANT NOTES: NEVER USE 0 FOR NUMBERIC FIELDS, IF YOU DON'T WANT TO 
+    // USE IT THEN JUST NEEDS TO SET IT'S STRING BE EMPTY NOT 0
+    // BINANCE COULD REJECT ORDER THAT USE 0 
     const auto newOrderResult = BinanceApiGateWay->new_order(
-        newOrder->GetSymbol()
+        newOrder->GetSymbol().c_str()
         , newOrder->GetSide()
         , newOrder->GetType()
         , newOrder->GetTime()
         , binapi::e_trade_resp_type::FULL
-        , newOrder->GetAmountStr()
-        , newOrder->GetPriceStr()
-        , newOrder->GetClientOrderId()
-        , newOrder->GetStopPriceStr()
-        , newOrder->GetIcebergAmountStr()
+        , newOrder->GetAmount() == 0 ? nullptr : newOrder->GetAmountStr().c_str()
+        , newOrder->GetPrice() == 0 ? nullptr : newOrder->GetPriceStr().c_str()
+        , newOrder->GetClientOrderId().c_str()
+        , newOrder->GetStopPrice() == 0 ? nullptr : newOrder->GetStopPriceStr().c_str()
+        , newOrder->GetIcebergAmount() == 0 ? nullptr : newOrder->GetIcebergAmountStr().c_str()
     );
     if (!static_cast<bool>(newOrderResult) && !newOrderResult.v.is_full_response_type())
     {
-        LOG_ERROR_STREAM(m_logger, "could not place a new order=" << newOrderResult.v << ", reason=" << newOrderResult.errmsg);
+        LOG_ERROR_STREAM(m_logger, "could NOT place a new [REAL] order="
+            << *newOrder << ", reason=" << newOrderResult.errmsg);
     }
     else
     {
@@ -62,22 +66,27 @@ binapi::rest::api::result<binapi::rest::new_order_resp_type>
 BinanceExchangeConnectivity::SendNewBinanceTestOrderFull(
     OrderManagement::BinanceNewOrder* newTestOrder)
 {
+    // IMPORTANT NOTES: NEVER USE 0 FOR NUMBERIC FIELDS, IF YOU DON'T WANT TO 
+    // USE IT THEN JUST NEEDS TO SET IT'S STRING BE EMPTY NOT 0
+    // BINANCE COULD REJECT ORDER THAT USE 0 
+    // Ensure that param is a valid const char*. 
+    // If you are passing an object that isn't a C-style string, it might be an crashing issue.
     const auto newTestOrderResult = BinanceApiGateWay->new_test_order(
-        newTestOrder->GetSymbol()
+        newTestOrder->GetSymbol().c_str()
         , newTestOrder->GetSide()
         , newTestOrder->GetType()
         , newTestOrder->GetTime()
         , binapi::e_trade_resp_type::FULL
-        , newTestOrder->GetAmountStr()
-        , newTestOrder->GetPriceStr()
-        , newTestOrder->GetClientOrderId()
-        , newTestOrder->GetStopPriceStr()
-        , newTestOrder->GetIcebergAmountStr()
+        , newTestOrder->GetAmount() == 0 ? nullptr : newTestOrder->GetAmountStr().c_str()
+        , newTestOrder->GetPrice() == 0 ? nullptr : newTestOrder->GetPriceStr().c_str()
+        , newTestOrder->GetClientOrderId().c_str()
+        , newTestOrder->GetStopPrice() == 0 ? nullptr : newTestOrder->GetStopPriceStr().c_str()
+        , newTestOrder->GetIcebergAmount() == 0 ? nullptr : newTestOrder->GetIcebergAmountStr().c_str()
     );
     if (!static_cast<bool>(newTestOrderResult) && !newTestOrderResult.v.is_full_response_type())
     {
-        LOG_ERROR_STREAM(m_logger, "could not place a new test order="
-            << newTestOrderResult.v << ", reason=" << newTestOrderResult.errmsg);
+        LOG_ERROR_STREAM(m_logger, "could NOT place a new [TEST] order="
+            << *newTestOrder << ", reason=" << newTestOrderResult.errmsg);
     }
     else
     {
@@ -103,8 +112,8 @@ BinanceExchangeConnectivity::SendCancelBinanceOrder(
         cancelOrder->GetClientOrderId());
     if (!static_cast<bool>(cancelOrderResult) && cancelOrderResult.v.status != StringDefinitions::BinanceExchangeCancelledStatus)
     {
-        LOG_ERROR_STREAM(m_logger, "could not cancel order="
-            << cancelOrderResult.v << ", reason=" << cancelOrderResult.errmsg);
+        LOG_ERROR_STREAM(m_logger, "could NOT cancel order="
+            << cancelOrder << ", reason=" << cancelOrderResult.errmsg);
     }
     else
     {
@@ -124,8 +133,8 @@ BinanceExchangeConnectivity::SendCancelReplaceBinanceOrder(
         replaceOrder->GetClientOrderId());
     if (!static_cast<bool>(replaceOrder) && replaceOrderResult.v.status != StringDefinitions::BinanceExchangeCancelledStatus)
     {
-        LOG_ERROR_STREAM(m_logger, "could not cancel order="
-            << replaceOrderResult.v << ", reason=" << replaceOrderResult.errmsg);
+        LOG_ERROR_STREAM(m_logger, "could NOT cancel order="
+            << replaceOrder << ", reason=" << replaceOrderResult.errmsg);
     }
     else
     {

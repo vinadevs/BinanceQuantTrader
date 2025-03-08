@@ -34,6 +34,7 @@
 
 <ComplianceNRegulatory>
   <TradingLimits RequestWeightPerMinute="6000" OrdersPerTenSeconds="50" OrdersPerTwentyFourHours="1000"/>
+  <ExchangeProfile File="[ROOT_BQT_PATH]\Configurations\Common\BinanceExchangeProfile.txt"/>
 </ComplianceNRegulatory>
 
 <RiskManagement>

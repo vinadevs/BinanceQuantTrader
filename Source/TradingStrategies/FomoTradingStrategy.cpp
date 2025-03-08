@@ -13,6 +13,7 @@
 #include "../UserAccount/BinanceTrader.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../ComplianceNRegulatory/BinanceTradingRules.h"
+#include "../ComplianceNRegulatory/BinanceExchangeProfile.h"
 
 using namespace TradingStrategies;
 using namespace IndicatorNSignals;
@@ -80,29 +81,40 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 		{
 			if (IsNotIsNotExceededTradingRules())
 			{
-				if (hints->isUpTrend)
+				const auto* symbolProfile = m_tradingRules->GetExchangeProfileMgr()->LookupExchangeProfile(hints->symbol);
+				if (symbolProfile)
 				{
-					if (m_trader->CreateLongPosition(hints->symbol, hints->longSuggestionQuantity, hints->windowBestBidPrice))
+					Sleep(1000); // delay to avoid bans while testing
+					if (hints->isUpTrend)
 					{
-						IncreaseOrderCounter(); // register a sent order request to ComplianceNRegulatory
+						if (m_trader->CreateLongPosition(hints->symbol,
+							symbolProfile->m_minTradeAmount, hints->windowBestBidPrice.convert_to<double>()))
+						{
+							IncreaseOrderCounter(); // register a sent order request to ComplianceNRegulatory
+						}
+					}
+					else if (hints->isDownTrend)
+					{
+						if (m_trader->CreateShortPosition(hints->symbol,
+							symbolProfile->m_minTradeAmount, hints->windowBestAskPrice.convert_to<double>()))
+						{
+							IncreaseOrderCounter(); // register a sent order request to ComplianceNRegulatory
+						}
 					}
 				}
-				else if (hints->isDownTrend)
+				else
 				{
-					if (m_trader->CreateShortPosition(hints->symbol, hints->shortSuggestionQuantity, hints->windowBestAskPrice))
-					{
-						IncreaseOrderCounter(); // register a sent order request to ComplianceNRegulatory
-					}
+					m_logger->Error("Strategy could not lookup Exchange Profile for symbol=" + hints->symbol);
 				}
 			}
 			else
 			{
-				//m_logger->Warning("Strategy received a hint signal but it is exceeded exchange limitations.");
+				m_logger->Warning("Strategy received a hint signal but it is exceeded exchange limitations.");
 			}
 		}
 		else
 		{
-			//m_logger->Warning("Strategy received a hint signal but it is not living now.");
+			m_logger->Warning("Strategy received a hint signal but it is not living now.");
 		}
 	}
 	catch (const std::exception& e)

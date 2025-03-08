@@ -29,8 +29,6 @@ namespace IndicatorNSignals {
 		bool isDownTrend{ false };
 		binapi::double_type windowBestBidPrice{ 0 };
 		binapi::double_type windowBestAskPrice{ 0 };
-		binapi::double_type shortSuggestionQuantity{ 0 };
-		binapi::double_type longSuggestionQuantity{ 0 };
 	};
 
 	class DLL_CLASS_INDICATORNSIGNALS_EXPORTS TradingHintsListener

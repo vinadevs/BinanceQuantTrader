@@ -41,11 +41,6 @@ void TradingTrendDetector::AnalysisIndividualBookTicker(const SynchronousMarketD
     m_tradingHints->isInvertedTrend = IsInvertedTrend();
     m_tradingHints->isUpTrend = IsUpTrend();
     m_tradingHints->isDownTrend = IsDownTrend();
-    m_tradingHints->longSuggestionQuantity = 0.0001;
-    m_tradingHints->shortSuggestionQuantity = 0.0001;
-    const auto qualitySantizied1 = m_tradingHints->longSuggestionQuantity.convert_to<double>();
-    const auto qualitySantiziedd1 = std::to_string(qualitySantizied1);
-    const auto qualitySantiziedd1s = qualitySantiziedd1.c_str();
     m_tradingHints->windowBestAskPrice = GetWindowBestAskPrice();
     m_tradingHints->windowBestBidPrice = GetWindowBestBidPrice();
     if (this->m_tradingTrendType != TradingTrendType::SETTLE_TREND)

@@ -80,7 +80,8 @@ namespace PortfolioManager {
 		BinanceBalances GetTradableBinanceBalances(bool updateNewData = false);
 		const BinanceBalance& GetBinanceBalance(const std::string& asset, bool updateNewData = false);
 
-		bool IsCryptoAssetAbleToTrade(const BinanceBalance& asset) const;
+		bool IsCryptoAssetAbleToTrade(const BinanceBalance& balance) const;
+		bool HasCryptoAssetBalance(const BinanceBalance& balance) const;
 		bool IsCryptoAssetHasMarketData(const std::string& asset) const;
 
 		binapi::rest::account_info_t* m_binanceAccountInfo {nullptr};

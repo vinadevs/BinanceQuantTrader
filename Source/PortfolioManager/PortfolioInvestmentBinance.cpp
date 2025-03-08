@@ -27,6 +27,8 @@ using namespace tinyxml2;
 using namespace MarketData;
 using namespace StaticData;
 
+static constexpr double ZERO_DOUBLE_VALUE = 0;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool BinanceTradingPairManager::CreateNewTradingPair(const std::string& tradingPairPair, const RealTimeMarketData* marketData, const BinanceBalance& balance)
@@ -124,7 +126,7 @@ void PortfolioInvestmentBinance::UpdateBinanceTradingPairs()
         }
         else
         {
-            m_logger->Warning("Invalid binance trading pair=" + balance.first);
+            m_logger->Info("Could not trade binance asset=" + balance.first + ", there is no asset balance or martket data available.");
         }
     }
 }
@@ -154,7 +156,12 @@ BinanceTradingPair* PortfolioInvestmentBinance::GetBinanceTradingPair(const std:
 
 bool PortfolioInvestmentBinance::IsCryptoAssetAbleToTrade(const BinanceBalance& balance) const
 {
-    return !balance.asset.empty() && balance.free > 0 && IsCryptoAssetHasMarketData(balance.asset);
+    return !balance.asset.empty() && IsCryptoAssetHasMarketData(balance.asset);
+}
+
+bool PortfolioInvestmentBinance::HasCryptoAssetBalance(const BinanceBalance& balance) const
+{
+    return !balance.asset.empty() && balance.free > ZERO_DOUBLE_VALUE && IsCryptoAssetHasMarketData(balance.asset);
 }
 
 const BinanceBalances& PortfolioInvestmentBinance::GetAllBinanceBalances(bool updateNewData /*= false*/)
@@ -181,7 +188,7 @@ BinanceBalances PortfolioInvestmentBinance::GetTradableBinanceBalances(bool upda
         }
         else
         {
-            m_logger->Warning("Invalid binance trading pair=" + balance.first);
+            m_logger->Info("Could not trade binance asset=" + balance.first + ", there is no asset balance or martket data available.");
         }
     }
     return tradableBalances;

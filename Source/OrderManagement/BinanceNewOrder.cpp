@@ -22,8 +22,10 @@ BinanceNewOrder::BinanceNewOrder(
     const double amount,
     const double price,
     const double stopPrice,
-    const double icebergAmount)
-    : Order(symbol, clientOrderId, BinanceOrderType::NEW),
+    const double icebergAmount,
+    const TradeType tradeType)
+    : Order(symbol, clientOrderId,
+        tradeType == TradeType::TEST ? BinanceOrderType::TEST : BinanceOrderType::NEW),
     m_side(side),
     m_type(type),
     m_time(time),
@@ -38,7 +40,7 @@ std::string BinanceNewOrder::ToStringOrder() const
 {
     return "BinanceNewOrder("
     "Symbol: " + m_symbol +
-        "UserAccountID: " + m_userAccountID +
+        ", UserAccountID: " + m_userAccountID +
         ", Side: " + TypeToStringUtils::ToString(m_side) +
         ", Type: " + TypeToStringUtils::ToString(m_type) +
         ", Time: " + TypeToStringUtils::ToString(m_time) +
@@ -56,7 +58,7 @@ std::string BinanceNewOrder::ToStringAck() const
 {
     return "BinanceNewOrderAck("
         "Symbol: " + m_symbol +
-        "UserAccountID: " + m_userAccountID +
+        ", UserAccountID: " + m_userAccountID +
         ", Side: " + TypeToStringUtils::ToString(m_side) +
         ", Type: " + TypeToStringUtils::ToString(m_type) +
         ", Time: " + TypeToStringUtils::ToString(m_time) +

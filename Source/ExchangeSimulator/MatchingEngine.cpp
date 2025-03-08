@@ -271,7 +271,7 @@ void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& me
 
 bool MatchingEngine::VerifyUpstreamBinanceNewOrder(const BinanceNewOrder& order)
 {
-	if (order.GetAmountDouble() <= ZERO_DOUBLE_VALUE)
+	if (order.GetAmount() <= ZERO_DOUBLE_VALUE)
 	{
 		const auto errMsg = "Received an invalid BinanceNewOrder with ammount is less than zero.";
 		m_logger->Error(errMsg);
@@ -279,7 +279,7 @@ bool MatchingEngine::VerifyUpstreamBinanceNewOrder(const BinanceNewOrder& order)
 		UpstreamGateWay->SendDownstreamOrderAck(ack);
 		return false;
 	}
-	if (order.GetPriceDouble() <= ZERO_DOUBLE_VALUE)
+	if (order.GetPrice() <= ZERO_DOUBLE_VALUE)
 	{
 		const auto errMsg = "Received an invalid BinanceNewOrder with price is less than zero.";
 		m_logger->Error(errMsg);
@@ -358,7 +358,8 @@ BinanceNewOrder MatchingEngine::ConstructUpstreamNewOrder(
 		amount,
 		price,
 		stopPrice,
-		icebergAmount);
+		icebergAmount,
+		TradeType::TEST);
 
 	order.SetUserAccountID(message.GetStringValueByTag(FieldLabels::UserAccountID));
 

@@ -1,4 +1,4 @@
-/*#*******************************************************************************
+/********************************************************************************
 # COPYRIGHT NOTES
 # ---------------
 # This is a part of Binance Quant Trader Project
@@ -7,9 +7,13 @@
 #*******************************************************************************/ 
 
 #include "pch.h"
+
+#include "HardTradingLimits.h"
 #include "BinanceTradingRules.h"
+#include "BinanceExchangeProfile.h"
 
 #include "../SettingNConfig/tinyxml2.h"
+#include "../LibraryUtils/PathUtils.h"
 
 #include <cassert>
 
@@ -25,6 +29,11 @@ BinanceTradingRules::BinanceTradingRules(const XMLElement* tradingRuleConfigXml)
               rulesXml->UnsignedAttribute("RequestWeightPerMinute"),
               rulesXml->UnsignedAttribute("OrdersPerTenSeconds"),
               rulesXml->UnsignedAttribute("OrdersPerTwentyFourHours"));
+    const auto* exchangeProfileXml = tradingRuleConfigXml->FirstChildElement("ExchangeProfile");
+    assert(exchangeProfileXml);
+    std::string exchangeProfileFile(exchangeProfileXml->Attribute("File"));
+    PathUtils::ReplaceSubString(exchangeProfileFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
+    m_exchangeProfileMgr = std::make_unique<BinanceExchangeProfileMgr>(exchangeProfileFile);
 }
 
 BinanceTradingRules::~BinanceTradingRules() {}

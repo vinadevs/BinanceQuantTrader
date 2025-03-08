@@ -57,7 +57,7 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
             auto bestExchangeBidOrder = exchangeBidOrderBook->GetAllItems().front();
             for (const auto& exchangeOrder : exchangeBidOrderBook->GetAllItems())
             {
-                if (exchangeOrder.m_price <= newUpstreamOrder.GetPriceDouble())
+                if (exchangeOrder.m_price <= newUpstreamOrder.GetPrice())
                 {
                     bestExchangeBidOrder = exchangeOrder;
                     hasLiquidity = true;
@@ -71,20 +71,20 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
                 auto* userAccount = m_userAccountManager->OpenEditSessionForUserAccount(newUpstreamOrder.GetUserAccountID());
                 // update order ack to upstream
                 newUpstreamOrder.SetFilledPrice(bestExchangeBidOrder.m_price);
-                if (bestExchangeBidOrder.m_quantity >= newUpstreamOrder.GetAmountDouble()) // FULL FILL ORDER
+                if (bestExchangeBidOrder.m_quantity >= newUpstreamOrder.GetAmount()) // FULL FILL ORDER
                 {
                     // update amount for traded asset
                     // 1. increasing crypto asset coin amount
                     auto& assetBalance = userAccount->LookupAssetBalance(newUpstreamOrder.GetSymbol());
-                    assetBalance.m_free += newUpstreamOrder.GetAmountDouble();
+                    assetBalance.m_free += newUpstreamOrder.GetAmount();
                     // 2. decreasing stable coin amount
                     userAccount->m_usdtBalance.m_usdtAmount
-                        -= Finance::CalculateTradeValue(newUpstreamOrder.GetAmountDouble(), bestExchangeBidOrder.m_price);
+                        -= Finance::CalculateTradeValue(newUpstreamOrder.GetAmount(), bestExchangeBidOrder.m_price);
                     // 3. update filled ack
-                    newUpstreamOrder.SetFilledAmount(newUpstreamOrder.GetAmountDouble());
+                    newUpstreamOrder.SetFilledAmount(newUpstreamOrder.GetAmount());
                     newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::FULL_FILLED);
                 }
-                else if (bestExchangeBidOrder.m_quantity < newUpstreamOrder.GetAmountDouble()) // PARTIAL FILL ORDER
+                else if (bestExchangeBidOrder.m_quantity < newUpstreamOrder.GetAmount()) // PARTIAL FILL ORDER
                 {
                     newUpstreamOrder.SetFilledAmount(bestExchangeBidOrder.m_quantity);
                     newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::PRTIAL_FILLED);
@@ -102,7 +102,7 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
             auto bestExchangeAskOrder = exchangeAskOrderBook->GetAllItems().front();
             for (const auto& exchangeOrder : exchangeAskOrderBook->GetAllItems())
             {
-                if (exchangeOrder.m_price <= newUpstreamOrder.GetPriceDouble())
+                if (exchangeOrder.m_price <= newUpstreamOrder.GetPrice())
                 {
                     bestExchangeAskOrder = exchangeOrder;
                     hasLiquidity = true;
@@ -116,20 +116,20 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
                 auto* userAccount = m_userAccountManager->OpenEditSessionForUserAccount(newUpstreamOrder.GetUserAccountID());
                 // update order ack to upstream
                 newUpstreamOrder.SetFilledPrice(bestExchangeAskOrder.m_price);
-                if (bestExchangeAskOrder.m_quantity >= newUpstreamOrder.GetAmountDouble()) // FULL FILL ORDER
+                if (bestExchangeAskOrder.m_quantity >= newUpstreamOrder.GetAmount()) // FULL FILL ORDER
                 {
                     // update amount for traded asset
                     // 1. decreasing crypto asset coin amount
                     auto& assetBalance = userAccount->LookupAssetBalance(newUpstreamOrder.GetSymbol());
-                    assetBalance.m_free -= newUpstreamOrder.GetAmountDouble();
+                    assetBalance.m_free -= newUpstreamOrder.GetAmount();
                     // 2. increasing stable coin amount
                     userAccount->m_usdtBalance.m_usdtAmount
-                        += Finance::CalculateTradeValue(newUpstreamOrder.GetAmountDouble(), bestExchangeAskOrder.m_price);
+                        += Finance::CalculateTradeValue(newUpstreamOrder.GetAmount(), bestExchangeAskOrder.m_price);
 
-                    newUpstreamOrder.SetFilledAmount(newUpstreamOrder.GetAmountDouble());
+                    newUpstreamOrder.SetFilledAmount(newUpstreamOrder.GetAmount());
                     newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::FULL_FILLED);
                 }
-                else if (bestExchangeAskOrder.m_quantity < newUpstreamOrder.GetAmountDouble()) // PARTIAL FILL ORDER
+                else if (bestExchangeAskOrder.m_quantity < newUpstreamOrder.GetAmount()) // PARTIAL FILL ORDER
                 {
                     newUpstreamOrder.SetFilledAmount(bestExchangeAskOrder.m_quantity);
                     newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::PRTIAL_FILLED);

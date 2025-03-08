@@ -10,8 +10,6 @@
 
 #include "dlldefine.h"
 
-#include "../KernelTrading/double_type.h"
-
 #include <string>
 #include <memory>
 #include <unordered_map>
@@ -56,12 +54,18 @@ namespace OrderManagement {
 
         ////////////////////// postion ////////////////////////////////////////
 
-        // Add new postion
+        // Create new trading postion
         std::unique_ptr<BinanceNewOrder> OpenNewPositionUpstreamOrder(
 			const std::string& symbol,
 			const PositionSide posSide,
-			const binapi::double_type quality,
-			const binapi::double_type refPrice);
+			const double quality,
+			const double refPrice);
+
+		std::unique_ptr<BinanceNewOrder> OpenNewTestPositionUpstreamOrder(
+			const std::string& symbol,
+			const PositionSide posSide,
+			const double quality,
+			const double refPrice);
 
 		bool CloseOpenedPositionUpstreamOrder(const std::string& clientOrderId);
 		bool CloseAllOpenedPositionUpstreamOrder(const PositionSide posSide, const PositionType posType);

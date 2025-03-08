@@ -33,6 +33,14 @@ namespace OrderManagement {
         REPLACED,
     };
 
+    // Type of new order
+    enum class TradeType : unsigned
+    {
+        UNDEF,
+        REAL,
+        TEST,
+    };
+
     class DLL_CLASS_ORDERMANAGEMENT_EXPORTS
         BinanceNewOrder final : public Order 
     {
@@ -48,7 +56,8 @@ namespace OrderManagement {
             const double amount,
             const double price,
             const double stopPrice,
-            const double icebergAmount);
+            const double icebergAmount,
+            const TradeType tradeType);
 
         ~BinanceNewOrder() override;
 
@@ -57,13 +66,13 @@ namespace OrderManagement {
         binapi::e_type GetType() const { return m_type; }
         binapi::e_time GetTime() const { return m_time; }
         std::string GetAmountStr() const { return std::to_string(m_amount); }
-        double GetAmountDouble() const { return m_amount; }
+        double GetAmount() const { return m_amount; }
         std::string GetFilledAmountStr() const { return std::to_string(m_filledAmount); }
-        double GetFilledAmountDouble() const { return m_filledAmount; }
+        double GetFilledAmount() const { return m_filledAmount; }
         std::string GetPriceStr() const { return std::to_string(m_price); }
-        double GetFilledPriceDouble() const { return m_filledPrice; }
+        double GetFilledPrice() const { return m_filledPrice; }
         std::string GetFilledPriceStr() const { return std::to_string(m_filledPrice); }
-        double GetPriceDouble() const { return m_price; } 
+        double GetPrice() const { return m_price; } 
         std::string GetStopPriceStr() const { return std::to_string(m_stopPrice); }
         double GetStopPrice() const { return m_stopPrice; }
         std::string GetIcebergAmountStr() const { return std::to_string(m_icebergAmount); }

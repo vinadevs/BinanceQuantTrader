@@ -18,7 +18,7 @@ namespace LibraryUtils {
 
 namespace binapi {
 	namespace rest {
-		class account_info_t;
+		struct account_info_t;
 	};
 };
 

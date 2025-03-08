@@ -30,21 +30,43 @@ PositionManager::~PositionManager() {}
 std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewPositionUpstreamOrder(
 	const std::string& symbol,
     const PositionSide posSide,
-	const binapi::double_type quality,
-	const binapi::double_type refPrice)
+	const double quality,
+	const double refPrice)
+{
+    const double stopPrice = 0;
+    const double icebergAmount = 0;
+    const auto clientOrderId = GeneralUtils::GenerateUniqueID(StringDefinitions::BQTNewLongOrder);
+    m_workedPositions.try_emplace(clientOrderId, posSide);
+    return m_orderCreator->CreateNewBinanceOrderFull(
+          clientOrderId
+        , symbol
+        , posSide == PositionSide::LONG ? binapi::e_side::buy : binapi::e_side::sell
+        , binapi::e_type::limit
+        , binapi::e_time::GTC
+        , quality
+        , refPrice
+        , stopPrice
+        , icebergAmount);
+}
+
+std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewTestPositionUpstreamOrder(
+    const std::string& symbol,
+    const PositionSide posSide,
+    const double quality,
+    const double refPrice)
 {
     const double stopPrice = 0;
     const double icebergAmount = 0;
     const auto clientOrderId = GeneralUtils::GenerateUniqueID(StringDefinitions::BQTNewLongOrder);
     m_workedPositions.try_emplace(clientOrderId, posSide);
     return m_orderCreator->CreateNewBinanceTestOrderFull(
-          clientOrderId
+        clientOrderId
         , symbol
         , posSide == PositionSide::LONG ? binapi::e_side::buy : binapi::e_side::sell
         , binapi::e_type::limit
         , binapi::e_time::GTC
-        , quality.convert_to<double>()
-        , refPrice.convert_to<double>()
+        , quality
+        , refPrice
         , stopPrice
         , icebergAmount);
 }

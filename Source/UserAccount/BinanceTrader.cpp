@@ -74,20 +74,20 @@ BinanceTrader::BinanceTrader(
 
 ////////////// UPSTREAM PROCESSING /////////////////////////////
 
-binapi::double_type BinanceTrader::CalculateTradeValue(
-	const binapi::double_type quality,
-	const binapi::double_type refPrice)
+double BinanceTrader::CalculateTradeValue(
+	const double quality,
+	const double refPrice)
 {
 	return quality * refPrice;
 }
 
 bool BinanceTrader::CreateLongPosition(
 	const std::string& symbol,
-	const binapi::double_type quality, 
-	const binapi::double_type refPrice)
+	const double quality, 
+	const double refPrice)
 {
 #if USE_BACK_TEST_TRADING
-	if (m_binanceAccountInfo->stableCoinAmount > CalculateTradeValue(quality, refPrice))
+	if (m_binanceAccountInfo->stableCoinAmount.convert_to<double>() > CalculateTradeValue(quality, refPrice))
 	{
 #else
 	if (m_portfolio->GetBinanceTradingPair(symbol))
@@ -96,8 +96,9 @@ bool BinanceTrader::CreateLongPosition(
 		auto newSingleLongOrder = m_positionManager->OpenNewPositionUpstreamOrder(symbol, PositionSide::LONG, quality, refPrice);
 #if USE_BACK_TEST_TRADING
 		const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleLongOrder.get());
+#elif USE_BINANCE_TEST_TRADING
+		const auto result = BinanceExchangeGateWay->SendNewBinanceTestOrderFull(newSingleLongOrder.get());
 #else
-		//const auto result = BinanceExchangeGateWay->SendNewBinanceTestOrderFull(newSingleLongOrder.get());
 		const auto result = BinanceExchangeGateWay->SendNewBinanceOrderFull(newSingleLongOrder.get());
 #endif
 		newSingleLongOrder->SetSendingOrderResult(result);
@@ -107,23 +108,24 @@ bool BinanceTrader::CreateLongPosition(
 	}
 	else
 	{
-		m_logger->Info("User account has no stable coin available, could not trade!");
+		m_logger->Warning("User account has no stable coin available, could not create long (buy) position!");
 		return false;
 	}
 }
 
 bool BinanceTrader::CreateShortPosition(
 	const std::string& symbol,
-	const binapi::double_type quality, 
-	const binapi::double_type refPrice)
+	const double quality, 
+	const double refPrice)
 {
 	if (m_portfolio->GetBinanceTradingPair(symbol)->GetQuantity() > ZERO_DOUBLE_VALUE)
 	{
 		auto newSingleShortOrder = m_positionManager->OpenNewPositionUpstreamOrder(symbol, PositionSide::SHORT, quality, refPrice);
 #if USE_BACK_TEST_TRADING
 		const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleShortOrder.get());
+#elif USE_BINANCE_TEST_TRADING
+		const auto result = BinanceExchangeGateWay->SendNewBinanceTestOrderFull(newSingleShortOrder.get());
 #else
-		//const auto result = BinanceExchangeGateWay->SendNewBinanceTestOrderFull(newSingleShortOrder.get());
 		const auto result = BinanceExchangeGateWay->SendNewBinanceOrderFull(newSingleShortOrder.get());
 #endif
 		newSingleShortOrder->SetSendingOrderResult(result);
@@ -133,7 +135,7 @@ bool BinanceTrader::CreateShortPosition(
 	}
 	else
 	{
-		m_logger->Info("User account has no asset available, could not trade!");
+		m_logger->Warning("User account has no asset available, could not create short (sell) position!");
 		return false;
 	}
 }

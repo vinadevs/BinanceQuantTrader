@@ -153,9 +153,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BinanceExchangeProfile.h" />
     <ClInclude Include="BinanceTradingRules.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="HardTradingLimits.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>

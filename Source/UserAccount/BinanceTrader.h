@@ -10,7 +10,6 @@
 
 #include "dlldefine.h"
 
-#include "../KernelTrading/double_type.h"
 #include "../OrderManagement/BinanceWorkedOrderManager.h"
 #include "../OrderManagement/PositionManager.h"
 
@@ -49,12 +48,12 @@ namespace UserAccount {
 		////////////// UPSTREAM PROCESSING /////////////////////////////
 
 		bool CreateLongPosition(const std::string& symbol,
-			const binapi::double_type quality,
-			const binapi::double_type refPrice) override;
+			const double quality,
+			const double refPrice) override;
 
 		bool CreateShortPosition(const std::string& symbol,
-			const binapi::double_type quality,
-			const binapi::double_type refPrice) override;
+			const double quality,
+			const double refPrice) override;
 
 		void UpdateAccountInfo();
 
@@ -67,9 +66,9 @@ namespace UserAccount {
 		void ReportTradeData(const std::string& symbol);
 #endif
 	private:
-		binapi::double_type CalculateTradeValue(
-			const binapi::double_type quality,
-			const binapi::double_type refPrice);
+		double CalculateTradeValue(
+			const double quality,
+			const double refPrice);
 
 		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr };
 		RiskManagement::RiskManager* m_riskManager{ nullptr };  // stop loss

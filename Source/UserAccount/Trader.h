@@ -9,7 +9,6 @@
 #pragma once
 
 #include "dlldefine.h"
-#include "../KernelTrading/double_type.h"
 #include "../LibraryUtils/Logger.h"
 
 #include <string>
@@ -34,12 +33,12 @@ namespace UserAccount {
 		virtual ~Trader();
 
 		virtual bool CreateLongPosition(const std::string& symbol,
-			const binapi::double_type quality,
-			const binapi::double_type refPrice) = 0;
+			const double quality,
+			const double refPrice) = 0;
 
 		virtual bool CreateShortPosition(const std::string& symbol,
-			const binapi::double_type quality,
-			const binapi::double_type refPrice) = 0;
+			const double quality,
+			const double refPrice) = 0;
 	protected:
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
 	};

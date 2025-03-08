@@ -1,4 +1,0 @@
-# TradingPair,Quantity,CashBalance,OriginalAssetCashBalance 
-BTCUSDT,1,0,65721
-ETHUSDT,1,0,2673
-BNBUSDT,1,0,602
