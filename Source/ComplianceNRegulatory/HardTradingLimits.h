@@ -19,6 +19,7 @@
 namespace ComplianceNRegulatory {
 	struct DLL_CLASS_COMPLIANCENREGULATORY_EXPORTS HardTradingLimits final
 	{
+		HardTradingLimits() = default;
 		HardTradingLimits(
 			const size_t requestWeightPerMinute,
 			const size_t ordersPerTenSeconds,

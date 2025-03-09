@@ -81,7 +81,7 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 		{
 			if (IsNotIsNotExceededTradingRules())
 			{
-				const auto* symbolProfile = m_tradingRules->GetExchangeProfileMgr()->LookupExchangeProfile(hints->symbol);
+				const auto* symbolProfile = m_tradingRules->GetExchangeProfileMgr()->LookupStaticExchangeProfile(hints->symbol);
 				if (symbolProfile)
 				{
 					Sleep(1000); // delay to avoid bans while testing

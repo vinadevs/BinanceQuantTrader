@@ -126,7 +126,7 @@
       <EnableUAC>false</EnableUAC>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>LibraryUtilsD.lib;SettingNConfigD.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>RestAPID.lib;KernelTradingD.lib;LibraryUtilsD.lib;SettingNConfigD.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -149,7 +149,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>LibraryUtils.lib;SettingNConfig.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>RestAPI.lib;KernelTrading.lib;LibraryUtils.lib;SettingNConfig.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -161,6 +161,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BinanceExchangeProfile.cpp" />
     <ClCompile Include="BinanceTradingRules.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">

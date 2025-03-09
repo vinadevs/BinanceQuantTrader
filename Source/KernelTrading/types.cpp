@@ -13,6 +13,7 @@
 #include "fnv1a.h"
 
 #include <type_traits>
+#include <fstream>
 
 #include <boost/utility/string_view.hpp>
 
@@ -863,6 +864,70 @@ std::ostream& operator<<(std::ostream &os, const exchange_info_t &o) {
     os << "}";
 
     return os;
+}
+
+bool exchange_info_t::write_exchange_info_to_file(const std::string& filePath, const exchange_info_t& o) {
+    std::ofstream file(filePath);
+    if (!file.is_open()) {
+        return false; // Failed to open file
+    }
+
+    file << "{";
+    file << "\"timezone\":\"" << o.timezone << "\",";
+    file << "\"serverTime\":" << o.serverTime << ",";
+
+    file << "\"exchangeFilters\":[";
+    for (auto it = o.exchangeFilters.begin(); it != o.exchangeFilters.end(); ++it) {
+        file << "\"" << *it << "\"";
+        if (std::next(it) != o.exchangeFilters.end()) {
+            file << ",";
+        }
+    }
+    file << "],";
+
+    file << "\"rateLimits\":[";
+    for (auto it = o.rateLimits.begin(); it != o.rateLimits.end(); ++it) {
+        file << *it;
+        if (std::next(it) != o.rateLimits.end()) {
+            file << ",";
+        }
+    }
+    file << "],";
+
+    file << "\"symbols\":[";
+    for (auto it = o.symbols.begin(); it != o.symbols.end(); ++it) {
+        file << it->second;
+        if (std::next(it) != o.symbols.end()) {
+            file << ",";
+        }
+    }
+    file << "],";
+
+    static const std::size_t perms_arr[] = {
+        static_cast<std::underlying_type<e_permissions>::type>(e_permissions::NONE),
+        static_cast<std::underlying_type<e_permissions>::type>(e_permissions::SPOT),
+        static_cast<std::underlying_type<e_permissions>::type>(e_permissions::MARGIN),
+        static_cast<std::underlying_type<e_permissions>::type>(e_permissions::LEVERAGED),
+        static_cast<std::underlying_type<e_permissions>::type>(e_permissions::TRD_GRP_002),
+        static_cast<std::underlying_type<e_permissions>::type>(e_permissions::TRD_GRP_003),
+        static_cast<std::underlying_type<e_permissions>::type>(e_permissions::TRD_GRP_004),
+        static_cast<std::underlying_type<e_permissions>::type>(e_permissions::TRD_GRP_005)
+    };
+
+    file << "\"permissions\":[";
+    for (const auto* it = std::begin(perms_arr); it != std::end(perms_arr); ++it) {
+        if (o.permissions & (*it)) {
+            file << "\"" << e_permissions_to_string(static_cast<e_permissions>(*it)) << "\"";
+            if (std::next(it) != std::end(perms_arr)) {
+                file << ",";
+            }
+        }
+    }
+    file << "]";
+
+    file << "}";
+
+    return true;
 }
 
 /*************************************************************************************************/

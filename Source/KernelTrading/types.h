@@ -360,6 +360,7 @@ struct DLL_CLASS exchange_info_t {
     const symbol_t& get_by_symbol(const char *sym) const;
 
     static exchange_info_t construct(const flatjson::fjson &json);
+    static bool write_exchange_info_to_file(const std::string& filePath, const exchange_info_t& o);
     friend DLL_CLASS std::ostream& operator<<(std::ostream &os, const exchange_info_t &s);
 };
 
