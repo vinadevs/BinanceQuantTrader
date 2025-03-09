@@ -33,15 +33,6 @@
     <ClInclude Include="dlldefine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PortfolioInvestmentLocalTest.h">
-      <Filter>Local Test Only</Filter>
-    </ClInclude>
-    <ClInclude Include="CryptoAssetLocalTest.h">
-      <Filter>Local Test Only</Filter>
-    </ClInclude>
-    <ClInclude Include="Asset.h">
-      <Filter>Local Test Only</Filter>
-    </ClInclude>
     <ClInclude Include="PortfolioInvestment.h">
       <Filter>Base Portfolio</Filter>
     </ClInclude>
@@ -61,12 +52,6 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CryptoAssetLocalTest.cpp">
-      <Filter>Local Test Only</Filter>
-    </ClCompile>
-    <ClCompile Include="PortfolioInvestmentLocalTest.cpp">
-      <Filter>Local Test Only</Filter>
     </ClCompile>
     <ClCompile Include="PortfolioInvestmentBinance.cpp">
       <Filter>Binance Portfolio</Filter>
