@@ -22,6 +22,7 @@
 #include "../LibraryUtils/SourceBuildFlags.h"
 #include "../RestAPI/ApiKeyInfoManager.h"
 #include "../RestAPI/BinanceAPI.h"
+#include "../SettingNConfig/BqtGlobalSettings.h"
 
 #if USE_BACK_TEST_TRADING
 #include "../TradingStrategies/StrategyMessageServer.h"
@@ -45,6 +46,7 @@ using namespace HistoricalData;
 using namespace UserAccount;
 using namespace tinyxml2;
 using namespace LibraryUtils;
+using namespace SettingNConfig;
 using namespace RestAPI;
 
 TradingModel::TradingModel(
@@ -84,6 +86,10 @@ void TradingModel::PrepareTradingComponents(
 	const XMLDocument* configAccessKeyXml)
 {
 	// PREPARES TRADING COMPONENTS
+	m_logger->Info("Initiating Global Settings.");
+	const auto* globalSettingsCfg = configBQTXml->FirstChildElement("GlobalSettings");
+	BqtGlobalSettingsMgr->InitGlobalSetting(globalSettingsCfg);
+
 	m_logger->Info("Initiating User Account And Binance API.");
 	const auto* userAccountXml = configAccessKeyXml->FirstChildElement("UserAccount");
 	assert(userAccountXml);

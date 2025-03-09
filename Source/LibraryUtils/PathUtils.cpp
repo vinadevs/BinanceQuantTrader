@@ -15,10 +15,12 @@
 std::string PathUtils::GetApplicationFolderPath()
 {
     char szPath[MAX_PATH];
+#ifdef _WIN32
     if (GetModuleFileNameA(NULL, szPath, ARRAYSIZE(szPath)) == 0)
     {
         throw std::runtime_error("Error: GetModuleFileName failed, error code:" + std::to_string(GetLastError()));
     }
+#endif
 #ifdef _DEBUG
     return std::filesystem::path(szPath).parent_path().parent_path().parent_path().string();
 #else

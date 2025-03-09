@@ -80,6 +80,7 @@ Source/OrderRouting/x64
 Source/MarketDataCapture/x64
 Source/Configurations/BQT/BinanceAKCfgTest.xml
 Source/Configurations/Simulator/BinanceExchangeSimulatorCfgTest.xml
+Source/AppData
 Source/Lib64
 .vs/
 x64/

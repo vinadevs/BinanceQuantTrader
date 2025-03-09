@@ -87,9 +87,10 @@ BINANCE_QUANT_TRADING_MODEL
 		}
 
 		// APPLICATION: BUILD AND START TRADING MODEL
-		logger->Info("Starting Trading Model.");
+		logger->Info("Preparing Trading Model.");
 		std::unique_ptr<BinanceQuantTrader::TradingModel> model
 			= std::make_unique<BinanceQuantTrader::TradingModel>(configBQTXml.get(), configAccessKeyXml.get());
+		logger->Info("Starting Trading Model.");
 		model->RunModel();
 	}
 	catch (const std::exception& e)
