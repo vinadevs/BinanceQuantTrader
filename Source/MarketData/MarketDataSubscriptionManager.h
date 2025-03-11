@@ -32,6 +32,7 @@ namespace MarketData {
 		PART_DEPTH,
 		DIFF_DEPTH,
 		USER_DATA,
+		END_NOT_USING  // Add this to define the range
 	};
 
 	class MarketDataSubscriptionManager

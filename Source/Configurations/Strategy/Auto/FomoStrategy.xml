@@ -15,3 +15,8 @@
 <ShortSell>
   <Parameters TriggerMaxiumUpTick="50" TriggerMaxiumDownTick="20"/>
 </ShortSell>
+
+<TargetSymbols>
+  <Symbols List="BTCUSDT,ETHUSDT,BNBUSDT"/>
+</TargetSymbols>
+  

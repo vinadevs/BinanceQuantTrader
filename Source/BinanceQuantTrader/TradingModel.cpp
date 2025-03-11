@@ -142,7 +142,7 @@ void TradingModel::PrepareTradingComponents(
 	const auto* traderXmlCfg = configBQTXml->FirstChildElement("TraderInfo");
 	m_trader = TraderFactory::CreateSmartTrader(m_portfolio.get(), m_riskManager.get(), traderXmlCfg);
 
-	m_logger->Info("Initiating Compliance And Regulatory .");
+	m_logger->Info("Initiating Compliance And Regulatory.");
 	const auto* complianceCfg = configBQTXml->FirstChildElement("ComplianceNRegulatory");
 	m_tradingRules = std::make_unique<BinanceTradingRules>(complianceCfg);
 

@@ -1,4 +1,0 @@
-# Trading Pair Symbol
-BTCUSDT
-ETHUSDT
-BNBUSDT

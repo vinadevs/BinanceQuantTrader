@@ -29,7 +29,7 @@ BinanceTradingRules::BinanceTradingRules(const XMLElement* tradingRuleConfigXml)
               rulesXml->UnsignedAttribute("RequestWeightPerMinute"),
               rulesXml->UnsignedAttribute("OrdersPerTenSeconds"),
               rulesXml->UnsignedAttribute("OrdersPerTwentyFourHours"));
-    const auto* exchangeProfileXml = tradingRuleConfigXml->FirstChildElement("ExchangeProfile");
+    const auto* exchangeProfileXml = tradingRuleConfigXml->FirstChildElement("StaticExchangeProfile");
     assert(exchangeProfileXml);
     std::string exchangeProfileFile(exchangeProfileXml->Attribute("File"));
     PathUtils::ReplaceSubString(exchangeProfileFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());

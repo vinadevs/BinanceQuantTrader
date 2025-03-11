@@ -22,6 +22,7 @@
 #include <unordered_set>
 
 namespace tinyxml2 {
+	class XMLDocument;
 	class XMLElement;
 };
 
@@ -41,12 +42,16 @@ namespace MarketData {
 	{
 	public:
 		MarketDataEvents(
-			const tinyxml2::XMLElement* mkDataConfigXml,
+			const tinyxml2::XMLElement* rootConfigXml,
 			MarketDataFeedHandler* feedHandler);
 		~MarketDataEvents();
 
-		void StartSubscriptionEvents();
-		void Wait();
+		bool Subscribe(const std::string& symbol);
+		bool Unsubscribe(const std::string& symbol);
+
+		// Start market data events and wait
+		void StartAndWait();
+
 		const std::unordered_set<std::string>& GetSubscribingSymbols() const;
 	private:
 		// choose what we want to receive from exchange
@@ -72,15 +77,18 @@ namespace MarketData {
 			const std::string& dataName,
 			binapi::ws::websockets::handle h,
 			const SubscriptionHandleType type);
+		void LoadBinanceMarketDataConfig(const tinyxml2::XMLElement* rootConfigXml);
+		void CreateWebSocketConnection();
 		// load static symbols to subscribe
 		void LoadInterestingDataSymbols(const char* filePath);
 
-		std::unordered_set<std::string> m_subscribingSymbols;
+		std::unordered_set<std::string> m_subscribedSymbols;
+		std::unordered_set<std::string> m_staticSymbols;
 		boost::asio::io_context m_ioContext;
 		std::unique_ptr<binapi::ws::websockets> m_webSocketRealTime;
 		std::unique_ptr<MarketDataSubscriptionManager> m_mdSubscriptionMgr;
 		MarketDataFeedHandler* m_feedHandler{ nullptr };
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
-		const tinyxml2::XMLElement* m_configXml{ nullptr };
+		std::unique_ptr<tinyxml2::XMLDocument> m_marketDataCfgXml;
 	};
 };

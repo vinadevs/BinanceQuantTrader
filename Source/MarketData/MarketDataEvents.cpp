@@ -16,6 +16,7 @@
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/StringUtils.h"
 #include "../LibraryUtils/PathUtils.h"
+#include "../LibraryUtils/EnumIteration.h"
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/steady_timer.hpp>
@@ -29,37 +30,65 @@ using namespace tinyxml2;
 using namespace LibraryUtils;
 
 MarketDataEvents::MarketDataEvents(
-    const XMLElement* configXml,
+    const XMLElement* rootConfigXml,
     MarketDataFeedHandler* feedHandler)
     : m_feedHandler(feedHandler),
     m_mdSubscriptionMgr(std::make_unique<MarketDataSubscriptionManager>()),
-    m_logger(std::make_unique<Logger>("MarketDataEvents")),
-    m_configXml(configXml)
+    m_logger(std::make_unique<Logger>("MarketDataEvents"))
 {
-    assert(m_configXml);
-    assert(m_feedHandler);
-    const auto* connectionXml = m_configXml->FirstChildElement("Connection");
-	assert(connectionXml);
-    const auto streamBinanceCom = connectionXml->Attribute("StreamBinanceCom");
-    const auto streamConnectionPort = connectionXml->Attribute("StreamConnectionPort");
-    m_webSocketRealTime = std::make_unique<binapi::ws::websockets>(
-          m_ioContext
-        , streamBinanceCom
-        , streamConnectionPort);
-    m_logger->Info("Binance web socket created.");
-
-    const auto* interestingDataSymbolsXml = m_configXml->FirstChildElement("InterestingDataSymbols");
-    assert(interestingDataSymbolsXml);
-    const auto* assetFile = interestingDataSymbolsXml->Attribute("File");
-    assert(assetFile);
-    m_logger->Info("Loading binance asset symbol data.");
-    LoadInterestingDataSymbols(assetFile);
+    LoadBinanceMarketDataConfig(rootConfigXml);
+    CreateWebSocketConnection();
 }
 
 MarketDataEvents::~MarketDataEvents()
 {
     m_logger->Info("Shutdown update events and unsubscribe all symbols.");
     AsyncUnsubscribeAll();
+}
+
+void MarketDataEvents::LoadBinanceMarketDataConfig(const XMLElement* rootConfigXml)
+{
+    assert(rootConfigXml);
+    const auto* usingMarketDataXml = rootConfigXml->FirstChildElement("UsingMarketData");
+    assert(usingMarketDataXml);
+    std::string marketDataCfgFile(usingMarketDataXml->Attribute("File"));
+    PathUtils::ReplaceSubString(marketDataCfgFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
+    if (std::filesystem::exists(marketDataCfgFile))
+    {
+        if (StringUtils::IsConfigAttributeMatched(usingMarketDataXml->Attribute("Name"), "BinanceMarketData"))
+        {
+            m_marketDataCfgXml = std::make_unique<XMLDocument>();
+            const auto errLoadFileXml = m_marketDataCfgXml->LoadFile(marketDataCfgFile.c_str());
+            if (errLoadFileXml != XML_SUCCESS)
+            {
+                throw std::runtime_error("MarketDataFactory: Load file Xml error="
+                    + std::string(XMLDocument::ErrorIDToName(errLoadFileXml)) + ", error path:" + marketDataCfgFile);
+            }
+        }
+        else
+        {
+            throw std::runtime_error("MarketDataFactory: unsupported TradingStrategy config");
+        }
+    }
+    else
+    {
+        throw std::runtime_error("MarketDataFactory: File does not exist=" + marketDataCfgFile);
+    }
+}
+
+void MarketDataEvents::CreateWebSocketConnection()
+{
+    const auto* realTimeMarketDataCfg = m_marketDataCfgXml->FirstChildElement("RealTimeMarketData");
+    assert(realTimeMarketDataCfg);
+    const auto* connectionXml = realTimeMarketDataCfg->FirstChildElement("Connection");
+    assert(connectionXml);
+    const auto streamBinanceCom = connectionXml->Attribute("StreamBinanceCom");
+    const auto streamConnectionPort = connectionXml->Attribute("StreamConnectionPort");
+    m_webSocketRealTime = std::make_unique<binapi::ws::websockets>(
+        m_ioContext
+        , streamBinanceCom
+        , streamConnectionPort);
+    m_logger->Info("Binance web socket created.");
 }
 
 void MarketDataEvents::LoadInterestingDataSymbols(const char* filePath)
@@ -83,7 +112,7 @@ void MarketDataEvents::LoadInterestingDataSymbols(const char* filePath)
                 if (std::getline(ss, tradingPair))
                 {
                     StringUtils::StrimString(tradingPair);
-                    m_subscribingSymbols.emplace(tradingPair);
+                    m_staticSymbols.emplace(tradingPair);
                 }
                 else
                 {
@@ -103,68 +132,85 @@ void MarketDataEvents::LoadInterestingDataSymbols(const char* filePath)
     }
 }
 
-void MarketDataEvents::StartSubscriptionEvents()
+bool MarketDataEvents::Subscribe(const std::string& symbol)
 {
-    m_logger->Info("Starting subscribing real time market data.");
-    if (m_subscribingSymbols.empty())
+    m_logger->Info("Starting subscribing real time market data for symbol=" + symbol);
+    if (m_feedHandler->CreateNewMarketDataFeed(symbol))
     {
-        throw std::runtime_error("MarketDataEvents: interesting symbol list is empty. No symbols to subscribe market data.");
+        const auto* realTimeMarketDataCfg = m_marketDataCfgXml->FirstChildElement("RealTimeMarketData");
+        assert(realTimeMarketDataCfg);
+        const auto* dataTypeSubscriptionXml = realTimeMarketDataCfg->FirstChildElement("SubscriptionData");
+        assert(dataTypeSubscriptionXml);
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("IndividualBookTickerData"), "true"))
+        {
+            SubscibeIndividualBookTicker(symbol);
+        }
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("TradeData"), "true"))
+        {
+            SubscibeTrade(symbol);
+        }
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("IndividualMarketTickerData"), "true"))
+        {
+            SubscibeIndividualMarketTicker(symbol);
+        }
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("AllMarketTickersData"), "true"))
+        {
+            SubscibeAllMarketTickers(symbol);
+        }
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("IndividualMiniTickerData"), "true"))
+        {
+            SubscibeIndividualMiniTicker(symbol);
+        }
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("AllMiniTickersData"), "true"))
+        {
+            SubscibeAllMiniTickers(symbol);
+        }
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("AggregateTradeData"), "true"))
+        {
+            SubscibeAggregateTrade(symbol);
+        }
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("KlineCandleStickData"), "true"))
+        {
+            SubscibeKlineCandleStick(symbol);
+        }
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("PartDepthData"), "true"))
+        {
+            SubscibePartDepth(symbol);
+        }
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("DiffDepthData"), "true"))
+        {
+            SubscibeDiffDepth(symbol);
+        }
+        // stores subscribed symbol
+        m_subscribedSymbols.emplace(symbol);
+        return true;
     }
-    for (const auto& symbol : m_subscribingSymbols)
+    else
     {
-        if (m_feedHandler->CreateNewMarketDataFeed(symbol))
-        {
-            const auto* dataTypeSubscriptionXml = m_configXml->FirstChildElement("SubscriptionData");
-            assert(dataTypeSubscriptionXml);
-            if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("IndividualBookTickerData"), "true"))
-            {
-                SubscibeIndividualBookTicker(symbol);
-            }
-            if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("TradeData"), "true"))
-            {
-                SubscibeTrade(symbol);
-            }
-            if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("IndividualMarketTickerData"), "true"))
-            {
-                SubscibeIndividualMarketTicker(symbol);
-            }
-            if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("AllMarketTickersData"), "true"))
-            {
-                SubscibeAllMarketTickers(symbol);
-            }
-            if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("IndividualMiniTickerData"), "true"))
-            {
-                SubscibeIndividualMiniTicker(symbol);
-            }
-            if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("AllMiniTickersData"), "true"))
-            {
-                SubscibeAllMiniTickers(symbol);
-            }
-            if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("AggregateTradeData"), "true"))
-            {
-                SubscibeAggregateTrade(symbol);
-            }
-            if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("KlineCandleStickData"), "true"))
-            {
-                SubscibeKlineCandleStick(symbol);
-            }
-            if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("PartDepthData"), "true"))
-            {
-                SubscibePartDepth(symbol);
-            }
-            if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("DiffDepthData"), "true"))
-            {
-                SubscibeDiffDepth(symbol);
-            }
-        }
-        else
-        {
-            m_logger->Warning("Could not create new market data feed for symbol=" + symbol);
-        }
+        m_logger->Warning("Could not create new market data feed for symbol=" + symbol);
+        return false;
     }
 }
 
-void MarketDataEvents::Wait()
+bool MarketDataEvents::Unsubscribe(const std::string& symbol)
+{
+    for (auto type = EnumBegin<SubscriptionHandleType>(); 
+              type != EnumEnd<SubscriptionHandleType>();
+              type = static_cast<SubscriptionHandleType>(static_cast<unsigned>(type) + 1))
+    {
+        auto h = m_mdSubscriptionMgr->GetHandle(symbol, type);
+        if (h) {
+            Unsubscribe(h);
+        }
+        else
+        {
+            return false;
+        }
+    }  
+    return true;
+}
+
+void MarketDataEvents::StartAndWait()
 {
     // ansyn wait in main loop
     m_ioContext.run();
@@ -172,7 +218,7 @@ void MarketDataEvents::Wait()
 
 const std::unordered_set<std::string>& MarketDataEvents::GetSubscribingSymbols() const
 {
-    return m_subscribingSymbols;
+    return m_subscribedSymbols;
 }
 
 void MarketDataEvents::VerifySubscriptionHandle(

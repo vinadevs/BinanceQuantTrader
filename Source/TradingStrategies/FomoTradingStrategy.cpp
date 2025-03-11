@@ -39,15 +39,15 @@ FomoTradingStrategy::FomoTradingStrategy(
 
 void FomoTradingStrategy::InitializeParameters(const std::string& strategyCfgPath)
 {
-	auto strategyCfgPathXml = std::make_unique<XMLDocument>();
-	const auto errLoadFileXml = strategyCfgPathXml->LoadFile(strategyCfgPath.c_str());
+	auto strategyCfgXml = std::make_unique<XMLDocument>();
+	const auto errLoadFileXml = strategyCfgXml->LoadFile(strategyCfgPath.c_str());
 	if (errLoadFileXml != XML_SUCCESS)
 	{
 		throw std::runtime_error("FomoTradingStrategy: Load file Xml error=" 
 			+ std::string(XMLDocument::ErrorIDToName(errLoadFileXml)) + ", error path:" + strategyCfgPath);
 	}
-	SetupStrategyLifeTime(strategyCfgPathXml.get());
-	const auto* signalXml = strategyCfgPathXml->FirstChildElement("IndicatorAndSignals");
+	SetupStrategyLifeTime(strategyCfgXml.get());
+	const auto* signalXml = strategyCfgXml->FirstChildElement("IndicatorAndSignals");
 	assert(signalXml);
 	m_tradingSignalService = std::make_unique<TradingSignalService>(m_trader->GetPortfolio(), signalXml);
 	m_tradingSignalService->RegisterTradingHintsListener(this);

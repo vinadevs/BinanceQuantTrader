@@ -36,8 +36,17 @@ void RealTimeMarketData::UnRegisterDataListener(MarketDataObserver* observer)
 
 void RealTimeMarketData::StartStreamingData()
 {
-	m_dataEvents->StartSubscriptionEvents();
-	m_dataEvents->Wait();
+	m_dataEvents->StartAndWait();
+}
+
+bool RealTimeMarketData::SubscribeSymbol(const std::string& symbol)
+{
+	return m_dataEvents->Subscribe(symbol);
+}
+
+bool RealTimeMarketData::UnsubscribeSymbol(const std::string& symbol)
+{
+	return m_dataEvents->Unsubscribe(symbol);
 }
 
 const std::unordered_set<std::string>& RealTimeMarketData::GetSubscribingSymbols() const
