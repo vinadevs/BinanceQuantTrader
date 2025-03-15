@@ -122,6 +122,7 @@ namespace ExchangeSimulator {
         std::unique_ptr<Participant> m_participant;
         RTMarketParticipant* m_rtMarketDataParticipant{ nullptr };
         std::unique_ptr<MarketData::RealTimeMarketData> m_marketData;
+        std::unique_ptr<tinyxml2::XMLDocument> m_binanceMarketDataConfig;
         DownstreamAckBehaviour m_downstreamAckBehaviour{ DownstreamAckBehaviour::USING_HTTP_REQUEST };
     };
 };

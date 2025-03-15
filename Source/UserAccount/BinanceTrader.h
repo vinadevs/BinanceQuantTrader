@@ -21,6 +21,7 @@
 #include "Trader.h"
 
 #include <string>
+#include <vector>
 #include <memory>
 
 namespace PortfolioManager {
@@ -56,6 +57,7 @@ namespace UserAccount {
 			const double refPrice) override;
 
 		void UpdateAccountInfo();
+		void CreatePortfolioManagement(const std::vector<std::string>& targetTradeSymbols);
 
 		PortfolioManager::PortfolioInvestmentBinance* GetPortfolio() const { return m_portfolio; }
 		

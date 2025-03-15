@@ -30,13 +30,14 @@ using namespace tinyxml2;
 using namespace LibraryUtils;
 
 MarketDataEvents::MarketDataEvents(
-    const XMLElement* rootConfigXml,
+    const XMLElement* marketDataConfigXml,
     MarketDataFeedHandler* feedHandler)
-    : m_feedHandler(feedHandler),
+    : m_marketDataConfigXml(marketDataConfigXml),
+    m_feedHandler(feedHandler),
     m_mdSubscriptionMgr(std::make_unique<MarketDataSubscriptionManager>()),
     m_logger(std::make_unique<Logger>("MarketDataEvents"))
 {
-    LoadBinanceMarketDataConfig(rootConfigXml);
+    assert(m_marketDataConfigXml);
     CreateWebSocketConnection();
 }
 
@@ -46,41 +47,9 @@ MarketDataEvents::~MarketDataEvents()
     AsyncUnsubscribeAll();
 }
 
-void MarketDataEvents::LoadBinanceMarketDataConfig(const XMLElement* rootConfigXml)
-{
-    assert(rootConfigXml);
-    const auto* usingMarketDataXml = rootConfigXml->FirstChildElement("UsingMarketData");
-    assert(usingMarketDataXml);
-    std::string marketDataCfgFile(usingMarketDataXml->Attribute("File"));
-    PathUtils::ReplaceSubString(marketDataCfgFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
-    if (std::filesystem::exists(marketDataCfgFile))
-    {
-        if (StringUtils::IsConfigAttributeMatched(usingMarketDataXml->Attribute("Name"), "BinanceMarketData"))
-        {
-            m_marketDataCfgXml = std::make_unique<XMLDocument>();
-            const auto errLoadFileXml = m_marketDataCfgXml->LoadFile(marketDataCfgFile.c_str());
-            if (errLoadFileXml != XML_SUCCESS)
-            {
-                throw std::runtime_error("MarketDataFactory: Load file Xml error="
-                    + std::string(XMLDocument::ErrorIDToName(errLoadFileXml)) + ", error path:" + marketDataCfgFile);
-            }
-        }
-        else
-        {
-            throw std::runtime_error("MarketDataFactory: unsupported TradingStrategy config");
-        }
-    }
-    else
-    {
-        throw std::runtime_error("MarketDataFactory: File does not exist=" + marketDataCfgFile);
-    }
-}
-
 void MarketDataEvents::CreateWebSocketConnection()
 {
-    const auto* realTimeMarketDataCfg = m_marketDataCfgXml->FirstChildElement("RealTimeMarketData");
-    assert(realTimeMarketDataCfg);
-    const auto* connectionXml = realTimeMarketDataCfg->FirstChildElement("Connection");
+    const auto* connectionXml = m_marketDataConfigXml->FirstChildElement("Connection");
     assert(connectionXml);
     const auto streamBinanceCom = connectionXml->Attribute("StreamBinanceCom");
     const auto streamConnectionPort = connectionXml->Attribute("StreamConnectionPort");
@@ -134,12 +103,11 @@ void MarketDataEvents::LoadInterestingDataSymbols(const char* filePath)
 
 bool MarketDataEvents::Subscribe(const std::string& symbol)
 {
+    std::lock_guard<std::mutex> lock(m_marketDataMutex);
     m_logger->Info("Starting subscribing real time market data for symbol=" + symbol);
     if (m_feedHandler->CreateNewMarketDataFeed(symbol))
     {
-        const auto* realTimeMarketDataCfg = m_marketDataCfgXml->FirstChildElement("RealTimeMarketData");
-        assert(realTimeMarketDataCfg);
-        const auto* dataTypeSubscriptionXml = realTimeMarketDataCfg->FirstChildElement("SubscriptionData");
+        const auto* dataTypeSubscriptionXml = m_marketDataConfigXml->FirstChildElement("SubscriptionData");
         assert(dataTypeSubscriptionXml);
         if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("IndividualBookTickerData"), "true"))
         {
@@ -194,6 +162,7 @@ bool MarketDataEvents::Subscribe(const std::string& symbol)
 
 bool MarketDataEvents::Unsubscribe(const std::string& symbol)
 {
+    std::lock_guard<std::mutex> lock(m_marketDataMutex);
     for (auto type = EnumBegin<SubscriptionHandleType>(); 
               type != EnumEnd<SubscriptionHandleType>();
               type = static_cast<SubscriptionHandleType>(static_cast<unsigned>(type) + 1))
@@ -210,10 +179,20 @@ bool MarketDataEvents::Unsubscribe(const std::string& symbol)
     return true;
 }
 
+bool MarketDataEvents::IsSubscribed(const std::string& symbol)
+{
+    std::lock_guard<std::mutex> lock(m_marketDataMutex);
+    return m_subscribedSymbols.find(symbol) != m_subscribedSymbols.end();
+}
+
 void MarketDataEvents::StartAndWait()
 {
-    // ansyn wait in main loop
-    m_ioContext.run();
+    // ansyn wait in main loop, using defer_lock to explicitly lock thread
+    std::unique_lock<std::mutex> lock(m_marketDataMutex, std::defer_lock);
+    lock.lock();
+    while(m_subscribedSymbols.empty()) {} // only go ahead when we have as leat one subcribed symbol
+    lock.unlock(); // because below call will never return so we have to unlock it here to avoid deadlock
+    m_ioContext.run(); // never return!!!
 }
 
 const std::unordered_set<std::string>& MarketDataEvents::GetSubscribingSymbols() const

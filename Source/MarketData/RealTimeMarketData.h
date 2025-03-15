@@ -81,6 +81,7 @@ public:
 	void StartStreamingData();
 	bool SubscribeSymbol(const std::string& symbol);
 	bool UnsubscribeSymbol(const std::string& symbol);
+	bool IsSubscribedSymbol(const std::string& symbol);
 	const std::unordered_set<std::string>& GetSubscribingSymbols() const;
 	MarketDataFeedHandler* GetFeedHandler() const;
 private:

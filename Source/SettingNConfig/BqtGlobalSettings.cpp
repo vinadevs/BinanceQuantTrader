@@ -41,7 +41,7 @@ void BqtGlobalSettings::InitGlobalSetting(const XMLElement* globalSettingsCfg)
     if (!std::filesystem::exists(applicationDataFolder)) {
         std::filesystem::create_directories(applicationDataFolder);
     }
-    m_logger->Error("Using application data folder=" + applicationDataFolder);
+    m_logger->Info("Using application data folder=" + applicationDataFolder);
     m_dataAppPath = applicationDataFolder;
 }
 

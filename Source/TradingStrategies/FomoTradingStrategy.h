@@ -17,6 +17,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 #if USE_MULTITHREADING
 #include <queue>
 #include <mutex>
@@ -34,6 +35,11 @@ namespace UserAccount {
 namespace ComplianceNRegulatory {
 	class BinanceTradingRules;
 }
+
+namespace tinyxml2 {
+	class XMLDocument;
+};
+
 
 // The fear of missing out, or FOMO, refers to the feeling or 
 // perception that others are having more fun, living better lives,
@@ -56,6 +62,7 @@ namespace TradingStrategies {
 		virtual ~FomoTradingStrategy();
 
 		bool OnReceivedTradingHints(const IndicatorNSignals::TradingHints* hints) override;
+
 #ifndef USE_BACK_TEST_TRADING
 		void ReportTradeResults(const std::string& symbol) override;
 #endif
@@ -65,11 +72,18 @@ namespace TradingStrategies {
 
 		void StopLive() override;
 	private:
+		void CreateTradingSignalServices();
+		void SubscribeTargetSymbols();
+		void UnsubscribeTargetSymbols();
+		void CreatePortfolioManagement();
 		bool TradeAsHints(const IndicatorNSignals::TradingHints* hints);
 
 #if USE_MULTITHREADING
 		void TradingLoop();
-		std::mutex m_marketDataMutex;
+
+		std::unique_ptr<tinyxml2::XMLDocument> m_strategyCfgXml;
+		std::vector<std::string> m_targetTradeSymbols;
+		std::mutex m_tradingHintsMutex;
 		std::condition_variable m_tradingHintCond; // avoid polling thread
 		std::atomic<bool> m_hasNewTradingHint{ false }; // lock free thread
 		// customize queue with thread safe protection

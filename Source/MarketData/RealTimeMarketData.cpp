@@ -49,6 +49,11 @@ bool RealTimeMarketData::UnsubscribeSymbol(const std::string& symbol)
 	return m_dataEvents->Unsubscribe(symbol);
 }
 
+bool RealTimeMarketData::IsSubscribedSymbol(const std::string& symbol)
+{
+	return m_dataEvents->IsSubscribed(symbol);
+}
+
 const std::unordered_set<std::string>& RealTimeMarketData::GetSubscribingSymbols() const
 {
 	return m_dataEvents->GetSubscribingSymbols();

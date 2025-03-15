@@ -60,11 +60,6 @@ BinanceTrader::BinanceTrader(
 	m_binanceAccountInfo = std::make_unique<binapi::rest::account_info_t>();
 	m_workedOrderManager = std::make_unique<BinanceWorkedOrderManager>();
 	m_positionManager = std::make_unique<PositionManager>(m_workedOrderManager.get());
-	m_logger->Info("querying Binance remote account info...");
-	// Query all assets from remote Binance account and manage them locally for our trading
-	m_portfolio->SetUserAccountInfo(m_binanceAccountInfo.get());
-	m_portfolio->UpdateBinanceAccountInfo();
-	m_logger->Info("querying account info finished.");
 #if USE_BACK_TEST_TRADING
 	m_exchangeReporter = std::make_unique<BackTestReporter>(reportCfg, m_portfolio);
 #else
@@ -143,6 +138,19 @@ bool BinanceTrader::CreateShortPosition(
 void BinanceTrader::UpdateAccountInfo()
 {
 	m_portfolio->UpdateBinanceAccountInfo();
+}
+
+void BinanceTrader::CreatePortfolioManagement(const std::vector<std::string>& targetTradeSymbols)
+{
+	for (const auto& symbol : targetTradeSymbols)
+	{
+		m_portfolio->AddNewAssetToManage(symbol);
+	}
+	m_logger->Info("querying Binance remote account info...");
+	// Query all assets from remote Binance account and manage them locally for our trading
+	m_portfolio->SetUserAccountInfo(m_binanceAccountInfo.get());
+	m_portfolio->UpdateBinanceAccountInfo();
+	m_logger->Info("querying account info finished.");
 }
 
 ////////////// DOWNSTREAM PROCESSING /////////////////////////////

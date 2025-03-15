@@ -20,10 +20,15 @@
 #include <vector>
 #include <string>
 #include <unordered_set>
+#if USE_MULTITHREADING
+#include <queue>
+#include <mutex>
+#include <condition_variable>
+#endif
 
 namespace tinyxml2 {
-	class XMLDocument;
 	class XMLElement;
+	class XMLDocument;
 };
 
 namespace LibraryUtils {
@@ -42,17 +47,18 @@ namespace MarketData {
 	{
 	public:
 		MarketDataEvents(
-			const tinyxml2::XMLElement* rootConfigXml,
+			const tinyxml2::XMLElement* marketDataConfigXml,
 			MarketDataFeedHandler* feedHandler);
 		~MarketDataEvents();
 
 		bool Subscribe(const std::string& symbol);
 		bool Unsubscribe(const std::string& symbol);
-
+		bool IsSubscribed(const std::string& symbol);
 		// Start market data events and wait
+		// NOTE: we must always subscribe symbols before calling this function!
 		void StartAndWait();
-
 		const std::unordered_set<std::string>& GetSubscribingSymbols() const;
+
 	private:
 		// choose what we want to receive from exchange
 		void SubscibeIndividualBookTicker(const std::string& symbol);
@@ -77,7 +83,6 @@ namespace MarketData {
 			const std::string& dataName,
 			binapi::ws::websockets::handle h,
 			const SubscriptionHandleType type);
-		void LoadBinanceMarketDataConfig(const tinyxml2::XMLElement* rootConfigXml);
 		void CreateWebSocketConnection();
 		// load static symbols to subscribe
 		void LoadInterestingDataSymbols(const char* filePath);
@@ -89,6 +94,7 @@ namespace MarketData {
 		std::unique_ptr<MarketDataSubscriptionManager> m_mdSubscriptionMgr;
 		MarketDataFeedHandler* m_feedHandler{ nullptr };
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
-		std::unique_ptr<tinyxml2::XMLDocument> m_marketDataCfgXml;
+		std::mutex m_marketDataMutex; // this class need to be thread safe!
+		const tinyxml2::XMLElement* m_marketDataConfigXml{ nullptr };
 	};
 };

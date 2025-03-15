@@ -14,6 +14,8 @@
 #include "../SettingNConfig/tinyxml2.h"
 #include "../ComplianceNRegulatory/BinanceTradingRules.h"
 #include "../ComplianceNRegulatory/BinanceExchangeProfile.h"
+#include "../LibraryUtils/StringUtils.h"
+#include "../PortfolioManager/PortfolioInvestmentBinance.h"
 
 using namespace TradingStrategies;
 using namespace IndicatorNSignals;
@@ -34,24 +36,23 @@ FomoTradingStrategy::FomoTradingStrategy(
 		strategyCfgPath, marketData, trader, tradingRules)
 {
 	InitializeParameters(strategyCfgPath);
-	m_logger->Info("Initialized trading parameters for strategy.");
+	// Subscribe target symbols to receive real time market data
+	m_logger->Info("Subscribe target symbols.");
+	SubscribeTargetSymbols();
+	m_logger->Info("Completed initialization for the strategy.");
 }
 
 void FomoTradingStrategy::InitializeParameters(const std::string& strategyCfgPath)
 {
-	auto strategyCfgXml = std::make_unique<XMLDocument>();
-	const auto errLoadFileXml = strategyCfgXml->LoadFile(strategyCfgPath.c_str());
+	m_strategyCfgXml = std::make_unique<XMLDocument>();
+	const auto errLoadFileXml = m_strategyCfgXml->LoadFile(strategyCfgPath.c_str());
 	if (errLoadFileXml != XML_SUCCESS)
 	{
 		throw std::runtime_error("FomoTradingStrategy: Load file Xml error=" 
 			+ std::string(XMLDocument::ErrorIDToName(errLoadFileXml)) + ", error path:" + strategyCfgPath);
 	}
-	SetupStrategyLifeTime(strategyCfgXml.get());
-	const auto* signalXml = strategyCfgXml->FirstChildElement("IndicatorAndSignals");
-	assert(signalXml);
-	m_tradingSignalService = std::make_unique<TradingSignalService>(m_trader->GetPortfolio(), signalXml);
-	m_tradingSignalService->RegisterTradingHintsListener(this);
-	m_marketData->RegisterDataListener(m_tradingSignalService.get());
+
+	SetupStrategyLifeTime(m_strategyCfgXml.get());
 }
 
 FomoTradingStrategy::~FomoTradingStrategy()
@@ -63,7 +64,7 @@ FomoTradingStrategy::~FomoTradingStrategy()
 bool FomoTradingStrategy::OnReceivedTradingHints(const TradingHints* hints)
 {
 #if USE_MULTITHREADING
-	std::unique_lock<std::mutex> lock(m_marketDataMutex);
+	std::unique_lock<std::mutex> lock(m_tradingHintsMutex);
 	m_tradingHintsQueue.PushItem(hints);
 	m_hasNewTradingHint.store(true);
 	m_tradingHintCond.notify_one();
@@ -71,6 +72,41 @@ bool FomoTradingStrategy::OnReceivedTradingHints(const TradingHints* hints)
 #else
 	return TradeAsHints(hints);
 #endif
+}
+
+void FomoTradingStrategy::CreateTradingSignalServices()
+{
+	const auto* signalXml = m_strategyCfgXml->FirstChildElement("IndicatorAndSignals");
+	assert(signalXml);
+	m_tradingSignalService = std::make_unique<TradingSignalService>(m_trader->GetPortfolio(), signalXml);
+	m_tradingSignalService->RegisterTradingHintsListener(this);
+	m_marketData->RegisterDataListener(m_tradingSignalService.get());
+}
+
+void FomoTradingStrategy::SubscribeTargetSymbols()
+{
+	const auto* targetSymbolXml = m_strategyCfgXml->FirstChildElement("TargetSymbols");
+	assert(targetSymbolXml);
+	const XMLElement* symbolsXml = targetSymbolXml->FirstChildElement("Symbols");
+	assert(symbolsXml);
+	m_targetTradeSymbols = StringUtils::SplitAndTrimString(symbolsXml->Attribute("List"), ',');
+	for (const auto& symbol : m_targetTradeSymbols)
+	{
+		m_marketData->SubscribeSymbol(symbol);
+	}
+}
+
+void FomoTradingStrategy::UnsubscribeTargetSymbols()
+{
+	for (const auto& symbol : m_targetTradeSymbols)
+	{
+		m_marketData->SubscribeSymbol(symbol);
+	}
+}
+
+void FomoTradingStrategy::CreatePortfolioManagement()
+{
+	m_trader->CreatePortfolioManagement(m_targetTradeSymbols);
 }
 
 bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
@@ -139,7 +175,16 @@ void FomoTradingStrategy::ReportTradeResults(const std::string& symbol)
 
 void FomoTradingStrategy::StartLive()
 {
+	// Change Strategy state to live
 	m_strategyRunStatus = StrategyRunStatus::LIVE;
+	// Create portfolio management
+	m_logger->Info("Create portfolio management.");
+	CreatePortfolioManagement();
+	// Creating trending services
+	m_logger->Info("Creating trending services.");
+	CreateTradingSignalServices();
+	// Listen on trading hints
+	m_logger->Info("Starting live and trade.");
 #if USE_MULTITHREADING
 	TradingLoop();
 #endif
@@ -160,7 +205,7 @@ void FomoTradingStrategy::TradingLoop()
 	m_isThreadTradeOngoing.store(true);
 	while (m_isThreadTradeOngoing.load())
 	{
-		std::unique_lock<std::mutex> lock(m_marketDataMutex);
+		std::unique_lock<std::mutex> lock(m_tradingHintsMutex);
 		// Wait for new trading hint or timeout after 1 second
 		m_tradingHintCond.wait_for(lock, WAIT_TIME_OUT, [&]()
 		{

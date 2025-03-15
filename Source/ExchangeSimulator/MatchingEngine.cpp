@@ -9,6 +9,7 @@
 #include "pch.h"
 
 #include "../SettingNConfig/tinyxml2.h"
+#include "../SettingNConfig/BqtXmlUtils.h"
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/TimeUtils.h"
 #include "../LibraryUtils/StringUtils.h"
@@ -55,7 +56,9 @@ MatchingEngine::MatchingEngine(
 		m_participant = std::make_unique<RTMarketParticipant>(maxDownstreamOrderBookSize, userAccountManager);
 		m_logger->Info("Initiating Real Time Market Data.");
 		const auto* realTimeMarketDataCfg = matchingEngineXmlCfg->FirstChildElement("RealTimeMarketData");
-		m_marketData = std::make_unique<RealTimeMarketData>(realTimeMarketDataCfg);
+		m_binanceMarketDataConfig = SettingNConfig::BqtXmlUtils::GetBinanceMarketDataConfig(realTimeMarketDataCfg);
+		const auto* binanceRealTimeMarketDataCfg = m_binanceMarketDataConfig->FirstChildElement("RealTimeMarketData");
+		m_marketData = std::make_unique<RealTimeMarketData>(binanceRealTimeMarketDataCfg);
 		m_rtMarketDataParticipant = dynamic_cast<RTMarketParticipant*>(m_participant.get());
 		assert(m_rtMarketDataParticipant);
 		m_rtMarketDataParticipant->CreateDownstreamOrderBooks(m_marketData->GetSubscribingSymbols());

@@ -82,7 +82,7 @@ TradingSignalService::TradingSignalService(PortfolioInvestmentBinance* portfolio
     {
         // WE MUST START EXCHANGE SIMULATOR TO BY PASS THIS EXCEPTION IN BACK TESTING TRADE
         throw std::runtime_error(
-            "TradingSignalService: Investment portfolio asset bracket is empty."
+            "TradingSignalService: Investment portfolio asset basket is empty."
             "Could not query remote binance info or have no available asset.");
     }
     for (const auto& pairs : m_portfolio->GetBinanceTradingPairManager().GetTradingPairs())

@@ -50,6 +50,7 @@ namespace MarketDataCapture {
         MarketDataService(const std::string& configFile);
         ~MarketDataService();
 
+        void SubscribeTargetSymbols();
         void Run();
     private:
         std::unique_ptr<tinyxml2::XMLDocument> m_rootConfigXml;

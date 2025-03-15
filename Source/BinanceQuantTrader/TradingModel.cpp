@@ -18,6 +18,7 @@
 #include "../TradingStrategies/TradingStrategyBase.h"
 #include "../TradingStrategies/SingleStrategyHost.h"
 #include "../SettingNConfig/tinyxml2.h"
+#include "../SettingNConfig/BqtXmlUtils.h"
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/SourceBuildFlags.h"
 #include "../RestAPI/ApiKeyInfoManager.h"
@@ -128,7 +129,9 @@ void TradingModel::PrepareTradingComponents(
 
 	m_logger->Info("Initiating Real Time Market Data.");
 	const auto* realTimeMarketDataCfg = configBQTXml->FirstChildElement("RealTimeMarketData");
-	m_marketData = std::make_unique<RealTimeMarketData>(realTimeMarketDataCfg);
+	m_binanceMarketDataConfig = BqtXmlUtils::GetBinanceMarketDataConfig(realTimeMarketDataCfg);
+	const auto* binanceRealTimeMarketDataCfg = m_binanceMarketDataConfig->FirstChildElement("RealTimeMarketData");
+	m_marketData = std::make_unique<RealTimeMarketData>(binanceRealTimeMarketDataCfg);
 
 	m_logger->Info("Initiating Portfolio Investment.");
 	const auto* portfolioCfg = configBQTXml->FirstChildElement("PortfolioInvestment");

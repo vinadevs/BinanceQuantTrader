@@ -65,7 +65,7 @@ BINANCE_MARKET_DATA_CAPTURE_TOOL
 	{
 #ifdef _DEBUG
 		const auto config_market_data_path
-			= PathUtils::GetConfigFolderPath(PathUtils::Path_Type::MARKET_DATA_CAPTURE) + "\\RealtimeMarketDataCfg.xml";
+			= PathUtils::GetConfigFolderPath(PathUtils::Path_Type::MARKET_DATA_CAPTURE) + "\\BinanceMarketDataCfg.xml";
 #else
 		// ARGUMENTS
 		argparse::ArgumentParser program(BINANCE_MESSAGE_HUB_SERVER_TITLE);
@@ -75,6 +75,7 @@ BINANCE_MARKET_DATA_CAPTURE_TOOL
 #endif
 		// APPLICATION
 		auto marketDataService = std::make_unique<MarketDataService>(config_market_data_path);
+		marketDataService->SubscribeTargetSymbols();
 		marketDataService->Run(); // this is a wait call, so should not return
 	}
 	catch (const std::exception& e)

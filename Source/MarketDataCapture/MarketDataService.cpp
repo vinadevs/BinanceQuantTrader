@@ -1,6 +1,7 @@
 #include "../MarketData/RealTimeMarketData.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../LibraryUtils/Logger.h"
+#include "../LibraryUtils/StringUtils.h"
 
 #include "MarketDataListener.h"
 #include "MarketDataService.h"
@@ -28,6 +29,19 @@ MarketDataService::MarketDataService(const std::string& configFile)
 	assert(realTimeMarketDataCfg);
 	m_marketData = std::make_unique<RealTimeMarketData>(realTimeMarketDataCfg);
 	m_marketData->RegisterDataListener(m_marketDataListener.get());
+}
+
+void MarketDataService::SubscribeTargetSymbols()
+{
+	const auto* targetSymbolXml = m_rootConfigXml->FirstChildElement("MarketDataCapture");
+	assert(targetSymbolXml);
+	const XMLElement* symbolsXml = targetSymbolXml->FirstChildElement("SubscribingSymbols");
+	assert(symbolsXml);
+	auto targetTradeSymbols = StringUtils::SplitAndTrimString(symbolsXml->Attribute("List"), ',');
+	for (const auto& symbol : targetTradeSymbols)
+	{
+		m_marketData->SubscribeSymbol(symbol);
+	}
 }
 
 MarketDataService::~MarketDataService()
