@@ -28,15 +28,20 @@ BinanceExchangeProfileMgr::~BinanceExchangeProfileMgr() {}
 
 bool BinanceExchangeProfileMgr::UpdateRemoteExchangeProfiles(
     const std::string& symbol,
-    const bool logDataToFile)
+    const bool logDataToFile/*=false*/)
 {
     const auto exchangeInfo = BinanceApiGateWay->exchange_info(symbol);
     if (!exchangeInfo)
     {
-        LOG_ERROR_STREAM(m_logger, "exchange_info error: " << exchangeInfo.errmsg);
+        LOG_ERROR_STREAM(m_logger, "exchange_info error=" << exchangeInfo.errmsg);
         return false;
     }
-    if (logDataToFile) {
+    else
+    {
+        LOG_INFO_STREAM(m_logger, "Updated exchange_info for symbol=" << symbol);
+    }
+    if (logDataToFile) 
+    {
         const auto exchangeInfoPath = BqtGlobalSettingsMgr->GetdDataAppPath() + "//exchange_info_" + symbol + ".txt";
         RemoteBinanceExchangeProfile::write_exchange_info_to_file(exchangeInfoPath, exchangeInfo.v);
     }

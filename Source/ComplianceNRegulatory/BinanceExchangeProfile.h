@@ -26,9 +26,8 @@ namespace LibraryUtils {
 
 namespace ComplianceNRegulatory {
 
-#pragma once
-
-struct DLL_CLASS_COMPLIANCENREGULATORY_EXPORTS StaticBinanceExchangeProfile final {
+struct DLL_CLASS_COMPLIANCENREGULATORY_EXPORTS 
+    StaticBinanceExchangeProfile final {
     std::string m_tradingPair;
     double m_minTradeAmount{ 0 };
     double m_minAmountMovement{ 0 };
@@ -41,12 +40,14 @@ struct DLL_CLASS_COMPLIANCENREGULATORY_EXPORTS StaticBinanceExchangeProfile fina
 
 using RemoteBinanceExchangeProfile = binapi::rest::exchange_info_t;
 
-class DLL_CLASS_COMPLIANCENREGULATORY_EXPORTS BinanceExchangeProfileMgr final {
+class DLL_CLASS_COMPLIANCENREGULATORY_EXPORTS 
+    BinanceExchangeProfileMgr final {
 public:
     BinanceExchangeProfileMgr(const std::string& filePath);
     ~BinanceExchangeProfileMgr();
 
-    bool UpdateRemoteExchangeProfiles(const std::string& symbol, const bool logDataToFile);
+    // Should call only onne time at the starting of the trade.
+    bool UpdateRemoteExchangeProfiles(const std::string& symbol, const bool logDataToFile = false);
 
     const StaticBinanceExchangeProfile* LookupStaticExchangeProfile(const std::string& symbol) const;
     const RemoteBinanceExchangeProfile* LookupRemoteExchangeProfile(const std::string& symbol) const;

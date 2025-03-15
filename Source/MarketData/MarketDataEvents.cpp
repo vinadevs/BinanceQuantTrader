@@ -163,12 +163,11 @@ bool MarketDataEvents::Subscribe(const std::string& symbol)
 bool MarketDataEvents::Unsubscribe(const std::string& symbol)
 {
     std::lock_guard<std::mutex> lock(m_marketDataMutex);
-    for (auto type = EnumBegin<SubscriptionHandleType>(); 
-              type != EnumEnd<SubscriptionHandleType>();
-              type = static_cast<SubscriptionHandleType>(static_cast<unsigned>(type) + 1))
+    FOR_LOOP_ENUM(iter, SubscriptionHandleType)
     {
-        auto h = m_mdSubscriptionMgr->GetHandle(symbol, type);
-        if (h) {
+        auto h = m_mdSubscriptionMgr->GetHandle(symbol, iter);
+        if (h) 
+        {
             Unsubscribe(h);
         }
         else
@@ -187,7 +186,7 @@ bool MarketDataEvents::IsSubscribed(const std::string& symbol)
 
 void MarketDataEvents::StartAndWait()
 {
-    // ansyn wait in main loop, using defer_lock to explicitly lock thread
+    // ansyn wait in main loop, using defer_lock to explicitly lock/unlock thread
     std::unique_lock<std::mutex> lock(m_marketDataMutex, std::defer_lock);
     lock.lock();
     while(m_subscribedSymbols.empty()) {} // only go ahead when we have as leat one subcribed symbol

@@ -39,6 +39,8 @@ FomoTradingStrategy::FomoTradingStrategy(
 	// Subscribe target symbols to receive real time market data
 	m_logger->Info("Subscribe target symbols.");
 	SubscribeTargetSymbols();
+	m_logger->Info("Create Binance Exchange Profile.");
+	CreateBinanceExchangeProfile();
 	m_logger->Info("Completed initialization for the strategy.");
 }
 
@@ -109,6 +111,14 @@ void FomoTradingStrategy::CreatePortfolioManagement()
 	m_trader->CreatePortfolioManagement(m_targetTradeSymbols);
 }
 
+void FomoTradingStrategy::CreateBinanceExchangeProfile()
+{
+	for (const auto& symbol : m_targetTradeSymbols)
+	{
+		m_tradingRules->GetExchangeProfileMgr()->UpdateRemoteExchangeProfiles(symbol, true);
+	}
+}
+
 bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 {
 	try
@@ -117,14 +127,16 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 		{
 			if (IsNotIsNotExceededTradingRules())
 			{
-				const auto* symbolProfile = m_tradingRules->GetExchangeProfileMgr()->LookupStaticExchangeProfile(hints->symbol);
+				const auto* symbolProfile = m_tradingRules->GetExchangeProfileMgr()->LookupRemoteExchangeProfile(hints->symbol);
 				if (symbolProfile)
 				{
 					Sleep(1000); // delay to avoid bans while testing
+					const auto& symbolExchangeInfo = symbolProfile->get_by_symbol(hints->symbol);
 					if (hints->isUpTrend)
 					{
 						if (m_trader->CreateLongPosition(hints->symbol,
-							symbolProfile->m_minTradeAmount, hints->windowBestBidPrice.convert_to<double>()))
+							symbolExchangeInfo.get_filter_lot_size().minQty.convert_to<double>(),
+							symbolExchangeInfo.get_filter_price().minPrice.convert_to<double>()))
 						{
 							IncreaseOrderCounter(); // register a sent order request to ComplianceNRegulatory
 						}
@@ -132,7 +144,8 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 					else if (hints->isDownTrend)
 					{
 						if (m_trader->CreateShortPosition(hints->symbol,
-							symbolProfile->m_minTradeAmount, hints->windowBestAskPrice.convert_to<double>()))
+							symbolExchangeInfo.get_filter_lot_size().minQty.convert_to<double>(),
+							symbolExchangeInfo.get_filter_price().minPrice.convert_to<double>()))
 						{
 							IncreaseOrderCounter(); // register a sent order request to ComplianceNRegulatory
 						}

@@ -13,12 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Trading Rules By Pass Engine">
+      <UniqueIdentifier>{8b1c44d4-40d6-4ba2-8a9c-3653a9defda3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TradingRulesByPassEngine.h">
+      <Filter>Trading Rules By Pass Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="dlldefine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -28,6 +37,9 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TradingRulesByPassEngine.cpp">
+      <Filter>Trading Rules By Pass Engine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

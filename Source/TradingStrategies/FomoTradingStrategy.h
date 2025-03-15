@@ -76,6 +76,7 @@ namespace TradingStrategies {
 		void SubscribeTargetSymbols();
 		void UnsubscribeTargetSymbols();
 		void CreatePortfolioManagement();
+		void CreateBinanceExchangeProfile();
 		bool TradeAsHints(const IndicatorNSignals::TradingHints* hints);
 
 #if USE_MULTITHREADING
