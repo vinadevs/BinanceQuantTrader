@@ -84,8 +84,7 @@ namespace TradingStrategies {
 	// indicators to complex algorithms involving data analysis...
 
 	class DLL_CLASS_TRADING_TRATEGIES_EXPORTS
-		TradingStrategyBase : 
-		  public OrdersPerTenSecondsChecker
+		TradingStrategyBase
 #if USE_BACK_TEST_TRADING  
 		, public MiddlewareMQ::MessageHandler
 #endif
@@ -124,9 +123,8 @@ namespace TradingStrategies {
 
 		void SetupStrategyLifeTime(tinyxml2::XMLDocument* strategyCfgPathXml);
 		bool IsNotIsNotExceededTradingRules() const;
-		void IncreaseOrderCounter();
+		void IncreaseComplianceOrderCounter();
 	protected:
-		void OnAlarmTriggered(const int passToDerived = 0) override; // to reset rule counters
 #if USE_BACK_TEST_TRADING  
 		void OnHandlingReceivedSimulatorMessage(
 			const MiddlewareMQ::BqtJsonMessage& message) override; // process exchange simulator message
@@ -139,6 +137,7 @@ namespace TradingStrategies {
 		MarketData::RealTimeMarketData* m_marketData {nullptr}; // real time market data
 		UserAccount::BinanceTrader* m_trader{ nullptr }; // user account and trade actions
 		ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr }; // exchange compliance and regulatory
+		std::unique_ptr<CompilanceChecker> m_compilanceChecker;
 		std::unique_ptr<LibraryUtils::Logger> m_logger; // log message
 		const StrategyType m_strategyType { StrategyType::UNDEF};
 		StrategyLifeTime m_StrategyLifeTime { StrategyLifeTime::INTRA_DAY };

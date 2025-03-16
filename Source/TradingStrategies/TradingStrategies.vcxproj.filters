@@ -75,9 +75,6 @@
     <ClInclude Include="MutilpleStrategiesHost.h">
       <Filter>Strategy Host</Filter>
     </ClInclude>
-    <ClInclude Include="TradingComponent.h">
-      <Filter>Trading Component</Filter>
-    </ClInclude>
     <ClInclude Include="CompilanceChecker.h">
       <Filter>Trading Component</Filter>
     </ClInclude>
@@ -115,6 +112,9 @@
     </ClCompile>
     <ClCompile Include="StrategyMessageServer.cpp">
       <Filter>Message Server</Filter>
+    </ClCompile>
+    <ClCompile Include="CompilanceChecker.cpp">
+      <Filter>Trading Component</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

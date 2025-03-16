@@ -164,10 +164,10 @@
     <ClInclude Include="SingleStrategyHost.h" />
     <ClInclude Include="StrategyManager.h" />
     <ClInclude Include="TestTradingStrategy.h" />
-    <ClInclude Include="TradingComponent.h" />
     <ClInclude Include="TradingStrategyBase.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CompilanceChecker.cpp" />
     <ClCompile Include="StrategyMessageServer.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FomoTradingStrategy.cpp" />

@@ -47,6 +47,7 @@ public:
     ~BinanceExchangeProfileMgr();
 
     // Should call only onne time at the starting of the trade.
+    // CAN NOT USE FOR BACK TEST SIMILATOR MODE
     bool UpdateRemoteExchangeProfiles(const std::string& symbol, const bool logDataToFile = false);
 
     const StaticBinanceExchangeProfile* LookupStaticExchangeProfile(const std::string& symbol) const;

@@ -8,11 +8,13 @@
 
 #include "pch.h"
 #include "TradingStrategyBase.h"
+
 #include "../MarketData/RealTimeMarketData.h"
 #include "../LibraryUtils/GeneralUtils.h"
 #include "../LibraryUtils/StringUtils.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../ComplianceNRegulatory/BinanceTradingRules.h"
+#include "../ComplianceNRegulatory/HardTradingLimits.h"
 #include "../UserAccount/BinanceTrader.h"
 
 using namespace TradingStrategies;
@@ -31,8 +33,7 @@ TradingStrategyBase::TradingStrategyBase(
 	MarketData::RealTimeMarketData* marketData,
 	UserAccount::BinanceTrader* trader,
 	ComplianceNRegulatory::BinanceTradingRules* tradingRules)
-	: OrdersPerTenSecondsChecker(AlarmSystem::AlarmMode::REPEAT),
-	m_strategyName(strategyName),
+	: m_strategyName(strategyName),
 	m_strategyDescription(strategyDescription),
 	m_strategyCfgPath(strategyCfgPath),
 	m_marketData(marketData),
@@ -43,9 +44,7 @@ TradingStrategyBase::TradingStrategyBase(
 	m_logger = std::make_unique<Logger>(m_strategyName);
 	m_logger->Info("Trading strategy name=" + m_strategyName);
 	m_logger->Info("Trading strategy description=" + m_strategyDescription);
-	// This is Binance compliances and rules checker
-	OrdersPerTenSecondsChecker::Start();
-	m_logger->Info("OrdersPerTenSecondsChecker started.");
+	m_compilanceChecker = std::make_unique<CompilanceChecker>();
 }
 
 TradingStrategyBase::~TradingStrategyBase() {}
@@ -92,40 +91,43 @@ void TradingStrategyBase::SetupStrategyLifeTime(tinyxml2::XMLDocument* strategyC
 	{
 		throw std::runtime_error("TradingStrategyBase: unsupported StrategyLifeTime config");
 	}
+	m_compilanceChecker->StartAlarmOnTradingRules(
+		m_tradingRules,
+		AlarmSystem::AlarmMode::REPEAT,
+		m_StrategyLifeTime != StrategyLifeTime::INTRA_DAY ? true : false);
 }
 
 bool TradingStrategyBase::IsNotIsNotExceededTradingRules() const
 {
 	if (m_tradingRules->IsNotExceededOrdersPerTenSeconds())
 	{
-		if (m_StrategyLifeTime == StrategyLifeTime::INTRA_DAY)
+		if (m_tradingRules->IsNotExceededRequestWeightPerMinute())
 		{
-			return true;
-		}
-		else if (m_tradingRules->IsNotExceededOrdersPerTwentyFourHours())
-		{
-			return true;
+			if (m_StrategyLifeTime == StrategyLifeTime::INTRA_DAY)
+			{
+				return true;
+			}
+			else if (m_tradingRules->IsNotExceededOrdersPerTwentyFourHours())
+			{
+				return true;
+			}
 		}
 	}
 	return false;
 }
 
-void TradingStrategyBase::IncreaseOrderCounter() 
+void TradingStrategyBase::IncreaseComplianceOrderCounter() 
 {
 	m_tradingRules->IncreaseOrdersPerTenSeconds();
+	m_logger->Info("Current number of orders per ten seconds= "
+		+ std::to_string(m_tradingRules->GetTradingLimits()->m_ordersPerTenSeconds) + ".");
+	m_tradingRules->IncreaseRequestWeightPerMinute();
+	m_logger->Info("Current number of requests per minute= "
+		+ std::to_string(m_tradingRules->GetTradingLimits()->m_requestWeightPerMinute) + ".");
 	if (m_StrategyLifeTime != StrategyLifeTime::INTRA_DAY)
 	{
 		m_tradingRules->IncreaseOrdersPerTwentyFourHours();
 	}
-}
-
-void TradingStrategyBase::OnAlarmTriggered(const int passToDerived)
-{
-	// NOTE: PLEASE DO NOT CALL REST API UPDATES MANY TIMES/SECONDS
-	// AS BINANCE WILL BAN THE LOCAL IP FOR THAT SPAM
-	// PLEASE CHECK IN ComplianceNRegulatory CODE
-	// REMEMBER ALWAY IMPLEMENT A CHECKER BEFORE CALL REST API
-	m_tradingRules->ResetOrdersPerTenSecondsCounter();
 }
 
 #if USE_BACK_TEST_TRADING  

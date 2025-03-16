@@ -28,7 +28,7 @@ namespace ComplianceNRegulatory {
 			m_ordersPerTenSeconds(ordersPerTenSeconds),
 			m_ordersPerTwentyFourHours(ordersPerTwentyFourHours) {
 		}
-		size_t m_requestWeightPerMinute{ 6000 };
+		size_t m_requestWeightPerMinute{ 3000 };
 		size_t m_ordersPerTenSeconds{ 50 };
 		size_t m_ordersPerTwentyFourHours{ 160000 };
 	};

@@ -40,7 +40,9 @@ FomoTradingStrategy::FomoTradingStrategy(
 	m_logger->Info("Subscribe target symbols.");
 	SubscribeTargetSymbols();
 	m_logger->Info("Create Binance Exchange Profile.");
+#ifdef USE_BINANCE_TEST_TRADING
 	CreateBinanceExchangeProfile();
+#endif
 	m_logger->Info("Completed initialization for the strategy.");
 }
 
@@ -130,7 +132,6 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 				const auto* symbolProfile = m_tradingRules->GetExchangeProfileMgr()->LookupRemoteExchangeProfile(hints->symbol);
 				if (symbolProfile)
 				{
-					Sleep(1000); // delay to avoid bans while testing
 					const auto& symbolExchangeInfo = symbolProfile->get_by_symbol(hints->symbol);
 					if (hints->isUpTrend)
 					{
@@ -138,7 +139,7 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 							symbolExchangeInfo.get_filter_lot_size().minQty.convert_to<double>(),
 							symbolExchangeInfo.get_filter_price().minPrice.convert_to<double>()))
 						{
-							IncreaseOrderCounter(); // register a sent order request to ComplianceNRegulatory
+							IncreaseComplianceOrderCounter(); // register a sent order request to ComplianceNRegulatory
 						}
 					}
 					else if (hints->isDownTrend)
@@ -147,7 +148,7 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 							symbolExchangeInfo.get_filter_lot_size().minQty.convert_to<double>(),
 							symbolExchangeInfo.get_filter_price().minPrice.convert_to<double>()))
 						{
-							IncreaseOrderCounter(); // register a sent order request to ComplianceNRegulatory
+							IncreaseComplianceOrderCounter(); // register a sent order request to ComplianceNRegulatory
 						}
 					}
 				}

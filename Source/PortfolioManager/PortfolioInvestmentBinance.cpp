@@ -31,10 +31,14 @@ static constexpr double ZERO_DOUBLE_VALUE = 0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool BinanceTradingPairManager::CreateNewTradingPair(const std::string& tradingPair, RealTimeMarketData* marketData, const BinanceBalance& balance)
+bool BinanceTradingPairManager::CreateNewTradingPair(
+    const std::string& tradingPair,
+    RealTimeMarketData* marketData,
+    const BinanceBalance& balance)
 {
     std::unique_lock<std::mutex> lock(m_threadSafeMutex);
-    return m_assets.try_emplace(tradingPair, std::make_unique<BinanceTradingPair>(tradingPair, marketData, balance)).second;
+    return m_assets.try_emplace(tradingPair,
+        std::make_unique<BinanceTradingPair>(tradingPair, marketData, balance)).second;
 }
 
 bool BinanceTradingPairManager::RemoveTradingPair(const std::string& tradingPair)
@@ -64,7 +68,8 @@ const BinanceTradingPairMap& BinanceTradingPairManager::GetTradingPairs() const
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-PortfolioInvestmentBinance::PortfolioInvestmentBinance(const XMLElement* portfolioCfg, RealTimeMarketData* marketData)
+PortfolioInvestmentBinance::PortfolioInvestmentBinance(
+    const XMLElement* portfolioCfg, RealTimeMarketData* marketData)
 	: PortfolioInvestment(PortfolioType::BINANCE_ASSET) , m_marketData(marketData)
 {
     m_logger = std::make_unique<LibraryUtils::Logger>("PortfolioInvestmentBinance");
@@ -99,6 +104,7 @@ void PortfolioInvestmentBinance::UpdateBinanceAccountInfo()
         // APIError(code=-2015): Invalid API-key, IP, or permissions for action from the python-binance module
         // This maybe because your API-key has been expired
         // Please try to renew your API-key at https://www.binance.com/en-JP/my/settings/api-management 
+        // OR: Way too much request weight used; IP banned until specific time
         throw std::runtime_error("PortfolioInvestmentBinance: failed to update Binance account information.");
     }
 }
@@ -110,18 +116,21 @@ void PortfolioInvestmentBinance::UpdateBinanceTradingPairs()
         const auto binanceSymbol = CreateTradingPairSymbol(balance.first);
         if (IsCryptoAssetAbleToTrade(balance.second))
         {
-            if (BinanceTradingPair* tradingPair = m_binanceTradingPairMgr.GetTradingPair(binanceSymbol))
+            if (BinanceTradingPair* tradingPair 
+                = m_binanceTradingPairMgr.GetTradingPair(binanceSymbol))
             {
                 tradingPair->UpdateTradingPair(balance.second);
             }
             else
             {
-                m_logger->Info("Could not update binance asset=" + binanceSymbol + ", we do NOT manage this asset now.");
+                m_logger->Info("Could not update binance asset=" 
+                    + binanceSymbol + ", we do NOT manage this asset now.");
             }
         }
         else
         {
-            m_logger->Info("Could not update binance asset=" + binanceSymbol + ", there is no asset balance or martket data available.");
+            m_logger->Info("Could not update binance asset=" 
+                + binanceSymbol + ", there is no asset balance or martket data available.");
         }
     }
 }
@@ -143,7 +152,8 @@ binapi::rest::account_info_t* PortfolioInvestmentBinance::GetBinanceAccountInfo(
     return m_binanceAccountInfo;
 }
 
-BinanceTradingPairManager& PortfolioInvestmentBinance::GetBinanceTradingPairManager(bool updateNewData /*= false*/)
+BinanceTradingPairManager& PortfolioInvestmentBinance::GetBinanceTradingPairManager(
+    bool updateNewData /*= false*/)
 {
     if (updateNewData)
     {
@@ -152,7 +162,8 @@ BinanceTradingPairManager& PortfolioInvestmentBinance::GetBinanceTradingPairMana
     return m_binanceTradingPairMgr;
 }
 
-BinanceTradingPair* PortfolioInvestmentBinance::GetBinanceTradingPair(const std::string& asset, bool updateNewData /*= false*/)
+BinanceTradingPair* PortfolioInvestmentBinance::GetBinanceTradingPair(
+    const std::string& asset, bool updateNewData /*= false*/)
 {
     if (updateNewData)
     {
@@ -168,7 +179,9 @@ bool PortfolioInvestmentBinance::IsCryptoAssetAbleToTrade(const BinanceBalance& 
 
 bool PortfolioInvestmentBinance::HasCryptoAssetBalance(const BinanceBalance& balance)
 {
-    return !balance.asset.empty() && balance.free > ZERO_DOUBLE_VALUE && IsCryptoAssetHasMarketData(balance.asset);
+    return !balance.asset.empty() &&
+        balance.free > ZERO_DOUBLE_VALUE &&
+        IsCryptoAssetHasMarketData(balance.asset);
 }
 
 const BinanceBalances& PortfolioInvestmentBinance::GetAllBinanceBalances(bool updateNewData /*= false*/)
@@ -195,7 +208,8 @@ BinanceBalances PortfolioInvestmentBinance::GetTradableBinanceBalances(bool upda
         }
         else
         {
-            m_logger->Info("Could not trade binance asset=" + balance.first + ", there is no asset balance or martket data available.");
+            m_logger->Info("Could not trade binance asset=" 
+                + balance.first + ", there is no asset balance or martket data available.");
         }
     }
     return tradableBalances;
