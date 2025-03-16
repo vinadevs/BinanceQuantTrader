@@ -18,7 +18,7 @@
 
 namespace OrderManagement {
 	// Type of order message which will send to the exchange/downstream/simulator
-	enum class BinanceOrderType : unsigned
+	enum class MessageType : unsigned
 	{
 		UNDEF,
 		NEW,
@@ -36,7 +36,7 @@ namespace OrderManagement {
 	public:
 		Order() = default;
 
-		Order(const std::string& symbol, const std::string& clientOrderId, const BinanceOrderType binanceOrderType)
+		Order(const std::string& symbol, const std::string& clientOrderId, const MessageType binanceOrderType)
 			: m_symbol(symbol), m_clientOrderId(clientOrderId), m_binanceOrderType(binanceOrderType)
 		{
 			UpdateOrderTypeStr();
@@ -53,7 +53,7 @@ namespace OrderManagement {
 			return m_symbol;
 		}
 
-		BinanceOrderType GetOrderType() const {
+		MessageType GetOrderType() const {
 			return m_binanceOrderType;
 		}
 
@@ -77,27 +77,27 @@ namespace OrderManagement {
 		void UpdateOrderTypeStr() {
 			switch (m_binanceOrderType)
 			{
-			case OrderManagement::BinanceOrderType::UNDEF: {
+			case OrderManagement::MessageType::UNDEF: {
 				m_binanceOrderTypeStr = "UNDEF";
 				break;
 			}
-			case OrderManagement::BinanceOrderType::NEW: {
+			case OrderManagement::MessageType::NEW: {
 				m_binanceOrderTypeStr = "NEW";
 				break;
 			}
-			case OrderManagement::BinanceOrderType::CANCEL: {
+			case OrderManagement::MessageType::CANCEL: {
 				m_binanceOrderTypeStr = "CANCEL";
 				break;
 			}
-			case OrderManagement::BinanceOrderType::REPLACE: {
+			case OrderManagement::MessageType::REPLACE: {
 				m_binanceOrderTypeStr = "REPLACE";
 				break;
 			}
-			case OrderManagement::BinanceOrderType::QUERY: {
+			case OrderManagement::MessageType::QUERY: {
 				m_binanceOrderTypeStr = "QUERY";
 				break;
 			}
-			case OrderManagement::BinanceOrderType::TEST: {
+			case OrderManagement::MessageType::TEST: {
 				m_binanceOrderTypeStr = "TEST";
 				break;
 			}
@@ -109,6 +109,6 @@ namespace OrderManagement {
 		std::string m_symbol;
 		std::string m_clientOrderId; // m_clientOrderId is new order ID from us
 		std::string m_binanceOrderTypeStr;
-		BinanceOrderType m_binanceOrderType{ BinanceOrderType::UNDEF };
+		MessageType m_binanceOrderType{ MessageType::UNDEF };
 	};
 };

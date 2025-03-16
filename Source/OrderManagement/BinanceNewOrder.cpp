@@ -12,6 +12,7 @@
 #include "TypeToStringUtils.h"
 
 using namespace OrderManagement;
+using namespace MiddlewareMQ;
 
 BinanceNewOrder::BinanceNewOrder(
     const std::string& clientOrderId,
@@ -25,7 +26,7 @@ BinanceNewOrder::BinanceNewOrder(
     const double icebergAmount,
     const TradeType tradeType)
     : Order(symbol, clientOrderId,
-        tradeType == TradeType::TEST ? BinanceOrderType::TEST : BinanceOrderType::NEW),
+        tradeType == TradeType::TEST ? MessageType::TEST : MessageType::NEW),
     m_side(side),
     m_type(type),
     m_time(time),
@@ -76,16 +77,16 @@ std::string BinanceNewOrder::ToStringAck() const
 }
 
 void BinanceNewOrder::SetSendingOrderResult(
-    const MiddlewareMQ::MiddlewareMQResult& sendingOrderResult)
+    const MiddlewareMQResult& sendingOrderResult)
 {
     m_sendingSimulatorOrderResult = sendingOrderResult;
 }
 
-MiddlewareMQ::BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrder() const
+BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrder() const
 {
-    MiddlewareMQ::BqtJsonMessage message;
+    BqtJsonMessage message;
     message.AddPair(FieldLabels::UserAccountID, m_userAccountID);
-    message.AddPair(FieldLabels::BinanceOrderType, "BinanceNewOrder");
+    message.AddPair(FieldLabels::MessageType, "BinanceNewOrder");
     message.AddPair(FieldLabels::Symbol, m_symbol);
     message.AddPair(FieldLabels::Side, TypeToStringUtils::ToString(m_side));
     message.AddPair(FieldLabels::Type, TypeToStringUtils::ToString(m_type));
@@ -100,11 +101,11 @@ MiddlewareMQ::BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrder() const
     return message;
 }
 
-MiddlewareMQ::BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageAck() const
+BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageAck() const
 {
-    MiddlewareMQ::BqtJsonMessage message;
+    BqtJsonMessage message;
     message.AddPair(FieldLabels::UserAccountID, m_userAccountID);
-    message.AddPair(FieldLabels::BinanceOrderType, "BinanceNewOrderAck");
+    message.AddPair(FieldLabels::MessageType, "BinanceNewOrderAck");
     message.AddPair(FieldLabels::Symbol, m_symbol);
     message.AddPair(FieldLabels::Side, TypeToStringUtils::ToString(m_side));
     message.AddPair(FieldLabels::Type, TypeToStringUtils::ToString(m_type));

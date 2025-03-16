@@ -160,23 +160,23 @@ void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessag
 {
 	m_logger->Info("Received simulator ack=" + message.SerializeMessage());
 	const std::string simulatorAckType = message.GetStringValueByTag(FieldLabels::SimulatorAck::AckType);
-	if (simulatorAckType == DownstreamAckTypes::NewOrderAck)
+	if (simulatorAckType == FieldLabels::DownstreamAckTypes::NewOrderAck)
 	{
 		
 	}
-	else if (simulatorAckType == DownstreamAckTypes::CancelOrderAck)
+	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::CancelOrderAck)
 	{
 
 	}
-	else if (simulatorAckType == DownstreamAckTypes::ReplaceOrderAck)
+	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::ReplaceOrderAck)
 	{
 
 	}
-	else if (simulatorAckType == DownstreamAckTypes::QueryOrderAck)
+	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::QueryOrderAck)
 	{
 
 	}
-	else if (simulatorAckType == DownstreamAckTypes::FilledNewOrderAck)
+	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::FilledNewOrderAck)
 	{
 		const std::string clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
 		const std::string orderStatus = message.GetStringValueByTag(FieldLabels::OrderStatus);
@@ -191,15 +191,15 @@ void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessag
 			m_exchangeReporter->DoTradeExecutionReport();
 		}
 	}
-	else if (simulatorAckType == DownstreamAckTypes::CancelledOrderAck)
+	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::CancelledOrderAck)
 	{
 
 	}
-	else if (simulatorAckType == DownstreamAckTypes::ReplacedOrderAck)
+	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::ReplacedOrderAck)
 	{
 
 	}
-	else if (simulatorAckType == DownstreamAckTypes::ErrorOrderAck)
+	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::ErrorOrderAck)
 	{
 
 	}

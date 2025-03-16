@@ -16,7 +16,7 @@ TestOrder::TestOrder(const std::string& clientOrderId,
 					 const binapi::double_type quality,
 					 const binapi::double_type referencePrice,
 					 const TestOrderSide side)
-	: Order(m_symbol, clientOrderId, BinanceOrderType::TEST),
+	: Order(m_symbol, clientOrderId, MessageType::TEST),
 	m_assetQty(quality),
 	m_assetReferencePrice(referencePrice),
 	m_orderSide(side)

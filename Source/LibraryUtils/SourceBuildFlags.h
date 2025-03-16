@@ -17,8 +17,8 @@
 #endif
 
 // Macro flag to enable or disable test trading mode
-#define USE_BACK_TEST_TRADING 0  // Set to 0 to disable test mode, CAREFULLY, lose monney!!!!
-#define USE_BINANCE_TEST_TRADING 1  // Set to 0 to disable test mode, CAREFULLY, lose monney!!!!
+#define USE_BACK_TEST_TRADING 1  // Set to 0 to disable test mode, CAREFULLY, lose monney!!!!
+#define USE_BINANCE_TEST_TRADING 0  // Set to 0 to disable test mode, CAREFULLY, lose monney!!!!
 #if USE_BACK_TEST_TRADING
 #define USE_BACK_TEST_TRADING_MESSAGE "Using back test trading mode."
 #elif USE_BINANCE_TEST_TRADING

@@ -31,6 +31,7 @@ namespace OrderManagement {
         FULL_FILLED,
         CANCELLED,
         REPLACED,
+        REJECTED,
     };
 
     // Type of new order

@@ -196,7 +196,7 @@ void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& me
 	std::unique_lock<std::mutex> lock(m_mutex);
 	if (message.IsValid())
 	{
-		const auto messageType = message.GetStringValueByTag(FieldLabels::BinanceOrderType);
+		const auto messageType = message.GetStringValueByTag(FieldLabels::MessageType);
 		if (messageType == Binance_Order_Type::New_Order)
 		{
 			auto newOrder = ConstructUpstreamNewOrder(message);
@@ -223,30 +223,30 @@ void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& me
 		}
 		else if (messageType == Binance_Order_Type::Cancel_Order)
 		{
-			const auto cancelOrder = ConstructUpstreamCancelOrder(message);
+			auto cancelOrder = ConstructUpstreamCancelOrder(message);
 			if (VerifyUpstreamBinanceCancelOrder(cancelOrder))
 			{
-				//cancelOrder.SetOrderStatus(BinanceCancelOrderStatus::WAITING_FOR_CANCEL);
+				cancelOrder.SetOrderStatus(BinanceCancelOrderStatus::WAITING_FOR_CANCEL);
 				m_upstreamOrderQueueMgr->PushOrderToQueue(cancelOrder.GetClientOrderId(), cancelOrder);
 			}
 			else return;
 		}
 		else if (messageType == Binance_Order_Type::Replace_Order)
 		{
-			const auto replaceOrder = ConstructUpstreamReplaceOrder(message);
+			auto replaceOrder = ConstructUpstreamReplaceOrder(message);
 			if (VerifyUpstreamBinanceReplaceOrder(replaceOrder))
 			{
-				//cancelOrder.SetOrderStatus(BinanceReplaceOrderStatus::WAITING_FOR_REPLACE);
+				replaceOrder.SetOrderStatus(BinanceReplaceOrderStatus::WAITING_FOR_REPLACE);
 				m_upstreamOrderQueueMgr->PushOrderToQueue(replaceOrder.GetClientOrderId(), replaceOrder);
 			}
 			else return;
 		}
 		else if (messageType == Binance_Order_Type::Query_Order)
 		{
-			const auto queryOrder = ConstructUpstreamQueryOrder(message);
+			auto queryOrder = ConstructUpstreamQueryOrder(message);
 			if (VerifyUpstreamBinanceQueryOrder(queryOrder))
 			{
-				//cancelOrder.SetOrderStatus(BinanceQueryOrderStatus::WAITING_FOR_QUERY);
+				queryOrder.SetOrderStatus(BinanceQueryOrderStatus::WAITING_FOR_QUERY);
 				m_upstreamOrderQueueMgr->PushOrderToQueue(queryOrder.GetClientOrderId(), queryOrder);
 			}
 			else return;
@@ -295,16 +295,43 @@ bool MatchingEngine::VerifyUpstreamBinanceNewOrder(const BinanceNewOrder& order)
 
 bool MatchingEngine::VerifyUpstreamBinanceCancelOrder(const BinanceCancelOrder& order)
 {
+	const auto& targetOrder = m_upstreamOrderQueueMgr->LookupOrder(order.GetOrigClientOrderId());
+	if (UpstreamOrderUtils::GetOrderClientId(order) != order.GetClientOrderId())
+	{
+		const auto errMsg = "Could not find target order to cancel with OrderClientId=" + order.GetClientOrderId();
+		m_logger->Error(errMsg);
+		const auto ack = AckUtils::CreateErrorRejectOrderAck(order.GetSymbol(), order.GetClientOrderId(), errMsg);
+		UpstreamGateWay->SendDownstreamOrderAck(ack);
+		return false;
+	}
 	return true;
 }
 
 bool MatchingEngine::VerifyUpstreamBinanceReplaceOrder(const BinanceReplaceOrder& order)
 {
+	const auto& targetOrder = m_upstreamOrderQueueMgr->LookupOrder(order.GetOrigClientOrderId());
+	if (UpstreamOrderUtils::GetOrderClientId(order) != order.GetClientOrderId())
+	{
+		const auto errMsg = "Could not find target order to replace with OrderClientId=" + order.GetClientOrderId();
+		m_logger->Error(errMsg);
+		const auto ack = AckUtils::CreateErrorRejectOrderAck(order.GetSymbol(), order.GetClientOrderId(), errMsg);
+		UpstreamGateWay->SendDownstreamOrderAck(ack);
+		return false;
+	}
 	return true;
 }
 
 bool MatchingEngine::VerifyUpstreamBinanceQueryOrder(const BinanceQueryOrder& order)
 {
+	const auto& targetOrder = m_upstreamOrderQueueMgr->LookupOrder(order.GetOrigClientOrderId());
+	if (UpstreamOrderUtils::GetOrderClientId(order) != order.GetClientOrderId())
+	{
+		const auto errMsg = "Could not find target order to query with OrderClientId=" + order.GetClientOrderId();
+		m_logger->Error(errMsg);
+		const auto ack = AckUtils::CreateErrorRejectOrderAck(order.GetSymbol(), order.GetClientOrderId(), errMsg);
+		UpstreamGateWay->SendDownstreamOrderAck(ack);
+		return false;
+	}
 	return true;
 }
 
