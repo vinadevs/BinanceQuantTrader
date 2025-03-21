@@ -19,6 +19,7 @@ namespace OrderManagement {
 	class BinanceNewOrder;
 	class BinanceCancelOrder;
 	class BinanceReplaceOrder;
+	class BinanceQueryOrder;
 }
 
 namespace LibraryUtils {
@@ -45,8 +46,8 @@ namespace ExchangeConnectivity {
 		binapi::rest::api::result<binapi::rest::new_order_resp_type>
 			SendNewBinanceTestOrderFull(OrderManagement::BinanceNewOrder* newTestOrder);
 
-		binapi::rest::api::result<binapi::rest::my_trades_info_t>
-			QueryBinanceOrderStatus(const std::string& symbol);
+		binapi::rest::api::result<binapi::rest::order_info_t>
+			QueryBinanceOrderStatus(OrderManagement::BinanceQueryOrder* queryOrder);
 
 		binapi::rest::api::result<binapi::rest::cancel_order_info_t>
 			SendCancelBinanceOrder(OrderManagement::BinanceCancelOrder* cancelOrder);

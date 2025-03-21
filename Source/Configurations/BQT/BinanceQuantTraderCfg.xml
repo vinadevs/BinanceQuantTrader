@@ -34,7 +34,7 @@
 </TraderInfo>
 
 <ComplianceNRegulatory>
-  <TradingLimits RequestWeightPerMinute="6000" OrdersPerTenSeconds="50" OrdersPerTwentyFourHours="1000"/>
+  <TradingLimits MaxRequestWeightPerMinute="5000" MaxOrdersPerTenSeconds="50" MaxOrdersPerTwentyFourHours="160000"/>
   <StaticExchangeProfile File="[ROOT_BQT_PATH]\Configurations\Common\BinanceStaticExchangeProfile.txt"/>
 </ComplianceNRegulatory>
 

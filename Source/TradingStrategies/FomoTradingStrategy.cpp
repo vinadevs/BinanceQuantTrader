@@ -139,8 +139,9 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 							symbolExchangeInfo.get_filter_lot_size().minQty.convert_to<double>(),
 							symbolExchangeInfo.get_filter_price().minPrice.convert_to<double>()))
 						{
-							IncreaseComplianceOrderCounter(); // register a sent order request to ComplianceNRegulatory
+							
 						}
+						IncreaseComplianceOrderCounter(); // register a sent order request to ComplianceNRegulatory
 					}
 					else if (hints->isDownTrend)
 					{
@@ -148,8 +149,9 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 							symbolExchangeInfo.get_filter_lot_size().minQty.convert_to<double>(),
 							symbolExchangeInfo.get_filter_price().minPrice.convert_to<double>()))
 						{
-							IncreaseComplianceOrderCounter(); // register a sent order request to ComplianceNRegulatory
+							
 						}
+						IncreaseComplianceOrderCounter(); // register a sent order request to ComplianceNRegulatory
 					}
 				}
 				else
@@ -159,7 +161,7 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 			}
 			else
 			{
-				m_logger->Warning("Strategy received a hint signal but it is exceeded exchange limitations.");
+				//m_logger->Debug("Strategy received a hint signal but it is exceeded exchange limitations.");
 			}
 		}
 		else

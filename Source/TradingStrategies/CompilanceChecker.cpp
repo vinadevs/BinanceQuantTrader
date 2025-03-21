@@ -33,7 +33,7 @@ void OrdersPerTenSecondsChecker::OnAlarmTriggered(const int passToDerived/*=0*/)
 	// AS BINANCE WILL BAN THE LOCAL IP FOR THAT SPAM
 	// PLEASE CHECK IN ComplianceNRegulatory CODE
 	// REMEMBER ALWAY IMPLEMENT A CHECKER BEFORE CALL REST API
-	m_tradingRules->ResetOrdersPerTenSecondsCounter();
+	m_tradingRules->ResetOrdersPerTenSecondsCounter(false);
 	m_logger->Info("Reset limitation of orders per ten seconds.");
 }
 
@@ -56,7 +56,7 @@ void RequestWeightPerMinuteChecker::OnAlarmTriggered(const int passToDerived)
 	// AS BINANCE WILL BAN THE LOCAL IP FOR THAT SPAM
 	// PLEASE CHECK IN ComplianceNRegulatory CODE
 	// REMEMBER ALWAY IMPLEMENT A CHECKER BEFORE CALL REST API
-	m_tradingRules->ResetRequestWeightPerMinuteCounter();
+	m_tradingRules->ResetRequestWeightPerMinuteCounter(false);
 	m_logger->Info("Reset limitation of requests per minute.");
 }
 
@@ -79,7 +79,7 @@ void OrdersPerTwentyFourHoursChecker::OnAlarmTriggered(const int passToDerived)
 	// AS BINANCE WILL BAN THE LOCAL IP FOR THAT SPAM
 	// PLEASE CHECK IN ComplianceNRegulatory CODE
 	// REMEMBER ALWAY IMPLEMENT A CHECKER BEFORE CALL REST API
-	m_tradingRules->ResetRequestWeightPerMinuteCounter();
+	m_tradingRules->ResetOrdersPerTwentyFourHoursCounter(false);
 	m_logger->Info("Reset limitation of orders per 24 hours.");
 }
 

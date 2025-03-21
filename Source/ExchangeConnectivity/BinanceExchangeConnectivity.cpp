@@ -11,6 +11,7 @@
 #include "../OrderManagement/BinanceNewOrder.h"
 #include "../OrderManagement/BinanceCancelOrder.h"
 #include "../OrderManagement/BinanceReplaceOrder.h"
+#include "../OrderManagement/BinanceQueryOrder.h"
 #include "../RestAPI/BinanceAPI.h"
 #include "../LibraryUtils/StringDefinitions.h"
 #include "../LibraryUtils/Logger.h"
@@ -95,10 +96,24 @@ BinanceExchangeConnectivity::SendNewBinanceTestOrderFull(
     return newTestOrderResult;
 }
 
-binapi::rest::api::result<binapi::rest::my_trades_info_t>
-BinanceExchangeConnectivity::QueryBinanceOrderStatus(const std::string& symbol)
+binapi::rest::api::result<binapi::rest::order_info_t>
+BinanceExchangeConnectivity::QueryBinanceOrderStatus(
+    OrderManagement::BinanceQueryOrder* queryOrder)
 {
-    return binapi::rest::api::result<binapi::rest::my_trades_info_t>();
+    const auto queryOrderResult = BinanceApiGateWay->order_info(
+        queryOrder->GetSymbol(),
+        queryOrder->GetOrderId(),
+        queryOrder->GetOrigClientOrderId());
+    if (!static_cast<bool>(queryOrderResult) && queryOrderResult.v.status != StringDefinitions::BinanceExchangeCancelledStatus)
+    {
+        LOG_ERROR_STREAM(m_logger, "could NOT query order="
+            << queryOrder << ", reason=" << queryOrderResult.errmsg);
+    }
+    else
+    {
+        LOG_INFO_STREAM(m_logger, "queried order=" << queryOrderResult.v);
+    }
+    return queryOrderResult;
 }
 
 binapi::rest::api::result<binapi::rest::cancel_order_info_t>

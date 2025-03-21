@@ -51,14 +51,17 @@ namespace ComplianceNRegulatory {
 		void IncreaseOrdersPerTenSeconds();
 		void IncreaseOrdersPerTwentyFourHours();
 
-		void ResetRequestWeightPerMinuteCounter();
-		void ResetOrdersPerTenSecondsCounter();
-		void ResetOrdersPerTwentyFourHoursCounter();
+		void ResetRequestWeightPerMinuteCounter(bool forceLimitationCheck);
+		void ResetOrdersPerTenSecondsCounter(bool forceLimitationCheck);
+		void ResetOrdersPerTwentyFourHoursCounter(bool forceLimitationCheck);
 
 		bool IsNotExceededRequestWeightPerMinute();
 		bool IsNotExceededOrdersPerTenSeconds();
 		bool IsNotExceededOrdersPerTwentyFourHours();
 
+		size_t GetRequestWeightPerMinuteCounter() const { return m_requestWeightPerMinuteCounter; }
+		size_t GetOrdersPerTenSecondsCounter() const { return m_ordersPerTenSecondsCounter; }
+		size_t GetOrdersPerTwentyFourHoursCounter() const { return m_ordersPerTwentyFourHoursCounter; }
 	private:
 		std::mutex m_mutex; // for thread safe
 		std::unique_ptr<HardTradingLimits> m_limits;

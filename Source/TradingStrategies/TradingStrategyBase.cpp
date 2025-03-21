@@ -119,11 +119,11 @@ bool TradingStrategyBase::IsNotIsNotExceededTradingRules() const
 void TradingStrategyBase::IncreaseComplianceOrderCounter() 
 {
 	m_tradingRules->IncreaseOrdersPerTenSeconds();
-	m_logger->Info("Current number of orders per ten seconds= "
-		+ std::to_string(m_tradingRules->GetTradingLimits()->m_ordersPerTenSeconds) + ".");
+	m_logger->Info("CompilanceChecker: current number of orders per ten seconds="
+		+ std::to_string(m_tradingRules->GetOrdersPerTenSecondsCounter()) + ".");
 	m_tradingRules->IncreaseRequestWeightPerMinute();
-	m_logger->Info("Current number of requests per minute= "
-		+ std::to_string(m_tradingRules->GetTradingLimits()->m_requestWeightPerMinute) + ".");
+	m_logger->Info("CompilanceChecker: current number of requests per minute="
+		+ std::to_string(m_tradingRules->GetRequestWeightPerMinuteCounter()) + ".");
 	if (m_StrategyLifeTime != StrategyLifeTime::INTRA_DAY)
 	{
 		m_tradingRules->IncreaseOrdersPerTwentyFourHours();
