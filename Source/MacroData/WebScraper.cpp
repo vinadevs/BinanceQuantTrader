@@ -9,6 +9,8 @@
 #include "pch.h"
 #include "WebScraper.h"
 
+#include <curl/curl.h>
+
 using namespace MacroData;
 
 // Callback function for libcurl
@@ -23,7 +25,7 @@ size_t WebScraper::WriteCallback(
 }
 
 // Fetch HTML from a URL
-std::string WebScraper::fetchHTML(const std::string& url) {
+std::string WebScraper::FetchHTML(const std::string& url) {
     CURL* curl;
     CURLcode res;
     std::string htmlData;
@@ -41,7 +43,7 @@ std::string WebScraper::fetchHTML(const std::string& url) {
 }
 
 // Extract visible text from an HTML document
-void WebScraper::extractText(
+void WebScraper::ExtractText(
     GumboNode* node,
     std::vector<std::string>& texts) {
     if (!node) return;
@@ -58,16 +60,16 @@ void WebScraper::extractText(
     if (node->type == GUMBO_NODE_ELEMENT) {
         GumboVector* children = &node->v.element.children;
         for (size_t i = 0; i < children->length; ++i) {
-            extractText(static_cast<GumboNode*>(children->data[i]), texts);
+            ExtractText(static_cast<GumboNode*>(children->data[i]), texts);
         }
     }
 }
 
 // Extract all text from HTML
-std::vector<std::string> WebScraper::extractAllText(const std::string& html) {
+std::vector<std::string> WebScraper::ExtractAllText(const std::string& html) {
     std::vector<std::string> texts;
     GumboOutput* output = gumbo_parse(html.c_str());
-    extractText(output->root, texts);
+    ExtractText(output->root, texts);
     gumbo_destroy_output(&kGumboDefaultOptions, output);
     return texts;
 }
