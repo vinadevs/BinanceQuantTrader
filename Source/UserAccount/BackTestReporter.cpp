@@ -39,7 +39,7 @@ void BackTestReporter::SetupReporter(const tinyxml2::XMLElement* reportCfg)
 {
 	if (reportCfg->BoolAttribute("TradeReport"))
 	{
-		m_enableTradeReporter = true;
+		m_enableLastDayTradeReporter = true;
 	}
 	if (reportCfg->BoolAttribute("OrderReport"))
 	{
@@ -48,6 +48,14 @@ void BackTestReporter::SetupReporter(const tinyxml2::XMLElement* reportCfg)
 	if (reportCfg->BoolAttribute("BalanceReport"))
 	{
 		m_enableBalanceReporter = true;
+	}
+	if (reportCfg->BoolAttribute("ExchangerPriceForOrdersReport"))
+	{
+		m_enableExchangerPriceForOrdersReporter = true;
+	}
+	if (reportCfg->BoolAttribute("CalculateLossForOrdersReport"))
+	{
+		m_enableCalculateLossForOrdersReporter = true;
 	}
 }
 
@@ -60,6 +68,14 @@ void BackTestReporter::UpdateRemoteReportOpenOrders(const std::string& symbol)
 }
 
 void BackTestReporter::UpdateRemoteReportAccountBalance(const std::string& symbol)
+{
+}
+
+void BackTestReporter::UpdateRemoteReportExchangerPriceForOrders(const std::string& symbol)
+{
+}
+
+void BackTestReporter::UpdateRemoteReportCalculateLossForOrders(const std::string& symbol)
 {
 }
 

@@ -30,7 +30,7 @@
 
 <TraderInfo>
   <UsingTrader Type="BinanceTrader"/>
-  <Report TradeReport="true" OrderReport="true" BalanceReport="true"/>
+  <Report TradeReport="true" OrderReport="true" BalanceReport="true" ExchangerPriceForOrdersReport="true" CalculateLossForOrdersReport="true"/>
 </TraderInfo>
 
 <ComplianceNRegulatory>

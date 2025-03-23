@@ -173,6 +173,7 @@ struct DLL_CLASS account_info_t {
         const std::map<std::string, balance_t>& balances
         );
 
+    static bool write_account_info_to_file(const std::string& filePath, const account_info_t& o);
     friend DLL_CLASS std::ostream &operator<<(std::ostream &os, const account_info_t &f);
 };
 

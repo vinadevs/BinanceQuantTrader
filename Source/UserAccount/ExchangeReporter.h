@@ -33,6 +33,8 @@ namespace UserAccount {
 		virtual void UpdateRemoteReportTrades(const std::string& symbol) = 0;
 		virtual void UpdateRemoteReportOpenOrders(const std::string& symbol) = 0;
 		virtual void UpdateRemoteReportAccountBalance(const std::string& symbol) = 0;
+		virtual void UpdateRemoteReportExchangerPriceForOrders(const std::string& symbol) = 0;
+		virtual void UpdateRemoteReportCalculateLossForOrders(const std::string& symbol) = 0;
 		virtual void DoRemoteExecutionReport(const std::string& symbol) = 0;
 		virtual void DoLocalExecutionReport(const std::string& symbol) = 0;
 		virtual void DoTradeExecutionReport() = 0;
@@ -42,9 +44,11 @@ namespace UserAccount {
 		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr };
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
 
-		bool m_enableTradeReporter{ false };
+		bool m_enableLastDayTradeReporter{ false };
 		bool m_enableOpenOrderReporter{ false };
 		bool m_enableBalanceReporter{ false };
+		bool m_enableExchangerPriceForOrdersReporter{ false };
+		bool m_enableCalculateLossForOrdersReporter{ false };
 	};
 };
 

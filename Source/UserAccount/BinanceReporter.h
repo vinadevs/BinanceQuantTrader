@@ -33,6 +33,8 @@ namespace UserAccount {
 		void UpdateRemoteReportTrades(const std::string& symbol) override;
 		void UpdateRemoteReportOpenOrders(const std::string& symbol) override;
 		void UpdateRemoteReportAccountBalance(const std::string& symbol) override;
+		void UpdateRemoteReportExchangerPriceForOrders(const std::string& symbol) override;
+		void UpdateRemoteReportCalculateLossForOrders(const std::string& symbol) override;
 		void DoRemoteExecutionReport(const std::string& symbol) override;
 		void DoLocalExecutionReport(const std::string& symbol) override;
 		void DoTradeExecutionReport() override;

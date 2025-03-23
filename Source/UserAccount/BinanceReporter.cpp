@@ -40,7 +40,7 @@ void BinanceReporter::SetupReporter(const tinyxml2::XMLElement* reportCfg)
 {
 	if (reportCfg->BoolAttribute("TradeReport"))
 	{
-		m_enableTradeReporter = true;
+		m_enableLastDayTradeReporter = true;
 	}
 	if (reportCfg->BoolAttribute("OrderReport"))
 	{
@@ -49,6 +49,14 @@ void BinanceReporter::SetupReporter(const tinyxml2::XMLElement* reportCfg)
 	if (reportCfg->BoolAttribute("BalanceReport"))
 	{
 		m_enableBalanceReporter = true;
+	}
+	if (reportCfg->BoolAttribute("ExchangerPriceForOrdersReport"))
+	{
+		m_enableExchangerPriceForOrdersReporter = true;
+	}
+	if (reportCfg->BoolAttribute("CalculateLossForOrdersReport"))
+	{
+		m_enableCalculateLossForOrdersReporter = true;
 	}
 }
 
@@ -71,7 +79,9 @@ void BinanceReporter::UpdateRemoteReportTrades(const std::string& symbol)
 		LOG_INFO_STREAM(m_logger, o.symbol << " - " << o.orderId);
 	};
 	LOG_INFO_STREAM(m_logger, "********************* TRADES REPORT *********************************");
-	binapi::make_trades_report_for_last_day(std::cout, *BinanceApiGateWay, accountInfo.v, exchangeInfo.v, { symbol }, trades_report_cb);
+	binapi::make_trades_report_for_last_day(std::cout, 
+		*BinanceApiGateWay, accountInfo.v, exchangeInfo.v,
+		{ symbol }, trades_report_cb);
 }
 
 void BinanceReporter::UpdateRemoteReportOpenOrders(const std::string& symbol)
@@ -89,7 +99,8 @@ void BinanceReporter::UpdateRemoteReportOpenOrders(const std::string& symbol)
 		return;
 	}
 	LOG_INFO_STREAM(m_logger, "******************* OPEN ORDERS REPORT ******************************");
-	binapi::make_open_orders_report(std::cout, *BinanceApiGateWay, exchangeInfo.v, {});
+	binapi::make_open_orders_report(std::cout, 
+		*BinanceApiGateWay, exchangeInfo.v, { symbol });
 }
 
 void BinanceReporter::UpdateRemoteReportAccountBalance(const std::string& symbol)
@@ -106,13 +117,52 @@ void BinanceReporter::UpdateRemoteReportAccountBalance(const std::string& symbol
 		LOG_ERROR_STREAM(m_logger, "exchange_info error: " << exchangeInfo.errmsg);
 		return;
 	}
-	LOG_INFO_STREAM(m_logger, "******************** BALANCE REPORT *********************************");
-	binapi::make_balance_report(std::cout, *BinanceApiGateWay, accountInfo.v, exchangeInfo.v);
+	LOG_INFO_STREAM(m_logger, "******************** USER BALANCE REPORT *********************************");
+	binapi::make_balance_report(std::cout, 
+		*BinanceApiGateWay, accountInfo.v, exchangeInfo.v);
+}
+
+void BinanceReporter::UpdateRemoteReportExchangerPriceForOrders(const std::string& symbol)
+{
+	const auto accountInfo = BinanceApiGateWay->account_info();
+	if (!accountInfo)
+	{
+		LOG_ERROR_STREAM(m_logger, "get account info error: " << accountInfo.errmsg);
+		return;
+	}
+	const auto exchangeInfo = BinanceApiGateWay->exchange_info(symbol);
+	if (!exchangeInfo)
+	{
+		LOG_ERROR_STREAM(m_logger, "exchange_info error: " << exchangeInfo.errmsg);
+		return;
+	}
+	LOG_INFO_STREAM(m_logger, "******************** EXCHANGE ORDER PRICE REPORT *********************************");
+	binapi::show_exchanger_price_for_orders(std::cout,
+		*BinanceApiGateWay, exchangeInfo.v, { symbol });
+}
+
+void BinanceReporter::UpdateRemoteReportCalculateLossForOrders(const std::string& symbol)
+{
+	const auto accountInfo = BinanceApiGateWay->account_info();
+	if (!accountInfo)
+	{
+		LOG_ERROR_STREAM(m_logger, "get account info error: " << accountInfo.errmsg);
+		return;
+	}
+	const auto exchangeInfo = BinanceApiGateWay->exchange_info(symbol);
+	if (!exchangeInfo)
+	{
+		LOG_ERROR_STREAM(m_logger, "exchange_info error: " << exchangeInfo.errmsg);
+		return;
+	}
+	LOG_INFO_STREAM(m_logger, "******************** CALCULATE ORDER LOSS REPORT *********************************");
+	binapi::calc_loss_for_orders(std::cout,
+		*BinanceApiGateWay, exchangeInfo.v, { symbol });
 }
 
 void BinanceReporter::DoRemoteExecutionReport(const std::string& symbol)
 {
-	if (m_enableTradeReporter)
+	if (m_enableLastDayTradeReporter)
 	{
 		UpdateRemoteReportTrades(symbol);
 	}
@@ -123,6 +173,14 @@ void BinanceReporter::DoRemoteExecutionReport(const std::string& symbol)
 	if (m_enableBalanceReporter)
 	{
 		UpdateRemoteReportAccountBalance(symbol);
+	}
+	if (m_enableExchangerPriceForOrdersReporter)
+	{
+		UpdateRemoteReportExchangerPriceForOrders(symbol);
+	}
+	if (m_enableCalculateLossForOrdersReporter)
+	{
+		UpdateRemoteReportCalculateLossForOrders(symbol);
 	}
 }
 
