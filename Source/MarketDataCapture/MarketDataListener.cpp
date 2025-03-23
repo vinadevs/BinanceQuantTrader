@@ -48,7 +48,7 @@ bool MarketDataListener::OnIndividualBookTickerChange(
 bool MarketDataListener::OnTradeChange(
 	MarketData::MarketDataSubject* marketData, const std::string& symbol)
 {
-    if (const auto* data = marketData->GetSynchronousMarketData(symbol))
+    if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
         return true;
     }

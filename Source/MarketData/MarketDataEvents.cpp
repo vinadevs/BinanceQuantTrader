@@ -221,12 +221,12 @@ void MarketDataEvents::VerifySubscriptionHandle(
 void MarketDataEvents::SubscibeIndividualBookTicker(const std::string& symbol)
 {
     const auto handle = m_webSocketRealTime->book(symbol.c_str(),
-          std::bind(&MarketDataFeedHandler::HandleIndividualBookTickerData,
-       m_feedHandler,
-        std::placeholders::_1,
-        std::placeholders::_2,
-        std::placeholders::_3,
-        std::placeholders::_4));
+        std::bind(&MarketDataFeedHandler::HandleIndividualBookTickerData,
+            m_feedHandler,
+            std::placeholders::_1,
+            std::placeholders::_2,
+            std::placeholders::_3,
+            std::placeholders::_4));
     VerifySubscriptionHandle(symbol, "individual book ticker", handle,
         SubscriptionHandleType::INDIVIDUAL_BOOK_TICKER);
 }

@@ -86,7 +86,7 @@ namespace TradingStrategies {
 	class DLL_CLASS_TRADING_TRATEGIES_EXPORTS
 		TradingStrategyBase
 #if USE_BACK_TEST_TRADING  
-		, public MiddlewareMQ::MessageHandler
+		: public MiddlewareMQ::MessageHandler
 #endif
 	{
 	public:

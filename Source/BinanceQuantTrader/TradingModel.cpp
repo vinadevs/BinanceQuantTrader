@@ -173,7 +173,7 @@ void TradingModel::RunModel()
 	// -We dont have a Binance message server, because Binance API 
 	// is using REST protocol so we will use HTTP/REST protocol instead
 	m_strategyMessageServer->Start();
-	m_logger->Info(USE_BACK_TEST_TRADING);
+	m_logger->Info(USE_BACK_TEST_TRADING_MESSAGE);
 #elif USE_BINANCE_TEST_TRADING
 	m_logger->Info(USE_BINANCE_TEST_TRADING_MESSAGE);
 #else
