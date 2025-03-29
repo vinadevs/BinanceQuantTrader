@@ -26,9 +26,12 @@ namespace UserAccount {
 	public:
 		BinanceReporter(
 			const tinyxml2::XMLElement* reportConfigXml,
+			binapi::rest::account_info_t* accountInfo,
+			binapi::rest::exchange_info_t* exchangeInfo,
 			PortfolioManager::PortfolioInvestmentBinance* portfolio);
 		BinanceReporter() = default;
 		~BinanceReporter() override;
+		void UpdateRemoteData(const std::string& symbol) override;
 		void SetupReporter(const tinyxml2::XMLElement* reportCfg) override;
 		void UpdateRemoteReportTrades(const std::string& symbol) override;
 		void UpdateRemoteReportOpenOrders(const std::string& symbol) override;

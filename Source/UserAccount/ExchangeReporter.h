@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "../RestAPI/RestAPI.h"
+
 #include <memory>
 
 namespace tinyxml2 {
@@ -26,9 +28,14 @@ namespace UserAccount {
 	class ExchangeReporter
 	{
 	public:
-		ExchangeReporter(PortfolioManager::PortfolioInvestmentBinance* portfolio)
-			: m_portfolio(portfolio) {}
+		ExchangeReporter(
+			binapi::rest::account_info_t* accountInfo,
+			binapi::rest::exchange_info_t* exchangeInfo,
+			PortfolioManager::PortfolioInvestmentBinance* portfolio)
+			: m_accountInfo(accountInfo), m_exchangeInfo(exchangeInfo), m_portfolio(portfolio) {}
+
 		virtual ~ExchangeReporter() {};
+
 		virtual void SetupReporter(const tinyxml2::XMLElement* reportCfg) = 0;
 		virtual void UpdateRemoteReportTrades(const std::string& symbol) = 0;
 		virtual void UpdateRemoteReportOpenOrders(const std::string& symbol) = 0;
@@ -38,6 +45,8 @@ namespace UserAccount {
 		virtual void DoRemoteExecutionReport(const std::string& symbol) = 0;
 		virtual void DoLocalExecutionReport(const std::string& symbol) = 0;
 		virtual void DoTradeExecutionReport() = 0;
+		virtual void UpdateRemoteData(const std::string& symbol) = 0;
+
 	protected:
 		virtual bool MergeLocalAndRemmoteReport() = 0;
 
@@ -49,6 +58,10 @@ namespace UserAccount {
 		bool m_enableBalanceReporter{ false };
 		bool m_enableExchangerPriceForOrdersReporter{ false };
 		bool m_enableCalculateLossForOrdersReporter{ false };
+
+		// report data
+		binapi::rest::account_info_t* m_accountInfo;
+		binapi::rest::exchange_info_t* m_exchangeInfo;
 	};
 };
 

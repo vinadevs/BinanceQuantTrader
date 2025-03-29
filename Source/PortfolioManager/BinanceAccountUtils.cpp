@@ -65,7 +65,7 @@ bool BinanceAccountUtils::QueryBinanceAccount(
                 return false;
             }
             //LOG_DEBUG_STREAM(logger, "AccountInfo=" << accountInfoResult.v);
-            *account = accountInfoResult.v;
+            DEREF_V(account) = accountInfoResult.v;
             return true;
         }
     }

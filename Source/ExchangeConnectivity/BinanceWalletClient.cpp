@@ -27,24 +27,22 @@ BinanceWalletClient::BinanceWalletClient(const tinyxml2::XMLElement* binanceWall
     m_grpcConnection.m_serverPort = std::string(connectionXml->Attribute("ServerPort"));
     m_grpcConnection.m_serverConnection = m_grpcConnection.m_serverIpAddress + ":" + m_grpcConnection.m_serverPort;
     m_grpcConnection.m_grpcChannel = grpc::CreateChannel(m_grpcConnection.m_serverConnection, grpc::InsecureChannelCredentials());
-    m_grpcConnection.m_grpcStub = UserAccountService::NewStub(m_grpcConnection.m_grpcChannel);
+    m_grpcConnection.m_grpcStub = account::UserAccountService::NewStub(m_grpcConnection.m_grpcChannel);
 }
 
-BinanceWalletClient::~BinanceWalletClient()
-{
-}
+BinanceWalletClient::~BinanceWalletClient() {}
 
 bool BinanceWalletClient::GetUserAccountDataResponse(
     const std::string& userId,
     binapi::rest::account_info_t* account,
     std::string& errorMessage)
 {
-    m_logger->Info("Sending request data for user account id=" + userId);
+    m_logger->Info("Sending request account_info_t data for user account id=" + userId);
 
-    UserAccountDataRequest request;
+    account::UserAccountDataRequest request;
     request.set_user_id(userId);
 
-    UserAccountDataResponse response; 
+    account::UserAccountDataResponse response;
     grpc::ClientContext context;
 
     const grpc::Status status = m_grpcConnection.m_grpcStub->GetUserAccountData(&context, request, &response);

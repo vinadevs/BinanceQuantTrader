@@ -60,6 +60,9 @@
     <ClInclude Include="protobuf\exchange_info_data.pb.h">
       <Filter>Backtest Simulator\Protobuf</Filter>
     </ClInclude>
+    <ClInclude Include="BinanceExchangeClient.h">
+      <Filter>Backtest Simulator</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -94,6 +97,9 @@
     </ClCompile>
     <ClCompile Include="protobuf\exchange_info_data.pb.cc">
       <Filter>Backtest Simulator\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="BinanceExchangeClient.cpp">
+      <Filter>Backtest Simulator</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

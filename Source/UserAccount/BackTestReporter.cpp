@@ -8,25 +8,24 @@
 
 #include "pch.h"
 
-#include "../RestAPI/RestAPI.h"
-#include "../RestAPI/BinanceAPI.h"
+#include "../RestAPI/ApiKeyInfoManager.h"
 #include "../LibraryUtils/Logger.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../PortfolioManager/PortfolioInvestmentBinance.h"
+#include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
 
 #include "ReportAPIs.h"
 #include "BackTestReporter.h"
 
-#include <iostream>
-
 using namespace UserAccount;
 using namespace PortfolioManager;
-using namespace RestAPI;
 
 BackTestReporter::BackTestReporter(
 	const tinyxml2::XMLElement* reportConfigXml,
+	binapi::rest::account_info_t* accountInfo,
+	binapi::rest::exchange_info_t* exchangeInfo,
 	PortfolioInvestmentBinance* portfolio)
-	: ExchangeReporter(portfolio)
+	: ExchangeReporter(accountInfo, exchangeInfo, portfolio)
 {
 	m_logger = std::make_unique<LibraryUtils::Logger>("BackTestReporter");
 	SetupReporter(reportConfigXml);
@@ -56,6 +55,29 @@ void BackTestReporter::SetupReporter(const tinyxml2::XMLElement* reportCfg)
 	if (reportCfg->BoolAttribute("CalculateLossForOrdersReport"))
 	{
 		m_enableCalculateLossForOrdersReporter = true;
+	}
+}
+
+void BackTestReporter::UpdateRemoteData(const std::string& symbol)
+{
+	std::string errorMessage;
+	if (ExchangeSimulatorGateWay->GetUserAccountInfo(
+		ApiKeyInfoMgr->GetApiKeyInfo().m_userID, m_accountInfo, errorMessage))
+	{
+		m_logger->Info("updating account info finished.");
+	}
+	else
+	{
+		m_logger->Error("account_info: emsg=" + errorMessage);
+	}
+	if (ExchangeSimulatorGateWay->GetExchangeInfo(
+		ApiKeyInfoMgr->GetApiKeyInfo().m_userID, m_exchangeInfo, errorMessage))
+	{
+		m_logger->Info("updating exchange info finished.");
+	}
+	else
+	{
+		m_logger->Error("account_info: emsg=" + errorMessage);
 	}
 }
 

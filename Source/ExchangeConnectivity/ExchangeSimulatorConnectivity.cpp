@@ -18,6 +18,7 @@
 #include "../SettingNConfig/tinyxml2.h"
 
 #include "BinanceWalletClient.h"
+#include "BinanceExchangeClient.h"
 #include "ExchangeSimulatorConnectivity.h"
 
 using namespace ExchangeConnectivity;
@@ -43,6 +44,11 @@ void ExchangeSimulatorConnectivity::InitMessageTransporter(const XMLElement* mes
 void ExchangeSimulatorConnectivity::InitBinanceWalletClient(const XMLElement* binanceWalletClientXmlCfg)
 {
     m_binanceWalletClient = std::make_unique<BinanceWalletClient>(binanceWalletClientXmlCfg);
+}
+
+void ExchangeSimulatorConnectivity::InitBinanceExchangeClient(const tinyxml2::XMLElement* binanceExchangeClientXmlCfg)
+{
+    m_binanceExchangeClient = std::make_unique<BinanceExchangeClient>(binanceExchangeClientXmlCfg);
 }
 
 MiddlewareMQ::MiddlewareMQResult
@@ -122,4 +128,12 @@ bool ExchangeSimulatorConnectivity::GetUserAccountInfo(
     std::string& errorMessage)
 {
     return m_binanceWalletClient->GetUserAccountDataResponse(userId, account, errorMessage);
+}
+
+bool ExchangeSimulatorConnectivity::GetExchangeInfo(
+    const std::string& userId,
+    binapi::rest::exchange_info_t* exchangeInfo,
+    std::string& errorMessage)
+{
+    return m_binanceExchangeClient->GetExchangeInfoResponse(userId, exchangeInfo, errorMessage);
 }

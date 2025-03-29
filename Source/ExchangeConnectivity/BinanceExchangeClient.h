@@ -4,12 +4,12 @@
 # This is a part of Binance Quant Trader Project
 # Copyright(C) - vinadevs
 # This source code can be used, distributed or modified under Apache license
-#*******************************************************************************/ 
+#*******************************************************************************/
 
 #pragma once
 
-#include "Protobuf/user_account_data.pb.h"
-#include "Protobuf/user_account_data.grpc.pb.h"
+#include "Protobuf/exchange_info_data.pb.h"
+#include "Protobuf/exchange_info_data.grpc.pb.h"
 #undef max
 #undef min
 #include <grpcpp/grpcpp.h>
@@ -33,9 +33,9 @@ namespace binapi {
 
 namespace ExchangeConnectivity {
 
-	struct UserAccountGrpcConnection final
+	struct ExchangeGrpcConnection final
 	{
-		std::unique_ptr<account::UserAccountService::Stub> m_grpcStub;
+		std::unique_ptr<exchange::ExchangeService::Stub> m_grpcStub;
 		std::shared_ptr<grpc::Channel> m_grpcChannel;
 		grpc::ClientContext m_context;
 		std::string m_serverIpAddress;
@@ -43,18 +43,18 @@ namespace ExchangeConnectivity {
 		std::string m_serverConnection;
 	};
 
-	class BinanceWalletClient final
+	class BinanceExchangeClient final
 	{
 	public:
-		BinanceWalletClient(const tinyxml2::XMLElement* binanceWalletClientXmlCfg);
-		~BinanceWalletClient();
+		BinanceExchangeClient(const tinyxml2::XMLElement* BinanceExchangeClientXmlCfg);
+		~BinanceExchangeClient();
 
-		bool GetUserAccountDataResponse(
-			const std::string& userId,
-			binapi::rest::account_info_t* account,
-			std::string& errorMessage);
+		bool GetExchangeInfoResponse(
+			const std::string& symbolId,
+			binapi::rest::exchange_info_t*
+			exchangeInfo, std::string& errorMessage);
 	private:
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
-		UserAccountGrpcConnection m_grpcConnection;
+		ExchangeGrpcConnection m_grpcConnection;
 	};
 };

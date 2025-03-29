@@ -58,12 +58,15 @@ BinanceTrader::BinanceTrader(
     m_logger = std::make_unique<LibraryUtils::Logger>("BinanceTrader");
     m_logger->Info("using BinanceTrader.");
 	m_binanceAccountInfo = std::make_unique<binapi::rest::account_info_t>();
+	m_binanceExchangeInfo = std::make_unique<binapi::rest::exchange_info_t>();
 	m_workedOrderManager = std::make_unique<BinanceWorkedOrderManager>();
 	m_positionManager = std::make_unique<PositionManager>(m_workedOrderManager.get());
 #if USE_BACK_TEST_TRADING
-	m_exchangeReporter = std::make_unique<BackTestReporter>(reportCfg, m_portfolio);
+	m_exchangeReporter = std::make_unique<BackTestReporter>(
+		reportCfg, m_binanceAccountInfo.get(), m_binanceExchangeInfo.get(), m_portfolio);
 #else
-	m_exchangeReporter = std::make_unique<BinanceReporter>(reportCfg, m_portfolio);
+	m_exchangeReporter = std::make_unique<BinanceReporter>(
+		reportCfg, m_binanceAccountInfo.get(), m_binanceExchangeInfo.get(), m_portfolio);
 #endif
 }
 

@@ -54,6 +54,7 @@ struct TableStruct_user_5faccount_5fdata_2eproto {
 };
 extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_user_5faccount_5fdata_2eproto;
+namespace account {
 class Balance;
 struct BalanceDefaultTypeInternal;
 extern BalanceDefaultTypeInternal _Balance_default_instance_;
@@ -66,11 +67,13 @@ extern UserAccountDataResponseDefaultTypeInternal _UserAccountDataResponse_defau
 class UserAccountDataResponse_BalancesEntry_DoNotUse;
 struct UserAccountDataResponse_BalancesEntry_DoNotUseDefaultTypeInternal;
 extern UserAccountDataResponse_BalancesEntry_DoNotUseDefaultTypeInternal _UserAccountDataResponse_BalancesEntry_DoNotUse_default_instance_;
+}  // namespace account
 namespace google {
 namespace protobuf {
 }  // namespace protobuf
 }  // namespace google
 
+namespace account {
 
 // ===================================================================
 
@@ -78,7 +81,7 @@ namespace protobuf {
 // -------------------------------------------------------------------
 
 class UserAccountDataRequest final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:UserAccountDataRequest) */ {
+/* @@protoc_insertion_point(class_definition:account.UserAccountDataRequest) */ {
  public:
   inline UserAccountDataRequest() : UserAccountDataRequest(nullptr) {}
   ~UserAccountDataRequest() PROTOBUF_FINAL;
@@ -202,7 +205,7 @@ class UserAccountDataRequest final : public ::google::protobuf::Message
   template <typename T>
   friend ::absl::string_view(
       ::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "UserAccountDataRequest"; }
+  static ::absl::string_view FullMessageName() { return "account.UserAccountDataRequest"; }
 
  protected:
   explicit UserAccountDataRequest(::google::protobuf::Arena* arena);
@@ -241,13 +244,13 @@ class UserAccountDataRequest final : public ::google::protobuf::Message
   std::string* _internal_mutable_user_id();
 
   public:
-  // @@protoc_insertion_point(class_scope:UserAccountDataRequest)
+  // @@protoc_insertion_point(class_scope:account.UserAccountDataRequest)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
       0, 1, 0,
-      38, 2>
+      46, 2>
       _table_;
 
   friend class ::google::protobuf::MessageLite;
@@ -274,7 +277,7 @@ class UserAccountDataRequest final : public ::google::protobuf::Message
 // -------------------------------------------------------------------
 
 class Balance final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:Balance) */ {
+/* @@protoc_insertion_point(class_definition:account.Balance) */ {
  public:
   inline Balance() : Balance(nullptr) {}
   ~Balance() PROTOBUF_FINAL;
@@ -398,7 +401,7 @@ class Balance final : public ::google::protobuf::Message
   template <typename T>
   friend ::absl::string_view(
       ::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "Balance"; }
+  static ::absl::string_view FullMessageName() { return "account.Balance"; }
 
  protected:
   explicit Balance(::google::protobuf::Arena* arena);
@@ -459,13 +462,13 @@ class Balance final : public ::google::protobuf::Message
   void _internal_set_locked_amount(double value);
 
   public:
-  // @@protoc_insertion_point(class_scope:Balance)
+  // @@protoc_insertion_point(class_scope:account.Balance)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
       2, 3, 0,
-      28, 2>
+      36, 2>
       _table_;
 
   friend class ::google::protobuf::MessageLite;
@@ -521,7 +524,7 @@ class UserAccountDataResponse_BalancesEntry_DoNotUse final
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
       1, 2, 1,
-      49, 2>
+      57, 2>
       _table_;
 
   const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
@@ -533,7 +536,7 @@ class UserAccountDataResponse_BalancesEntry_DoNotUse final
 // -------------------------------------------------------------------
 
 class UserAccountDataResponse final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:UserAccountDataResponse) */ {
+/* @@protoc_insertion_point(class_definition:account.UserAccountDataResponse) */ {
  public:
   inline UserAccountDataResponse() : UserAccountDataResponse(nullptr) {}
   ~UserAccountDataResponse() PROTOBUF_FINAL;
@@ -657,7 +660,7 @@ class UserAccountDataResponse final : public ::google::protobuf::Message
   template <typename T>
   friend ::absl::string_view(
       ::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "UserAccountDataResponse"; }
+  static ::absl::string_view FullMessageName() { return "account.UserAccountDataResponse"; }
 
  protected:
   explicit UserAccountDataResponse(::google::protobuf::Arena* arena);
@@ -690,19 +693,19 @@ class UserAccountDataResponse final : public ::google::protobuf::Message
     kCanWithdrawFieldNumber = 8,
     kCanDepositFieldNumber = 9,
   };
-  // map<string, .Balance> balances = 11;
+  // map<string, .account.Balance> balances = 11;
   int balances_size() const;
   private:
   int _internal_balances_size() const;
 
   public:
   void clear_balances() ;
-  const ::google::protobuf::Map<std::string, ::Balance>& balances() const;
-  ::google::protobuf::Map<std::string, ::Balance>* mutable_balances();
+  const ::google::protobuf::Map<std::string, ::account::Balance>& balances() const;
+  ::google::protobuf::Map<std::string, ::account::Balance>* mutable_balances();
 
   private:
-  const ::google::protobuf::Map<std::string, ::Balance>& _internal_balances() const;
-  ::google::protobuf::Map<std::string, ::Balance>* _internal_mutable_balances();
+  const ::google::protobuf::Map<std::string, ::account::Balance>& _internal_balances() const;
+  ::google::protobuf::Map<std::string, ::account::Balance>* _internal_mutable_balances();
 
   public:
   // string user_id = 1;
@@ -811,13 +814,13 @@ class UserAccountDataResponse final : public ::google::protobuf::Message
   void _internal_set_can_deposit(bool value);
 
   public:
-  // @@protoc_insertion_point(class_scope:UserAccountDataResponse)
+  // @@protoc_insertion_point(class_scope:account.UserAccountDataResponse)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
       4, 11, 2,
-      55, 2>
+      63, 2>
       _table_;
 
   friend class ::google::protobuf::MessageLite;
@@ -834,7 +837,7 @@ class UserAccountDataResponse final : public ::google::protobuf::Message
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const UserAccountDataResponse& from_msg);
-    ::google::protobuf::internal::MapField<UserAccountDataResponse_BalancesEntry_DoNotUse, std::string, ::Balance,
+    ::google::protobuf::internal::MapField<UserAccountDataResponse_BalancesEntry_DoNotUse, std::string, ::account::Balance,
                       ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
                       ::google::protobuf::internal::WireFormatLite::TYPE_MESSAGE>
         balances_;
@@ -878,7 +881,7 @@ inline void Balance::clear_asset_symbol() {
 }
 inline const std::string& Balance::asset_symbol() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:Balance.asset_symbol)
+  // @@protoc_insertion_point(field_get:account.Balance.asset_symbol)
   return _internal_asset_symbol();
 }
 template <typename Arg_, typename... Args_>
@@ -886,11 +889,11 @@ inline PROTOBUF_ALWAYS_INLINE void Balance::set_asset_symbol(Arg_&& arg,
                                                      Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.asset_symbol_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:Balance.asset_symbol)
+  // @@protoc_insertion_point(field_set:account.Balance.asset_symbol)
 }
 inline std::string* Balance::mutable_asset_symbol() ABSL_ATTRIBUTE_LIFETIME_BOUND {
   std::string* _s = _internal_mutable_asset_symbol();
-  // @@protoc_insertion_point(field_mutable:Balance.asset_symbol)
+  // @@protoc_insertion_point(field_mutable:account.Balance.asset_symbol)
   return _s;
 }
 inline const std::string& Balance::_internal_asset_symbol() const {
@@ -907,7 +910,7 @@ inline std::string* Balance::_internal_mutable_asset_symbol() {
 }
 inline std::string* Balance::release_asset_symbol() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:Balance.asset_symbol)
+  // @@protoc_insertion_point(field_release:account.Balance.asset_symbol)
   return _impl_.asset_symbol_.Release();
 }
 inline void Balance::set_allocated_asset_symbol(std::string* value) {
@@ -916,7 +919,7 @@ inline void Balance::set_allocated_asset_symbol(std::string* value) {
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.asset_symbol_.IsDefault()) {
     _impl_.asset_symbol_.Set("", GetArena());
   }
-  // @@protoc_insertion_point(field_set_allocated:Balance.asset_symbol)
+  // @@protoc_insertion_point(field_set_allocated:account.Balance.asset_symbol)
 }
 
 // double free_amount = 2;
@@ -925,12 +928,12 @@ inline void Balance::clear_free_amount() {
   _impl_.free_amount_ = 0;
 }
 inline double Balance::free_amount() const {
-  // @@protoc_insertion_point(field_get:Balance.free_amount)
+  // @@protoc_insertion_point(field_get:account.Balance.free_amount)
   return _internal_free_amount();
 }
 inline void Balance::set_free_amount(double value) {
   _internal_set_free_amount(value);
-  // @@protoc_insertion_point(field_set:Balance.free_amount)
+  // @@protoc_insertion_point(field_set:account.Balance.free_amount)
 }
 inline double Balance::_internal_free_amount() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -947,12 +950,12 @@ inline void Balance::clear_locked_amount() {
   _impl_.locked_amount_ = 0;
 }
 inline double Balance::locked_amount() const {
-  // @@protoc_insertion_point(field_get:Balance.locked_amount)
+  // @@protoc_insertion_point(field_get:account.Balance.locked_amount)
   return _internal_locked_amount();
 }
 inline void Balance::set_locked_amount(double value) {
   _internal_set_locked_amount(value);
-  // @@protoc_insertion_point(field_set:Balance.locked_amount)
+  // @@protoc_insertion_point(field_set:account.Balance.locked_amount)
 }
 inline double Balance::_internal_locked_amount() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -974,7 +977,7 @@ inline void UserAccountDataRequest::clear_user_id() {
 }
 inline const std::string& UserAccountDataRequest::user_id() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:UserAccountDataRequest.user_id)
+  // @@protoc_insertion_point(field_get:account.UserAccountDataRequest.user_id)
   return _internal_user_id();
 }
 template <typename Arg_, typename... Args_>
@@ -982,11 +985,11 @@ inline PROTOBUF_ALWAYS_INLINE void UserAccountDataRequest::set_user_id(Arg_&& ar
                                                      Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.user_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:UserAccountDataRequest.user_id)
+  // @@protoc_insertion_point(field_set:account.UserAccountDataRequest.user_id)
 }
 inline std::string* UserAccountDataRequest::mutable_user_id() ABSL_ATTRIBUTE_LIFETIME_BOUND {
   std::string* _s = _internal_mutable_user_id();
-  // @@protoc_insertion_point(field_mutable:UserAccountDataRequest.user_id)
+  // @@protoc_insertion_point(field_mutable:account.UserAccountDataRequest.user_id)
   return _s;
 }
 inline const std::string& UserAccountDataRequest::_internal_user_id() const {
@@ -1003,7 +1006,7 @@ inline std::string* UserAccountDataRequest::_internal_mutable_user_id() {
 }
 inline std::string* UserAccountDataRequest::release_user_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:UserAccountDataRequest.user_id)
+  // @@protoc_insertion_point(field_release:account.UserAccountDataRequest.user_id)
   return _impl_.user_id_.Release();
 }
 inline void UserAccountDataRequest::set_allocated_user_id(std::string* value) {
@@ -1012,7 +1015,7 @@ inline void UserAccountDataRequest::set_allocated_user_id(std::string* value) {
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.user_id_.IsDefault()) {
     _impl_.user_id_.Set("", GetArena());
   }
-  // @@protoc_insertion_point(field_set_allocated:UserAccountDataRequest.user_id)
+  // @@protoc_insertion_point(field_set_allocated:account.UserAccountDataRequest.user_id)
 }
 
 // -------------------------------------------------------------------
@@ -1028,7 +1031,7 @@ inline void UserAccountDataResponse::clear_user_id() {
 }
 inline const std::string& UserAccountDataResponse::user_id() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:UserAccountDataResponse.user_id)
+  // @@protoc_insertion_point(field_get:account.UserAccountDataResponse.user_id)
   return _internal_user_id();
 }
 template <typename Arg_, typename... Args_>
@@ -1036,11 +1039,11 @@ inline PROTOBUF_ALWAYS_INLINE void UserAccountDataResponse::set_user_id(Arg_&& a
                                                      Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.user_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:UserAccountDataResponse.user_id)
+  // @@protoc_insertion_point(field_set:account.UserAccountDataResponse.user_id)
 }
 inline std::string* UserAccountDataResponse::mutable_user_id() ABSL_ATTRIBUTE_LIFETIME_BOUND {
   std::string* _s = _internal_mutable_user_id();
-  // @@protoc_insertion_point(field_mutable:UserAccountDataResponse.user_id)
+  // @@protoc_insertion_point(field_mutable:account.UserAccountDataResponse.user_id)
   return _s;
 }
 inline const std::string& UserAccountDataResponse::_internal_user_id() const {
@@ -1057,7 +1060,7 @@ inline std::string* UserAccountDataResponse::_internal_mutable_user_id() {
 }
 inline std::string* UserAccountDataResponse::release_user_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:UserAccountDataResponse.user_id)
+  // @@protoc_insertion_point(field_release:account.UserAccountDataResponse.user_id)
   return _impl_.user_id_.Release();
 }
 inline void UserAccountDataResponse::set_allocated_user_id(std::string* value) {
@@ -1066,7 +1069,7 @@ inline void UserAccountDataResponse::set_allocated_user_id(std::string* value) {
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.user_id_.IsDefault()) {
     _impl_.user_id_.Set("", GetArena());
   }
-  // @@protoc_insertion_point(field_set_allocated:UserAccountDataResponse.user_id)
+  // @@protoc_insertion_point(field_set_allocated:account.UserAccountDataResponse.user_id)
 }
 
 // uint32 maker_commission = 2;
@@ -1075,12 +1078,12 @@ inline void UserAccountDataResponse::clear_maker_commission() {
   _impl_.maker_commission_ = 0u;
 }
 inline ::uint32_t UserAccountDataResponse::maker_commission() const {
-  // @@protoc_insertion_point(field_get:UserAccountDataResponse.maker_commission)
+  // @@protoc_insertion_point(field_get:account.UserAccountDataResponse.maker_commission)
   return _internal_maker_commission();
 }
 inline void UserAccountDataResponse::set_maker_commission(::uint32_t value) {
   _internal_set_maker_commission(value);
-  // @@protoc_insertion_point(field_set:UserAccountDataResponse.maker_commission)
+  // @@protoc_insertion_point(field_set:account.UserAccountDataResponse.maker_commission)
 }
 inline ::uint32_t UserAccountDataResponse::_internal_maker_commission() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -1097,12 +1100,12 @@ inline void UserAccountDataResponse::clear_taker_commission() {
   _impl_.taker_commission_ = 0u;
 }
 inline ::uint32_t UserAccountDataResponse::taker_commission() const {
-  // @@protoc_insertion_point(field_get:UserAccountDataResponse.taker_commission)
+  // @@protoc_insertion_point(field_get:account.UserAccountDataResponse.taker_commission)
   return _internal_taker_commission();
 }
 inline void UserAccountDataResponse::set_taker_commission(::uint32_t value) {
   _internal_set_taker_commission(value);
-  // @@protoc_insertion_point(field_set:UserAccountDataResponse.taker_commission)
+  // @@protoc_insertion_point(field_set:account.UserAccountDataResponse.taker_commission)
 }
 inline ::uint32_t UserAccountDataResponse::_internal_taker_commission() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -1119,12 +1122,12 @@ inline void UserAccountDataResponse::clear_buyer_commission() {
   _impl_.buyer_commission_ = 0u;
 }
 inline ::uint32_t UserAccountDataResponse::buyer_commission() const {
-  // @@protoc_insertion_point(field_get:UserAccountDataResponse.buyer_commission)
+  // @@protoc_insertion_point(field_get:account.UserAccountDataResponse.buyer_commission)
   return _internal_buyer_commission();
 }
 inline void UserAccountDataResponse::set_buyer_commission(::uint32_t value) {
   _internal_set_buyer_commission(value);
-  // @@protoc_insertion_point(field_set:UserAccountDataResponse.buyer_commission)
+  // @@protoc_insertion_point(field_set:account.UserAccountDataResponse.buyer_commission)
 }
 inline ::uint32_t UserAccountDataResponse::_internal_buyer_commission() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -1141,12 +1144,12 @@ inline void UserAccountDataResponse::clear_seller_commission() {
   _impl_.seller_commission_ = 0u;
 }
 inline ::uint32_t UserAccountDataResponse::seller_commission() const {
-  // @@protoc_insertion_point(field_get:UserAccountDataResponse.seller_commission)
+  // @@protoc_insertion_point(field_get:account.UserAccountDataResponse.seller_commission)
   return _internal_seller_commission();
 }
 inline void UserAccountDataResponse::set_seller_commission(::uint32_t value) {
   _internal_set_seller_commission(value);
-  // @@protoc_insertion_point(field_set:UserAccountDataResponse.seller_commission)
+  // @@protoc_insertion_point(field_set:account.UserAccountDataResponse.seller_commission)
 }
 inline ::uint32_t UserAccountDataResponse::_internal_seller_commission() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -1163,12 +1166,12 @@ inline void UserAccountDataResponse::clear_update_time() {
   _impl_.update_time_ = ::uint64_t{0u};
 }
 inline ::uint64_t UserAccountDataResponse::update_time() const {
-  // @@protoc_insertion_point(field_get:UserAccountDataResponse.update_time)
+  // @@protoc_insertion_point(field_get:account.UserAccountDataResponse.update_time)
   return _internal_update_time();
 }
 inline void UserAccountDataResponse::set_update_time(::uint64_t value) {
   _internal_set_update_time(value);
-  // @@protoc_insertion_point(field_set:UserAccountDataResponse.update_time)
+  // @@protoc_insertion_point(field_set:account.UserAccountDataResponse.update_time)
 }
 inline ::uint64_t UserAccountDataResponse::_internal_update_time() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -1185,12 +1188,12 @@ inline void UserAccountDataResponse::clear_can_trade() {
   _impl_.can_trade_ = false;
 }
 inline bool UserAccountDataResponse::can_trade() const {
-  // @@protoc_insertion_point(field_get:UserAccountDataResponse.can_trade)
+  // @@protoc_insertion_point(field_get:account.UserAccountDataResponse.can_trade)
   return _internal_can_trade();
 }
 inline void UserAccountDataResponse::set_can_trade(bool value) {
   _internal_set_can_trade(value);
-  // @@protoc_insertion_point(field_set:UserAccountDataResponse.can_trade)
+  // @@protoc_insertion_point(field_set:account.UserAccountDataResponse.can_trade)
 }
 inline bool UserAccountDataResponse::_internal_can_trade() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -1207,12 +1210,12 @@ inline void UserAccountDataResponse::clear_can_withdraw() {
   _impl_.can_withdraw_ = false;
 }
 inline bool UserAccountDataResponse::can_withdraw() const {
-  // @@protoc_insertion_point(field_get:UserAccountDataResponse.can_withdraw)
+  // @@protoc_insertion_point(field_get:account.UserAccountDataResponse.can_withdraw)
   return _internal_can_withdraw();
 }
 inline void UserAccountDataResponse::set_can_withdraw(bool value) {
   _internal_set_can_withdraw(value);
-  // @@protoc_insertion_point(field_set:UserAccountDataResponse.can_withdraw)
+  // @@protoc_insertion_point(field_set:account.UserAccountDataResponse.can_withdraw)
 }
 inline bool UserAccountDataResponse::_internal_can_withdraw() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -1229,12 +1232,12 @@ inline void UserAccountDataResponse::clear_can_deposit() {
   _impl_.can_deposit_ = false;
 }
 inline bool UserAccountDataResponse::can_deposit() const {
-  // @@protoc_insertion_point(field_get:UserAccountDataResponse.can_deposit)
+  // @@protoc_insertion_point(field_get:account.UserAccountDataResponse.can_deposit)
   return _internal_can_deposit();
 }
 inline void UserAccountDataResponse::set_can_deposit(bool value) {
   _internal_set_can_deposit(value);
-  // @@protoc_insertion_point(field_set:UserAccountDataResponse.can_deposit)
+  // @@protoc_insertion_point(field_set:account.UserAccountDataResponse.can_deposit)
 }
 inline bool UserAccountDataResponse::_internal_can_deposit() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -1251,12 +1254,12 @@ inline void UserAccountDataResponse::clear_stable_coin_amount() {
   _impl_.stable_coin_amount_ = 0;
 }
 inline double UserAccountDataResponse::stable_coin_amount() const {
-  // @@protoc_insertion_point(field_get:UserAccountDataResponse.stable_coin_amount)
+  // @@protoc_insertion_point(field_get:account.UserAccountDataResponse.stable_coin_amount)
   return _internal_stable_coin_amount();
 }
 inline void UserAccountDataResponse::set_stable_coin_amount(double value) {
   _internal_set_stable_coin_amount(value);
-  // @@protoc_insertion_point(field_set:UserAccountDataResponse.stable_coin_amount)
+  // @@protoc_insertion_point(field_set:account.UserAccountDataResponse.stable_coin_amount)
 }
 inline double UserAccountDataResponse::_internal_stable_coin_amount() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
@@ -1267,7 +1270,7 @@ inline void UserAccountDataResponse::_internal_set_stable_coin_amount(double val
   _impl_.stable_coin_amount_ = value;
 }
 
-// map<string, .Balance> balances = 11;
+// map<string, .account.Balance> balances = 11;
 inline int UserAccountDataResponse::_internal_balances_size() const {
   return _internal_balances().size();
 }
@@ -1278,20 +1281,20 @@ inline void UserAccountDataResponse::clear_balances() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.balances_.Clear();
 }
-inline const ::google::protobuf::Map<std::string, ::Balance>& UserAccountDataResponse::_internal_balances() const {
+inline const ::google::protobuf::Map<std::string, ::account::Balance>& UserAccountDataResponse::_internal_balances() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.balances_.GetMap();
 }
-inline const ::google::protobuf::Map<std::string, ::Balance>& UserAccountDataResponse::balances() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_map:UserAccountDataResponse.balances)
+inline const ::google::protobuf::Map<std::string, ::account::Balance>& UserAccountDataResponse::balances() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_map:account.UserAccountDataResponse.balances)
   return _internal_balances();
 }
-inline ::google::protobuf::Map<std::string, ::Balance>* UserAccountDataResponse::_internal_mutable_balances() {
+inline ::google::protobuf::Map<std::string, ::account::Balance>* UserAccountDataResponse::_internal_mutable_balances() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   return _impl_.balances_.MutableMap();
 }
-inline ::google::protobuf::Map<std::string, ::Balance>* UserAccountDataResponse::mutable_balances() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable_map:UserAccountDataResponse.balances)
+inline ::google::protobuf::Map<std::string, ::account::Balance>* UserAccountDataResponse::mutable_balances() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable_map:account.UserAccountDataResponse.balances)
   return _internal_mutable_balances();
 }
 
@@ -1300,6 +1303,7 @@ inline ::google::protobuf::Map<std::string, ::Balance>* UserAccountDataResponse:
 #endif  // __GNUC__
 
 // @@protoc_insertion_point(namespace_scope)
+}  // namespace account
 
 
 // @@protoc_insertion_point(global_scope)

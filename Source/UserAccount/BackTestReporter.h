@@ -26,10 +26,13 @@ namespace UserAccount {
 	public:
 		BackTestReporter(
 			const tinyxml2::XMLElement* reportConfigXml,
+			binapi::rest::account_info_t* accountInfo,
+			binapi::rest::exchange_info_t* exchangeInfo,
 			PortfolioManager::PortfolioInvestmentBinance* portfolio);
 		BackTestReporter() = default;
 		~BackTestReporter() override;
 		void SetupReporter(const tinyxml2::XMLElement* reportCfg) override;
+		void UpdateRemoteData(const std::string& symbol) override;
 		void UpdateRemoteReportTrades(const std::string& symbol) override;
 		void UpdateRemoteReportOpenOrders(const std::string& symbol) override;
 		void UpdateRemoteReportAccountBalance(const std::string& symbol) override;

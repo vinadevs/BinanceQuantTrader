@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "Protobuf/user_account_data.pb.h"
-#include "Protobuf/user_account_data.grpc.pb.h"
+#include "Protobuf/exchange_info_data.pb.h"
+#include "Protobuf/exchange_info_data.grpc.pb.h"
 
 #include <grpcpp/grpcpp.h>
 #include <memory>
@@ -21,22 +21,22 @@ namespace LibraryUtils {
 namespace ExchangeSimulator {
 
 /**
- * @class UserAccountHttpService
- * @brief Implementation of the UserAccountService gRPC interface.
+ * @class ExchangeInfoHttpService
+ * @brief Implementation of the ExchangeService gRPC interface.
  *
- * This class provides the core functionality for managing binance wallet user accounts
+ * This class provides the core functionality for managing binance exchange info
 */
     class UserAccountManager;
-    class UserAccountHttpService final 
-        : public account::UserAccountService::Service {
+    class ExchangeInfoHttpService final 
+        : public exchange::ExchangeService::Service {
     public:
-        UserAccountHttpService(UserAccountManager* userAccountManager);
-        ~UserAccountHttpService() override;
+        ExchangeInfoHttpService(UserAccountManager* userAccountManager);
+        ~ExchangeInfoHttpService() override;
     private:
-        grpc::Status GetUserAccountData(
+        grpc::Status GetExchangeInfo(
             grpc::ServerContext* context,
-            const account::UserAccountDataRequest* request,
-            account::UserAccountDataResponse* response) override;
+            const exchange::ExchangeInfoRequest* request,
+            exchange::ExchangeInfoResponse* response) override;
 
         std::unique_ptr<LibraryUtils::Logger> m_logger;
         UserAccountManager* m_userAccountManager{ nullptr };

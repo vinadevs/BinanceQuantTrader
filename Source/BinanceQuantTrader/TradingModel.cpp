@@ -102,13 +102,17 @@ void TradingModel::PrepareTradingComponents(
 	ApiKeyInfoMgr->InitApiKeyInfo(userID, pk, sk);
 
 #if USE_BACK_TEST_TRADING
-	m_logger->Info("Initiating Message Transporter.");
+	m_logger->Info("Initiating Test Message Transporter.");
 	const auto* messageTransporterCfg = configBQTXml->FirstChildElement("MessageTransporter");
 	ExchangeSimulatorGateWay->InitMessageTransporter(messageTransporterCfg);
 
-	m_logger->Info("Initiating Binance Wallet Client.");
+	m_logger->Info("Initiating Test Binance Wallet Client.");
 	const auto* binanceWalletClientCfg = configBQTXml->FirstChildElement("BinanceWalletClient");
 	ExchangeSimulatorGateWay->InitBinanceWalletClient(binanceWalletClientCfg);
+
+	m_logger->Info("Initiating Test Binance Exchange Client.");
+	const auto* binanceExchangeClientCfg = configBQTXml->FirstChildElement("BinanceExchangeClient");
+	ExchangeSimulatorGateWay->InitBinanceExchangeClient(binanceExchangeClientCfg);
 #else
 	const auto* binanceAPICfg = configBQTXml->FirstChildElement("BinanceAPI");
 	assert(binanceAPICfg);
@@ -157,7 +161,7 @@ void TradingModel::PrepareTradingComponents(
 		m_tradingRules.get());
 
 #if USE_BACK_TEST_TRADING
-	m_logger->Info("Initiating Message Server.");
+	m_logger->Info("Initiating Test Message Server.");
 	const auto* messageServerCfg = configBQTXml->FirstChildElement("MessageServer");
 	m_strategyMessageServer = std::make_unique<StrategyMessageServer>(messageServerCfg);
 	m_strategyMessageServer->RegisterMessageHandler(m_strategy.get());

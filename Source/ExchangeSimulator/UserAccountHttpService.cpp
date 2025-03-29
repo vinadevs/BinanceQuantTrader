@@ -24,8 +24,8 @@ UserAccountHttpService::~UserAccountHttpService() {}
 
 grpc::Status UserAccountHttpService::GetUserAccountData(
     grpc::ServerContext* context,
-    const UserAccountDataRequest* request,
-    UserAccountDataResponse* response)
+    const account::UserAccountDataRequest* request,
+    account::UserAccountDataResponse* response)
 {
     m_logger->Info("Received UserAccountData request for User ID=" + request->user_id());
    
@@ -45,7 +45,7 @@ grpc::Status UserAccountHttpService::GetUserAccountData(
 
     for (const auto& asset : userAccount->m_assetBalances)
     {
-        Balance balance;
+        account::Balance balance;
         balance.set_asset_symbol(asset.second.m_symbol);
         balance.set_free_amount(asset.second.m_free);
         balance.set_locked_amount(asset.second.m_locked);

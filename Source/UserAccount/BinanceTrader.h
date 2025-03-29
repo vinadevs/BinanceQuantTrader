@@ -75,6 +75,7 @@ namespace UserAccount {
 		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr };
 		RiskManagement::RiskManager* m_riskManager{ nullptr };  // stop loss
 		std::unique_ptr<binapi::rest::account_info_t> m_binanceAccountInfo;
+		std::unique_ptr<binapi::rest::exchange_info_t> m_binanceExchangeInfo;
 		std::unique_ptr<OrderManagement::BinanceWorkedOrderManager> m_workedOrderManager;
 		std::unique_ptr<OrderManagement::PositionManager> m_positionManager;
 		std::unique_ptr<ExchangeReporter> m_exchangeReporter;

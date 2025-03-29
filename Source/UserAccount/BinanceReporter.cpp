@@ -8,6 +8,7 @@
 
 #include "pch.h"
 
+#include "../KernelTrading/errors.h"
 #include "../RestAPI/RestAPI.h"
 #include "../RestAPI/BinanceAPI.h"
 #include "../LibraryUtils/Logger.h"
@@ -17,7 +18,6 @@
 #include "ReportAPIs.h"
 #include "BinanceReporter.h"
 
-#include <iostream>
 #include "BinanceTrader.h"
 
 using namespace UserAccount;
@@ -26,8 +26,10 @@ using namespace RestAPI;
 
 BinanceReporter::BinanceReporter(
 	const tinyxml2::XMLElement* reportConfigXml,
+	binapi::rest::account_info_t* accountInfo,
+	binapi::rest::exchange_info_t* exchangeInfo,
 	PortfolioInvestmentBinance* portfolio)
-	: ExchangeReporter(portfolio)
+	: ExchangeReporter(accountInfo, exchangeInfo, portfolio)
 {
 	m_logger = std::make_unique<LibraryUtils::Logger>("BinanceReporter");
 	SetupReporter(reportConfigXml);
@@ -35,6 +37,34 @@ BinanceReporter::BinanceReporter(
 }
 
 BinanceReporter::~BinanceReporter() {}
+
+void BinanceReporter::UpdateRemoteData(const std::string& symbol)
+{
+	const auto accountInfoResult = BinanceApiGateWay->account_info();
+	if (!accountInfoResult)
+	{
+		LOG_ERROR_STREAM(m_logger, "account_info: ec=" << std::to_string(accountInfoResult.ec)
+			<< ", ename=" << binapi::rest::e_error_to_string(accountInfoResult.ec)
+			<< ", emsg=" << accountInfoResult.errmsg);
+	}
+	else
+	{
+		m_logger->Info("updating account info finished.");
+		DEREF_V(m_accountInfo) = accountInfoResult.v;
+	}
+	const auto exchangeInfoResult = BinanceApiGateWay->exchange_info(symbol);
+	if (!exchangeInfoResult)
+	{
+		LOG_ERROR_STREAM(m_logger, "exchange_info: ec=" << std::to_string(exchangeInfoResult.ec)
+			<< ", ename=" << binapi::rest::e_error_to_string(exchangeInfoResult.ec)
+			<< ", emsg=" << exchangeInfoResult.errmsg);
+	}
+	else
+	{
+		m_logger->Info("updating exchange info finished.");
+		DEREF_V(m_exchangeInfo) = exchangeInfoResult.v;
+	}
+}
 
 void BinanceReporter::SetupReporter(const tinyxml2::XMLElement* reportCfg)
 {
@@ -62,102 +92,47 @@ void BinanceReporter::SetupReporter(const tinyxml2::XMLElement* reportCfg)
 
 void BinanceReporter::UpdateRemoteReportTrades(const std::string& symbol)
 {
-	const auto accountInfo = BinanceApiGateWay->account_info();
-	if (!accountInfo)
-	{
-		LOG_ERROR_STREAM(m_logger, "get account info error: " << accountInfo.errmsg);
-		return;
-	}
-	const auto exchangeInfo = BinanceApiGateWay->exchange_info(symbol);
-	if (!exchangeInfo)
-	{
-		LOG_ERROR_STREAM(m_logger, "exchange_info error: " << exchangeInfo.errmsg);
-		return;
-	}
+	UpdateRemoteData(symbol);
 	static const auto trades_report_cb = [&](const binapi::rest::order_info_t& o)
 	{
 		LOG_INFO_STREAM(m_logger, o.symbol << " - " << o.orderId);
 	};
 	LOG_INFO_STREAM(m_logger, "********************* TRADES REPORT *********************************");
 	binapi::make_trades_report_for_last_day(std::cout, 
-		*BinanceApiGateWay, accountInfo.v, exchangeInfo.v,
+		*BinanceApiGateWay, DEREF_V(m_accountInfo), DEREF_V(m_exchangeInfo),
 		{ symbol }, trades_report_cb);
 }
 
 void BinanceReporter::UpdateRemoteReportOpenOrders(const std::string& symbol)
 {
-	const auto accountInfo = BinanceApiGateWay->account_info();
-	if (!accountInfo) 
-	{
-		LOG_ERROR_STREAM(m_logger, "get account info error: " << accountInfo.errmsg);
-		return;
-	}
-	const auto exchangeInfo = BinanceApiGateWay->exchange_info(symbol);
-	if (!exchangeInfo) 
-	{
-		LOG_ERROR_STREAM(m_logger, "exchange_info error: " << exchangeInfo.errmsg);
-		return;
-	}
+	UpdateRemoteData(symbol);
 	LOG_INFO_STREAM(m_logger, "******************* OPEN ORDERS REPORT ******************************");
 	binapi::make_open_orders_report(std::cout, 
-		*BinanceApiGateWay, exchangeInfo.v, { symbol });
+		*BinanceApiGateWay, DEREF_V(m_exchangeInfo), { symbol });
 }
 
 void BinanceReporter::UpdateRemoteReportAccountBalance(const std::string& symbol)
 {
-	const auto accountInfo = BinanceApiGateWay->account_info();
-	if (!accountInfo)
-	{
-		LOG_ERROR_STREAM(m_logger, "get account info error: " << accountInfo.errmsg);
-		return;
-	}
-	const auto exchangeInfo = BinanceApiGateWay->exchange_info(symbol);
-	if (!exchangeInfo)
-	{
-		LOG_ERROR_STREAM(m_logger, "exchange_info error: " << exchangeInfo.errmsg);
-		return;
-	}
+	UpdateRemoteData(symbol);
 	LOG_INFO_STREAM(m_logger, "******************** USER BALANCE REPORT *********************************");
 	binapi::make_balance_report(std::cout, 
-		*BinanceApiGateWay, accountInfo.v, exchangeInfo.v);
+		*BinanceApiGateWay, DEREF_V(m_accountInfo), DEREF_V(m_exchangeInfo));
 }
 
 void BinanceReporter::UpdateRemoteReportExchangerPriceForOrders(const std::string& symbol)
 {
-	const auto accountInfo = BinanceApiGateWay->account_info();
-	if (!accountInfo)
-	{
-		LOG_ERROR_STREAM(m_logger, "get account info error: " << accountInfo.errmsg);
-		return;
-	}
-	const auto exchangeInfo = BinanceApiGateWay->exchange_info(symbol);
-	if (!exchangeInfo)
-	{
-		LOG_ERROR_STREAM(m_logger, "exchange_info error: " << exchangeInfo.errmsg);
-		return;
-	}
+	UpdateRemoteData(symbol);
 	LOG_INFO_STREAM(m_logger, "******************** EXCHANGE ORDER PRICE REPORT *********************************");
 	binapi::show_exchanger_price_for_orders(std::cout,
-		*BinanceApiGateWay, exchangeInfo.v, { symbol });
+		*BinanceApiGateWay, DEREF_V(m_exchangeInfo), { symbol });
 }
 
 void BinanceReporter::UpdateRemoteReportCalculateLossForOrders(const std::string& symbol)
 {
-	const auto accountInfo = BinanceApiGateWay->account_info();
-	if (!accountInfo)
-	{
-		LOG_ERROR_STREAM(m_logger, "get account info error: " << accountInfo.errmsg);
-		return;
-	}
-	const auto exchangeInfo = BinanceApiGateWay->exchange_info(symbol);
-	if (!exchangeInfo)
-	{
-		LOG_ERROR_STREAM(m_logger, "exchange_info error: " << exchangeInfo.errmsg);
-		return;
-	}
+	UpdateRemoteData(symbol);
 	LOG_INFO_STREAM(m_logger, "******************** CALCULATE ORDER LOSS REPORT *********************************");
 	binapi::calc_loss_for_orders(std::cout,
-		*BinanceApiGateWay, exchangeInfo.v, { symbol });
+		*BinanceApiGateWay, DEREF_V(m_exchangeInfo), { symbol });
 }
 
 void BinanceReporter::DoRemoteExecutionReport(const std::string& symbol)

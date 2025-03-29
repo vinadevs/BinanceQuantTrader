@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BinanceExchangeClient.h" />
     <ClInclude Include="BqtMessageEnhancer.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="ExchangeSimulatorConnectivity.h" />
@@ -167,6 +168,7 @@
     <ClInclude Include="BinanceWalletClient.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BinanceExchangeClient.cpp" />
     <ClCompile Include="BqtMessageEnhancer.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="BinanceExchangeConnectivity.cpp" />
