@@ -161,6 +161,8 @@
     <ClInclude Include="AlgosConnectivity.h" />
     <ClInclude Include="DownstreamOrderBook.h" />
     <ClInclude Include="ExchangeRuleAndCompliance.h" />
+    <ClInclude Include="protobuf\exchange_info_data.grpc.pb.h" />
+    <ClInclude Include="protobuf\exchange_info_data.pb.h" />
     <ClInclude Include="TimeInForceHandler.h" />
     <ClInclude Include="TradeUtils.h" />
     <ClInclude Include="UpstreamOrderMatchedMgr.h" />
@@ -194,6 +196,8 @@
     <ClCompile Include="HistoricalParticipant.cpp" />
     <ClCompile Include="MatchingEngine.cpp" />
     <ClCompile Include="OrderAckManager.cpp" />
+    <ClCompile Include="protobuf\exchange_info_data.grpc.pb.cc" />
+    <ClCompile Include="protobuf\exchange_info_data.pb.cc" />
     <ClCompile Include="TimeInForceHandler.cpp" />
     <ClCompile Include="UpstreamOrder.cpp" />
     <ClCompile Include="UpstreamOrderMatchedMgr.cpp" />

@@ -159,6 +159,8 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="BinanceExchangeConnectivity.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="protobuf\exchange_info_data.grpc.pb.h" />
+    <ClInclude Include="protobuf\exchange_info_data.pb.h" />
     <ClInclude Include="protobuf\pch.h" />
     <ClInclude Include="protobuf\user_account_data.grpc.pb.h" />
     <ClInclude Include="protobuf\user_account_data.pb.h" />
@@ -175,6 +177,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="protobuf\exchange_info_data.grpc.pb.cc" />
+    <ClCompile Include="protobuf\exchange_info_data.pb.cc" />
     <ClCompile Include="protobuf\user_account_data.grpc.pb.cc" />
     <ClCompile Include="protobuf\user_account_data.pb.cc" />
     <ClCompile Include="BinanceWalletClient.cpp" />

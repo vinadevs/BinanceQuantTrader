@@ -13,11 +13,11 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\Protobuf">
-      <UniqueIdentifier>{d1100ed8-231a-4a75-a991-e777c8b6ded6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Backtest Simulator">
       <UniqueIdentifier>{2400bd1c-1139-42ec-ba9d-7c48ad9a3f30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Backtest Simulator\Protobuf">
+      <UniqueIdentifier>{d1100ed8-231a-4a75-a991-e777c8b6ded6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -37,13 +37,13 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="protobuf\pch.h">
-      <Filter>Source Files\Protobuf</Filter>
+      <Filter>Backtest Simulator\Protobuf</Filter>
     </ClInclude>
     <ClInclude Include="protobuf\user_account_data.grpc.pb.h">
-      <Filter>Source Files\Protobuf</Filter>
+      <Filter>Backtest Simulator\Protobuf</Filter>
     </ClInclude>
     <ClInclude Include="protobuf\user_account_data.pb.h">
-      <Filter>Source Files\Protobuf</Filter>
+      <Filter>Backtest Simulator\Protobuf</Filter>
     </ClInclude>
     <ClInclude Include="ExchangeSimulatorConnectivity.h">
       <Filter>Backtest Simulator</Filter>
@@ -53,6 +53,12 @@
     </ClInclude>
     <ClInclude Include="BqtMessageEnhancer.h">
       <Filter>Backtest Simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\exchange_info_data.grpc.pb.h">
+      <Filter>Backtest Simulator\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\exchange_info_data.pb.h">
+      <Filter>Backtest Simulator\Protobuf</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -69,10 +75,10 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="protobuf\user_account_data.grpc.pb.cc">
-      <Filter>Source Files\Protobuf</Filter>
+      <Filter>Backtest Simulator\Protobuf</Filter>
     </ClCompile>
     <ClCompile Include="protobuf\user_account_data.pb.cc">
-      <Filter>Source Files\Protobuf</Filter>
+      <Filter>Backtest Simulator\Protobuf</Filter>
     </ClCompile>
     <ClCompile Include="ExchangeSimulatorConnectivity.cpp">
       <Filter>Backtest Simulator</Filter>
@@ -82,6 +88,12 @@
     </ClCompile>
     <ClCompile Include="BqtMessageEnhancer.cpp">
       <Filter>Backtest Simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\exchange_info_data.grpc.pb.cc">
+      <Filter>Backtest Simulator\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\exchange_info_data.pb.cc">
+      <Filter>Backtest Simulator\Protobuf</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
