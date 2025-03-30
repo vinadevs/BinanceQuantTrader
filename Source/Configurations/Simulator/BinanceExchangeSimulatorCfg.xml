@@ -30,3 +30,7 @@
 <ExchangeRuleAndCompliance>
   <TradeCommissions MakerCommission="0.01" TakerCommission="0.05" BuyerCommission="0" SellerCommission="0"/>
 </ExchangeRuleAndCompliance>
+
+<ExchangeInfoManager>
+  <ExchangeInfo File="[ROOT_BQT_PATH]\Configurations\Common\ExchangeInfoSimulator.json"/>
+</ExchangeInfoManager>

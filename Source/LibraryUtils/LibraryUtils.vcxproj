@@ -157,6 +157,7 @@
     <ClInclude Include="BQTDeque.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="EnumIteration.h" />
+    <ClInclude Include="FileUtils.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="GeneralUtils.h" />
@@ -174,6 +175,7 @@
   <ItemGroup>
     <ClCompile Include="AlarmSystem.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="FileUtils.cpp" />
     <ClCompile Include="GeneralUtils.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="PathUtils.cpp" />

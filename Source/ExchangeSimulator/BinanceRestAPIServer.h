@@ -27,21 +27,25 @@ namespace grpc {
 namespace ExchangeSimulator {
 
     /**
-     * @class BinanceWalletServer
-     * @brief A Google Protobuf HTTP message server for handling account queries.
+     * @class BinanceRestAPIServer
+     * @brief A Google Protobuf HTTP message server for handling account/exchange queries.
      * This server is specifically designed to receive and process user account
      * queries from the Algo Trading System. 
      */
 
     class UserAccountManager;
+	class ExchangeInfoManager;
     class UserAccountHttpService;
-    class BinanceWalletServer final : public ExchangeServiceInterface
+	class ExchangeInfoHttpService;
+
+    class BinanceRestAPIServer final : public ExchangeServiceInterface
     {
     public:
-        BinanceWalletServer(
-            const tinyxml2::XMLElement* binanceWalletServerXmlCfg,
-            UserAccountManager* userAccountManager);
-        ~BinanceWalletServer();
+        BinanceRestAPIServer(
+            const tinyxml2::XMLElement* binanceRestAPIServerXmlCfg,
+            UserAccountManager* userAccountManager,
+            ExchangeInfoManager* exchangeInfoManager);
+        ~BinanceRestAPIServer();
 
         void Start() override;
         void Stop() override;
@@ -49,7 +53,10 @@ namespace ExchangeSimulator {
         void WaitForIncomingMessage();
 
         std::unique_ptr<LibraryUtils::Logger> m_logger;
+		// http services
         std::unique_ptr<UserAccountHttpService> m_userAccountHttpService;
+        std::unique_ptr<ExchangeInfoHttpService> m_exchangeInfoHttpService;
+        // http services
         std::unique_ptr<grpc::Server> m_grpcServer;
         std::thread m_grpcThread;
         std::string m_serverIpAddress;

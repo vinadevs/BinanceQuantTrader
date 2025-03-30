@@ -26,11 +26,12 @@ namespace ExchangeSimulator {
  *
  * This class provides the core functionality for managing binance exchange info
 */
-    class UserAccountManager;
+    class ExchangeInfoManager;
+
     class ExchangeInfoHttpService final 
         : public exchange::ExchangeService::Service {
     public:
-        ExchangeInfoHttpService(UserAccountManager* userAccountManager);
+        ExchangeInfoHttpService(ExchangeInfoManager* exchangeInfoManager);
         ~ExchangeInfoHttpService() override;
     private:
         grpc::Status GetExchangeInfo(
@@ -39,6 +40,6 @@ namespace ExchangeSimulator {
             exchange::ExchangeInfoResponse* response) override;
 
         std::unique_ptr<LibraryUtils::Logger> m_logger;
-        UserAccountManager* m_userAccountManager{ nullptr };
+		ExchangeInfoManager* m_exchangeInfoManager{ nullptr };
     };
 };

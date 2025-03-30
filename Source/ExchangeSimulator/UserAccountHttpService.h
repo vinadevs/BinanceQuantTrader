@@ -27,6 +27,7 @@ namespace ExchangeSimulator {
  * This class provides the core functionality for managing binance wallet user accounts
 */
     class UserAccountManager;
+
     class UserAccountHttpService final 
         : public account::UserAccountService::Service {
     public:

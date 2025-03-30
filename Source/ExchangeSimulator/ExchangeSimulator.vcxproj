@@ -155,11 +155,12 @@
   <ItemGroup>
     <ClInclude Include="BqtJsonMessageServer.h" />
     <ClInclude Include="BinanceExchangeSimulator.h" />
-    <ClInclude Include="BinanceWalletServer.h" />
+    <ClInclude Include="BinanceRestAPIServer.h" />
     <ClInclude Include="CommonDef.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="AlgosConnectivity.h" />
     <ClInclude Include="DownstreamOrderBook.h" />
+    <ClInclude Include="ExchangeInfoManager.h" />
     <ClInclude Include="ExchangeInfoHttpService.h" />
     <ClInclude Include="ExchangeRuleAndCompliance.h" />
     <ClInclude Include="protobuf\exchange_info_data.grpc.pb.h" />
@@ -189,10 +190,11 @@
   <ItemGroup>
     <ClCompile Include="BqtJsonMessageServer.cpp" />
     <ClCompile Include="BinanceExchangeSimulator.cpp" />
-    <ClCompile Include="BinanceWalletServer.cpp" />
+    <ClCompile Include="BinanceRestAPIServer.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="AlgosConnectivity.cpp" />
     <ClCompile Include="DownstreamOrderBook.cpp" />
+    <ClCompile Include="ExchangeInfoManager.cpp" />
     <ClCompile Include="ExchangeInfoHttpService.cpp" />
     <ClCompile Include="ExchangeRuleAndCompliance.cpp" />
     <ClCompile Include="HistoricalParticipant.cpp" />

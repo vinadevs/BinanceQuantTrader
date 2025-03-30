@@ -99,7 +99,7 @@
     <ClInclude Include="UserAccountManager.h">
       <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
     </ClInclude>
-    <ClInclude Include="BinanceWalletServer.h">
+    <ClInclude Include="BinanceRestAPIServer.h">
       <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
     </ClInclude>
     <ClInclude Include="UserAccountHttpService.h">
@@ -147,6 +147,9 @@
     <ClInclude Include="ExchangeInfoHttpService.h">
       <Filter>Binance Exchange Simulator\Exchange Information</Filter>
     </ClInclude>
+    <ClInclude Include="ExchangeInfoManager.h">
+      <Filter>Binance Exchange Simulator\Exchange Information</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -188,7 +191,7 @@
     <ClCompile Include="UserAccountManager.cpp">
       <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
     </ClCompile>
-    <ClCompile Include="BinanceWalletServer.cpp">
+    <ClCompile Include="BinanceRestAPIServer.cpp">
       <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
     </ClCompile>
     <ClCompile Include="UserAccountHttpService.cpp">
@@ -228,6 +231,9 @@
       <Filter>Binance Exchange Simulator\Protobuf</Filter>
     </ClCompile>
     <ClCompile Include="ExchangeInfoHttpService.cpp">
+      <Filter>Binance Exchange Simulator\Exchange Information</Filter>
+    </ClCompile>
+    <ClCompile Include="ExchangeInfoManager.cpp">
       <Filter>Binance Exchange Simulator\Exchange Information</Filter>
     </ClCompile>
   </ItemGroup>

@@ -8,7 +8,7 @@
 
 #include "pch.h"
 
-#include "UserAccountManager.h"
+#include "ExchangeInfoManager.h"
 #include "ExchangeInfoHttpService.h"
 #include "ExchangeRuleAndCompliance.h"
 
@@ -16,9 +16,9 @@
 
 using namespace ExchangeSimulator;
 
-ExchangeInfoHttpService::ExchangeInfoHttpService(UserAccountManager* userAccountManager)
-    : m_logger{ std::make_unique<LibraryUtils::Logger>("ExchangeInfoHttpService") }
-    , m_userAccountManager(userAccountManager) {}
+ExchangeInfoHttpService::ExchangeInfoHttpService(ExchangeInfoManager* exchangeInfoManager)
+    : m_logger{ std::make_unique<LibraryUtils::Logger>("ExchangeInfoHttpService") },
+      m_exchangeInfoManager(exchangeInfoManager) {}
 
 ExchangeInfoHttpService::~ExchangeInfoHttpService() {}
 
@@ -27,6 +27,9 @@ grpc::Status ExchangeInfoHttpService::GetExchangeInfo(
     const exchange::ExchangeInfoRequest* request,
     exchange::ExchangeInfoResponse* response)
 {
-    return grpc::Status();
-}
+    m_logger->Info("Received exchange_info_t request for User ID=" + request->symbol_id());
 
+	const auto& exchangeInfo = m_exchangeInfoManager->GetExchangeInfo();
+
+    return grpc::Status::OK;
+}
