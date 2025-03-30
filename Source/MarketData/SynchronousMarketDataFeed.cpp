@@ -22,8 +22,8 @@ SynchronousMarketDataFeed::SynchronousMarketDataFeed(const std::string& symbol) 
 
 void SynchronousMarketDataFeed::UpdateIndividualBookTickerData(const binapi::ws::book_ticker_t& book)
 {
-	m_syncMarketData->m_individualBookTickerData.m_eventTimeMs->SetData(
-		TimeUtils::GetCurrentTimeChrono(TimeUtils::TimeUnit::Milliseconds));
+	//m_syncMarketData->m_individualBookTickerData.m_eventTimeMs->SetData(
+	//	TimeUtils::GetCurrentTimeChrono(TimeUtils::TimeUnit::Milliseconds));
 	m_syncMarketData->m_individualBookTickerData.m_bestBidPrice->SetData(book.b);
 	m_syncMarketData->m_individualBookTickerData.m_bestBidQty->SetData(book.B);
 	m_syncMarketData->m_individualBookTickerData.m_bestAskPrice->SetData(book.a);
@@ -49,11 +49,6 @@ SynchronousMarketData* SynchronousMarketDataFeed::GetSynchronousData()
 	return m_syncMarketData.get();
 }
 
-SingleMarketDataFeed* SynchronousMarketDataFeed::GetSingleFeed(const FeedID id) const
-{
-	return m_syncMarketData->GetFeed(id);
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool MarketDataFeedManager::CreateNewSynchronousFeed(const std::string& symbol)
@@ -68,16 +63,6 @@ SynchronousMarketDataFeed* MarketDataFeedManager::GetSynchronousFeed(const std::
 	if (const auto it = m_smdFeedStorage.find(symbol); it != m_smdFeedStorage.end())
 	{
 		return it->second.get();
-	}
-	return nullptr;
-}
-
-SingleMarketDataFeed* MarketDataFeedManager::GetSingleFeed(const std::string& symbol, const FeedID id)
-{
-	std::unique_lock<std::mutex> lock(m_threadSafeMutex);
-	if (const auto it = m_smdFeedStorage.find(symbol); it != m_smdFeedStorage.end())
-	{
-		return it->second.get()->GetSingleFeed(id);
 	}
 	return nullptr;
 }

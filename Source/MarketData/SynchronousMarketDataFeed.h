@@ -29,7 +29,12 @@ namespace MarketData {
 		void UpdateIndividualBookTickerData(const binapi::ws::book_ticker_t& book);
 		void UpdateTradeData(const binapi::ws::trade_t& trade);
 		SynchronousMarketData* GetSynchronousData();
-		SingleMarketDataFeed* GetSingleFeed(const FeedID id) const;
+
+		template <typename FeedType>
+		SingleMarketDataFeed* GetSingleFeed(const FeedType id) const
+		{
+			return m_syncMarketData->GetFeed(id);
+		}
 	private:
 		std::unique_ptr<SynchronousMarketData> m_syncMarketData;
 	};
@@ -44,7 +49,18 @@ namespace MarketData {
 		bool CreateNewSynchronousFeed(const std::string& symbol);
 		bool RemoveSynchronousFeed(const std::string& symbol);
 		SynchronousMarketDataFeed* GetSynchronousFeed(const std::string& symbol);
-		SingleMarketDataFeed* GetSingleFeed(const std::string& symbol, const FeedID id);
+
+		template <typename FeedType>
+		SingleMarketDataFeed* GetSingleFeed(const std::string& symbol, const FeedType id)
+		{
+			std::unique_lock<std::mutex> lock(m_threadSafeMutex);
+			if (const auto it = m_smdFeedStorage.find(symbol); it != m_smdFeedStorage.end())
+			{
+				return it->second.get()->GetSingleFeed(id);
+			}
+			return nullptr;
+		}
+
 	private:
 		std::mutex m_threadSafeMutex;
 		std::unordered_map<std::string, std::unique_ptr<SynchronousMarketDataFeed>> m_smdFeedStorage;

@@ -156,7 +156,9 @@ namespace MarketData {
 		PartDepthData m_partDepthData;
 		DiffDepthData m_diffDepthData;
 
-		SingleMarketDataFeed* GetFeed(const FeedID id) const;
+		template <typename FeedType>
+		SingleMarketDataFeed* GetFeed(const FeedType id) const;
+
 		std::string GetSymbol() const { return m_symbol; }
 
 		friend std::ostream& operator<<(std::ostream& os, const SynchronousMarketData& o)
@@ -171,4 +173,23 @@ namespace MarketData {
 	protected:
 		std::string m_symbol;
 	};
+
+	template <>
+	inline SingleMarketDataFeed *SynchronousMarketData::GetFeed(const IndividualBookTickerID id) const
+	{
+		switch (id)
+		{
+		case IndividualBookTickerID::BEST_BID_PRICE:
+			return m_individualBookTickerData.m_bestBidPrice.get();
+		case IndividualBookTickerID::BEST_BID_QUANTITY:
+			return m_individualBookTickerData.m_bestBidQty.get();
+		case IndividualBookTickerID::BEST_ASK_PRICE:
+			return m_individualBookTickerData.m_bestAskPrice.get();
+		case IndividualBookTickerID::BEST_ASK_QUANTITY:
+			return m_individualBookTickerData.m_bestAskQty.get();
+		default:
+			break;
+		}
+		return nullptr;
+	}
 };

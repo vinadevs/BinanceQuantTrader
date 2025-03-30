@@ -23,19 +23,19 @@ bool MarketDataListener::OnIndividualBookTickerChange(
     if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
         LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol()
-        << "|" << FromFeedIDToString(FeedID::BEST_ASK_PRICE) <<
-           "=" << syncedData->GetFeed(FeedID::BEST_ASK_PRICE)->GetDoubleMultiprecisionData()
-        << "|" << FromFeedIDToString(FeedID::BEST_ASK_QUANTITY) <<
-           "=" << syncedData->GetFeed(FeedID::BEST_ASK_QUANTITY)->GetDoubleMultiprecisionData()
-        << "|" << FromFeedIDToString(FeedID::BEST_BID_PRICE) <<
-           "=" << syncedData->GetFeed(FeedID::BEST_BID_PRICE)->GetDoubleMultiprecisionData()
-        << "|" << FromFeedIDToString(FeedID::BEST_BID_QUANTITY) <<
-           "=" << syncedData->GetFeed(FeedID::BEST_BID_QUANTITY)->GetDoubleMultiprecisionData()
+            << "|" << IndividualBookTickerID::BEST_ASK_PRICE <<
+            "=" << syncedData->GetFeed(IndividualBookTickerID::BEST_ASK_PRICE)->GetDoubleMultiprecisionData()
+            << "|" << IndividualBookTickerID::BEST_ASK_QUANTITY <<
+            "=" << syncedData->GetFeed(IndividualBookTickerID::BEST_ASK_QUANTITY)->GetDoubleMultiprecisionData()
+            << "|" << IndividualBookTickerID::BEST_BID_PRICE <<
+            "=" << syncedData->GetFeed(IndividualBookTickerID::BEST_BID_PRICE)->GetDoubleMultiprecisionData()
+            << "|" << IndividualBookTickerID::BEST_BID_QUANTITY <<
+            "=" << syncedData->GetFeed(IndividualBookTickerID::BEST_BID_QUANTITY)->GetDoubleMultiprecisionData());
         // Update more feeds here...
         // ...
         // Update time is always the last one.
-        << "|" << FromFeedIDToString(FeedID::EVENT_TIME) <<
-           "=" << TimeUtils::GetTimestampString(syncedData->GetFeed(FeedID::EVENT_TIME)->GetUnsignedIntData()));
+        /*<< "|" << FromFeedIDToString(IndividualBookTickerID::EVENT_TIME) <<
+           "=" << TimeUtils::GetTimestampString(syncedData->GetFeed(IndividualBookTickerID::EVENT_TIME)->GetUnsignedIntData()))*/;
         return true;
     }
     else
