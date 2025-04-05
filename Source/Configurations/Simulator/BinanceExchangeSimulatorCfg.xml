@@ -18,12 +18,13 @@
 <StaticData>
 </StaticData>
 
-<BinanceWalletServer>
+<BinanceRestAPIServer>
   <Connection ServerIpAddress="0.0.0.0" ServerPort="12345"/>
-</BinanceWalletServer>
+</BinanceRestAPIServer>
 
 <UserAccountManager>
   <GeneralSetting MaximumAccount="1"/>
+  <AccountInfo File="[ROOT_BQT_PATH]\Configurations\StaticData\account_info_t.json"/>
   <TestUserAccount ListUserID="{user_id,path_to_config};{user_id,path_to_config}"/>
 </UserAccountManager>
 
@@ -32,5 +33,5 @@
 </ExchangeRuleAndCompliance>
 
 <ExchangeInfoManager>
-  <ExchangeInfo File="[ROOT_BQT_PATH]\Configurations\Common\ExchangeInfoSimulator.json"/>
+  <ExchangeInfo File="[ROOT_BQT_PATH]\Configurations\StaticData\exchange_info_t.json"/>
 </ExchangeInfoManager>

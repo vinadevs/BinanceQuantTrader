@@ -27,6 +27,11 @@ UserAccountManager::UserAccountManager(const tinyxml2::XMLElement* userAccountMa
     assert(generalSettingXml);
     m_maxAccount = generalSettingXml->Unsigned64Attribute("MaximumAccount");
 
+    const auto* accountInfoXml = userAccountManagerCfg->FirstChildElement("AccountInfo");
+    assert(accountInfoXml);
+    std::string accountInfoJsonFile(accountInfoXml->Attribute("File"));
+    PathUtils::ReplaceSubString(accountInfoJsonFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
+
     const auto* testUserAccountXml = userAccountManagerCfg->FirstChildElement("TestUserAccount");
     assert(testUserAccountXml);
     const auto* listUserIDStr = testUserAccountXml->Attribute("ListUserID");
@@ -36,7 +41,7 @@ UserAccountManager::UserAccountManager(const tinyxml2::XMLElement* userAccountMa
         PathUtils::ReplaceSubString(userPair.second, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
         if (std::filesystem::exists(userPair.second))
         {
-            AddNewUserAccount(userPair.first, userPair.second);
+            AddNewUserAccount(userPair.first, userPair.second, accountInfoJsonFile);
         }
         else
         {
@@ -49,12 +54,15 @@ UserAccountManager::~UserAccountManager()
 {
 }
 
-void UserAccountManager::AddNewUserAccount(const std::string& userId, const std::string& configPath)
+void UserAccountManager::AddNewUserAccount(
+    const std::string& userId,
+    const std::string& userConfigPath,
+    const std::string& accountInfoJsonFile)
 {
     std::unique_lock<std::mutex> lock(m_mutex);
     if (m_accounts.size() <= m_maxAccount)
     {
-        const auto result = m_accounts.try_emplace(userId, std::make_unique<UserAccount>(configPath));
+        const auto result = m_accounts.try_emplace(userId, std::make_unique<UserAccount>(userConfigPath, accountInfoJsonFile));
         if (!result.second)
         {
             LOG_WARNING_STREAM(m_logger, "UserAccount with userId '" << userId << "' already exists.");

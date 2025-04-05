@@ -18,13 +18,15 @@ namespace tinyxml2 {
 };
 
 namespace ExchangeSimulator {
-
-class ExchangeInfoManager final {
-public:
-	ExchangeInfoManager(const tinyxml2::XMLElement* exchangeInfoManagerCfg);
-	~ExchangeInfoManager();
-	const binapi::rest::exchange_info_t& GetExchangeInfo() const { return m_exchangeInfo; }
-private:
-	binapi::rest::exchange_info_t m_exchangeInfo;
-};
+	
+	// The ExchangeInfoManager class is responsible for managing exchange information.
+	// It initializes with a configuration element and provides access to exchange information.
+	class ExchangeInfoManager final {
+	public:
+		ExchangeInfoManager(const tinyxml2::XMLElement* exchangeInfoManagerCfg);
+		~ExchangeInfoManager();
+		const binapi::rest::exchange_info_t& GetExchangeInfo() const { return m_exchangeInfo; }
+	private:
+		binapi::rest::exchange_info_t m_exchangeInfo;
+	};
 } // ns ExchangeSimulator

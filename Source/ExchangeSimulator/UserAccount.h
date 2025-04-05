@@ -13,6 +13,8 @@
 #include <iostream>
 #include <mutex>
 
+#include "../KernelTrading/types.h"
+
 namespace ExchangeSimulator {
 
     using AssetSymbol = std::string;
@@ -118,7 +120,7 @@ namespace ExchangeSimulator {
     {
         UserAccount() = default;
 
-        UserAccount(const std::string& userConfigPath);
+        UserAccount(const std::string& userConfigPath, const std::string& accountInfoJsonFile);
 
         // balances
         AssetBalances m_assetBalances;
@@ -152,6 +154,10 @@ namespace ExchangeSimulator {
         bool IsAccountHavingAssets() const;
 
         AssetBalance& LookupAssetBalance(const AssetSymbol& symbol);
+
+		const binapi::rest::account_info_t& GetAccountInfo() const { 
+            return m_accountInfo; 
+        }
     private:
         void EnableUserAccountControls();
         void DisableUserAccountControls();
@@ -162,5 +168,7 @@ namespace ExchangeSimulator {
         bool m_canDeposit{ false };
         bool m_canTrade{ false };
         std::mutex m_mutex;
+		// binance account info
+        binapi::rest::account_info_t m_accountInfo;
     };
 };

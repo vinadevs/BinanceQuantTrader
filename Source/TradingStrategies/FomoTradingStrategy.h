@@ -53,7 +53,7 @@ namespace TradingStrategies {
 		: public TradingStrategyBase,
 		  public IndicatorNSignals::TradingHintsListener
 	{
-	public:
+	public: 
 		FomoTradingStrategy(const std::string& strategyCfgPath,
 							MarketData::RealTimeMarketData* marketData,
 							UserAccount::BinanceTrader* trader,

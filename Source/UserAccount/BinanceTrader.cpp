@@ -19,7 +19,7 @@
 #include "../OrderManagement/BinanceReplaceOrder.h"
 #include "../OrderManagement/FieldLabels.h"
 #include "../RiskManagement/RiskManager.h"
-
+#include "../ComplianceNRegulatory/BinanceTradingRules.h"
 #include "../LibraryUtils/SourceBuildFlags.h"
 #include "../LibraryUtils/StringUtils.h"
 #if USE_BACK_TEST_TRADING
@@ -36,6 +36,7 @@
 
 using namespace UserAccount;
 using namespace PortfolioManager;
+using namespace ComplianceNRegulatory;
 using namespace RiskManagement;
 using namespace OrderManagement;
 using namespace RestAPI;
@@ -51,22 +52,23 @@ static constexpr double ZERO_DOUBLE_VALUE = 0;
 BinanceTrader::BinanceTrader(
 	const XMLElement* reportCfg,
 	PortfolioInvestmentBinance* portfolio,
+	BinanceTradingRules* tradingRules,
 	RiskManager* riskManager)
     : m_portfolio(portfolio),
+	  m_tradingRules(tradingRules),
 	  m_riskManager(riskManager)
 {
     m_logger = std::make_unique<LibraryUtils::Logger>("BinanceTrader");
     m_logger->Info("using BinanceTrader.");
 	m_binanceAccountInfo = std::make_unique<binapi::rest::account_info_t>();
-	m_binanceExchangeInfo = std::make_unique<binapi::rest::exchange_info_t>();
 	m_workedOrderManager = std::make_unique<BinanceWorkedOrderManager>();
 	m_positionManager = std::make_unique<PositionManager>(m_workedOrderManager.get());
 #if USE_BACK_TEST_TRADING
 	m_exchangeReporter = std::make_unique<BackTestReporter>(
-		reportCfg, m_binanceAccountInfo.get(), m_binanceExchangeInfo.get(), m_portfolio);
+		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_portfolio);
 #else
 	m_exchangeReporter = std::make_unique<BinanceReporter>(
-		reportCfg, m_binanceAccountInfo.get(), m_binanceExchangeInfo.get(), m_portfolio);
+		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_portfolio);
 #endif
 }
 

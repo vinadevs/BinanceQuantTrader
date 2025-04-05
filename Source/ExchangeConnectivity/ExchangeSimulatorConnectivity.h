@@ -77,7 +77,7 @@ namespace ExchangeConnectivity {
 			std::string& errorMessage);
 
 		bool GetExchangeInfo(
-			const std::string& userId,
+			const std::string& symbol,
 			binapi::rest::exchange_info_t* exchangeInfo,
 			std::string& errorMessage);
 	private:

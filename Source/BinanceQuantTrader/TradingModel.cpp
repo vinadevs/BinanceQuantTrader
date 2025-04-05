@@ -141,21 +141,26 @@ void TradingModel::PrepareTradingComponents(
 	const auto* portfolioCfg = configBQTXml->FirstChildElement("PortfolioInvestment");
 	m_portfolio = std::make_unique<PortfolioInvestmentBinance>(portfolioCfg, m_marketData.get());
 
+	m_logger->Info("Initiating Compliance And Regulatory.");
+	const auto* complianceCfg = configBQTXml->FirstChildElement("ComplianceNRegulatory");
+	m_tradingRules = std::make_unique<BinanceTradingRules>(complianceCfg);
+
 	m_logger->Info("Initiating Risk Management.");
 	const auto* riskManagementCfg = configBQTXml->FirstChildElement("RiskManagement");
 	m_riskManager = std::make_unique<RiskManager>(riskManagementCfg);
 
 	m_logger->Info("Initiating Trader.");
 	const auto* traderXmlCfg = configBQTXml->FirstChildElement("TraderInfo");
-	m_trader = TraderFactory::CreateSmartTrader(m_portfolio.get(), m_riskManager.get(), traderXmlCfg);
-
-	m_logger->Info("Initiating Compliance And Regulatory.");
-	const auto* complianceCfg = configBQTXml->FirstChildElement("ComplianceNRegulatory");
-	m_tradingRules = std::make_unique<BinanceTradingRules>(complianceCfg);
+	m_trader = TraderFactory::CreateSmartTrader(
+		m_portfolio.get(),
+		m_tradingRules.get(),
+		m_riskManager.get(),
+		traderXmlCfg);
 
 	m_logger->Info("Initiating Trading Strategy.");
 	const auto* strategyCfg = configBQTXml->FirstChildElement("TradingStrategy");
-	m_strategy = StrategyFactory::CreateTargetStrategy(strategyCfg,
+	m_strategy = StrategyFactory::CreateTargetStrategy(
+		strategyCfg,
 		m_marketData.get(),
 		m_trader.get(),
 		m_tradingRules.get());

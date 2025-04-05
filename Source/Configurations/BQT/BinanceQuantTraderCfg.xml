@@ -53,3 +53,7 @@
 <BinanceWalletClient>
   <Connection ServerIpAddress="localhost" ServerPort="50051"/>
 </BinanceWalletClient>
+
+<BinanceExchangeClient>
+  <Connection ServerIpAddress="localhost" ServerPort="50051"/>
+</BinanceExchangeClient>

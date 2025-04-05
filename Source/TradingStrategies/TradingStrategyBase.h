@@ -123,7 +123,7 @@ namespace TradingStrategies {
 
 		void SetupStrategyLifeTime(tinyxml2::XMLDocument* strategyCfgPathXml);
 		bool IsNotIsNotExceededTradingRules() const;
-		void IncreaseComplianceOrderCounter();
+		void IncreaseComplianceRestAPIRequestCounter();
 	protected:
 #if USE_BACK_TEST_TRADING  
 		void OnHandlingReceivedSimulatorMessage(

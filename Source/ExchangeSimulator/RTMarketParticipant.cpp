@@ -57,6 +57,7 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
             auto bestExchangeBidOrder = exchangeBidOrderBook->GetAllItems().front();
             for (const auto& exchangeOrder : exchangeBidOrderBook->GetAllItems())
             {
+                // Determine the best exchange bid order that satisfies the buy price from upstream order.
                 if (exchangeOrder.m_price <= newUpstreamOrder.GetPrice())
                 {
                     bestExchangeBidOrder = exchangeOrder;
@@ -102,7 +103,8 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
             auto bestExchangeAskOrder = exchangeAskOrderBook->GetAllItems().front();
             for (const auto& exchangeOrder : exchangeAskOrderBook->GetAllItems())
             {
-                if (exchangeOrder.m_price <= newUpstreamOrder.GetPrice())
+				// Determine the best exchange ask order that satisfies the sell price from upstream order.
+                if (exchangeOrder.m_price >= newUpstreamOrder.GetPrice())
                 {
                     bestExchangeAskOrder = exchangeOrder;
                     hasLiquidity = true;

@@ -131,9 +131,9 @@ bool ExchangeSimulatorConnectivity::GetUserAccountInfo(
 }
 
 bool ExchangeSimulatorConnectivity::GetExchangeInfo(
-    const std::string& userId,
+    const std::string& symbol,
     binapi::rest::exchange_info_t* exchangeInfo,
     std::string& errorMessage)
 {
-    return m_binanceExchangeClient->GetExchangeInfoResponse(userId, exchangeInfo, errorMessage);
+    return m_binanceExchangeClient->GetExchangeInfoResponse(symbol, exchangeInfo, errorMessage);
 }

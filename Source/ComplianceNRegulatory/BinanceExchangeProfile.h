@@ -46,12 +46,14 @@ public:
     BinanceExchangeProfileMgr(const std::string& filePath);
     ~BinanceExchangeProfileMgr();
 
-    // Should call only onne time at the starting of the trade.
-    // CAN NOT USE FOR BACK TEST SIMILATOR MODE
+    // Should call at the starting of the trade to get trading rules for all symbols.
     bool UpdateRemoteExchangeProfiles(const std::string& symbol, const bool logDataToFile = false);
-
-    const StaticBinanceExchangeProfile* LookupStaticExchangeProfile(const std::string& symbol) const;
-    const RemoteBinanceExchangeProfile* LookupRemoteExchangeProfile(const std::string& symbol) const;
+    std::unordered_map<std::string, RemoteBinanceExchangeProfile> 
+        GetRemoteExchangeProfiles() const { return m_exchangeRemoteProfiles; }
+    std::unordered_map<std::string, StaticBinanceExchangeProfile>
+		GetStaticExchangeProfiles() const { return m_exchangeStaticProfiles; }
+    StaticBinanceExchangeProfile* LookupStaticExchangeProfile(const std::string& symbol);
+    RemoteBinanceExchangeProfile* AccessRemoteExchangeProfile(const std::string& symbol);
 private:
     void LoadStaticExchangeProfilesFromFile(const std::string& filePath);
 

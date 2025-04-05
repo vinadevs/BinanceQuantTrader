@@ -12,6 +12,7 @@
 #include "../LibraryUtils/Logger.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../PortfolioManager/PortfolioInvestmentBinance.h"
+#include "../ComplianceNRegulatory/BinanceExchangeProfile.h"
 #include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
 
 #include "ReportAPIs.h"
@@ -23,9 +24,9 @@ using namespace PortfolioManager;
 BackTestReporter::BackTestReporter(
 	const tinyxml2::XMLElement* reportConfigXml,
 	binapi::rest::account_info_t* accountInfo,
-	binapi::rest::exchange_info_t* exchangeInfo,
+	ComplianceNRegulatory::BinanceExchangeProfileMgr* exchangeProfileMgr,
 	PortfolioInvestmentBinance* portfolio)
-	: ExchangeReporter(accountInfo, exchangeInfo, portfolio)
+	: ExchangeReporter(accountInfo, exchangeProfileMgr, portfolio)
 {
 	m_logger = std::make_unique<LibraryUtils::Logger>("BackTestReporter");
 	SetupReporter(reportConfigXml);
@@ -71,7 +72,7 @@ void BackTestReporter::UpdateRemoteData(const std::string& symbol)
 		m_logger->Error("account_info: emsg=" + errorMessage);
 	}
 	if (ExchangeSimulatorGateWay->GetExchangeInfo(
-		ApiKeyInfoMgr->GetApiKeyInfo().m_userID, m_exchangeInfo, errorMessage))
+		symbol, m_exchangeProfileMgr->AccessRemoteExchangeProfile(symbol), errorMessage))
 	{
 		m_logger->Info("updating exchange info finished.");
 	}

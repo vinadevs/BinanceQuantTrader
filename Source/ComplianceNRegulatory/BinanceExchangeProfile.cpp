@@ -12,6 +12,10 @@
 #include "../RestAPI/BinanceAPI.h"
 #include "../LibraryUtils/Logger.h"
 #include "../SettingNConfig/BqtGlobalSettings.h"
+#if USE_BACK_TEST_TRADING
+#include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
+#include "../RestAPI/ApiKeyInfoManager.h"
+#endif
 
 #include "BinanceExchangeProfile.h"
 
@@ -30,31 +34,92 @@ bool BinanceExchangeProfileMgr::UpdateRemoteExchangeProfiles(
     const std::string& symbol,
     const bool logDataToFile/*=false*/)
 {
-    const auto exchangeInfo = BinanceApiGateWay->exchange_info(symbol);
-    if (!exchangeInfo)
-    {
-        LOG_ERROR_STREAM(m_logger, "exchange_info error=" << exchangeInfo.errmsg);
-        return false;
-    }
+    auto* exchangeInfo = const_cast<RemoteBinanceExchangeProfile*>(AccessRemoteExchangeProfile(symbol));
+	if (exchangeInfo)
+	{
+#if USE_BACK_TEST_TRADING
+        std::string errorMessage;
+        if (ExchangeSimulatorGateWay->GetExchangeInfo(
+            symbol, exchangeInfo, errorMessage))
+        {
+            m_logger->Info("updating account info finished.");
+        }
+        else
+        {
+            m_logger->Error("account_info: emsg=" + errorMessage);
+        }
+        if (logDataToFile)
+        {
+            const auto exchangeInfoPath = BqtGlobalSettingsMgr->GetdDataAppPath() + "//exchange_info_" + symbol + ".txt";
+            RemoteBinanceExchangeProfile::write_exchange_info_to_file(exchangeInfoPath, *exchangeInfo);
+        }
+        return true;
+#else
+        exchangeInfo = BinanceApiGateWay->exchange_info(symbol);
+        if (!exchangeInfo)
+        {
+            LOG_ERROR_STREAM(m_logger, "exchange_info error=" << exchangeInfo.errmsg);
+            return false;
+        }
+        else
+        {
+            LOG_INFO_STREAM(m_logger, "Updated exchange_info for symbol=" << symbol);
+        }
+        if (logDataToFile)
+        {
+            const auto exchangeInfoPath = BqtGlobalSettingsMgr->GetdDataAppPath() + "//exchange_info_" + symbol + ".txt";
+            RemoteBinanceExchangeProfile::write_exchange_info_to_file(exchangeInfoPath, exchangeInfo.v);
+        }
+        return true;
+#endif
+	}
     else
     {
-        LOG_INFO_STREAM(m_logger, "Updated exchange_info for symbol=" << symbol);
+        RemoteBinanceExchangeProfile newExchangeInfo;
+#if USE_BACK_TEST_TRADING
+        std::string errorMessage;
+        if (ExchangeSimulatorGateWay->GetExchangeInfo(
+            symbol, &newExchangeInfo, errorMessage))
+        {
+            m_logger->Info("updating account info finished.");
+        }
+        else
+        {
+            m_logger->Error("account_info: emsg=" + errorMessage);
+        }
+        if (logDataToFile)
+        {
+            const auto exchangeInfoPath = BqtGlobalSettingsMgr->GetdDataAppPath() + "//exchange_info_" + symbol + ".txt";
+            RemoteBinanceExchangeProfile::write_exchange_info_to_file(exchangeInfoPath, newExchangeInfo);
+        }
+        return m_exchangeRemoteProfiles.try_emplace(symbol, std::move(newExchangeInfo)).second;
+#else
+        const auto newExchangeInfoResult = BinanceApiGateWay->exchange_info(symbol);
+        if (!newExchangeInfoResult)
+        {
+            LOG_ERROR_STREAM(m_logger, "exchange_info error=" << newExchangeInfoResult.errmsg);
+            return false;
+        }
+        else
+        {
+            LOG_INFO_STREAM(m_logger, "Updated exchange_info for symbol=" << symbol);
+        }
+        if (logDataToFile)
+        {
+            const auto exchangeInfoPath = BqtGlobalSettingsMgr->GetdDataAppPath() + "//exchange_info_" + symbol + ".txt";
+            RemoteBinanceExchangeProfile::write_exchange_info_to_file(exchangeInfoPath, newExchangeInfoResult.v);
+        }
+        return m_exchangeRemoteProfiles.try_emplace(symbol, std::move(newExchangeInfoResult.v)).second;
+#endif
     }
-    if (logDataToFile) 
-    {
-        const auto exchangeInfoPath = BqtGlobalSettingsMgr->GetdDataAppPath() + "//exchange_info_" + symbol + ".txt";
-        RemoteBinanceExchangeProfile::write_exchange_info_to_file(exchangeInfoPath, exchangeInfo.v);
-    }
-    return m_exchangeRemoteProfiles.try_emplace(symbol, std::move(exchangeInfo.v)).second;
 }
 
-const StaticBinanceExchangeProfile* BinanceExchangeProfileMgr::LookupStaticExchangeProfile(const std::string& symbol) const {
+StaticBinanceExchangeProfile* BinanceExchangeProfileMgr::LookupStaticExchangeProfile(const std::string& symbol) {
     const auto it = m_exchangeStaticProfiles.find(symbol);
     return (it != m_exchangeStaticProfiles.end()) ? &it->second : nullptr;
 }
 
-const RemoteBinanceExchangeProfile* BinanceExchangeProfileMgr::LookupRemoteExchangeProfile(const std::string& symbol) const
-{
+RemoteBinanceExchangeProfile* BinanceExchangeProfileMgr::AccessRemoteExchangeProfile(const std::string& symbol) {
     const auto it = m_exchangeRemoteProfiles.find(symbol);
     return (it != m_exchangeRemoteProfiles.end()) ? &it->second : nullptr;
 }

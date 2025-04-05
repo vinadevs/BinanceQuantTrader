@@ -156,6 +156,7 @@
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="OrderParammeterCreator.h" />
     <ClInclude Include="TradingRulesByPassEngine.h" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +167,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="OrderParammeterCreator.cpp" />
     <ClCompile Include="TradingRulesByPassEngine.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -23,6 +23,7 @@
 
 namespace tinyxml2 {
     class XMLElement;
+	class XMLDocument;
 };
 
 namespace LibraryUtils {
@@ -90,6 +91,7 @@ namespace ExchangeSimulator {
 
         void OnHandlingReceivedSimulatorMessage(const MiddlewareMQ::BqtJsonMessage& message) override;
     private:
+        void SubscribeTargetSymbols(const tinyxml2::XMLDocument* matchingEngineXmlCfg);
         void ProcessIncommingOrders();
         bool VerifyUpstreamBinanceNewOrder(const OrderManagement::BinanceNewOrder& order);
         bool VerifyUpstreamBinanceCancelOrder(const OrderManagement::BinanceCancelOrder& order);

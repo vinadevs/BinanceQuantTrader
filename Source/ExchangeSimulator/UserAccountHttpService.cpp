@@ -52,7 +52,7 @@ grpc::Status UserAccountHttpService::GetUserAccountData(
         response->mutable_balances()->emplace(asset.second.m_symbol, balance);
     }
 
-    m_logger->Info("Sending UserAccountData response for User ID=" + request->user_id());
+    m_logger->Info("Sending account_info_t response for User ID=" + request->user_id());
 
     return grpc::Status::OK;
 }

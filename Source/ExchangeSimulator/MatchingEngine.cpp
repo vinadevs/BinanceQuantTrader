@@ -57,8 +57,9 @@ MatchingEngine::MatchingEngine(
 		m_logger->Info("Initiating Real Time Market Data.");
 		const auto* realTimeMarketDataCfg = matchingEngineXmlCfg->FirstChildElement("RealTimeMarketData");
 		m_binanceMarketDataConfig = SettingNConfig::BqtXmlUtils::GetBinanceMarketDataConfig(realTimeMarketDataCfg);
-		const auto* binanceRealTimeMarketDataCfg = m_binanceMarketDataConfig->FirstChildElement("RealTimeMarketData");
-		m_marketData = std::make_unique<RealTimeMarketData>(binanceRealTimeMarketDataCfg);
+		const auto* exchangeSimulatorMarketDataCfg = m_binanceMarketDataConfig->FirstChildElement("RealTimeMarketData");
+		m_marketData = std::make_unique<RealTimeMarketData>(exchangeSimulatorMarketDataCfg);
+		SubscribeTargetSymbols(m_binanceMarketDataConfig.get());
 		m_rtMarketDataParticipant = dynamic_cast<RTMarketParticipant*>(m_participant.get());
 		assert(m_rtMarketDataParticipant);
 		m_rtMarketDataParticipant->CreateDownstreamOrderBooks(m_marketData->GetSubscribingSymbols());
@@ -81,6 +82,19 @@ MatchingEngine::MatchingEngine(
 }
 
 MatchingEngine::~MatchingEngine() {}
+
+void MatchingEngine::SubscribeTargetSymbols(const tinyxml2::XMLDocument* realTimeMarketDataCfg)
+{
+	const auto* targetSymbolXml = realTimeMarketDataCfg->FirstChildElement("ExchangeSimulatorMarketData");
+	assert(targetSymbolXml);
+	const tinyxml2::XMLElement* symbolsXml = targetSymbolXml->FirstChildElement("MatchingForSymbols");
+	assert(symbolsXml);
+	auto targetTradeSymbols = StringUtils::SplitAndTrimString(symbolsXml->Attribute("List"), ',');
+	for (const auto& symbol : targetTradeSymbols)
+	{
+		m_marketData->SubscribeSymbol(symbol);
+	}
+}
 
 void MatchingEngine::Start()
 {

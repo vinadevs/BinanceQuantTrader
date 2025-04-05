@@ -9,6 +9,9 @@
 #include "pch.h"
 
 #include "../SettingNConfig/tinyxml2.h"
+#include "../LibraryUtils/FileUtils.h"
+#include "../LibraryUtils/PathUtils.h"
+#include "../KernelTrading/flatjson.h"
 #include "../StaticData/StaticDataManager.h"
 
 #include "UserAccount.h"
@@ -20,7 +23,9 @@
 using namespace ExchangeSimulator;
 using namespace tinyxml2;
 
-UserAccount::UserAccount(const std::string& userConfigPath)
+UserAccount::UserAccount(
+    const std::string& userConfigPath,
+    const std::string& accountInfoJsonFile)
 {
     auto userAccountCfgPathXml = std::make_unique<XMLDocument>();
     const auto errorLoadFileXml = userAccountCfgPathXml->LoadFile(userConfigPath.c_str());
@@ -47,6 +52,10 @@ UserAccount::UserAccount(const std::string& userConfigPath)
     }
     m_updateTime = static_cast<std::size_t>(std::chrono::system_clock::now().time_since_epoch().count());
     EnableUserAccountControls();
+	// init account info from json file
+    const std::string accountInfoJsonStr = FileUtils::ReadFileContent(accountInfoJsonFile);
+    const flatjson::fjson accountInfoJson{ accountInfoJsonStr.c_str(), accountInfoJsonStr.size() };
+    m_accountInfo = binapi::rest::account_info_t::construct(accountInfoJson);
 }
 
 bool UserAccount::IsAccountEligibleToWithdraw() const

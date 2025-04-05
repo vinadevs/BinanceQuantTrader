@@ -16,33 +16,45 @@ namespace tinyxml2 {
 	class XMLElement;
 };
 
+namespace ComplianceNRegulatory {
+    class BinanceExchangeProfileMgr;
+}
+
 namespace PortfolioManager {
-	class PortfolioInvestmentBinance;
+    class PortfolioInvestmentBinance;
 }
 
 namespace UserAccount {
-	class BackTestReporter final : public ExchangeReporter
-	{
-	public:
-		BackTestReporter(
-			const tinyxml2::XMLElement* reportConfigXml,
-			binapi::rest::account_info_t* accountInfo,
-			binapi::rest::exchange_info_t* exchangeInfo,
-			PortfolioManager::PortfolioInvestmentBinance* portfolio);
-		BackTestReporter() = default;
-		~BackTestReporter() override;
-		void SetupReporter(const tinyxml2::XMLElement* reportCfg) override;
-		void UpdateRemoteData(const std::string& symbol) override;
-		void UpdateRemoteReportTrades(const std::string& symbol) override;
-		void UpdateRemoteReportOpenOrders(const std::string& symbol) override;
-		void UpdateRemoteReportAccountBalance(const std::string& symbol) override;
-		void UpdateRemoteReportExchangerPriceForOrders(const std::string& symbol) override;
-		void UpdateRemoteReportCalculateLossForOrders(const std::string& symbol) override;
-		void DoRemoteExecutionReport(const std::string& symbol) override;
-		void DoLocalExecutionReport(const std::string& symbol) override;
-		void DoTradeExecutionReport() override;
-	private:
-		bool MergeLocalAndRemmoteReport() override;
-	};
+    /**
+    * @class BackTestReporter
+    * @brief A final class that extends ExchangeReporter to provide backtesting reporting functionalities.
+    *
+    * This class is responsible for setting up the reporter, updating remote data, and generating various reports
+    * related to trades, open orders, account balance, exchange prices, and loss calculations. It also handles
+    * remote and local execution reports and merges local and remote reports.
+    */
+    class BackTestReporter final : public ExchangeReporter
+    {
+    public:
+        BackTestReporter(
+            const tinyxml2::XMLElement* reportConfigXml,
+            binapi::rest::account_info_t* accountInfo,
+            ComplianceNRegulatory::BinanceExchangeProfileMgr* exchangeProfileMgr,
+            PortfolioManager::PortfolioInvestmentBinance* portfolio);
+        BackTestReporter() = default;
+        ~BackTestReporter() override;
+        void SetupReporter(const tinyxml2::XMLElement* reportCfg) override;
+        void UpdateRemoteData(const std::string& symbol) override;
+        void UpdateRemoteReportTrades(const std::string& symbol) override;
+        void UpdateRemoteReportOpenOrders(const std::string& symbol) override;
+        void UpdateRemoteReportAccountBalance(const std::string& symbol) override;
+        void UpdateRemoteReportExchangerPriceForOrders(const std::string& symbol) override;
+        void UpdateRemoteReportCalculateLossForOrders(const std::string& symbol) override;
+        void DoRemoteExecutionReport(const std::string& symbol) override;
+        void DoLocalExecutionReport(const std::string& symbol) override;
+        void DoTradeExecutionReport() override;
+    private:
+        bool MergeLocalAndRemmoteReport() override;
+    };
 };
 

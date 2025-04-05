@@ -22,6 +22,10 @@ namespace PortfolioManager {
 	class PortfolioInvestmentBinance;
 }
 
+namespace ComplianceNRegulatory {
+	class BinanceTradingRules;
+}
+
 namespace RiskManagement {
 	class RiskManager;
 }
@@ -33,6 +37,7 @@ namespace BinanceQuantTrader {
 	public:
 		static std::unique_ptr<UserAccount::BinanceTrader>
 			CreateSmartTrader(PortfolioManager::PortfolioInvestmentBinance* portfolio,
+							  ComplianceNRegulatory::BinanceTradingRules* tradingRules,
 							  RiskManagement::RiskManager* riskManager,
 				              const tinyxml2::XMLElement* traderXmlCfg);
 	};

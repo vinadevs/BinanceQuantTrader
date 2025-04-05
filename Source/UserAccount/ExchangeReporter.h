@@ -20,19 +20,25 @@ namespace LibraryUtils {
 	class Logger;
 };
 
+namespace ComplianceNRegulatory {
+	class BinanceExchangeProfileMgr;
+}
+
 namespace PortfolioManager {
 	class PortfolioInvestmentBinance;
 }
 
 namespace UserAccount {
+
+	// The ExchangeReporter class is responsible for generating reports on trading activities.
 	class ExchangeReporter
 	{
 	public:
 		ExchangeReporter(
 			binapi::rest::account_info_t* accountInfo,
-			binapi::rest::exchange_info_t* exchangeInfo,
+			ComplianceNRegulatory::BinanceExchangeProfileMgr* exchangeProfileMgr,
 			PortfolioManager::PortfolioInvestmentBinance* portfolio)
-			: m_accountInfo(accountInfo), m_exchangeInfo(exchangeInfo), m_portfolio(portfolio) {}
+			: m_accountInfo(accountInfo), m_exchangeProfileMgr(exchangeProfileMgr), m_portfolio(portfolio) {}
 
 		virtual ~ExchangeReporter() {};
 
@@ -50,6 +56,7 @@ namespace UserAccount {
 	protected:
 		virtual bool MergeLocalAndRemmoteReport() = 0;
 
+		ComplianceNRegulatory::BinanceExchangeProfileMgr* m_exchangeProfileMgr{ nullptr };
 		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr };
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
 
@@ -59,9 +66,8 @@ namespace UserAccount {
 		bool m_enableExchangerPriceForOrdersReporter{ false };
 		bool m_enableCalculateLossForOrdersReporter{ false };
 
-		// report data
+		// restAPI data
 		binapi::rest::account_info_t* m_accountInfo;
-		binapi::rest::exchange_info_t* m_exchangeInfo;
 	};
 };
 

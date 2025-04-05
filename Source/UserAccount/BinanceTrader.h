@@ -32,6 +32,10 @@ namespace RiskManagement {
 	class RiskManager;
 }
 
+namespace ComplianceNRegulatory {
+	class BinanceTradingRules;
+}
+
 namespace tinyxml2 {
 	class XMLElement;
 };
@@ -44,6 +48,7 @@ namespace UserAccount {
 	public:
 		BinanceTrader(const tinyxml2::XMLElement* reportCfg, 
 			          PortfolioManager::PortfolioInvestmentBinance* portfolio,
+					  ComplianceNRegulatory::BinanceTradingRules* tradingRules,
 					  RiskManagement::RiskManager* riskManager);
 
 		////////////// UPSTREAM PROCESSING /////////////////////////////
@@ -57,6 +62,7 @@ namespace UserAccount {
 			const double refPrice) override;
 
 		void UpdateAccountInfo();
+
 		void CreatePortfolioManagement(const std::vector<std::string>& targetTradeSymbols);
 
 		PortfolioManager::PortfolioInvestmentBinance* GetPortfolio() const { return m_portfolio; }
@@ -72,10 +78,10 @@ namespace UserAccount {
 			const double quality,
 			const double refPrice);
 
-		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr };
+		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr }; // list of assets to trade
+		ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr }; // exchange compliance and regulatory
 		RiskManagement::RiskManager* m_riskManager{ nullptr };  // stop loss
 		std::unique_ptr<binapi::rest::account_info_t> m_binanceAccountInfo;
-		std::unique_ptr<binapi::rest::exchange_info_t> m_binanceExchangeInfo;
 		std::unique_ptr<OrderManagement::BinanceWorkedOrderManager> m_workedOrderManager;
 		std::unique_ptr<OrderManagement::PositionManager> m_positionManager;
 		std::unique_ptr<ExchangeReporter> m_exchangeReporter;

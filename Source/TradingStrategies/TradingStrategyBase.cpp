@@ -116,7 +116,7 @@ bool TradingStrategyBase::IsNotIsNotExceededTradingRules() const
 	return false;
 }
 
-void TradingStrategyBase::IncreaseComplianceOrderCounter() 
+void TradingStrategyBase::IncreaseComplianceRestAPIRequestCounter() 
 {
 	m_tradingRules->IncreaseOrdersPerTenSeconds();
 	m_logger->Info("CompilanceChecker: current number of orders per ten seconds="

@@ -39,10 +39,6 @@ FomoTradingStrategy::FomoTradingStrategy(
 	// Subscribe target symbols to receive real time market data
 	m_logger->Info("Subscribe target symbols.");
 	SubscribeTargetSymbols();
-	m_logger->Info("Create Binance Exchange Profile.");
-#ifdef USE_BINANCE_TEST_TRADING
-	CreateBinanceExchangeProfile();
-#endif
 	m_logger->Info("Completed initialization for the strategy.");
 }
 
@@ -111,6 +107,7 @@ void FomoTradingStrategy::UnsubscribeTargetSymbols()
 void FomoTradingStrategy::CreatePortfolioManagement()
 {
 	m_trader->CreatePortfolioManagement(m_targetTradeSymbols);
+	IncreaseComplianceRestAPIRequestCounter(); // register a sent order request to ComplianceNRegulatory
 }
 
 void FomoTradingStrategy::CreateBinanceExchangeProfile()
@@ -118,6 +115,7 @@ void FomoTradingStrategy::CreateBinanceExchangeProfile()
 	for (const auto& symbol : m_targetTradeSymbols)
 	{
 		m_tradingRules->GetExchangeProfileMgr()->UpdateRemoteExchangeProfiles(symbol, true);
+		IncreaseComplianceRestAPIRequestCounter(); // register a sent order request to ComplianceNRegulatory
 	}
 }
 
@@ -129,7 +127,7 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 		{
 			if (IsNotIsNotExceededTradingRules())
 			{
-				const auto* symbolProfile = m_tradingRules->GetExchangeProfileMgr()->LookupRemoteExchangeProfile(hints->symbol);
+				const auto* symbolProfile = m_tradingRules->GetExchangeProfileMgr()->AccessRemoteExchangeProfile(hints->symbol);
 				if (symbolProfile)
 				{
 					const auto& symbolExchangeInfo = symbolProfile->get_by_symbol(hints->symbol);
@@ -139,9 +137,9 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 							symbolExchangeInfo.get_filter_lot_size().minQty.convert_to<double>(),
 							symbolExchangeInfo.get_filter_price().minPrice.convert_to<double>()))
 						{
-							
+							m_logger->Info("Created a new [Long Position] for symbol=" + hints->symbol);
 						}
-						IncreaseComplianceOrderCounter(); // register a sent order request to ComplianceNRegulatory
+						IncreaseComplianceRestAPIRequestCounter(); // register a sent order request to ComplianceNRegulatory
 					}
 					else if (hints->isDownTrend)
 					{
@@ -149,9 +147,9 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 							symbolExchangeInfo.get_filter_lot_size().minQty.convert_to<double>(),
 							symbolExchangeInfo.get_filter_price().minPrice.convert_to<double>()))
 						{
-							
+							m_logger->Info("Created a new [Short Position] for symbol=" + hints->symbol);
 						}
-						IncreaseComplianceOrderCounter(); // register a sent order request to ComplianceNRegulatory
+						IncreaseComplianceRestAPIRequestCounter(); // register a sent order request to ComplianceNRegulatory
 					}
 				}
 				else
@@ -161,7 +159,8 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 			}
 			else
 			{
-				//m_logger->Debug("Strategy received a hint signal but it is exceeded exchange limitations.");
+				// comment out as this is spamming the log
+				//m_logger->Debug("Strategy received a hint signal but it is exceeded exchange rule/limitations.");
 			}
 		}
 		else
@@ -193,6 +192,9 @@ void FomoTradingStrategy::StartLive()
 {
 	// Change Strategy state to live
 	m_strategyRunStatus = StrategyRunStatus::LIVE;
+	// Create exchange filter profile
+	m_logger->Info("Create Binance Exchange Profile.");
+	CreateBinanceExchangeProfile();
 	// Create portfolio management
 	m_logger->Info("Create portfolio management.");
 	CreatePortfolioManagement();

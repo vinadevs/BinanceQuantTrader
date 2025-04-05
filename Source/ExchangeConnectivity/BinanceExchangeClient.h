@@ -50,7 +50,7 @@ namespace ExchangeConnectivity {
 		~BinanceExchangeClient();
 
 		bool GetExchangeInfoResponse(
-			const std::string& symbolId,
+			const std::string& symbol,
 			binapi::rest::exchange_info_t*
 			exchangeInfo, std::string& errorMessage);
 	private:

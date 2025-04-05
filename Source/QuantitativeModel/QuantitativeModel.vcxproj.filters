@@ -16,6 +16,9 @@
     <Filter Include="Trading Rules By Pass Engine">
       <UniqueIdentifier>{8b1c44d4-40d6-4ba2-8a9c-3653a9defda3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Order Parammeter Creator">
+      <UniqueIdentifier>{682cf977-a4c1-4566-8691-4b4633e45017}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -30,6 +33,9 @@
     <ClInclude Include="dlldefine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OrderParammeterCreator.h">
+      <Filter>Order Parammeter Creator</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -40,6 +46,9 @@
     </ClCompile>
     <ClCompile Include="TradingRulesByPassEngine.cpp">
       <Filter>Trading Rules By Pass Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="OrderParammeterCreator.cpp">
+      <Filter>Order Parammeter Creator</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
