@@ -16,8 +16,10 @@
 #include "../ComplianceNRegulatory/BinanceExchangeProfile.h"
 #include "../LibraryUtils/StringUtils.h"
 #include "../PortfolioManager/PortfolioInvestmentBinance.h"
+#include "../QuantitativeModel/OrderParammeterCreator.h"
 
 using namespace TradingStrategies;
+using namespace QuantitativeModel;
 using namespace IndicatorNSignals;
 using namespace MarketData;
 using namespace UserAccount;

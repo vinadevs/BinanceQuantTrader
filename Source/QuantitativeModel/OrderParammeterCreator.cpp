@@ -8,3 +8,13 @@
 
 #include "pch.h"
 #include "OrderParammeterCreator.h"
+
+using namespace QuantitativeModel;
+
+OrderParammeterCreator::OrderParammeterCreator()
+{
+}
+
+OrderParammeterCreator::~OrderParammeterCreator()
+{
+}
