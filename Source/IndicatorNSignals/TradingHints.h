@@ -27,6 +27,7 @@ namespace IndicatorNSignals {
 		bool isInvertedTrend{ false };
 		bool isUpTrend{ false };
 		bool isDownTrend{ false };
+		bool shouldCancelAllOrder{ false };
 		binapi::double_type windowBestBidPrice{ 0 };
 		binapi::double_type windowBestAskPrice{ 0 };
 	};

@@ -65,7 +65,7 @@ namespace OrderManagement {
         void AddReplaceOrder(const std::string& clientOrderId, std::unique_ptr<BinanceReplaceOrder> order);
 
         // Remove an order by clientOrderId
-        bool RemoveNewOrder(const std::string& clientOrderId);
+        bool RemoveOrder(const std::string& clientOrderId);
 
         // Lookup an order by clientOrderId
         BinanceNewOrder* LookupOrder(const std::string& clientOrderId);

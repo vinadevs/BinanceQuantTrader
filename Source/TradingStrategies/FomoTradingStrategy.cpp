@@ -16,7 +16,7 @@
 #include "../ComplianceNRegulatory/BinanceExchangeProfile.h"
 #include "../LibraryUtils/StringUtils.h"
 #include "../PortfolioManager/PortfolioInvestmentBinance.h"
-#include "../QuantitativeModel/OrderParammeterCreator.h"
+#include "../QuantitativeModel/OrderParammeterGenerator.h"
 
 using namespace TradingStrategies;
 using namespace QuantitativeModel;
@@ -112,6 +112,11 @@ void FomoTradingStrategy::CreatePortfolioManagement()
 	IncreaseComplianceRestAPIRequestCounter(); // register a sent order request to ComplianceNRegulatory
 }
 
+void FomoTradingStrategy::CreateOrderParameterGenerator()
+{
+	m_orderParammeterGenerator = std::make_unique<OrderParammeterGenerator>(m_tradingRules, m_logger.get());
+}
+
 void FomoTradingStrategy::CreateBinanceExchangeProfile()
 {
 	for (const auto& symbol : m_targetTradeSymbols)
@@ -129,35 +134,23 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 		{
 			if (IsNotIsNotExceededTradingRules())
 			{
-				const auto* symbolProfile = m_tradingRules->GetExchangeProfileMgr()->AccessRemoteExchangeProfile(hints->symbol);
-				if (symbolProfile)
+				const auto orderParammeter = m_orderParammeterGenerator->Generate(hints);
+				if (m_trader->CreateNewPosition(orderParammeter))
 				{
-					const auto& symbolExchangeInfo = symbolProfile->get_by_symbol(hints->symbol);
-					if (hints->isUpTrend)
+					if (orderParammeter.m_side == binapi::e_side::buy)
 					{
-						if (m_trader->CreateLongPosition(hints->symbol,
-							symbolExchangeInfo.get_filter_lot_size().minQty.convert_to<double>(),
-							symbolExchangeInfo.get_filter_price().minPrice.convert_to<double>()))
-						{
-							m_logger->Info("Created a new [Long Position] for symbol=" + hints->symbol);
-						}
-						IncreaseComplianceRestAPIRequestCounter(); // register a sent order request to ComplianceNRegulatory
+						m_logger->Info("Created a new [Long Position] for symbol=" + hints->symbol);
 					}
-					else if (hints->isDownTrend)
+					else if (orderParammeter.m_side == binapi::e_side::sell)
 					{
-						if (m_trader->CreateShortPosition(hints->symbol,
-							symbolExchangeInfo.get_filter_lot_size().minQty.convert_to<double>(),
-							symbolExchangeInfo.get_filter_price().minPrice.convert_to<double>()))
-						{
-							m_logger->Info("Created a new [Short Position] for symbol=" + hints->symbol);
-						}
-						IncreaseComplianceRestAPIRequestCounter(); // register a sent order request to ComplianceNRegulatory
+						m_logger->Info("Created a new [Short Position] for symbol=" + hints->symbol);
 					}
 				}
-				else
+				if (hints->isInvertedTrend && hints->isDownTrend)
 				{
-					m_logger->Error("Strategy could not lookup Exchange Profile for symbol=" + hints->symbol);
+					m_trader->CancelAllOpenPositions(hints->symbol);
 				}
+				IncreaseComplianceRestAPIRequestCounter(); // register a sent order request to ComplianceNRegulatory
 			}
 			else
 			{
@@ -203,6 +196,9 @@ void FomoTradingStrategy::StartLive()
 	// Creating trending services
 	m_logger->Info("Creating trending services.");
 	CreateTradingSignalServices();
+	// Create order parammeter generator
+	m_logger->Info("Create Order Parammeter Generator.");
+	CreateOrderParameterGenerator();
 	// Listen on trading hints
 	m_logger->Info("Starting live and trade.");
 #if USE_MULTITHREADING

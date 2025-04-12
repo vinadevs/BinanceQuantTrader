@@ -81,63 +81,65 @@ double BinanceTrader::CalculateTradeValue(
 	return quality * refPrice;
 }
 
-bool BinanceTrader::CreateLongPosition(
-	const std::string& symbol,
-	const double quality, 
-	const double refPrice)
+bool BinanceTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammeter& param)
 {
-#if USE_BACK_TEST_TRADING
-	if (m_binanceAccountInfo->stableCoinAmount.convert_to<double>() > CalculateTradeValue(quality, refPrice))
+	if (param.m_side == binapi::e_side::buy)
 	{
+#if USE_BACK_TEST_TRADING
+		if (m_binanceAccountInfo->stableCoinAmount.convert_to<double>() > CalculateTradeValue(quality, refPrice))
+		{
 #else
-	if (m_portfolio->GetBinanceTradingPair(symbol))
-	{
+		if (m_portfolio->GetBinanceTradingPair(param.m_symbol))
+		{
 #endif
-		auto newSingleLongOrder = m_positionManager->OpenNewPositionUpstreamOrder(symbol, PositionSide::LONG, quality, refPrice);
+			auto newSingleLongOrder = m_positionManager->OpenNewPositionUpstreamOrder(param);
 #if USE_BACK_TEST_TRADING
-		const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleLongOrder.get());
+			const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleLongOrder.get());
 #elif USE_BINANCE_TEST_TRADING
-		const auto result = BinanceExchangeGateWay->SendNewBinanceTestOrderFull(newSingleLongOrder.get());
+			const auto result = BinanceExchangeGateWay->SendNewBinanceTestOrderFull(newSingleLongOrder.get());
 #else
-		const auto result = BinanceExchangeGateWay->SendNewBinanceOrderFull(newSingleLongOrder.get());
+			const auto result = BinanceExchangeGateWay->SendNewBinanceOrderFull(newSingleLongOrder.get());
 #endif
-		newSingleLongOrder->SetSendingOrderResult(result);
-		const auto clientOrderId = newSingleLongOrder->GetClientOrderId();
-		m_workedOrderManager->AddNewOrder(clientOrderId, std::move(newSingleLongOrder));
-		return static_cast<bool>(result);
+			newSingleLongOrder->SetSendingOrderResult(result);
+			const auto clientOrderId = newSingleLongOrder->GetClientOrderId();
+			m_workedOrderManager->AddNewOrder(clientOrderId, std::move(newSingleLongOrder));
+			return static_cast<bool>(result);
+		}
+		else
+		{
+			m_logger->Warning("User account has no stable coin available, could not create long (buy) position!");
+			return false;
+		}
 	}
-	else
+	else if (param.m_side == binapi::e_side::sell)
 	{
-		m_logger->Warning("User account has no stable coin available, could not create long (buy) position!");
-		return false;
+		if (m_portfolio->GetBinanceTradingPair(param.m_symbol)->GetQuantity() > ZERO_DOUBLE_VALUE)
+		{
+			auto newSingleShortOrder = m_positionManager->OpenNewPositionUpstreamOrder(param);
+#if USE_BACK_TEST_TRADING
+			const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleShortOrder.get());
+#elif USE_BINANCE_TEST_TRADING
+			const auto result = BinanceExchangeGateWay->SendNewBinanceTestOrderFull(newSingleShortOrder.get());
+#else
+			const auto result = BinanceExchangeGateWay->SendNewBinanceOrderFull(newSingleShortOrder.get());
+#endif
+			newSingleShortOrder->SetSendingOrderResult(result);
+			const auto clientOrderId = newSingleShortOrder->GetClientOrderId();
+			m_workedOrderManager->AddNewOrder(clientOrderId, std::move(newSingleShortOrder));
+			return static_cast<bool>(result);
+		}
+		else
+		{
+			m_logger->Warning("User account has no asset available, could not create short (sell) position!");
+			return false;
+		}
 	}
+	return false;
 }
 
-bool BinanceTrader::CreateShortPosition(
-	const std::string& symbol,
-	const double quality, 
-	const double refPrice)
+bool BinanceTrader::CancelAllOpenPositions(const std::string& symbol)
 {
-	if (m_portfolio->GetBinanceTradingPair(symbol)->GetQuantity() > ZERO_DOUBLE_VALUE)
-	{
-		auto newSingleShortOrder = m_positionManager->OpenNewPositionUpstreamOrder(symbol, PositionSide::SHORT, quality, refPrice);
-#if USE_BACK_TEST_TRADING
-		const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleShortOrder.get());
-#elif USE_BINANCE_TEST_TRADING
-		const auto result = BinanceExchangeGateWay->SendNewBinanceTestOrderFull(newSingleShortOrder.get());
-#else
-		const auto result = BinanceExchangeGateWay->SendNewBinanceOrderFull(newSingleShortOrder.get());
-#endif
-		newSingleShortOrder->SetSendingOrderResult(result);
-		const auto clientOrderId = newSingleShortOrder->GetClientOrderId();
-		m_workedOrderManager->AddNewOrder(clientOrderId, std::move(newSingleShortOrder));
-		return static_cast<bool>(result);
-	}
-	else
-	{
-		m_logger->Warning("User account has no asset available, could not create short (sell) position!");
-		return false;
-	}
+	return m_positionManager->CloseAllOpenedPositionUpstreamOrder(binapi::e_side::buy, PositionType::OPENING);
 }
 
 void BinanceTrader::UpdateAccountInfo()

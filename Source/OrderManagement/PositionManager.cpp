@@ -28,57 +28,62 @@ PositionManager::~PositionManager() {}
 ////////////////////// postion ////////////////////////////////////////
 
 std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewPositionUpstreamOrder(
-	const std::string& symbol,
-    const PositionSide posSide,
-	const double quality,
-	const double refPrice)
+    const QuantitativeModel::QuantOrderParammeter& param)
 {
-    const double stopPrice = 0;
     const double icebergAmount = 0;
     const auto clientOrderId = GeneralUtils::GenerateUniqueID(StringDefinitions::BQTNewLongOrder);
-    m_workedPositions.try_emplace(clientOrderId, posSide);
+    m_workedPositions.try_emplace(clientOrderId, param.m_side);
     return m_orderCreator->CreateNewBinanceOrderFull(
           clientOrderId
-        , symbol
-        , posSide == PositionSide::LONG ? binapi::e_side::buy : binapi::e_side::sell
-        , binapi::e_type::limit
-        , binapi::e_time::GTC
-        , quality
-        , refPrice
-        , stopPrice
+        , param.m_symbol
+        , param.m_side
+        , param.m_type
+        , param.m_time
+        , param.m_amount
+        , param.m_price
+        , param.m_stopPrice
         , icebergAmount);
 }
 
 std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewTestPositionUpstreamOrder(
-    const std::string& symbol,
-    const PositionSide posSide,
-    const double quality,
-    const double refPrice)
+    const QuantitativeModel::QuantOrderParammeter& param)
 {
-    const double stopPrice = 0;
     const double icebergAmount = 0;
     const auto clientOrderId = GeneralUtils::GenerateUniqueID(StringDefinitions::BQTNewLongOrder);
-    m_workedPositions.try_emplace(clientOrderId, posSide);
+    m_workedPositions.try_emplace(clientOrderId, param.m_side);
     return m_orderCreator->CreateNewBinanceTestOrderFull(
         clientOrderId
-        , symbol
-        , posSide == PositionSide::LONG ? binapi::e_side::buy : binapi::e_side::sell
-        , binapi::e_type::limit
-        , binapi::e_time::GTC
-        , quality
-        , refPrice
-        , stopPrice
+        , param.m_symbol
+        , param.m_side
+        , param.m_type
+        , param.m_time
+        , param.m_amount
+        , param.m_price
+        , param.m_stopPrice
         , icebergAmount);
 }
 
 bool PositionManager::CloseOpenedPositionUpstreamOrder(const std::string& clientOrderId)
 {
-    return CloseWorkedPosition(clientOrderId) && CloseWorkeOrder(clientOrderId);
+    return CloseWorkedPosition(clientOrderId) && CloseWorkedOrder(clientOrderId);
 }
 
-bool PositionManager::CloseAllOpenedPositionUpstreamOrder(const PositionSide posSide, const PositionType posType)
+bool PositionManager::CloseAllOpenedPositionUpstreamOrder(
+    const binapi::e_side posSide, const PositionType posType)
 {
-    return false;
+	for (auto it = m_workedPositions.begin(); it != m_workedPositions.end();)
+	{
+		if (it->second == posSide)
+		{
+			CloseOpenedPositionUpstreamOrder(it->first);
+			it = m_workedPositions.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+    return true;
 }
 
 bool PositionManager::CloseWorkedPosition(const std::string& clientOrderId)
@@ -97,7 +102,7 @@ bool PositionManager::CloseWorkedPosition(const std::string& clientOrderId)
     return false;
 }
 
-bool PositionManager::CloseWorkeOrder(const std::string& clientOrderId)
+bool PositionManager::CloseWorkedOrder(const std::string& clientOrderId)
 {
-    return m_workedOrderManager->RemoveNewOrder(clientOrderId);
+    return m_workedOrderManager->RemoveOrder(clientOrderId);
 }

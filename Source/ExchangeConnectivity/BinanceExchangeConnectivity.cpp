@@ -58,7 +58,7 @@ BinanceExchangeConnectivity::SendNewBinanceOrderFull(
     }
     else
     {
-        LOG_INFO_STREAM(m_logger, "placed a new order=" << newOrderResult.v);
+        LOG_INFO_STREAM(m_logger, "successfully placed a new [REAL] order=" << newOrderResult.v);
     }
     return newOrderResult;
 }
@@ -91,7 +91,7 @@ BinanceExchangeConnectivity::SendNewBinanceTestOrderFull(
     }
     else
     {
-        LOG_INFO_STREAM(m_logger, "placed a new test order=" << newTestOrderResult.v);
+        LOG_INFO_STREAM(m_logger, "successfully placed a new [TEST] order=" << newTestOrderResult.v);
     }
     return newTestOrderResult;
 }
@@ -106,12 +106,12 @@ BinanceExchangeConnectivity::QueryBinanceOrderStatus(
         queryOrder->GetOrigClientOrderId());
     if (!static_cast<bool>(queryOrderResult) && queryOrderResult.v.status != StringDefinitions::BinanceExchangeCancelledStatus)
     {
-        LOG_ERROR_STREAM(m_logger, "could NOT query order="
+        LOG_ERROR_STREAM(m_logger, "could NOT query [REAL] order="
             << queryOrder << ", reason=" << queryOrderResult.errmsg);
     }
     else
     {
-        LOG_INFO_STREAM(m_logger, "queried order=" << queryOrderResult.v);
+        LOG_INFO_STREAM(m_logger, "successfully queried [REAL] order=" << queryOrderResult.v);
     }
     return queryOrderResult;
 }
@@ -127,12 +127,12 @@ BinanceExchangeConnectivity::SendCancelBinanceOrder(
         cancelOrder->GetClientOrderId());
     if (!static_cast<bool>(cancelOrderResult) && cancelOrderResult.v.status != StringDefinitions::BinanceExchangeCancelledStatus)
     {
-        LOG_ERROR_STREAM(m_logger, "could NOT cancel order="
+        LOG_ERROR_STREAM(m_logger, "could NOT cancel [REAL] order="
             << cancelOrder << ", reason=" << cancelOrderResult.errmsg);
     }
     else
     {
-        LOG_INFO_STREAM(m_logger, "cancelled order=" << cancelOrderResult.v);
+        LOG_INFO_STREAM(m_logger, "successfully cancelled [REAL] order=" << cancelOrderResult.v);
     }
     return cancelOrderResult;
 }
@@ -148,12 +148,12 @@ BinanceExchangeConnectivity::SendCancelReplaceBinanceOrder(
         replaceOrder->GetClientOrderId());
     if (!static_cast<bool>(replaceOrder) && replaceOrderResult.v.status != StringDefinitions::BinanceExchangeCancelledStatus)
     {
-        LOG_ERROR_STREAM(m_logger, "could NOT cancel order="
+        LOG_ERROR_STREAM(m_logger, "could NOT replace [REAL] order="
             << replaceOrder << ", reason=" << replaceOrderResult.errmsg);
     }
     else
     {
-        LOG_INFO_STREAM(m_logger, "cancelled order=" << replaceOrderResult.v);
+        LOG_INFO_STREAM(m_logger, "successfully replaced [REAL] order=" << replaceOrderResult.v);
     }
     return replaceOrderResult;
 }

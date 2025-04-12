@@ -10,6 +10,8 @@
 
 #include "dlldefine.h"
 
+#include "../QuantitativeModel/QuantOrderParammeter.h"
+
 #include <string>
 #include <memory>
 #include <unordered_map>
@@ -29,12 +31,6 @@ namespace OrderManagement {
 	// profits or losses as asset prices fluctuate.
 	// -This class will manage all worked trading postions
 	// -It can create new, cancel, replace, amend, an order... 
-
-	enum class PositionSide : unsigned
-	{
-		LONG, // buy side
-		SHORT, // sell side
-	};
 
 	enum class PositionType : unsigned
 	{
@@ -56,25 +52,19 @@ namespace OrderManagement {
 
         // Create new trading postion
         std::unique_ptr<BinanceNewOrder> OpenNewPositionUpstreamOrder(
-			const std::string& symbol,
-			const PositionSide posSide,
-			const double quality,
-			const double refPrice);
+			const QuantitativeModel::QuantOrderParammeter& param);
 
 		std::unique_ptr<BinanceNewOrder> OpenNewTestPositionUpstreamOrder(
-			const std::string& symbol,
-			const PositionSide posSide,
-			const double quality,
-			const double refPrice);
+			const QuantitativeModel::QuantOrderParammeter& param);
 
 		bool CloseOpenedPositionUpstreamOrder(const std::string& clientOrderId);
-		bool CloseAllOpenedPositionUpstreamOrder(const PositionSide posSide, const PositionType posType);
+		bool CloseAllOpenedPositionUpstreamOrder(const binapi::e_side posSide, const PositionType posType);
 	private:
 		bool CloseWorkedPosition(const std::string& clientOrderId);
-		bool CloseWorkeOrder(const std::string& clientOrderId);
+		bool CloseWorkedOrder(const std::string& clientOrderId);
 
 		std::mutex m_mutex;
-        std::unordered_map <std::string, PositionSide> m_workedPositions;
+        std::unordered_map <std::string, binapi::e_side> m_workedPositions;
         std::unique_ptr<LibraryUtils::Logger> m_logger;
 		std::unique_ptr<OrderCreator> m_orderCreator;
 		BinanceWorkedOrderManager* m_workedOrderManager {nullptr};

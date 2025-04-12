@@ -59,12 +59,12 @@ ExchangeSimulatorConnectivity::SendNewSimulatorOrderFull(
     const auto newOrderResult = m_messageDelivery->DeliveryMessage(message);
     if (!newOrderResult.m_result)
     {
-        LOG_ERROR_STREAM(m_logger, "could not place a new order="
+        LOG_ERROR_STREAM(m_logger, "could not place a new [SIMULATOR] order="
             << message << ", reason=" << newOrderResult.m_errMsg);
     }
     else
     {
-        LOG_INFO_STREAM(m_logger, "placed a new order=" << message);
+        LOG_INFO_STREAM(m_logger, "successfully placed a new [SIMULATOR] order=" << message);
     }
     return newOrderResult;
 }
@@ -77,12 +77,12 @@ ExchangeSimulatorConnectivity::SendCancelSimulatorOrder(
     const auto cancelOrderResult = m_messageDelivery->DeliveryMessage(message);
     if (!cancelOrderResult.m_result)
     {
-        LOG_ERROR_STREAM(m_logger, "could not cancel order="
+        LOG_ERROR_STREAM(m_logger, "could not cancel [SIMULATOR] order="
             << message << ", reason=" << cancelOrderResult.m_errMsg);
     }
     else
     {
-        LOG_INFO_STREAM(m_logger, "sent cancel order=" << message);
+        LOG_INFO_STREAM(m_logger, "successfully sent cancel [SIMULATOR] order=" << message);
     }
     return cancelOrderResult;
 }
@@ -95,12 +95,12 @@ ExchangeSimulatorConnectivity::SendCancelReplaceSimulatorOrder(
     const auto replaceOrderResult = m_messageDelivery->DeliveryMessage(message);
     if (!replaceOrderResult.m_result)
     {
-        LOG_ERROR_STREAM(m_logger, "could not replace order="
+        LOG_ERROR_STREAM(m_logger, "could not replace [SIMULATOR] order="
             << message << ", reason=" << replaceOrderResult.m_errMsg);
     }
     else
     {
-        LOG_INFO_STREAM(m_logger, "sent replace order=" << message);
+        LOG_INFO_STREAM(m_logger, "successfully sent replace [SIMULATOR] order=" << message);
     }
     return replaceOrderResult;
 }
@@ -112,12 +112,12 @@ ExchangeSimulatorConnectivity::QuerySimulatorOrderStatus(BinanceQueryOrder* quer
     const auto queryOrderResult = m_messageDelivery->DeliveryMessage(message);
     if (!queryOrderResult.m_result)
     {
-        LOG_ERROR_STREAM(m_logger, "could not query order="
+        LOG_ERROR_STREAM(m_logger, "could not query [SIMULATOR] order="
             << message << ", reason=" << queryOrderResult.m_errMsg);
     }
     else
     {
-        LOG_INFO_STREAM(m_logger, "sent query order=" << message);
+        LOG_INFO_STREAM(m_logger, "successfully sent query [SIMULATOR] order=" << message);
     }
     return queryOrderResult;
 }

@@ -10,6 +10,7 @@
 
 #include "dlldefine.h"
 #include "../LibraryUtils/Logger.h"
+#include "../QuantitativeModel/QuantOrderParammeter.h"
 
 #include <string>
 #include <memory>
@@ -32,13 +33,11 @@ namespace UserAccount {
 		Trader() {};
 		virtual ~Trader();
 
-		virtual bool CreateLongPosition(const std::string& symbol,
-			const double quality,
-			const double refPrice) = 0;
+		virtual bool CreateNewPosition(
+			const QuantitativeModel::QuantOrderParammeter& param) = 0;
 
-		virtual bool CreateShortPosition(const std::string& symbol,
-			const double quality,
-			const double refPrice) = 0;
+		virtual bool CancelAllOpenPositions(
+			const std::string& symbol) = 0;
 	protected:
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
 	};

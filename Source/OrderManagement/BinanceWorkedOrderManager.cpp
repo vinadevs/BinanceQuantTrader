@@ -49,7 +49,7 @@ void BinanceWorkedOrderManager::AddReplaceOrder(const std::string& clientOrderId
 }
 
 // Remove an order by clientOrderId
-bool BinanceWorkedOrderManager::RemoveNewOrder(const std::string& clientOrderId) {
+bool BinanceWorkedOrderManager::RemoveOrder(const std::string& clientOrderId) {
     std::lock_guard<std::mutex> lock(m_mutex);
     auto it = m_newWorkedOrders.find(clientOrderId);
     if (it != m_newWorkedOrders.end()) {

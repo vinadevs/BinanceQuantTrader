@@ -19,6 +19,9 @@
     <Filter Include="Backtest Simulator\Protobuf">
       <UniqueIdentifier>{d1100ed8-231a-4a75-a991-e777c8b6ded6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Binance Connectivity">
+      <UniqueIdentifier>{4a160601-6a0c-4eaa-a3e4-2f9a7aa88c08}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -28,9 +31,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dlldefine.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BinanceExchangeConnectivity.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ExchangeSimulatorConnectivity.h">
@@ -63,15 +63,15 @@
     <ClInclude Include="BinanceExchangeClient.h">
       <Filter>Backtest Simulator</Filter>
     </ClInclude>
+    <ClInclude Include="BinanceExchangeConnectivity.h">
+      <Filter>Binance Connectivity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BinanceExchangeConnectivity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExchangeSimulatorConnectivity.cpp">
@@ -100,6 +100,9 @@
     </ClCompile>
     <ClCompile Include="BinanceExchangeClient.cpp">
       <Filter>Backtest Simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="BinanceExchangeConnectivity.cpp">
+      <Filter>Binance Connectivity</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

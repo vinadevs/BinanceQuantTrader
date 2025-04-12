@@ -17,6 +17,6 @@
 </ShortSell>
 
 <TargetSymbols>
-  <Symbols List="BTCUSDT,ETHUSDT,BNBUSDT"/>
+  <Symbols List="BTCUSDT"/>
 </TargetSymbols>
   

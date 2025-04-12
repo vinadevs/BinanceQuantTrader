@@ -53,13 +53,9 @@ namespace UserAccount {
 
 		////////////// UPSTREAM PROCESSING /////////////////////////////
 
-		bool CreateLongPosition(const std::string& symbol,
-			const double quality,
-			const double refPrice) override;
+		bool CreateNewPosition(const QuantitativeModel::QuantOrderParammeter& param) override;
 
-		bool CreateShortPosition(const std::string& symbol,
-			const double quality,
-			const double refPrice) override;
+		bool CancelAllOpenPositions(const std::string& symbol) override;
 
 		void UpdateAccountInfo();
 

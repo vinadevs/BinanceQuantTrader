@@ -33,7 +33,10 @@
     <ClInclude Include="dlldefine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OrderParammeterCreator.h">
+    <ClInclude Include="OrderParammeterGenerator.h">
+      <Filter>Order Parammeter Creator</Filter>
+    </ClInclude>
+    <ClInclude Include="QuantOrderParammeter.h">
       <Filter>Order Parammeter Creator</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,7 +50,7 @@
     <ClCompile Include="TradingRulesByPassEngine.cpp">
       <Filter>Trading Rules By Pass Engine</Filter>
     </ClCompile>
-    <ClCompile Include="OrderParammeterCreator.cpp">
+    <ClCompile Include="OrderParammeterGenerator.cpp">
       <Filter>Order Parammeter Creator</Filter>
     </ClCompile>
   </ItemGroup>

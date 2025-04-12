@@ -36,10 +36,13 @@ namespace ComplianceNRegulatory {
 	class BinanceTradingRules;
 }
 
+namespace QuantitativeModel {
+	class OrderParammeterGenerator;
+};
+
 namespace tinyxml2 {
 	class XMLDocument;
 };
-
 
 // The fear of missing out, or FOMO, refers to the feeling or 
 // perception that others are having more fun, living better lives,
@@ -76,6 +79,7 @@ namespace TradingStrategies {
 		void SubscribeTargetSymbols();
 		void UnsubscribeTargetSymbols();
 		void CreatePortfolioManagement();
+		void CreateOrderParameterGenerator();
 		void CreateBinanceExchangeProfile();
 		bool TradeAsHints(const IndicatorNSignals::TradingHints* hints);
 
@@ -83,6 +87,7 @@ namespace TradingStrategies {
 		void TradingLoop();
 
 		std::unique_ptr<tinyxml2::XMLDocument> m_strategyCfgXml;
+		std::unique_ptr<QuantitativeModel::OrderParammeterGenerator> m_orderParammeterGenerator;
 		std::vector<std::string> m_targetTradeSymbols;
 		std::mutex m_tradingHintsMutex;
 		std::condition_variable m_tradingHintCond; // avoid polling thread
