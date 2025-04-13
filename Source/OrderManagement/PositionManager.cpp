@@ -13,15 +13,15 @@
 #include "../LibraryUtils/GeneralUtils.h"
 #include "../LibraryUtils/StringDefinitions.h"
 
-#include "BinanceWorkedOrderManager.h"
 #include "PositionManager.h"
 
 using namespace OrderManagement;
 
-PositionManager::PositionManager(BinanceWorkedOrderManager* workedOrderManager)
+PositionManager::PositionManager()
     : m_logger{ std::make_unique<LibraryUtils::Logger>("PositionManager") },
       m_orderCreator(std::make_unique<OrderCreator>()),
-      m_workedOrderManager(workedOrderManager){}
+      m_workedOrderManager{ std::make_unique<BinanceOrderManager>() } {
+}
 
 PositionManager::~PositionManager() {}
 
@@ -32,7 +32,6 @@ std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewPositionUpstreamOrder(
 {
     const double icebergAmount = 0;
     const auto clientOrderId = GeneralUtils::GenerateUniqueID(StringDefinitions::BQTNewLongOrder);
-    m_workedPositions.try_emplace(clientOrderId, param.m_side);
     return m_orderCreator->CreateNewBinanceOrderFull(
           clientOrderId
         , param.m_symbol
@@ -50,7 +49,6 @@ std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewTestPositionUpstreamOrd
 {
     const double icebergAmount = 0;
     const auto clientOrderId = GeneralUtils::GenerateUniqueID(StringDefinitions::BQTNewLongOrder);
-    m_workedPositions.try_emplace(clientOrderId, param.m_side);
     return m_orderCreator->CreateNewBinanceTestOrderFull(
         clientOrderId
         , param.m_symbol
@@ -63,46 +61,37 @@ std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewTestPositionUpstreamOrd
         , icebergAmount);
 }
 
+void PositionManager::AddNewWorkedOrder(const std::string& clientOrderId, std::unique_ptr<BinanceNewOrder> order)
+{
+    m_workedOrderManager->AddNewOrder(clientOrderId, std::move(order));
+}
+
+void PositionManager::AddUnworkedOrder(const std::string& clientOrderId, std::unique_ptr<BinanceNewOrder> order)
+{
+	m_unworkedOrderManager->AddNewOrder(clientOrderId, std::move(order));
+}         
+
+void PositionManager::AddNewCancelOrder(const std::string& clientOrderId, std::unique_ptr<BinanceCancelOrder> order)
+{
+	m_workedOrderManager->AddCancelOrder(clientOrderId, std::move(order));
+}
+
+void PositionManager::AddUnworkedCancelOrder(const std::string& clientOrderId, std::unique_ptr<BinanceCancelOrder> order)
+{
+	m_unworkedOrderManager->AddCancelOrder(clientOrderId, std::move(order));
+}
+
 bool PositionManager::CloseOpenedPositionUpstreamOrder(const std::string& clientOrderId)
 {
-    return CloseWorkedPosition(clientOrderId) && CloseWorkedOrder(clientOrderId);
-}
-
-bool PositionManager::CloseAllOpenedPositionUpstreamOrder(
-    const binapi::e_side posSide, const PositionType posType)
-{
-	for (auto it = m_workedPositions.begin(); it != m_workedPositions.end();)
-	{
-		if (it->second == posSide)
-		{
-			CloseOpenedPositionUpstreamOrder(it->first);
-			it = m_workedPositions.erase(it);
-		}
-		else
-		{
-			++it;
-		}
-	}
-    return true;
-}
-
-bool PositionManager::CloseWorkedPosition(const std::string& clientOrderId)
-{
-    std::lock_guard<std::mutex> lock(m_mutex);
-    auto it = m_workedPositions.find(clientOrderId);
-    if (it != m_workedPositions.end())
-    {
-        m_workedPositions.erase(it);
-        return true;
-    }
-    else
-    {
-        m_logger->Error("No UpstramOrder found with symbol='" + clientOrderId + "'.");
-    }
-    return false;
-}
-
-bool PositionManager::CloseWorkedOrder(const std::string& clientOrderId)
-{
     return m_workedOrderManager->RemoveOrder(clientOrderId);
+}
+
+bool PositionManager::CloseAllOpenedPositions()
+{
+    return m_workedOrderManager->RemoveAllNewOrders();
+}
+
+bool PositionManager::CloseAllOpenedPositionsBySide(const binapi::e_side posSide)
+{
+    return m_workedOrderManager->RemoveNewOrderBySide(posSide);
 }

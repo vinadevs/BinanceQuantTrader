@@ -12,9 +12,10 @@
 
 #include "../QuantitativeModel/QuantOrderParammeter.h"
 
+#include "BinanceOrderManager.h"
+
 #include <string>
 #include <memory>
-#include <unordered_map>
 #include <mutex>
 
 namespace LibraryUtils {
@@ -32,20 +33,13 @@ namespace OrderManagement {
 	// -This class will manage all worked trading postions
 	// -It can create new, cancel, replace, amend, an order... 
 
-	enum class PositionType : unsigned
-	{
-		OPENING, // new positions
-		FILLING, // position in middle of trade (filled, partial filled)
-		REJECTED, // positions were rejected by downstream
-	};
-
 	class OrderCreator;
-	class BinanceWorkedOrderManager;
+	class BinanceOrderManager;
 
 	class DLL_CLASS_ORDERMANAGEMENT_EXPORTS PositionManager final
 	{
 	public:
-		PositionManager(BinanceWorkedOrderManager* workedOrderManager);
+		PositionManager();
 		~PositionManager();
 
         ////////////////////// postion ////////////////////////////////////////
@@ -57,16 +51,26 @@ namespace OrderManagement {
 		std::unique_ptr<BinanceNewOrder> OpenNewTestPositionUpstreamOrder(
 			const QuantitativeModel::QuantOrderParammeter& param);
 
-		bool CloseOpenedPositionUpstreamOrder(const std::string& clientOrderId);
-		bool CloseAllOpenedPositionUpstreamOrder(const binapi::e_side posSide, const PositionType posType);
-	private:
-		bool CloseWorkedPosition(const std::string& clientOrderId);
-		bool CloseWorkedOrder(const std::string& clientOrderId);
+		// worked order (orders sent to exchange successfully)
+		void AddNewWorkedOrder(const std::string& clientOrderId, std::unique_ptr<BinanceNewOrder> order);
 
+		// unworked order (orders not sent to exchange)
+		void AddUnworkedOrder(const std::string& clientOrderId, std::unique_ptr<BinanceNewOrder> order);
+
+		// worked cancel order (cancel orders sent to exchange successfully)
+		void AddNewCancelOrder(const std::string& clientOrderId, std::unique_ptr<BinanceCancelOrder> order);
+
+		// unworked cancel order (cancel orders not sent to exchange)
+		void AddUnworkedCancelOrder(const std::string& clientOrderId, std::unique_ptr<BinanceCancelOrder> order);
+
+		bool CloseOpenedPositionUpstreamOrder(const std::string& clientOrderId);
+		bool CloseAllOpenedPositionsBySide(const binapi::e_side posSide);
+		bool CloseAllOpenedPositions();
+	private:
 		std::mutex m_mutex;
-        std::unordered_map <std::string, binapi::e_side> m_workedPositions;
         std::unique_ptr<LibraryUtils::Logger> m_logger;
 		std::unique_ptr<OrderCreator> m_orderCreator;
-		BinanceWorkedOrderManager* m_workedOrderManager {nullptr};
+		std::unique_ptr<OrderManagement::BinanceOrderManager> m_workedOrderManager;
+		std::unique_ptr<OrderManagement::BinanceOrderManager> m_unworkedOrderManager;
 	};
 };

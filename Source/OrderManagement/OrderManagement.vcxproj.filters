@@ -54,7 +54,7 @@
     <ClInclude Include="BinanceQueryOrder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BinanceWorkedOrderManager.h">
+    <ClInclude Include="BinanceOrderManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -86,7 +86,7 @@
     <ClCompile Include="BinanceQueryOrder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BinanceWorkedOrderManager.cpp">
+    <ClCompile Include="BinanceOrderManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

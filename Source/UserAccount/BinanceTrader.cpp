@@ -61,8 +61,7 @@ BinanceTrader::BinanceTrader(
     m_logger = std::make_unique<LibraryUtils::Logger>("BinanceTrader");
     m_logger->Info("using BinanceTrader.");
 	m_binanceAccountInfo = std::make_unique<binapi::rest::account_info_t>();
-	m_workedOrderManager = std::make_unique<BinanceWorkedOrderManager>();
-	m_positionManager = std::make_unique<PositionManager>(m_workedOrderManager.get());
+	m_positionManager = std::make_unique<PositionManager>();
 #if USE_BACK_TEST_TRADING
 	m_exchangeReporter = std::make_unique<BackTestReporter>(
 		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_portfolio);
@@ -101,9 +100,17 @@ bool BinanceTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParamme
 			const auto result = BinanceExchangeGateWay->SendNewBinanceOrderFull(newSingleLongOrder.get());
 #endif
 			newSingleLongOrder->SetSendingOrderResult(result);
+			const auto isSendingOrderSucceeded = static_cast<bool>(result);
 			const auto clientOrderId = newSingleLongOrder->GetClientOrderId();
-			m_workedOrderManager->AddNewOrder(clientOrderId, std::move(newSingleLongOrder));
-			return static_cast<bool>(result);
+			if (isSendingOrderSucceeded)
+			{
+				m_positionManager->AddNewWorkedOrder(clientOrderId, std::move(newSingleLongOrder));
+			}
+			else
+			{
+				m_positionManager->AddUnworkedOrder(clientOrderId, std::move(newSingleLongOrder));
+			}
+			return isSendingOrderSucceeded;
 		}
 		else
 		{
@@ -124,9 +131,17 @@ bool BinanceTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParamme
 			const auto result = BinanceExchangeGateWay->SendNewBinanceOrderFull(newSingleShortOrder.get());
 #endif
 			newSingleShortOrder->SetSendingOrderResult(result);
+			const auto isSendingOrderSucceeded = static_cast<bool>(result);
 			const auto clientOrderId = newSingleShortOrder->GetClientOrderId();
-			m_workedOrderManager->AddNewOrder(clientOrderId, std::move(newSingleShortOrder));
-			return static_cast<bool>(result);
+			if (isSendingOrderSucceeded)
+			{
+				m_positionManager->AddNewWorkedOrder(clientOrderId, std::move(newSingleShortOrder));
+			}
+			else
+			{
+				m_positionManager->AddUnworkedOrder(clientOrderId, std::move(newSingleShortOrder));
+			}
+			return isSendingOrderSucceeded;
 		}
 		else
 		{
@@ -139,7 +154,26 @@ bool BinanceTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParamme
 
 bool BinanceTrader::CancelAllOpenPositions(const std::string& symbol)
 {
-	return m_positionManager->CloseAllOpenedPositionUpstreamOrder(binapi::e_side::buy, PositionType::OPENING);
+	m_positionManager->CloseAllOpenedPositionsBySide(binapi::e_side::buy);
+#if USE_BACK_TEST_TRADING
+	const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleLongOrder.get());
+#elif USE_BINANCE_TEST_TRADING
+	const auto result = BinanceExchangeGateWay->SendNewBinanceTestOrderFull(newSingleLongOrder.get());
+#else
+	const auto result = BinanceExchangeGateWay->SendNewBinanceOrderFull(newSingleLongOrder.get());
+#endif
+	newSingleLongOrder->SetSendingOrderResult(result);
+	const auto isSendingOrderSucceeded = static_cast<bool>(result);
+	const auto clientOrderId = newSingleLongOrder->GetClientOrderId();
+	if (isSendingOrderSucceeded)
+	{
+		m_positionManager->AddNewWorkedOrder(clientOrderId, std::move(newSingleLongOrder));
+	}
+	else
+	{
+		m_positionManager->AddUnworkedOrder(clientOrderId, std::move(newSingleLongOrder));
+	}
+	return isSendingOrderSucceeded;
 }
 
 void BinanceTrader::UpdateAccountInfo()

@@ -157,7 +157,7 @@
     <ClInclude Include="BinanceNewOrder.h" />
     <ClInclude Include="BinanceQueryOrder.h" />
     <ClInclude Include="BinanceReplaceOrder.h" />
-    <ClInclude Include="BinanceWorkedOrderManager.h" />
+    <ClInclude Include="BinanceOrderManager.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="FieldLabels.h" />
     <ClInclude Include="Order.h" />
@@ -173,7 +173,7 @@
     <ClCompile Include="BinanceNewOrder.cpp" />
     <ClCompile Include="BinanceQueryOrder.cpp" />
     <ClCompile Include="BinanceReplaceOrder.cpp" />
-    <ClCompile Include="BinanceWorkedOrderManager.cpp" />
+    <ClCompile Include="BinanceOrderManager.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="OrderCreator.cpp" />
     <ClCompile Include="pch.cpp">

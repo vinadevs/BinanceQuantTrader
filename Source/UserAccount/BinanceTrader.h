@@ -10,7 +10,6 @@
 
 #include "dlldefine.h"
 
-#include "../OrderManagement/BinanceWorkedOrderManager.h"
 #include "../OrderManagement/PositionManager.h"
 
 #if USE_BACK_TEST_TRADING
@@ -78,7 +77,6 @@ namespace UserAccount {
 		ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr }; // exchange compliance and regulatory
 		RiskManagement::RiskManager* m_riskManager{ nullptr };  // stop loss
 		std::unique_ptr<binapi::rest::account_info_t> m_binanceAccountInfo;
-		std::unique_ptr<OrderManagement::BinanceWorkedOrderManager> m_workedOrderManager;
 		std::unique_ptr<OrderManagement::PositionManager> m_positionManager;
 		std::unique_ptr<ExchangeReporter> m_exchangeReporter;
 	};

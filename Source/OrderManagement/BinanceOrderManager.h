@@ -22,6 +22,7 @@ namespace OrderManagement {
     class BinanceNewOrder;
     class BinanceCancelOrder;
     class BinanceReplaceOrder;
+	class BinanceQueryOrder;
 }
 
 namespace LibraryUtils {
@@ -31,7 +32,7 @@ namespace LibraryUtils {
 namespace OrderManagement {
 
  /**
- * @class BinanceWorkedOrderManager
+ * @class BinanceOrderManager
  * @brief Manages created and sent orders for Binance trading.
  *
  * This class is responsible for tracking, updating, and managing orders that have been
@@ -47,13 +48,13 @@ namespace OrderManagement {
  */
 
     template<typename T>
-    using OrderWorkedList = std::unordered_map<std::string, std::unique_ptr<T>>;
+    using OrderList = std::unordered_map<std::string, std::unique_ptr<T>>;
 
-    class DLL_CLASS_ORDERMANAGEMENT_EXPORTS BinanceWorkedOrderManager final
+    class DLL_CLASS_ORDERMANAGEMENT_EXPORTS BinanceOrderManager final
     {
     public:
-        BinanceWorkedOrderManager();
-        ~BinanceWorkedOrderManager();
+        BinanceOrderManager();
+        ~BinanceOrderManager();
 
         // Add new order
         void AddNewOrder(const std::string& clientOrderId, std::unique_ptr<BinanceNewOrder> order);
@@ -64,8 +65,17 @@ namespace OrderManagement {
         // Add replace order
         void AddReplaceOrder(const std::string& clientOrderId, std::unique_ptr<BinanceReplaceOrder> order);
 
+		// Add query order
+		void AddQueryOrder(const std::string& clientOrderId, std::unique_ptr<BinanceQueryOrder> order);
+
         // Remove an order by clientOrderId
         bool RemoveOrder(const std::string& clientOrderId);
+
+		// Remove all new orders 
+		bool RemoveAllNewOrders();
+
+        // Remove new order by side
+		bool RemoveNewOrderBySide(const binapi::e_side side);
 
         // Lookup an order by clientOrderId
         BinanceNewOrder* LookupOrder(const std::string& clientOrderId);
@@ -81,6 +91,12 @@ namespace OrderManagement {
 
         // Lookup a replace order by clientOrderId
         BinanceReplaceOrder* LookupReplaceOrder(const std::string& clientOrderId);
+
+		// Lookup a query order by clientOrderId
+		BinanceQueryOrder* LookupQueryOrder(const std::string& clientOrderId);
+
+		// Remove a query order by clientOrderId
+		bool RemoveQueryOrder(const std::string& clientOrderId);
 
         // Clear all orders
         void ClearAll();
@@ -104,16 +120,19 @@ namespace OrderManagement {
         void ShowReplaceOrders();
 
         // Getters to return the maps
-        const OrderWorkedList<BinanceNewOrder>& GetWorkedOrders() const;
+        const OrderList<BinanceNewOrder>& GetOrders() const;
 
-        const OrderWorkedList<BinanceCancelOrder>& GetWorkedCancelOrders() const;
+        const OrderList<BinanceCancelOrder>& GetCancelOrders() const;
 
-        const OrderWorkedList<BinanceReplaceOrder>& GetWorkedReplaceOrders() const;
+        const OrderList<BinanceReplaceOrder>& GetReplaceOrders() const;
+
+		const OrderList<BinanceQueryOrder>& GetQueryOrders() const;
     private:
         std::unique_ptr<LibraryUtils::Logger> m_logger;
-        OrderWorkedList<BinanceNewOrder> m_newWorkedOrders;
-        OrderWorkedList<BinanceCancelOrder> m_workedCancelOrders;
-        OrderWorkedList<BinanceReplaceOrder> m_workedReplaceOrders;
+        OrderList<BinanceNewOrder> m_newOrders;
+        OrderList<BinanceCancelOrder> m_cancelOrders;
+        OrderList<BinanceReplaceOrder> m_replaceOrders;
+        OrderList<BinanceQueryOrder> m_queryOrders;
         std::mutex m_mutex;
     };
 };
