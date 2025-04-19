@@ -29,7 +29,8 @@ namespace MarketData
 		BUYER_ORDER_ID,
 		SELLER_ORDER_ID,
 		TRADE_TIME,
-		IS_BUYER_MARKET_MAKER
+		IS_BUYER_MARKET_MAKER,
+		EVENT_TIME_MS
 	};
 
 	enum class IndividualMarketTickerID : unsigned
@@ -151,6 +152,7 @@ namespace MarketData
 			case TradeID::SELLER_ORDER_ID: os << "SELLER_ORDER_ID"; break;
 			case TradeID::TRADE_TIME: os << "TRADE_TIME"; break;
 			case TradeID::IS_BUYER_MARKET_MAKER: os << "IS_BUYER_MARKET_MAKER"; break;
+			case TradeID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
 			default: os << "UNKNOWN_ID"; break;
 		}
 		return os;
@@ -180,6 +182,7 @@ namespace MarketData
 			case IndividualMarketTickerID::FIRST_TRADE_ID: os << "FIRST_TRADE_ID"; break;
 			case IndividualMarketTickerID::LAST_TRADE_ID: os << "LAST_TRADE_ID"; break;
 			case IndividualMarketTickerID::TOTAL_NUMBER_OF_TRADES: os << "TOTAL_NUMBER_OF_TRADES"; break;
+			case IndividualMarketTickerID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
 			default: os << "UNKNOWN_ID"; break;
 		}
 		return os;
@@ -204,6 +207,7 @@ namespace MarketData
 			case IndividualMiniTickerID::LOW_PRICE: os << "LOW_PRICE"; break;
 			case IndividualMiniTickerID::TOTAL_TRADED_BASE_ASSET_VOLUME: os << "TOTAL_TRADED_BASE_ASSET_VOLUME"; break;
 			case IndividualMiniTickerID::TOTAL_TRADED_QUOTE_ASSET_VOLUME: os << "TOTAL_TRADED_QUOTE_ASSET_VOLUME"; break;
+			case IndividualMiniTickerID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
 			default: os << "UNKNOWN_ID"; break;
 		}
 		return os;
@@ -229,6 +233,7 @@ namespace MarketData
 			case AggregateTradeID::LAST_TRADE_ID: os << "LAST_TRADE_ID"; break;
 			case AggregateTradeID::TRADE_TIME: os << "TRADE_TIME"; break;
 			case AggregateTradeID::IS_BUYER_MARKET_MAKER: os << "IS_BUYER_MARKET_MAKER"; break;
+			case AggregateTradeID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
 			default: os << "UNKNOWN_ID"; break;
 		}
 		return os;
@@ -252,6 +257,7 @@ namespace MarketData
 			case KlineCandleStickID::QUOTE_ASSET_VOLUME: os << "QUOTE_ASSET_VOLUME"; break;
 			case KlineCandleStickID::TAKER_BUY_BASE_ASSET_VOLUME: os << "TAKER_BUY_BASE_ASSET_VOLUME"; break;
 			case KlineCandleStickID::TAKER_BUY_QUOTE_ASSET_VOLUME: os << "TAKER_BUY_QUOTE_ASSET_VOLUME"; break;
+			case KlineCandleStickID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
 			default: os << "UNKNOWN_ID"; break;
 		}
 		return os;
@@ -263,6 +269,7 @@ namespace MarketData
 		{
 			case PartDepthID::PRICE: os << "PRICE"; break;
 			case PartDepthID::AMOUNT: os << "AMOUNT"; break;
+			case PartDepthID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
 			default: os << "UNKNOWN_ID"; break;
 		}
 		return os;
@@ -274,6 +281,7 @@ namespace MarketData
 		{
 			case DiffDepthID::PRICE: os << "PRICE"; break;
 			case DiffDepthID::AMOUNT: os << "AMOUNT"; break;
+			case DiffDepthID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
 			default: os << "UNKNOWN_ID"; break;
 		}
 		return os;
