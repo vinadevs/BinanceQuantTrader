@@ -147,7 +147,7 @@ namespace ExchangeSimulator {
         }
 
         const std::string& GetUserId() const { return m_userId; }
-        std::size_t GetUpdateTime() const { return m_updateTime; }
+        std::size_t GetUpdateTime() const;
         bool IsAccountEligibleToWithdraw() const;
         bool IsAccountEligibleToDeposit() const;
         bool IsAccountEligibleToTrade() const;

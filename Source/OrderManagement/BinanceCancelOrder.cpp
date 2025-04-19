@@ -20,8 +20,9 @@ BinanceCancelOrder::BinanceCancelOrder(
 	, std::size_t orderId
 	, const std::string& origClientOrderId)
 	: Order(symbol, clientOrderId, MessageType::CANCEL),
-	m_orderId(orderId),
-	m_origClientOrderId(origClientOrderId) {}
+	m_origClientOrderId(origClientOrderId) {
+	SetOrderId(orderId);
+}
 
 BinanceCancelOrder::~BinanceCancelOrder() {}
 

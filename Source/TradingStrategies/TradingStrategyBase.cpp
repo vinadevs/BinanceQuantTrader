@@ -116,17 +116,17 @@ bool TradingStrategyBase::IsNotIsNotExceededTradingRules() const
 	return false;
 }
 
-void TradingStrategyBase::IncreaseComplianceRestAPIRequestCounter() 
+void TradingStrategyBase::IncreaseComplianceRestAPIRequestCounter(const size_t noOfRequests)
 {
-	m_tradingRules->IncreaseOrdersPerTenSeconds();
+	m_tradingRules->IncreaseOrdersPerTenSeconds(noOfRequests);
 	m_logger->Info("CompilanceChecker: current number of orders per ten seconds="
 		+ std::to_string(m_tradingRules->GetOrdersPerTenSecondsCounter()) + ".");
-	m_tradingRules->IncreaseRequestWeightPerMinute();
+	m_tradingRules->IncreaseRequestWeightPerMinute(noOfRequests);
 	m_logger->Info("CompilanceChecker: current number of requests per minute="
 		+ std::to_string(m_tradingRules->GetRequestWeightPerMinuteCounter()) + ".");
 	if (m_StrategyLifeTime != StrategyLifeTime::INTRA_DAY)
 	{
-		m_tradingRules->IncreaseOrdersPerTwentyFourHours();
+		m_tradingRules->IncreaseOrdersPerTwentyFourHours(noOfRequests);
 	}
 }
 

@@ -20,8 +20,8 @@ BinanceQueryOrder::BinanceQueryOrder(
 	, std::size_t orderId
 	, const std::string& origClientOrderId)
 	: Order(symbol, clientOrderId, MessageType::QUERY),
-	m_orderId(orderId),
 	m_origClientOrderId(origClientOrderId) {
+	SetOrderId(orderId);
 }
 
 BinanceQueryOrder::~BinanceQueryOrder() {}

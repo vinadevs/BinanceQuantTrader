@@ -93,7 +93,7 @@ bool BinanceExchangeProfileMgr::UpdateRemoteExchangeProfiles(
             const auto exchangeInfoPath = BqtGlobalSettingsMgr->GetdDataAppPath() + "//exchange_info_" + symbol + ".txt";
             RemoteBinanceExchangeProfile::write_exchange_info_to_file(exchangeInfoPath, newExchangeInfo);
         }
-        return m_exchangeRemoteProfiles.try_emplace(symbol, std::move(newExchangeInfo)).second;
+        return m_exchangeRemoteProfiles.insert_or_assign(symbol, std::move(newExchangeInfo)).second;
 #else
         const auto newExchangeInfoResult = BinanceApiGateWay->exchange_info(symbol);
         if (!newExchangeInfoResult)
@@ -110,7 +110,7 @@ bool BinanceExchangeProfileMgr::UpdateRemoteExchangeProfiles(
             const auto exchangeInfoPath = BqtGlobalSettingsMgr->GetdDataAppPath() + "//exchange_info_" + symbol + ".txt";
             RemoteBinanceExchangeProfile::write_exchange_info_to_file(exchangeInfoPath, newExchangeInfoResult.v);
         }
-        return m_exchangeRemoteProfiles.try_emplace(symbol, std::move(newExchangeInfoResult.v)).second;
+        return m_exchangeRemoteProfiles.insert_or_assign(symbol, std::move(newExchangeInfoResult.v)).second;
 #endif
     }
 }

@@ -51,6 +51,9 @@ namespace OrderManagement {
 		std::unique_ptr<BinanceNewOrder> OpenNewTestPositionUpstreamOrder(
 			const QuantitativeModel::QuantOrderParammeter& param);
 
+		std::unique_ptr<BinanceCancelOrder> CancelPositionUpstreamOrder(
+			const BinanceNewOrder* originalOrder);
+
 		// worked order (orders sent to exchange successfully)
 		void AddNewWorkedOrder(const std::string& clientOrderId, std::unique_ptr<BinanceNewOrder> order);
 
@@ -66,6 +69,24 @@ namespace OrderManagement {
 		bool CloseOpenedPositionUpstreamOrder(const std::string& clientOrderId);
 		bool CloseAllOpenedPositionsBySide(const binapi::e_side posSide);
 		bool CloseAllOpenedPositions();
+
+		OrderManagement::BinanceOrderManager* GetWorkedOrderManager() const
+		{
+			return m_workedOrderManager.get();
+		}
+
+		OrderManagement::BinanceOrderManager* GetUnworkedOrderManager() const
+		{
+			return m_unworkedOrderManager.get();
+		}
+
+		binapi::double_type GetWeightedAveragePrice(
+			const std::string& symbol,
+			const binapi::e_side posSide) const
+		{
+			return m_workedOrderManager->GetWeightedAveragePrice(symbol, posSide);
+		}
+
 	private:
 		std::mutex m_mutex;
         std::unique_ptr<LibraryUtils::Logger> m_logger;

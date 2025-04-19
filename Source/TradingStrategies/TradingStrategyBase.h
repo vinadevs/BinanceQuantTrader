@@ -110,9 +110,9 @@ namespace TradingStrategies {
 		// We need to set these variables to unlive, m_strategyRunStatus,
 		// m_isThreadTradeOngoing (in case we use mutiple threads)
 		virtual void StopLive() = 0;
-#ifndef USE_BACK_TEST_TRADING
+
 		virtual void ReportTradeResults(const std::string& symbol) = 0;
-#endif
+
 		// -We will control strategy parameters from external file...
 		virtual void InitializeParameters(const std::string& strategyCfgPath) = 0;
 		// -Can we trade now?
@@ -123,7 +123,7 @@ namespace TradingStrategies {
 
 		void SetupStrategyLifeTime(tinyxml2::XMLDocument* strategyCfgPathXml);
 		bool IsNotIsNotExceededTradingRules() const;
-		void IncreaseComplianceRestAPIRequestCounter();
+		void IncreaseComplianceRestAPIRequestCounter(const size_t noOfRequests);
 	protected:
 #if USE_BACK_TEST_TRADING  
 		void OnHandlingReceivedSimulatorMessage(

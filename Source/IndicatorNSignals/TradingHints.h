@@ -15,6 +15,7 @@
 #include "dlldefine.h"
 
 #include "../KernelTrading/double_type.h"
+#include "../KernelTrading/types.h"
 
 #include <string>
 
@@ -30,6 +31,10 @@ namespace IndicatorNSignals {
 		bool shouldCancelAllOrder{ false };
 		binapi::double_type windowBestBidPrice{ 0 };
 		binapi::double_type windowBestAskPrice{ 0 };
+		binapi::e_time timeInForce{ binapi::e_time::IOC };
+		bool CanTrade() {
+			return isUpTrend || isDownTrend;
+		}
 	};
 
 	class DLL_CLASS_INDICATORNSIGNALS_EXPORTS TradingHintsListener

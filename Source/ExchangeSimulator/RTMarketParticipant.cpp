@@ -12,6 +12,7 @@
 #include "../MarketData/SynchronousMarketData.h"
 #include "../LibraryUtils/Logger.h"
 
+#include "ExchangeRuleAndCompliance.h"
 #include "RTMarketParticipant.h"
 #include "UserAccountManager.h"
 #include "TradeUtils.h"
@@ -80,7 +81,9 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
                     assetBalance.m_free += newUpstreamOrder.GetAmount();
                     // 2. decreasing stable coin amount
                     userAccount->m_usdtBalance.m_usdtAmount
-                        -= Finance::CalculateTradeValue(newUpstreamOrder.GetAmount(), bestExchangeBidOrder.m_price);
+                        -= (Finance::CalculateTradeValue(newUpstreamOrder.GetAmount(), bestExchangeBidOrder.m_price)
+						+ (Finance::CalculateTradeValue(newUpstreamOrder.GetAmount(), bestExchangeBidOrder.m_price)
+                        * ExchangeRuleMgr->GetMakerCommission() * ExchangeRuleMgr->GetTakerCommission()));
                     // 3. update filled ack
                     newUpstreamOrder.SetFilledAmount(newUpstreamOrder.GetAmount());
                     newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::FULL_FILLED);
@@ -126,7 +129,9 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
                     assetBalance.m_free -= newUpstreamOrder.GetAmount();
                     // 2. increasing stable coin amount
                     userAccount->m_usdtBalance.m_usdtAmount
-                        += Finance::CalculateTradeValue(newUpstreamOrder.GetAmount(), bestExchangeAskOrder.m_price);
+                        += (Finance::CalculateTradeValue(newUpstreamOrder.GetAmount(), bestExchangeAskOrder.m_price) 
+                        - (Finance::CalculateTradeValue(newUpstreamOrder.GetAmount(), bestExchangeAskOrder.m_price) 
+                        * ExchangeRuleMgr->GetMakerCommission() * ExchangeRuleMgr->GetTakerCommission()));
 
                     newUpstreamOrder.SetFilledAmount(newUpstreamOrder.GetAmount());
                     newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::FULL_FILLED);

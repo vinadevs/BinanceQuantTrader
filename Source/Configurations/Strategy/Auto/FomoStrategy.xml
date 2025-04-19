@@ -5,15 +5,15 @@
 </GeneralConfig>
 
 <IndicatorAndSignals>
-  <TrendDetectorParameters WindowSize="200" TriggerMaxiumUpTick="50" TriggerMaxiumDownTick="20"/>
+  <TrendDetectorParameters WindowSize="20" TriggerMaxiumUpTick="5" TriggerMaxiumDownTick="2"/>
 </IndicatorAndSignals>
 
 <LongBuy>
-  <Parameters TriggerMaxiumUpTick="50" TriggerMaxiumDownTick="20"/>
+  <Parameters TriggerMaxiumUpTick="5" TriggerMaxiumDownTick="2"/>
 </LongBuy>
 
 <ShortSell>
-  <Parameters TriggerMaxiumUpTick="50" TriggerMaxiumDownTick="20"/>
+  <Parameters TriggerMaxiumUpTick="5" TriggerMaxiumDownTick="2"/>
 </ShortSell>
 
 <TargetSymbols>

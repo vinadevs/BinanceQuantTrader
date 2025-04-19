@@ -13,6 +13,7 @@
 
 #include "../KernelTrading/types.h"
 #include "../KernelTrading/enums.h"
+
 #include <memory>
 #include <functional>
 

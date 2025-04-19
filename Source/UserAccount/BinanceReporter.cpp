@@ -12,6 +12,8 @@
 #include "../RestAPI/RestAPI.h"
 #include "../RestAPI/BinanceAPI.h"
 #include "../LibraryUtils/Logger.h"
+#include "../LibraryUtils/PathUtils.h"
+#include "../LibraryUtils/StringUtils.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../PortfolioManager/PortfolioInvestmentBinance.h"
 #include "../ComplianceNRegulatory/BinanceExchangeProfile.h"
@@ -20,6 +22,8 @@
 #include "BinanceReporter.h"
 
 #include "BinanceTrader.h"
+
+#include <filesystem>
 
 using namespace UserAccount;
 using namespace PortfolioManager;
@@ -89,11 +93,13 @@ void BinanceReporter::SetupReporter(const tinyxml2::XMLElement* reportCfg)
 	{
 		m_enableCalculateLossForOrdersReporter = true;
 	}
+	std::string reportToFilePath(reportCfg->Attribute("ReportToFilePath"));
+	PathUtils::ReplaceSubString(reportToFilePath, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
+	m_reportToFilePath = reportToFilePath;
 }
 
 void BinanceReporter::UpdateRemoteReportTrades(const std::string& symbol)
 {
-	UpdateRemoteData(symbol);
 	static const auto trades_report_cb = [&](const binapi::rest::order_info_t& o)
 	{
 		LOG_INFO_STREAM(m_logger, o.symbol << " - " << o.orderId);
@@ -107,7 +113,6 @@ void BinanceReporter::UpdateRemoteReportTrades(const std::string& symbol)
 
 void BinanceReporter::UpdateRemoteReportOpenOrders(const std::string& symbol)
 {
-	UpdateRemoteData(symbol);
 	LOG_INFO_STREAM(m_logger, "******************* OPEN ORDERS REPORT ******************************");
 	binapi::make_open_orders_report(std::cout, 
 		*BinanceApiGateWay, DEREF_V(m_exchangeProfileMgr->AccessRemoteExchangeProfile(symbol)), { symbol });
@@ -115,7 +120,6 @@ void BinanceReporter::UpdateRemoteReportOpenOrders(const std::string& symbol)
 
 void BinanceReporter::UpdateRemoteReportAccountBalance(const std::string& symbol)
 {
-	UpdateRemoteData(symbol);
 	LOG_INFO_STREAM(m_logger, "******************** USER BALANCE REPORT *********************************");
 	binapi::make_balance_report(std::cout, 
 		*BinanceApiGateWay, DEREF_V(m_accountInfo),
@@ -124,7 +128,6 @@ void BinanceReporter::UpdateRemoteReportAccountBalance(const std::string& symbol
 
 void BinanceReporter::UpdateRemoteReportExchangerPriceForOrders(const std::string& symbol)
 {
-	UpdateRemoteData(symbol);
 	LOG_INFO_STREAM(m_logger, "******************** EXCHANGE ORDER PRICE REPORT *********************************");
 	binapi::show_exchanger_price_for_orders(std::cout,
 		*BinanceApiGateWay, DEREF_V(m_exchangeProfileMgr->AccessRemoteExchangeProfile(symbol)), { symbol });
@@ -132,7 +135,6 @@ void BinanceReporter::UpdateRemoteReportExchangerPriceForOrders(const std::strin
 
 void BinanceReporter::UpdateRemoteReportCalculateLossForOrders(const std::string& symbol)
 {
-	UpdateRemoteData(symbol);
 	LOG_INFO_STREAM(m_logger, "******************** CALCULATE ORDER LOSS REPORT *********************************");
 	binapi::calc_loss_for_orders(std::cout,
 		*BinanceApiGateWay, DEREF_V(m_exchangeProfileMgr->AccessRemoteExchangeProfile(symbol)), { symbol });
@@ -166,15 +168,18 @@ void BinanceReporter::DoLocalExecutionReport(const std::string& symbol)
 {
 }
 
-void BinanceReporter::DoTradeExecutionReport()
+void BinanceReporter::DoTradeExecutionReport(const std::string& symbol)
 {
 	if (MergeLocalAndRemmoteReport())
 	{
-		LOG_INFO_STREAM(m_logger, "BinanceAccountInfo=" << *m_portfolio->GetBinanceAccountInfo());
+		UpdateRemoteData(symbol);
+		DoRemoteExecutionReport(symbol);
+		binapi::rest::account_info_t::write_account_info_to_file(
+			m_reportToFilePath, *m_accountInfo);
 	}
 }
 
 bool BinanceReporter::MergeLocalAndRemmoteReport()
 {
-	return false;
+	return true;
 }

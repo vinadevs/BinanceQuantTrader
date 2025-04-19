@@ -38,22 +38,22 @@ BinanceTradingRules::BinanceTradingRules(const XMLElement* tradingRuleConfigXml)
 
 BinanceTradingRules::~BinanceTradingRules() {}
 
-void BinanceTradingRules::IncreaseRequestWeightPerMinute()
+void BinanceTradingRules::IncreaseRequestWeightPerMinute(const size_t noOfRequests)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    m_requestWeightPerMinuteCounter++;
+    m_requestWeightPerMinuteCounter += noOfRequests;
 }
 
-void BinanceTradingRules::IncreaseOrdersPerTenSeconds()
+void BinanceTradingRules::IncreaseOrdersPerTenSeconds(const size_t noOfRequests)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    m_ordersPerTenSecondsCounter++;
+    m_ordersPerTenSecondsCounter += noOfRequests;
 }
 
-void BinanceTradingRules::IncreaseOrdersPerTwentyFourHours()
+void BinanceTradingRules::IncreaseOrdersPerTwentyFourHours(const size_t noOfRequests)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    m_ordersPerTwentyFourHoursCounter++;
+    m_ordersPerTwentyFourHoursCounter += noOfRequests;
 }
 
 void BinanceTradingRules::ResetRequestWeightPerMinuteCounter(bool forceLimitationCheck)

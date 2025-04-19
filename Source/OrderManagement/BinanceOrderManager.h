@@ -16,6 +16,7 @@
 #include <memory>
 #include <unordered_map>
 #include <mutex>
+#include <vector>
 
 namespace OrderManagement {
     class OrderCreator;
@@ -127,6 +128,12 @@ namespace OrderManagement {
         const OrderList<BinanceReplaceOrder>& GetReplaceOrders() const;
 
 		const OrderList<BinanceQueryOrder>& GetQueryOrders() const;
+
+		std::vector<BinanceNewOrder*> GetOrdersOfSymbol(const std::string& symbol) const;
+
+		binapi::double_type GetWeightedAveragePrice(
+			const std::string& symbol,
+			const binapi::e_side side);
     private:
         std::unique_ptr<LibraryUtils::Logger> m_logger;
         OrderList<BinanceNewOrder> m_newOrders;

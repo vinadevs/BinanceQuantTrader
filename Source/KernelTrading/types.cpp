@@ -17,6 +17,8 @@
 
 #include <boost/utility/string_view.hpp>
 
+#include "../LibraryUtils/TimeUtils.h"
+
 //#include <iostream> // TODO: comment out
 
 namespace binapi {
@@ -361,6 +363,36 @@ account_info_t account_info_t::construct(
     return res;
 }
 
+bool account_info_t::write_account_info_to_file(const std::string& filePath, const account_info_t& o)
+{
+    std::ofstream file(filePath);
+    if (!file.is_open()) {
+        return false; // Failed to open file
+    }
+    file
+        << "{"
+        << "\"makerCommission\":" << o.makerCommission << ","
+        << "\"takerCommission\":" << o.takerCommission << ","
+        << "\"buyerCommission\":" << o.buyerCommission << ","
+        << "\"sellerCommission\":" << o.sellerCommission << ","
+        << "\"canTrade\":" << (o.canTrade ? "true" : "false") << ","
+        << "\"canWithdraw\":" << (o.canWithdraw ? "true" : "false") << ","
+        << "\"canDeposit\":" << (o.canDeposit ? "true" : "false") << ","
+        << "\"updateTime\":" << TimeUtils::ConvertEpochTickToTimeString(o.updateTime) << ","
+#if USE_BACK_TEST_TRADING
+        << "\"stableCoinAmount\":" << o.stableCoinAmount << ","
+#endif
+        << "\"balances\":[";
+    for (auto it = o.balances.begin(); it != o.balances.end(); ++it) {
+        file << it->second;
+        if (std::next(it) != o.balances.end()) {
+            file << ",";
+        }
+    }
+    file << "]}";
+    return true;
+}
+
 const account_info_t::balance_t& account_info_t::get_balance(const char *symbol) const {
     auto it = balances.find(symbol);
     if ( it != balances.end() ) {
@@ -390,35 +422,6 @@ const double_type& account_info_t::sub_balance(const char *symbol, const double_
     assert(!"unreachable");
 }
 
-bool write_account_info_to_file(const std::string& filePath, const account_info_t& o) {
-    std::ofstream file(filePath);
-    if (!file.is_open()) {
-        return false; // Failed to open file
-    }
-    file
-        << "{"
-        << "\"makerCommission\":" << o.makerCommission << ","
-        << "\"takerCommission\":" << o.takerCommission << ","
-        << "\"buyerCommission\":" << o.buyerCommission << ","
-        << "\"sellerCommission\":" << o.sellerCommission << ","
-        << "\"canTrade\":" << (o.canTrade ? "true" : "false") << ","
-        << "\"canWithdraw\":" << (o.canWithdraw ? "true" : "false") << ","
-        << "\"canDeposit\":" << (o.canDeposit ? "true" : "false") << ","
-        << "\"updateTime\":" << o.updateTime << ","
-#if USE_BACK_TEST_TRADING
-        << "\"stableCoinAmount\":" << o.stableCoinAmount << ","
-#endif
-        << "\"balances\":[";
-    for (auto it = o.balances.begin(); it != o.balances.end(); ++it) {
-        file << it->second;
-        if (std::next(it) != o.balances.end()) {
-            file << ",";
-        }
-    }
-    file << "]}";
-    return true;
-}
-
 std::ostream &operator<<(std::ostream &os, const account_info_t &o) {
     os
     << "{"
@@ -429,7 +432,7 @@ std::ostream &operator<<(std::ostream &os, const account_info_t &o) {
     << "\"canTrade\":" << (o.canTrade ? "true" : "false") << ","
     << "\"canWithdraw\":" << (o.canWithdraw ? "true" : "false") << ","
     << "\"canDeposit\":" << (o.canDeposit ? "true" : "false") << ","
-    << "\"updateTime\":" << o.updateTime << ","
+    << "\"updateTime\":" << TimeUtils::ConvertEpochTickToTimeString(o.updateTime) << ","
 #if USE_BACK_TEST_TRADING
     << "\"stableCoinAmount\":" << o.stableCoinAmount << ","
 #endif
@@ -1275,7 +1278,7 @@ std::ostream &operator<<(std::ostream &os, const order_info_t &o) {
     << "\"stopPrice\":\"" << o.stopPrice << "\","
     << "\"icebergQty\":\"" << o.icebergQty << "\","
     << "\"time\":" << o.time << ","
-    << "\"updateTime\":" << o.updateTime << ","
+    << "\"updateTime\":" << TimeUtils::ConvertEpochTickToTimeString(o.updateTime) << ","
     << "\"isWorking\":" << (o.isWorking ? "true" : "false")
     << "}";
 

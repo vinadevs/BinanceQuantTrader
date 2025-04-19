@@ -61,6 +61,17 @@ std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewTestPositionUpstreamOrd
         , icebergAmount);
 }
 
+std::unique_ptr<BinanceCancelOrder> PositionManager::CancelPositionUpstreamOrder(
+    const BinanceNewOrder* originalOrder)
+{
+    const auto clientOrderId = GeneralUtils::GenerateUniqueID(StringDefinitions::BQTCancelOrder);
+    return m_orderCreator->CreateCancelBinanceOrder(
+        clientOrderId,
+        originalOrder->GetSymbol(),
+        originalOrder->GetOrderId(),
+        originalOrder->GetClientOrderId());
+}
+
 void PositionManager::AddNewWorkedOrder(const std::string& clientOrderId, std::unique_ptr<BinanceNewOrder> order)
 {
     m_workedOrderManager->AddNewOrder(clientOrderId, std::move(order));

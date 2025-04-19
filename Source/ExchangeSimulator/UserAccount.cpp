@@ -58,6 +58,11 @@ UserAccount::UserAccount(
     m_accountInfo = binapi::rest::account_info_t::construct(accountInfoJson);
 }
 
+std::size_t UserAccount::GetUpdateTime() const
+{
+    return static_cast<std::size_t>(std::chrono::system_clock::now().time_since_epoch().count());
+}
+
 bool UserAccount::IsAccountEligibleToWithdraw() const
 {
     return m_canWithdraw;

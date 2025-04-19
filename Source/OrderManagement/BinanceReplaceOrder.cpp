@@ -20,8 +20,8 @@ BinanceReplaceOrder::BinanceReplaceOrder(
 	, std::size_t orderId
 	, const std::string& origClientOrderId)
 	: Order(symbol, clientOrderId, MessageType::REPLACE),
-	m_orderId(orderId),
 	m_origClientOrderId(origClientOrderId) {
+	SetOrderId(orderId);
 }
 
 BinanceReplaceOrder::~BinanceReplaceOrder() {}

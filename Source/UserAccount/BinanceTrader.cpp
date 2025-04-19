@@ -85,7 +85,8 @@ bool BinanceTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParamme
 	if (param.m_side == binapi::e_side::buy)
 	{
 #if USE_BACK_TEST_TRADING
-		if (m_binanceAccountInfo->stableCoinAmount.convert_to<double>() > CalculateTradeValue(quality, refPrice))
+		if (m_binanceAccountInfo->stableCoinAmount.convert_to<double>() 
+			> CalculateTradeValue(param.m_amount, param.m_price))
 		{
 #else
 		if (m_portfolio->GetBinanceTradingPair(param.m_symbol))
@@ -104,6 +105,7 @@ bool BinanceTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParamme
 			const auto clientOrderId = newSingleLongOrder->GetClientOrderId();
 			if (isSendingOrderSucceeded)
 			{
+				newSingleLongOrder->SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
 				m_positionManager->AddNewWorkedOrder(clientOrderId, std::move(newSingleLongOrder));
 			}
 			else
@@ -135,6 +137,7 @@ bool BinanceTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParamme
 			const auto clientOrderId = newSingleShortOrder->GetClientOrderId();
 			if (isSendingOrderSucceeded)
 			{
+				newSingleShortOrder->SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
 				m_positionManager->AddNewWorkedOrder(clientOrderId, std::move(newSingleShortOrder));
 			}
 			else
@@ -154,31 +157,48 @@ bool BinanceTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParamme
 
 bool BinanceTrader::CancelAllOpenPositions(const std::string& symbol)
 {
-	m_positionManager->CloseAllOpenedPositionsBySide(binapi::e_side::buy);
-#if USE_BACK_TEST_TRADING
-	const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleLongOrder.get());
-#elif USE_BINANCE_TEST_TRADING
-	const auto result = BinanceExchangeGateWay->SendNewBinanceTestOrderFull(newSingleLongOrder.get());
-#else
-	const auto result = BinanceExchangeGateWay->SendNewBinanceOrderFull(newSingleLongOrder.get());
-#endif
-	newSingleLongOrder->SetSendingOrderResult(result);
-	const auto isSendingOrderSucceeded = static_cast<bool>(result);
-	const auto clientOrderId = newSingleLongOrder->GetClientOrderId();
-	if (isSendingOrderSucceeded)
+	const auto workedOrderManager = m_positionManager->GetWorkedOrderManager();
+	if (workedOrderManager)
 	{
-		m_positionManager->AddNewWorkedOrder(clientOrderId, std::move(newSingleLongOrder));
+		for (const auto* order : workedOrderManager->GetOrdersOfSymbol(symbol))
+		{
+			auto newCancelOrder = m_positionManager->CancelPositionUpstreamOrder(order);
+#if USE_BACK_TEST_TRADING
+			const auto result = ExchangeSimulatorGateWay->SendCancelSimulatorOrder(newCancelOrder.get());
+#else
+			const auto result = BinanceExchangeGateWay->SendCancelBinanceOrder(newCancelOrder.get());
+#endif
+			newCancelOrder->SetSendingOrderResult(result);
+			const auto isSendingOrderSucceeded = static_cast<bool>(result);
+			const auto clientOrderId = newCancelOrder->GetClientOrderId();
+			if (isSendingOrderSucceeded)
+			{
+				newCancelOrder->SetOrderStatus(BinanceCancelOrderStatus::WAITING_FOR_CANCEL);
+				m_positionManager->AddNewCancelOrder(clientOrderId, std::move(newCancelOrder));
+				m_positionManager->CloseOpenedPositionUpstreamOrder(clientOrderId);
+			}
+			else
+			{
+				m_positionManager->AddUnworkedCancelOrder(clientOrderId, std::move(newCancelOrder));
+			}
+		}
 	}
 	else
 	{
-		m_positionManager->AddUnworkedOrder(clientOrderId, std::move(newSingleLongOrder));
+		m_logger->Warning("No open positions available to cancel.");
+		return false;
 	}
-	return isSendingOrderSucceeded;
+	return true;
 }
 
 void BinanceTrader::UpdateAccountInfo()
 {
 	m_portfolio->UpdateBinanceAccountInfo();
+}
+
+void BinanceTrader::ReportTradeResults(const std::string& symbol)
+{
+	m_exchangeReporter->DoTradeExecutionReport(symbol);
 }
 
 void BinanceTrader::CreatePortfolioManagement(const std::vector<std::string>& targetTradeSymbols)
@@ -228,8 +248,6 @@ void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessag
 			m_logger->Info("Closed full filled upstream position for clientOrderId=" + clientOrderId);
 			// Updates the trader’s portfolio, balancing asset holding.
 			m_portfolio->UpdateBinanceAccountInfo();
-			// Updates PNL report.
-			m_exchangeReporter->DoTradeExecutionReport();
 		}
 	}
 	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::CancelledOrderAck)
@@ -245,11 +263,6 @@ void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessag
 
 	}
 	else m_logger->Error("Received simulator ack with unknown type=" + simulatorAckType);
-}
-#else
-void BinanceTrader::ReportTradeData(const std::string& symbol)
-{
-	m_exchangeReporter->DoTradeExecutionReport();
 }
 #endif
 

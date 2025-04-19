@@ -47,9 +47,9 @@ namespace ComplianceNRegulatory {
 			return m_exchangeProfileMgr.get();
 		};
 
-		void IncreaseRequestWeightPerMinute();
-		void IncreaseOrdersPerTenSeconds();
-		void IncreaseOrdersPerTwentyFourHours();
+		void IncreaseRequestWeightPerMinute(const size_t noOfRequests);
+		void IncreaseOrdersPerTenSeconds(const size_t noOfRequests);
+		void IncreaseOrdersPerTwentyFourHours(const size_t noOfRequests);
 
 		void ResetRequestWeightPerMinuteCounter(bool forceLimitationCheck);
 		void ResetOrdersPerTenSecondsCounter(bool forceLimitationCheck);

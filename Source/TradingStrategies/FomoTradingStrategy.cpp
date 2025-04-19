@@ -109,12 +109,17 @@ void FomoTradingStrategy::UnsubscribeTargetSymbols()
 void FomoTradingStrategy::CreatePortfolioManagement()
 {
 	m_trader->CreatePortfolioManagement(m_targetTradeSymbols);
-	IncreaseComplianceRestAPIRequestCounter(); // register a sent order request to ComplianceNRegulatory
+	IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
 }
 
 void FomoTradingStrategy::CreateOrderParameterGenerator()
 {
-	m_orderParammeterGenerator = std::make_unique<OrderParammeterGenerator>(m_tradingRules, m_logger.get());
+	m_orderParammeterGenerator = std::make_unique<OrderParammeterGenerator>(
+		m_trader->GetTradingRules(),
+		m_trader->GetPortfolio(),
+		m_trader->GetRiskManager(),
+		m_trader->GetPositionManager(),
+		m_logger.get());
 }
 
 void FomoTradingStrategy::CreateBinanceExchangeProfile()
@@ -122,7 +127,7 @@ void FomoTradingStrategy::CreateBinanceExchangeProfile()
 	for (const auto& symbol : m_targetTradeSymbols)
 	{
 		m_tradingRules->GetExchangeProfileMgr()->UpdateRemoteExchangeProfiles(symbol, true);
-		IncreaseComplianceRestAPIRequestCounter(); // register a sent order request to ComplianceNRegulatory
+		IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
 	}
 }
 
@@ -134,6 +139,7 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 		{
 			if (IsNotIsNotExceededTradingRules())
 			{
+				m_logger->Info("Creating order parameters for symbol=" + hints->symbol);
 				const auto orderParammeter = m_orderParammeterGenerator->Generate(hints);
 				if (m_trader->CreateNewPosition(orderParammeter))
 				{
@@ -145,12 +151,16 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 					{
 						m_logger->Info("Created a new [Short Position] for symbol=" + hints->symbol);
 					}
+					ReportTradeResults(hints->symbol);
+					IncreaseComplianceRestAPIRequestCounter(2); // register 2 sent http requests to ComplianceNRegulatory
+
 				}
-				if (hints->isInvertedTrend && hints->isDownTrend)
+				// TODO: should cancel order in a separate callback from hint signal analysis
+				if (hints->isInvertedTrend && hints->isDownTrend && hints->timeInForce == binapi::e_time::GTC)
 				{
 					m_trader->CancelAllOpenPositions(hints->symbol);
 				}
-				IncreaseComplianceRestAPIRequestCounter(); // register a sent order request to ComplianceNRegulatory
+				IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
 			}
 			else
 			{
@@ -176,12 +186,10 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 	return true;
 }
 
-#ifndef USE_BACK_TEST_TRADING
 void FomoTradingStrategy::ReportTradeResults(const std::string& symbol)
 {
-	m_trader->ReportTradeData(symbol);
+	m_trader->ReportTradeResults(symbol);
 }
-#endif
 
 void FomoTradingStrategy::StartLive()
 {

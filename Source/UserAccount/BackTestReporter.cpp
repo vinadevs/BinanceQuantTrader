@@ -10,6 +10,8 @@
 
 #include "../RestAPI/ApiKeyInfoManager.h"
 #include "../LibraryUtils/Logger.h"
+#include "../LibraryUtils/PathUtils.h"
+#include "../LibraryUtils/StringUtils.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../PortfolioManager/PortfolioInvestmentBinance.h"
 #include "../ComplianceNRegulatory/BinanceExchangeProfile.h"
@@ -17,6 +19,8 @@
 
 #include "ReportAPIs.h"
 #include "BackTestReporter.h"
+
+#include <filesystem>
 
 using namespace UserAccount;
 using namespace PortfolioManager;
@@ -57,6 +61,9 @@ void BackTestReporter::SetupReporter(const tinyxml2::XMLElement* reportCfg)
 	{
 		m_enableCalculateLossForOrdersReporter = true;
 	}
+	std::string reportToFilePath(reportCfg->Attribute("ReportToFilePath"));
+	PathUtils::ReplaceSubString(reportToFilePath, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
+	m_reportToFilePath = reportToFilePath;
 }
 
 void BackTestReporter::UpdateRemoteData(const std::string& symbol)
@@ -110,11 +117,14 @@ void BackTestReporter::DoLocalExecutionReport(const std::string& symbol)
 {
 }
 
-void BackTestReporter::DoTradeExecutionReport()
+void BackTestReporter::DoTradeExecutionReport(const std::string& symbol)
 {
 	if (MergeLocalAndRemmoteReport())
 	{
-		LOG_INFO_STREAM(m_logger, "BinanceAccountInfo=" << *m_portfolio->GetBinanceAccountInfo());
+		UpdateRemoteData(symbol);
+		DoRemoteExecutionReport(symbol);
+		binapi::rest::account_info_t::write_account_info_to_file(
+			m_reportToFilePath, *m_accountInfo);
 	}
 }
 

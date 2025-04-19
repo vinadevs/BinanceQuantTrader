@@ -43,7 +43,7 @@ void TradingTrendDetector::AnalysisIndividualBookTicker(const SynchronousMarketD
     m_tradingHints->isDownTrend = IsDownTrend();
     m_tradingHints->windowBestAskPrice = GetWindowBestAskPrice();
     m_tradingHints->windowBestBidPrice = GetWindowBestBidPrice();
-    if (this->m_tradingTrendType != TradingTrendType::SETTLE_TREND)
+    if (m_tradingHints->CanTrade())
     {
         IndicatorAndSignals::NotifyTradingHintsToListeners();
     }

@@ -126,7 +126,7 @@
       <EnableUAC>false</EnableUAC>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ComplianceNRegulatoryD.lib;MarketDataD.lib;LibraryUtilsD.lib;KernelTradingD.lib;QuantLib-x64-mt-gd.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PortfolioManagerD.lib;OrderManagementD.lib;ComplianceNRegulatoryD.lib;MarketDataD.lib;LibraryUtilsD.lib;KernelTradingD.lib;QuantLib-x64-mt-gd.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -149,7 +149,7 @@
       <EnableUAC>false</EnableUAC>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ComplianceNRegulatory.lib;MarketData.lib;LibraryUtils.lib;KernelTrading.lib;QuantLib-x64-mt.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PortfolioManager.lib;OrderManagement.lib;ComplianceNRegulatory.lib;MarketData.lib;LibraryUtils.lib;KernelTrading.lib;QuantLib-x64-mt.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

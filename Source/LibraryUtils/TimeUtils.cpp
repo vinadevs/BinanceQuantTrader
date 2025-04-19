@@ -57,3 +57,20 @@ std::string TimeUtils::GetTimestampString(const std::size_t ms)
     oss << std::put_time(&localTime, "%Y-%m-%d %H:%M:%S");  // Format: YYYY-MM-DD HH:MM:SS
     return oss.str();
 }
+
+std::string TimeUtils::ConvertEpochTickToTimeString(std::size_t epochTick)
+{
+    using clock = std::chrono::system_clock;
+    using duration = clock::duration;
+
+    duration d(epochTick);                     // Rebuild duration from count
+    auto tp = clock::time_point(d);        // Create time_point from duration
+    std::time_t t = clock::to_time_t(tp);  // Convert to time_t
+
+    std::tm* tmPtr = std::localtime(&t);   // Or std::gmtime for UTC
+
+    std::ostringstream oss;
+    oss << std::put_time(tmPtr, "%Y-%m-%d %H:%M:%S");
+
+    return oss.str();
+}

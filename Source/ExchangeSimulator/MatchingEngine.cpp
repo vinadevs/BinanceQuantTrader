@@ -163,10 +163,7 @@ void MatchingEngine::ProcessIncommingOrders()
 					+ UpstreamOrderUtils::GetOrderSymbol(order) + ", OrderType="
 					+ UpstreamOrderUtils::GetOrderTypeName(order);
 
-				m_logger->Info("From upstream order queue, processing prioritied order: " + orderInfoStr);
-
 				lock.unlock();  // Unlock mutex during processing			
-				m_logger->Info("From upstream order pre-trade checker, passed, " + orderInfoStr);
 
 				if (std::holds_alternative<BinanceNewOrder>(order))
 				{
@@ -196,7 +193,7 @@ void MatchingEngine::ProcessIncommingOrders()
 					m_logger->Info("From upstream order queue, querying, " + orderInfoStr);
 
 					auto& queryOrder = std::get<BinanceQueryOrder>(order);
-					m_upstreamOrderQueueMgr->LookupOrder(queryOrder.GetOrigClientOrderId());
+					auto foundOrder = m_upstreamOrderQueueMgr->LookupOrder(queryOrder.GetOrigClientOrderId());
 				}		
 				lock.lock();  // Lock mutex again for the next iteration
 			}
@@ -309,7 +306,6 @@ bool MatchingEngine::VerifyUpstreamBinanceNewOrder(const BinanceNewOrder& order)
 
 bool MatchingEngine::VerifyUpstreamBinanceCancelOrder(const BinanceCancelOrder& order)
 {
-	const auto& targetOrder = m_upstreamOrderQueueMgr->LookupOrder(order.GetOrigClientOrderId());
 	if (UpstreamOrderUtils::GetOrderClientId(order) != order.GetClientOrderId())
 	{
 		const auto errMsg = "Could not find target order to cancel with OrderClientId=" + order.GetClientOrderId();
@@ -323,7 +319,6 @@ bool MatchingEngine::VerifyUpstreamBinanceCancelOrder(const BinanceCancelOrder& 
 
 bool MatchingEngine::VerifyUpstreamBinanceReplaceOrder(const BinanceReplaceOrder& order)
 {
-	const auto& targetOrder = m_upstreamOrderQueueMgr->LookupOrder(order.GetOrigClientOrderId());
 	if (UpstreamOrderUtils::GetOrderClientId(order) != order.GetClientOrderId())
 	{
 		const auto errMsg = "Could not find target order to replace with OrderClientId=" + order.GetClientOrderId();
@@ -337,7 +332,6 @@ bool MatchingEngine::VerifyUpstreamBinanceReplaceOrder(const BinanceReplaceOrder
 
 bool MatchingEngine::VerifyUpstreamBinanceQueryOrder(const BinanceQueryOrder& order)
 {
-	const auto& targetOrder = m_upstreamOrderQueueMgr->LookupOrder(order.GetOrigClientOrderId());
 	if (UpstreamOrderUtils::GetOrderClientId(order) != order.GetClientOrderId())
 	{
 		const auto errMsg = "Could not find target order to query with OrderClientId=" + order.GetClientOrderId();
@@ -354,10 +348,9 @@ void MatchingEngine::PostProcessingMatchedNewOrder(BinanceNewOrder& order)
 	//Update the Order Book:
 	// If the order is fully matched, remove the order from the order book.
 	const auto& clientOrderId = order.GetClientOrderId();
-	const auto ackStr = order.ToStringAck();
 	if (order.GetOrderStatus() == BinanceNewOrderStatus::FULL_FILLED)
 	{
-		m_logger->Info("Full filled order info: " + ackStr);
+		m_logger->Info("Full filled order info: " + order.ToStringAck());
 		m_logger->Info("Sending full fill execution ack to upstream...");
 		// Notify the involved parties of the trade execution.
 		const auto ack = AckUtils::CreateFilledOrderAck(order, "Filled");
@@ -366,7 +359,7 @@ void MatchingEngine::PostProcessingMatchedNewOrder(BinanceNewOrder& order)
 	// If the order is not fully matched, insert the order into back of the order book to continue fill it later.
 	else if (order.GetOrderStatus() == BinanceNewOrderStatus::PRTIAL_FILLED)
 	{
-		m_logger->Info("Partial filled order info: " + ackStr);
+		m_logger->Info("Partial filled order info: " + order.ToStringAck());
 		m_upstreamOrderQueueMgr->PushOrderToQueue(order.GetClientOrderId(), order); // move to back of the queue
 		// Notify the involved parties of the trade execution.
 		m_logger->Info("Sending partial fill execution ack to upstream...");
@@ -374,9 +367,11 @@ void MatchingEngine::PostProcessingMatchedNewOrder(BinanceNewOrder& order)
 		UpstreamGateWay->SendDownstreamOrderAck(ack);
 	}
 	// If the order does not have liquidity, insert the order into back of the order book to continue fill it later.
-	else if (order.GetOrderStatus() == BinanceNewOrderStatus::WAITING_FOR_FILL)
+	// In case order is IOC or FOK, the order will be not be pushed back to the queue.
+	else if (order.GetOrderStatus() == BinanceNewOrderStatus::WAITING_FOR_FILL &&
+		     order.GetTimeInForce() == binapi::e_time::GTC)
 	{
-		m_logger->Info("Tried to match but order has no liquidity from market: " + ackStr);
+		//m_logger->Info("Tried to match but order has no liquidity from market: " + order.ToStringOrder());
 		m_upstreamOrderQueueMgr->PushOrderToQueue(order.GetClientOrderId(), order); // move to back of the queue
 	}
 }

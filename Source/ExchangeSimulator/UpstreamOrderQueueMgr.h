@@ -29,7 +29,7 @@ namespace ExchangeSimulator {
 		void PushOrderToQueue(const std::string& clientOrderId, const UpstreamOrder& order);
 		bool RemoveOrder(const std::string& clientOrderId);
 		bool ReplaceOrder(const std::string& clientOrderId, const UpstreamOrder& order);
-		const UpstreamOrder& LookupOrder(const std::string& clientOrderId) const;
+		UpstreamOrder LookupOrder(const std::string& clientOrderId) const;
 		void ClearAll();
 		bool HasNoOrders();
 		UpstreamOrder GetNextOrder();

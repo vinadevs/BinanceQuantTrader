@@ -59,7 +59,7 @@ bool BinanceWalletClient::GetUserAccountDataResponse(
             account->canWithdraw = response.can_withdraw();
             account->canDeposit = response.can_deposit();
             account->updateTime = response.update_time();
-#ifndef USE_BACK_TEST_TRADING
+#ifdef USE_BACK_TEST_TRADING
             account->stableCoinAmount = response.stable_coin_amount();
 #endif
             for (const auto& balancePair : response.balances()) {
@@ -68,7 +68,7 @@ bool BinanceWalletClient::GetUserAccountDataResponse(
                     balance.asset_symbol(),
                     balance.free_amount(),
                     balance.locked_amount() };
-                account->balances.try_emplace(balance.asset_symbol(), value);
+                account->balances.insert_or_assign(balance.asset_symbol(), value);
             }
             return true;
         }

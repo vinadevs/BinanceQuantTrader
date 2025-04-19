@@ -38,7 +38,9 @@ namespace UserAccount {
 			binapi::rest::account_info_t* accountInfo,
 			ComplianceNRegulatory::BinanceExchangeProfileMgr* exchangeProfileMgr,
 			PortfolioManager::PortfolioInvestmentBinance* portfolio)
-			: m_accountInfo(accountInfo), m_exchangeProfileMgr(exchangeProfileMgr), m_portfolio(portfolio) {}
+			: m_accountInfo(accountInfo),
+			m_exchangeProfileMgr(exchangeProfileMgr),
+			m_portfolio(portfolio) {}
 
 		virtual ~ExchangeReporter() {};
 
@@ -50,7 +52,7 @@ namespace UserAccount {
 		virtual void UpdateRemoteReportCalculateLossForOrders(const std::string& symbol) = 0;
 		virtual void DoRemoteExecutionReport(const std::string& symbol) = 0;
 		virtual void DoLocalExecutionReport(const std::string& symbol) = 0;
-		virtual void DoTradeExecutionReport() = 0;
+		virtual void DoTradeExecutionReport(const std::string& symbol) = 0;
 		virtual void UpdateRemoteData(const std::string& symbol) = 0;
 
 	protected:
@@ -68,6 +70,8 @@ namespace UserAccount {
 
 		// restAPI data
 		binapi::rest::account_info_t* m_accountInfo;
+		// external file to store report
+		std::string m_reportToFilePath;
 	};
 };
 

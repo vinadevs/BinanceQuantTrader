@@ -1,10 +1,12 @@
 -----------------------
 WINDOWS
 -----------------------
-1.  Go to vcpkg folder and run the following command:  ./vcpkg.exe integrate install
+1. Make sure you have vcpkg installed in your PC
 2. Go to Source/BinanceQuantTrader
-3. Open file BinanceQuantTrader.sln by Visual Studio 2022, right click on BinanceQuantTrader then build
-
+3. Open file BinanceQuantTrader.sln by Visual Studio 2022, right click on QuantLibrary project then build
+4. Copy 2 files QuantLib-x64-mt-gd.lib and QuantLib-x64-mt.lib from BinanceQuantTrader\Source\QuantLibrary\lib
+   to BinanceQuantTrader\Source\Lib64\
+5. Right click on BinanceQuantTrader then build or ctrl + B to build the whole solution
 
 -----------------------
 LINUX

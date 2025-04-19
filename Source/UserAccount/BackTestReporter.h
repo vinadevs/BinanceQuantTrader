@@ -52,7 +52,7 @@ namespace UserAccount {
         void UpdateRemoteReportCalculateLossForOrders(const std::string& symbol) override;
         void DoRemoteExecutionReport(const std::string& symbol) override;
         void DoLocalExecutionReport(const std::string& symbol) override;
-        void DoTradeExecutionReport() override;
+        void DoTradeExecutionReport(const std::string& symbol) override;
     private:
         bool MergeLocalAndRemmoteReport() override;
     };

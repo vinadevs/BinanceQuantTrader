@@ -58,15 +58,23 @@ namespace UserAccount {
 
 		void UpdateAccountInfo();
 
+		void ReportTradeResults(const std::string& symbol);
+
 		void CreatePortfolioManagement(const std::vector<std::string>& targetTradeSymbols);
 
 		PortfolioManager::PortfolioInvestmentBinance* GetPortfolio() const { return m_portfolio; }
 		
+		OrderManagement::PositionManager* GetPositionManager() const { return m_positionManager.get(); }
+
+		ComplianceNRegulatory::BinanceTradingRules* GetTradingRules() const { return m_tradingRules; }
+
+		RiskManagement::RiskManager* GetRiskManager() const { return m_riskManager; }
+
+		binapi::rest::account_info_t* GetBinanceAccountInfo() const { return m_binanceAccountInfo.get(); }
+
 		////////////// DOWNSTREAM PROCESSING /////////////////////////////
 #if USE_BACK_TEST_TRADING  
 		void HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage& message);
-#else
-		void ReportTradeData(const std::string& symbol);
 #endif
 	private:
 		double CalculateTradeValue(

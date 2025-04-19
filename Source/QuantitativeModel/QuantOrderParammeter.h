@@ -12,10 +12,27 @@
 
 #include "../RestAPI/RestAPI.h"
 #include "../RestAPI/BinanceAPI.h"
+#include "../OrderManagement/TypeToStringUtils.h"
 
 #include <string>
 
 namespace QuantitativeModel {
+
+// Struct: QuantOrderParammeter
+// ----------------------------
+// Represents the parameters required for placing or managing a quantitative trading order.
+// This structure is typically used to encapsulate all configurable inputs for order execution
+// in algorithmic or automated trading systems.
+
+// It includes details such as:  
+// - m_symbol: The trading pair symbol (e.g., BTCUSDT).  
+// - m_side: The side of the order (e.g., buy or sell).  
+// - m_type: The type of the order (e.g., market, limit).  
+// - m_time: The time in force for the order (e.g., GTC, IOC).  
+// - m_amount: The quantity of the asset to trade.  
+// - m_price: The price at which the order is placed (applicable for limit orders).  
+// - m_stopPrice: The stop price for stop-limit orders.  
+// This struct is designed to be lightweight and final, ensuring no inheritance.
 
     struct DLL_CLASS_QUANTITATIVEMODEL_EXPORTS
            QuantOrderParammeter final {
@@ -28,6 +45,22 @@ namespace QuantitativeModel {
            double m_stopPrice{ 0 };
 
            QuantOrderParammeter() = default;
+
+            // Converts the QuantOrderParammeter object into a human-readable string representation.
+            // This method is useful for logging or debugging purposes.
+            std::string AsString() const {
+               std::ostringstream oss;
+               oss << "QuantOrderParammeter { "
+                   << "Symbol: " << m_symbol << ", "
+                   << "Side: " << OrderManagement::TypeToStringUtils::ToString(m_side) << ", "
+                   << "Type: " << OrderManagement::TypeToStringUtils::ToString(m_type) << ", "
+                   << "Time: " << OrderManagement::TypeToStringUtils::ToString(m_time) << ", "
+                   << "Amount: " << m_amount << ", "
+                   << "Price: " << m_price << ", "
+                   << "StopPrice: " << m_stopPrice
+                   << " }";
+               return oss.str();
+            }
 
            // Constructor
            QuantOrderParammeter(

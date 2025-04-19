@@ -14,6 +14,7 @@
 #include "BinanceQueryOrder.h"
 
 #include "../LibraryUtils/Logger.h"
+#include "../KernelTrading/double_defaults.h"
 
 #include "BinanceOrderManager.h"
 
@@ -259,4 +260,40 @@ const OrderList<BinanceReplaceOrder>& BinanceOrderManager::GetReplaceOrders() co
 const OrderList<BinanceQueryOrder>& BinanceOrderManager::GetQueryOrders() const
 {
 	return m_queryOrders;
+}
+
+std::vector<BinanceNewOrder*> BinanceOrderManager::GetOrdersOfSymbol(const std::string& symbol) const
+{
+    std::vector<BinanceNewOrder*> ordersOfSymbol;
+	for (const auto& order : m_newOrders)
+	{
+		if (order.second->GetSymbol() == symbol)
+		{
+			ordersOfSymbol.emplace_back(order.second.get());
+		}
+	}
+	return ordersOfSymbol;
+}
+
+binapi::double_type BinanceOrderManager::GetWeightedAveragePrice(
+    const std::string& symbol,
+    const binapi::e_side side)
+{
+	binapi::double_type totalPrice = 0.0;
+	binapi::double_type totalAmount = 0.0;
+	for (const auto& order : m_newOrders)
+	{
+		if (order.second->GetSymbol() == symbol && order.second->GetSide() == side)
+		{
+			const auto filledPrice = order.second->GetFilledPrice();
+			const auto filledAmount = order.second->GetFilledAmount();
+			totalPrice += filledPrice * filledAmount;
+			totalAmount += filledAmount;
+		}
+	}
+	if (totalAmount > 0)
+	{
+		return totalPrice / totalAmount;
+	}
+	return INVALID_PRICE;
 }
