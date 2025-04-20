@@ -62,3 +62,48 @@ int MarketDataSubject::NotifyTradeChange(const std::string& symbol)
 {
 	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnTradeChange);
 }
+
+int MarketDataSubject::NotifyIndividualMarketTickerChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnIndividualMarketTickerChange);
+}
+
+int MarketDataSubject::NotifyMiniTickerChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnMiniTickerChange);
+}
+
+int MarketData::MarketDataSubject::NotifyKlineCandleStickChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnKlineCandleStickChange);
+}
+
+int MarketDataSubject::NotifyAggregateTradeChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAggregateTradeChange);
+}
+
+int MarketDataSubject::NotifyAllMarketTickersChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllMarketTickersChange);
+}
+
+int MarketDataSubject::NotifyAllMiniTickersChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllMiniTickersChange);
+}
+
+int MarketDataSubject::NotifyAllBookTickersChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllBookTickersChange);
+}
+
+int MarketDataSubject::NotifyAllPartDepthChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllMarketDepthChange);
+}
+
+int MarketDataSubject::NotifyAllDiffDepthChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllMarketDepthDiffChange);
+}

@@ -48,6 +48,15 @@ public:
 	// Input symbol param specifics for symbol has data change
 	virtual int NotifyIndividualBookTickerChange(const std::string& symbol);
 	virtual int NotifyTradeChange(const std::string& symbol);
+	virtual int NotifyIndividualMarketTickerChange(const std::string& symbol);
+	virtual int NotifyMiniTickerChange(const std::string& symbol);
+	virtual int NotifyKlineCandleStickChange(const std::string& symbol);
+	virtual int NotifyAggregateTradeChange(const std::string& symbol);
+	virtual int NotifyAllMarketTickersChange(const std::string& symbol);
+	virtual int NotifyAllMiniTickersChange(const std::string& symbol);
+	virtual int NotifyAllBookTickersChange(const std::string& symbol);
+	virtual int NotifyAllPartDepthChange(const std::string& symbol);
+	virtual int NotifyAllDiffDepthChange(const std::string& symbol);
 
 	// get synchronous market data
 	virtual SynchronousMarketData* GetSynchronousMarketData(const std::string& symbol) { return nullptr; }

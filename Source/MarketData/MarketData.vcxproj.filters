@@ -57,6 +57,12 @@
     <ClInclude Include="FeedIdentification.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TableMarketDataFeed.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ArrayMarketDtaFeed.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

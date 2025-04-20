@@ -24,14 +24,7 @@ namespace MarketData {
 
 // Add any data type we want to use as market data
 // std::variant is a clearer way than template declaration
-using SingleMarketData = std::variant<std::size_t, bool, binapi::double_type>;
-
-enum class MarketDataFeedStatus : unsigned
-{
-    UNDEF,  // can not trade
-    INIT,  // can not trade
-    UPDATED, // can trade
-};
+using SingleMarketData = std::variant<std::size_t, bool, binapi::double_type, std::string>;
 
 // In trading, Single Market Data Feed refers to a data stream 
 // that provides real-time or near-real-time information from 
@@ -40,20 +33,25 @@ enum class MarketDataFeedStatus : unsigned
 class DLL_CLASS_MARKETDATA_EXPORTS SingleMarketDataFeed
 {
 public:
-    SingleMarketDataFeed();
-
     void SetData(const SingleMarketData& newData);
 
     std::size_t GetUnsignedIntData() const;
     bool GetBooleanData() const;
     binapi::double_type GetDoubleMultiprecisionData() const;
     double GetDoubleData() const;
+    std::string GetStringData() const;
     MarketDataFeedStatus GetDataStatus() const;
+
+	inline friend std::ostream& operator<<(std::ostream& os, const SingleMarketDataFeed& o)
+	{
+        std::visit([&os](const auto& value) {
+            os << value;
+            }, o.m_data);
+        return os;
+	}
 private:
     SingleMarketData m_data;
     MarketDataFeedStatus m_mkdataFeedStatus{ MarketDataFeedStatus::INIT };
 };
-
-#define DECLARE_SINGLE_FEED_POINTER(class_var_name) \
-std::unique_ptr<SingleMarketDataFeed> class_var_name {std::make_unique<SingleMarketDataFeed>()};
 };
+

@@ -10,6 +10,12 @@
 
 namespace MarketData
 {
+	enum class MarketDataFeedStatus : unsigned
+	{
+		UNDEF,  // can not trade
+		INIT,  // can not trade
+		UPDATED, // can trade
+	};
 
 	// new enum types
 	enum class IndividualBookTickerID : unsigned
@@ -18,7 +24,7 @@ namespace MarketData
 		BEST_BID_QUANTITY,
 		BEST_ASK_PRICE,
 		BEST_ASK_QUANTITY,
-		EVENT_TIME_MS
+		EVENT_TIME_MS // This is internal update time and always the last one in the enum
 	};
 
 	enum class TradeID : unsigned
@@ -30,7 +36,7 @@ namespace MarketData
 		SELLER_ORDER_ID,
 		TRADE_TIME,
 		IS_BUYER_MARKET_MAKER,
-		EVENT_TIME_MS
+		EVENT_TIME_MS // This is internal update time and always the last one in the enum
 	};
 
 	enum class IndividualMarketTickerID : unsigned
@@ -55,13 +61,12 @@ namespace MarketData
 		FIRST_TRADE_ID,
 		LAST_TRADE_ID,
 		TOTAL_NUMBER_OF_TRADES,
-		EVENT_TIME_MS
+		EVENT_TIME_MS // This is internal update time and always the last one in the enum
 	};
 
-	enum class AllMarketTickersID : unsigned
+	enum class AllBookTickerID : unsigned
 	{
-		TICKERS,
-		EVENT_TIME_MS
+		TICKERS
 	};
 
 	enum class IndividualMiniTickerID : unsigned
@@ -72,13 +77,12 @@ namespace MarketData
 		LOW_PRICE,
 		TOTAL_TRADED_BASE_ASSET_VOLUME,
 		TOTAL_TRADED_QUOTE_ASSET_VOLUME,
-		EVENT_TIME_MS
+		EVENT_TIME_MS // This is internal update time and always the last one in the enum
 	};
 
-	enum class AllMiniTickersID : unsigned
+	enum class AllMiniTickerID : unsigned
 	{
-		TICKERS,
-		EVENT_TIME_MS
+		TICKERS
 	};
 
 	enum class AggregateTradeID : unsigned
@@ -90,7 +94,7 @@ namespace MarketData
 		LAST_TRADE_ID,
 		TRADE_TIME,
 		IS_BUYER_MARKET_MAKER,
-		EVENT_TIME_MS
+		EVENT_TIME_MS // This is internal update time and always the last one in the enum
 	};
 
 	enum class KlineCandleStickID : unsigned
@@ -110,21 +114,7 @@ namespace MarketData
 		QUOTE_ASSET_VOLUME,
 		TAKER_BUY_BASE_ASSET_VOLUME,
 		TAKER_BUY_QUOTE_ASSET_VOLUME,
-		EVENT_TIME_MS
-	};
-
-	enum class PartDepthID : unsigned
-	{
-		PRICE,
-		AMOUNT,
-		EVENT_TIME_MS
-	};
-
-	enum class DiffDepthID : unsigned
-	{
-		PRICE,
-		AMOUNT,
-		EVENT_TIME_MS
+		EVENT_TIME_MS // This is internal update time and always the last one in the enum
 	};
 
 	inline constexpr std::ostream &operator<<(std::ostream &os, const IndividualBookTickerID id)
@@ -187,16 +177,17 @@ namespace MarketData
 		}
 		return os;
 	}
-	inline constexpr std::ostream &operator<<(std::ostream &os, const AllMarketTickersID id)
+
+	inline constexpr std::ostream &operator<<(std::ostream &os, const AllBookTickerID id)
 	{
 		switch (id)
 		{
-			case AllMarketTickersID::TICKERS: os << "TICKERS"; break;
-			case AllMarketTickersID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
+			case AllBookTickerID::TICKERS: os << "TICKERS"; break;
 			default: os << "UNKNOWN_ID"; break;
 		}
 		return os;
 	}
+
 	inline constexpr std::ostream &operator<<(std::ostream &os, const IndividualMiniTickerID id)
 	{
 		switch (id)
@@ -212,16 +203,17 @@ namespace MarketData
 		}
 		return os;
 	}
-	inline constexpr std::ostream &operator<<(std::ostream &os, const AllMiniTickersID id)
+
+	inline constexpr std::ostream &operator<<(std::ostream &os, const AllMiniTickerID id)
 	{
 		switch (id)
 		{
-			case AllMiniTickersID::TICKERS: os << "TICKERS"; break;
-			case AllMiniTickersID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
+			case AllMiniTickerID::TICKERS: os << "TICKERS"; break;
 			default: os << "UNKNOWN_ID"; break;
 		}
 		return os;
 	}
+
 	inline constexpr std::ostream &operator<<(std::ostream &os, const AggregateTradeID id)
 	{
 		switch (id)
@@ -238,6 +230,7 @@ namespace MarketData
 		}
 		return os;
 	}
+
 	inline constexpr std::ostream &operator<<(std::ostream &os, const KlineCandleStickID id)
 	{
 		switch (id)
@@ -258,30 +251,6 @@ namespace MarketData
 			case KlineCandleStickID::TAKER_BUY_BASE_ASSET_VOLUME: os << "TAKER_BUY_BASE_ASSET_VOLUME"; break;
 			case KlineCandleStickID::TAKER_BUY_QUOTE_ASSET_VOLUME: os << "TAKER_BUY_QUOTE_ASSET_VOLUME"; break;
 			case KlineCandleStickID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
-			default: os << "UNKNOWN_ID"; break;
-		}
-		return os;
-	}
-
-	inline constexpr std::ostream &operator<<(std::ostream &os, const PartDepthID id)
-	{
-		switch (id)
-		{
-			case PartDepthID::PRICE: os << "PRICE"; break;
-			case PartDepthID::AMOUNT: os << "AMOUNT"; break;
-			case PartDepthID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
-			default: os << "UNKNOWN_ID"; break;
-		}
-		return os;
-	}
-
-	inline constexpr std::ostream &operator<<(std::ostream &os, const DiffDepthID id)
-	{
-		switch (id)
-		{
-			case DiffDepthID::PRICE: os << "PRICE"; break;
-			case DiffDepthID::AMOUNT: os << "AMOUNT"; break;
-			case DiffDepthID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
 			default: os << "UNKNOWN_ID"; break;
 		}
 		return os;

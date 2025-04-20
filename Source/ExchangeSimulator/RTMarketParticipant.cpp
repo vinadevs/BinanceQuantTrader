@@ -180,11 +180,11 @@ bool RTMarketParticipant::OnIndividualBookTickerChange(MarketDataSubject* market
     if (const auto* data = marketData->GetSynchronousMarketData(symbol))
     {
         UpdateBestMarketBidOrderBook(symbol,
-            data->GetFeed(IndividualBookTickerID::BEST_BID_PRICE)->GetDoubleData(),
-            data->GetFeed(IndividualBookTickerID::BEST_BID_QUANTITY)->GetDoubleData());
+            data->GetSingleFeed(IndividualBookTickerID::BEST_BID_PRICE)->GetDoubleData(),
+            data->GetSingleFeed(IndividualBookTickerID::BEST_BID_QUANTITY)->GetDoubleData());
         UpdateBestMarketAskOrderBook(symbol,
-            data->GetFeed(IndividualBookTickerID::BEST_ASK_PRICE)->GetDoubleData(),
-            data->GetFeed(IndividualBookTickerID::BEST_ASK_QUANTITY)->GetDoubleData());
+            data->GetSingleFeed(IndividualBookTickerID::BEST_ASK_PRICE)->GetDoubleData(),
+            data->GetSingleFeed(IndividualBookTickerID::BEST_ASK_QUANTITY)->GetDoubleData());
     }
     else
     {

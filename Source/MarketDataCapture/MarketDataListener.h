@@ -43,11 +43,18 @@ namespace MarketDataCapture {
         ~MarketDataListener() override;
 
         // book quote for downstream orders
-        bool OnIndividualBookTickerChange(
-            MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+        bool OnIndividualBookTickerChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
         // last trade for downstream orders
-        bool OnTradeChange(
-            MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+        bool OnTradeChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+        bool OnIndividualMarketTickerChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+        bool OnMiniTickerChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+        bool OnAggregateTradeChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+		bool OnKlineCandleStickChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+        bool OnAllMarketTickersChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+        bool OnAllMiniTickersChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+        bool OnAllBookTickersChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+        bool OnAllMarketDepthChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+        bool OnAllMarketDepthDiffChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
     private:
         std::unique_ptr<LibraryUtils::Logger> m_logger;
     };

@@ -78,6 +78,115 @@ bool MarketDataFeedHandler::HandleTradeData(const char* fl, int ec, std::string 
     return false;
 }
 
+bool MarketData::MarketDataFeedHandler::HandleIndividualMarketTickerData(const char* fl, int ec, std::string emsg, binapi::ws::market_ticker_t market)
+{
+	if (ec)
+	{
+		std::cerr << "subscribe market ticker error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		return false;
+	}
+
+	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(market.s))
+	{
+		feed->UpdateIndividualMarketTickerData(market);
+		MarketDataSubject::NotifyIndividualMarketTickerChange(market.s);
+		return true;
+	}
+    else
+    {
+		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + market.s);
+    }
+
+    return false;
+}
+
+bool MarketData::MarketDataFeedHandler::HandleMiniTickerData(const char* fl, int ec, std::string emsg, binapi::ws::mini_ticker_t mini)
+{
+	if (ec)
+	{
+		std::cerr << "subscribe mini ticker error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		return false;
+	}
+
+	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(mini.s))
+	{
+		feed->UpdateMiniTickerData(mini);
+		MarketDataSubject::NotifyMiniTickerChange(mini.s);
+		return true;
+	}
+	else
+	{
+		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + mini.s);
+	}
+
+    return false;
+}
+
+bool MarketData::MarketDataFeedHandler::HandleAggregateTradeData(const char* fl, int ec, std::string emsg, binapi::ws::agg_trade_t aggregate)
+{
+	if (ec)
+	{
+		std::cerr << "subscribe aggregate trade error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		return false;
+	}
+
+	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(aggregate.s))
+	{
+		feed->UpdateAggregateTradeData(aggregate);
+		MarketDataSubject::NotifyAggregateTradeChange(aggregate.s);
+		return true;
+	}
+	else
+	{
+		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + aggregate.s);
+	}
+
+    return false;
+}
+
+bool MarketData::MarketDataFeedHandler::HandleKlineCandleStickData(const char* fl, int ec, std::string emsg, binapi::ws::kline_t kline)
+{
+    if (ec)
+    {
+        std::cerr << "subscribe kline candle stick error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+    }
+
+	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(kline.s))
+	{
+		feed->UpdateKlineCandleStickData(kline);
+		MarketDataSubject::NotifyKlineCandleStickChange(kline.s);
+		return true;
+	}
+	else
+	{
+		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + kline.s);
+	}
+    return false;
+}
+
+bool MarketData::MarketDataFeedHandler::HandleAllDiffDepthData(const char* fl, int ec, std::string emsg, binapi::ws::diff_depths_t depth)
+{
+	if (ec)
+	{
+		std::cerr << "subscribe diff depth error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		return false;
+	}
+
+	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(depth.s))
+	{
+		feed->UpdateAllDiffDepthData(depth);
+		MarketDataSubject::NotifyAllDiffDepthChange(depth.s);
+		return true;
+	}
+	else
+	{
+		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + depth.s);
+	}
+
+    return false;
+}
+
+
 SynchronousMarketData* MarketDataFeedHandler::GetSynchronousMarketData(const std::string& symbol)
 {
     if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(symbol))

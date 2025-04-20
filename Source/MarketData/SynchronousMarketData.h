@@ -12,6 +12,8 @@
 #include "../KernelTrading/double_type.h"
 
 #include "SingleMarketDataFeed.h"
+#include "TableMarketDataFeed.h"
+#include "ArrayMarketDtaFeed.h"
 
 #include <iostream>
 #include <memory>
@@ -23,330 +25,252 @@
 #pragma warning(disable : 4715)
 
 namespace MarketData {
-	inline constexpr std::string_view indentation = "    ";
 	// Level 2 market data: Bid Ask price, quantity
-	class IndividualBookTickerData
+	class DLL_CLASS_MARKETDATA_EXPORTS IndividualBookTickerData
 	{
 	public:
-		DECLARE_SINGLE_FEED_POINTER(m_updateId);
-		DECLARE_SINGLE_FEED_POINTER(m_eventTimeMs); // There is no event time from Binance API, this is internal update time
-		DECLARE_SINGLE_FEED_POINTER(m_bestBidPrice);
-		DECLARE_SINGLE_FEED_POINTER(m_bestBidQty);
-		DECLARE_SINGLE_FEED_POINTER(m_bestAskPrice);
-		DECLARE_SINGLE_FEED_POINTER(m_bestAskQty);
+		// Rule of 5, for class containing unique pointers
+		IndividualBookTickerData();
+		IndividualBookTickerData(const IndividualBookTickerData& other);
+		IndividualBookTickerData& operator=(const IndividualBookTickerData& other);
+		IndividualBookTickerData(IndividualBookTickerData&& other) noexcept = default;
+		IndividualBookTickerData& operator=(IndividualBookTickerData&& other) noexcept = default;
+		~IndividualBookTickerData() = default;
 
-		friend std::ostream& operator<<(std::ostream& os, const IndividualBookTickerData& o)
-		{
-			os
-				<< "{"
-				<< "\"updateId\":\"" << o.m_updateId->GetUnsignedIntData() << "\","
-				<< "\"eventTime\":\"" << o.m_eventTimeMs->GetUnsignedIntData() << "\","
-				<< "\"bestBidPrice\":\"" << o.m_bestBidPrice->GetDoubleMultiprecisionData() << "\","
-				<< "\"bestBidQt\":\"" << o.m_bestBidQty->GetDoubleMultiprecisionData() << "\","
-				<< "\"bestAskPrice\":\"" << o.m_bestAskPrice->GetDoubleMultiprecisionData() << "\","
-				<< "\"bestAskQty\":\"" << o.m_bestAskQty->GetDoubleMultiprecisionData() << "\""
-				<< "}";
+		std::unique_ptr<SingleMarketDataFeed> m_updateId;
+		std::unique_ptr<SingleMarketDataFeed> m_bestBidPrice;
+		std::unique_ptr<SingleMarketDataFeed> m_bestBidQty;
+		std::unique_ptr<SingleMarketDataFeed> m_bestAskPrice;
+		std::unique_ptr<SingleMarketDataFeed> m_bestAskQty;
+		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs; // There is no event time from Binance API, this is internal update time
 
-			return os;
-		}
-};
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const IndividualBookTickerData& o);
+	};
 
 	// Level 1 market data: other trading data: Kline, VWAP, Volume,...
-	class TradeData // trade_t
+	class DLL_CLASS_MARKETDATA_EXPORTS TradeData // trade_t
 	{
 	public:
-		DECLARE_SINGLE_FEED_POINTER(m_eventTimeMs);
-		DECLARE_SINGLE_FEED_POINTER(m_tradeId);
-		DECLARE_SINGLE_FEED_POINTER(m_price);
-		DECLARE_SINGLE_FEED_POINTER(m_quantity);
-		DECLARE_SINGLE_FEED_POINTER(m_buyerOrderID);
-		DECLARE_SINGLE_FEED_POINTER(m_sellerOrderID);
-		DECLARE_SINGLE_FEED_POINTER(m_tradeTime);
-		DECLARE_SINGLE_FEED_POINTER(m_isBuyerTheMarketMaker);
+		// Rule of 5, for class containing unique pointers
+		TradeData();
+		TradeData(const TradeData& other);
+		TradeData& operator=(const TradeData& other);
+		TradeData(TradeData&& other) noexcept = default;
+		TradeData& operator=(TradeData&& other) noexcept = default;
+		~TradeData() = default;
 
-		friend std::ostream& operator<<(std::ostream& os, const TradeData& o)
-		{
-			os
-				<< "{"
-				<< indentation << "\"eventTime\":\"" << o.m_eventTimeMs->GetUnsignedIntData() << "\","
-				<< indentation << "\"tradeId\":\"" << o.m_tradeId->GetUnsignedIntData() << "\","
-				<< indentation << "\"price\":\"" << o.m_price->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"quantity\":\"" << o.m_quantity->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"buyerOrderID\":\"" << o.m_buyerOrderID->GetUnsignedIntData() << "\","
-				<< indentation << "\"sellerOrderID\":\"" << o.m_sellerOrderID->GetUnsignedIntData() << "\","
-				<< indentation << "\"tradeTime\":\"" << o.m_tradeTime->GetUnsignedIntData() << "\","
-				<< indentation << "\"isBuyerTheMarketMaker\":\"" << o.m_isBuyerTheMarketMaker->GetBooleanData() << "\""
-				<< "}";
+		std::unique_ptr<SingleMarketDataFeed> m_tradeId;
+		std::unique_ptr<SingleMarketDataFeed> m_price;
+		std::unique_ptr<SingleMarketDataFeed> m_quantity;
+		std::unique_ptr<SingleMarketDataFeed> m_buyerOrderID;
+		std::unique_ptr<SingleMarketDataFeed> m_sellerOrderID;
+		std::unique_ptr<SingleMarketDataFeed> m_tradeTime;
+		std::unique_ptr<SingleMarketDataFeed> m_isBuyerTheMarketMaker;
+		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
 
-			return os;
-		}
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const TradeData& o);
 	};
 
-	class IndividualMarketTickerData // market_ticker_t
+	class DLL_CLASS_MARKETDATA_EXPORTS IndividualMarketTickerData // market_ticker_t
 	{
 	public:
-		DECLARE_SINGLE_FEED_POINTER(m_eventTimeMs);
-		DECLARE_SINGLE_FEED_POINTER(m_symbol);
-		DECLARE_SINGLE_FEED_POINTER(m_priceChange);
-		DECLARE_SINGLE_FEED_POINTER(m_priceChangePercent);
-		DECLARE_SINGLE_FEED_POINTER(m_weightedAvgPrice);
-		DECLARE_SINGLE_FEED_POINTER(m_firstTradePrice);
-		DECLARE_SINGLE_FEED_POINTER(m_lastPrice);
-		DECLARE_SINGLE_FEED_POINTER(m_lastQuantity);
-		DECLARE_SINGLE_FEED_POINTER(m_bestBidPrice);
-		DECLARE_SINGLE_FEED_POINTER(m_bestBidQty);
-		DECLARE_SINGLE_FEED_POINTER(m_bestAskPrice);
-		DECLARE_SINGLE_FEED_POINTER(m_bestAskQty);
-		DECLARE_SINGLE_FEED_POINTER(m_openPrice);
-		DECLARE_SINGLE_FEED_POINTER(m_highPrice);
-		DECLARE_SINGLE_FEED_POINTER(m_lowPrice);
-		DECLARE_SINGLE_FEED_POINTER(m_totalTradedBaseAssetVolume);
-		DECLARE_SINGLE_FEED_POINTER(m_totalTradedQuoteAssetVolume);
-		DECLARE_SINGLE_FEED_POINTER(m_statisticsOpenTimeMs);
-		DECLARE_SINGLE_FEED_POINTER(m_statisticsCloseTimeMs);
-		DECLARE_SINGLE_FEED_POINTER(m_firstTradeId);
-		DECLARE_SINGLE_FEED_POINTER(m_lastTradeId);
-		DECLARE_SINGLE_FEED_POINTER(m_totalNumberOfTrades);
+		// Rule of 5, for class containing unique pointers
+		IndividualMarketTickerData();
+		IndividualMarketTickerData(const IndividualMarketTickerData& other);
+		IndividualMarketTickerData& operator=(const IndividualMarketTickerData& other);
+		IndividualMarketTickerData(IndividualMarketTickerData&& other) noexcept = default;
+		IndividualMarketTickerData& operator=(IndividualMarketTickerData&& other) noexcept = default;
+		~IndividualMarketTickerData() = default;
 
-		friend std::ostream& operator<<(std::ostream& os, const IndividualMarketTickerData& o)
-		{
-			os
-				<< "{"
-				<< indentation << "\"eventTime\":\"" << o.m_eventTimeMs->GetUnsignedIntData() << "\","
-				<< indentation << "\"priceChange\":\"" << o.m_priceChange->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"priceChangePercent\":\"" << o.m_priceChangePercent->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"weightedAvgPrice\":\"" << o.m_weightedAvgPrice->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"firstTradePrice\":\"" << o.m_firstTradePrice->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"lastPrice\":\"" << o.m_lastPrice->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"lastQuantity\":\"" << o.m_lastQuantity->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"bestBidPrice\":\"" << o.m_bestBidPrice->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"bestBidQty\":\"" << o.m_bestBidQty->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"bestAskPrice\":\"" << o.m_bestAskPrice->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"bestAskQty\":\"" << o.m_bestAskQty->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"openPrice\":\"" << o.m_openPrice->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"highPrice\":\"" << o.m_highPrice->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"lowPrice\":\"" << o.m_lowPrice->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"totalTradedBaseAssetVolume\":\"" << o.m_totalTradedBaseAssetVolume->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"totalTradedQuoteAssetVolume\":\"" << o.m_totalTradedQuoteAssetVolume->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"statisticsOpenTime\":\"" << o.m_statisticsOpenTimeMs->GetUnsignedIntData() << "\","
-				<< indentation << "\"statisticsCloseTime\":\"" << o.m_statisticsCloseTimeMs->GetUnsignedIntData() << "\","
-				<< indentation << "\"firstTradeId\":\"" << o.m_firstTradeId->GetUnsignedIntData() << "\","
-				<< indentation << "\"lastTradeId\":\"" << o.m_lastTradeId->GetUnsignedIntData() << "\","
-				<< indentation << "\"totalNumberOfTrades\":\"" << o.m_totalNumberOfTrades->GetUnsignedIntData() << "\""
-				<< "}";
+		std::unique_ptr<SingleMarketDataFeed> m_priceChange;
+		std::unique_ptr<SingleMarketDataFeed> m_priceChangePercent;
+		std::unique_ptr<SingleMarketDataFeed> m_weightedAvgPrice;
+		std::unique_ptr<SingleMarketDataFeed> m_firstTradePrice;
+		std::unique_ptr<SingleMarketDataFeed> m_lastPrice;
+		std::unique_ptr<SingleMarketDataFeed> m_lastQuantity;
+		std::unique_ptr<SingleMarketDataFeed> m_bestBidPrice;
+		std::unique_ptr<SingleMarketDataFeed> m_bestBidQty;
+		std::unique_ptr<SingleMarketDataFeed> m_bestAskPrice;
+		std::unique_ptr<SingleMarketDataFeed> m_bestAskQty;
+		std::unique_ptr<SingleMarketDataFeed> m_openPrice;
+		std::unique_ptr<SingleMarketDataFeed> m_highPrice;
+		std::unique_ptr<SingleMarketDataFeed> m_lowPrice;
+		std::unique_ptr<SingleMarketDataFeed> m_totalTradedBaseAssetVolume;
+		std::unique_ptr<SingleMarketDataFeed> m_totalTradedQuoteAssetVolume;
+		std::unique_ptr<SingleMarketDataFeed> m_statisticsOpenTimeMs;
+		std::unique_ptr<SingleMarketDataFeed> m_statisticsCloseTimeMs;
+		std::unique_ptr<SingleMarketDataFeed> m_firstTradeId;
+		std::unique_ptr<SingleMarketDataFeed> m_lastTradeId;
+		std::unique_ptr<SingleMarketDataFeed> m_totalNumberOfTrades;
+		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
 
-			return os;
-		}
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const IndividualMarketTickerData& o);
 	};
 
-	class AllMarketTickersData
+	class DLL_CLASS_MARKETDATA_EXPORTS AllMarketTickerData
 	{
 	public:
-		DECLARE_SINGLE_FEED_POINTER(m_eventTimeMs);
+		// Rule of 0
+		AllMarketTickerData();
+		AllMarketTickerData(const AllMarketTickerData& other);
+		AllMarketTickerData& operator=(const AllMarketTickerData& other);
+		AllMarketTickerData(AllMarketTickerData&& other) noexcept = default;
+		AllMarketTickerData& operator=(AllMarketTickerData&& other) noexcept = default;
+		~AllMarketTickerData() = default;
 
-		// TODO: to check the correctness of the map key
-		std::map<std::string, IndividualMarketTickerData> m_tickers; // map of symbol and its data
+		std::unique_ptr <TableMarketDataFeed<IndividualMarketTickerData>> m_allIndividualMarketTicker;
+		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
 
-		friend std::ostream& operator<<(std::ostream& os, const AllMarketTickersData& o)
-		{
-			os
-				<< "{"
-				<< indentation << "\"eventTime\":\"" << o.m_eventTimeMs->GetUnsignedIntData() << "\","
-				<< indentation << "\"tickers\":[";
-
-			for (const auto& ticker : o.m_tickers)
-			{
-				os << indentation << indentation << ticker.second << ",";
-			}
-
-			if (!o.m_tickers.empty())
-			{
-				os.seekp(-1, os.cur); // remove last comma
-			}
-
-			os << indentation << "]";
-			os << "}";
-
-			return os;
-		}
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const AllMarketTickerData& o);
 	};
 
 	class IndividualMiniTickerData
 	{
 	public:
-		DECLARE_SINGLE_FEED_POINTER(m_eventTimeMs);
-		DECLARE_SINGLE_FEED_POINTER(m_closePrice);
-		DECLARE_SINGLE_FEED_POINTER(m_openPrice);
-		DECLARE_SINGLE_FEED_POINTER(m_highPrice);
-		DECLARE_SINGLE_FEED_POINTER(m_lowPrice);
-		DECLARE_SINGLE_FEED_POINTER(m_totalTradedBaseAssetVolume);
-		DECLARE_SINGLE_FEED_POINTER(m_totalTradedQuoteAssetVolume);
+		// Rule of 5, for class containing unique pointers
+		IndividualMiniTickerData();
+		IndividualMiniTickerData(const IndividualMiniTickerData& other);
+		IndividualMiniTickerData& operator=(const IndividualMiniTickerData& other);
+		IndividualMiniTickerData(IndividualMiniTickerData&& other) noexcept = default;
+		IndividualMiniTickerData& operator=(IndividualMiniTickerData&& other) noexcept = default;
+		~IndividualMiniTickerData() = default;
 
-		friend std::ostream& operator<<(std::ostream& os, const IndividualMiniTickerData& o)
-		{
-			os
-				<< "{"
-				<< indentation << "\"eventTime\":\"" << o.m_eventTimeMs->GetUnsignedIntData() << "\","
-				<< indentation << "\"closePrice\":\"" << o.m_closePrice->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"openPrice\":\"" << o.m_openPrice->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"highPrice\":\"" << o.m_highPrice->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"lowPrice\":\"" << o.m_lowPrice->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"totalTradedBaseAssetVolume\":\"" << o.m_totalTradedBaseAssetVolume->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"totalTradedQuoteAssetVolume\":\"" << o.m_totalTradedQuoteAssetVolume->GetDoubleMultiprecisionData() << "\""
-				<< "}";
+		std::unique_ptr<SingleMarketDataFeed> m_closePrice;
+		std::unique_ptr<SingleMarketDataFeed> m_openPrice;
+		std::unique_ptr<SingleMarketDataFeed> m_highPrice;
+		std::unique_ptr<SingleMarketDataFeed> m_lowPrice;
+		std::unique_ptr<SingleMarketDataFeed> m_totalTradedBaseAssetVolume;
+		std::unique_ptr<SingleMarketDataFeed> m_totalTradedQuoteAssetVolume;
+		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
 
-			return os;
-		}
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const IndividualMiniTickerData& o);
 	};
 
-	class AllMiniTickersData
+	class DLL_CLASS_MARKETDATA_EXPORTS AllMiniTickerData
 	{
 	public:
-		DECLARE_SINGLE_FEED_POINTER(m_eventTimeMs);
+		// Rule of 5, for class containing unique pointers
+		AllMiniTickerData();
+		AllMiniTickerData(const AllMiniTickerData& other);
+		AllMiniTickerData& operator=(const AllMiniTickerData& other);
+		AllMiniTickerData(AllMiniTickerData&& other) noexcept = default;
+		AllMiniTickerData& operator=(AllMiniTickerData&& other) noexcept = default;
+		~AllMiniTickerData() = default;
 
-		// TODO: to check the correctness of the map key
-		std::map<std::string, IndividualMiniTickerData> m_tickers; // map of symbol and its data
+		std::unique_ptr <TableMarketDataFeed<IndividualMiniTickerData>> m_tableMarketTicker;
+		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
 
-		friend std::ostream& operator<<(std::ostream& os, const AllMiniTickersData& o)
-		{
-			os
-				<< "{"
-				<< indentation << "\"eventTime\":\"" << o.m_eventTimeMs->GetUnsignedIntData() << "\","
-				<< indentation << "\"tickers\":[";
-
-			for (const auto& ticker : o.m_tickers)
-			{
-				os << indentation << indentation << ticker.second << ",";
-			}
-
-			if (!o.m_tickers.empty())
-			{
-				os.seekp(-1, os.cur); // remove last comma
-			}
-
-			os << indentation << "]";
-			os << "}";
-
-			return os;
-		}
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const AllMiniTickerData& o);
 	};
 
-	class AggregateTradeData
+	class DLL_CLASS_MARKETDATA_EXPORTS AggregateTradeData
 	{
 	public:
-		DECLARE_SINGLE_FEED_POINTER(m_eventTimeMs);
-		DECLARE_SINGLE_FEED_POINTER(m_aggregateTradeId);
-		DECLARE_SINGLE_FEED_POINTER(m_price);
-		DECLARE_SINGLE_FEED_POINTER(m_quantity);
-		DECLARE_SINGLE_FEED_POINTER(m_firstTradeId);
-		DECLARE_SINGLE_FEED_POINTER(m_lastTradeId);
-		DECLARE_SINGLE_FEED_POINTER(m_totalNumberOfTrades);
-		DECLARE_SINGLE_FEED_POINTER(m_tradeTimeMs);
-		DECLARE_SINGLE_FEED_POINTER(m_isBuyerMarketMaker);
+		// Rule of 5, for class containing unique pointers
+		AggregateTradeData();
+		AggregateTradeData(const AggregateTradeData& other);
+		AggregateTradeData& operator=(const AggregateTradeData& other);
+		AggregateTradeData(AggregateTradeData&& other) noexcept = default;
+		AggregateTradeData& operator=(AggregateTradeData&& other) noexcept = default;
+		~AggregateTradeData() = default;
 
-		friend std::ostream& operator<<(std::ostream& os, const AggregateTradeData& o)
-		{
-			os
-				<< "{"
-				<< indentation << "\"eventTime\":\"" << o.m_eventTimeMs->GetUnsignedIntData() << "\","
-				<< indentation << "\"aggregateTradeId\":\"" << o.m_aggregateTradeId->GetUnsignedIntData() << "\","
-				<< indentation << "\"price\":\"" << o.m_price->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"quantity\":\"" << o.m_quantity->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"firstTradeId\":\"" << o.m_firstTradeId->GetUnsignedIntData() << "\","
-				<< indentation << "\"lastTradeId\":\"" << o.m_lastTradeId->GetUnsignedIntData() << "\","
-				<< indentation << "\"totalNumberOfTrades\":\"" << o.m_totalNumberOfTrades->GetUnsignedIntData() << "\","
-				<< indentation << "\"tradeTime\":\"" << o.m_tradeTimeMs->GetUnsignedIntData() << "\","
-				<< indentation << "\"isBuyerTheMarketMaker\":\"" << o.m_isBuyerMarketMaker->GetBooleanData() << "\""
-				<< "}";
+		std::unique_ptr<SingleMarketDataFeed> m_aggregateTradeId;
+		std::unique_ptr<SingleMarketDataFeed> m_price;
+		std::unique_ptr<SingleMarketDataFeed> m_quantity;
+		std::unique_ptr<SingleMarketDataFeed> m_firstTradeId;
+		std::unique_ptr<SingleMarketDataFeed> m_lastTradeId;
+		std::unique_ptr<SingleMarketDataFeed> m_totalNumberOfTrades;
+		std::unique_ptr<SingleMarketDataFeed> m_tradeTimeMs;
+		std::unique_ptr<SingleMarketDataFeed> m_isBuyerMarketMaker;
+		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
 
-			return os;
-		}
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const AggregateTradeData& o);
 	};
 
-	class KlineCandleStickData
+	class DLL_CLASS_MARKETDATA_EXPORTS KlineCandleStickData
 	{
 	public:
-		DECLARE_SINGLE_FEED_POINTER(m_eventTimeMs);
-		DECLARE_SINGLE_FEED_POINTER(m_klineStartTime);
-		DECLARE_SINGLE_FEED_POINTER(m_klineCloseTime);
-		DECLARE_SINGLE_FEED_POINTER(m_interval);
-		DECLARE_SINGLE_FEED_POINTER(m_firstTradeId);
-		DECLARE_SINGLE_FEED_POINTER(m_lastTradeId);
-		DECLARE_SINGLE_FEED_POINTER(m_openPrice);
-		DECLARE_SINGLE_FEED_POINTER(m_closePrice);
-		DECLARE_SINGLE_FEED_POINTER(m_highPrice);
-		DECLARE_SINGLE_FEED_POINTER(m_lowPrice);
-		DECLARE_SINGLE_FEED_POINTER(m_baseAssetVolume);
-		DECLARE_SINGLE_FEED_POINTER(m_numberOfTrades);
-		DECLARE_SINGLE_FEED_POINTER(m_isThisKlineClosed);
-		DECLARE_SINGLE_FEED_POINTER(m_quoteAssetVolume);
-		DECLARE_SINGLE_FEED_POINTER(m_takerBuyBaseAssetVolume);
-		DECLARE_SINGLE_FEED_POINTER(m_takerBuyQuoteAssetVolume);
+		// Rule of 5, for class containing unique pointers
+		KlineCandleStickData();
+		KlineCandleStickData(const KlineCandleStickData& other);
+		KlineCandleStickData& operator=(const KlineCandleStickData& other);
+		KlineCandleStickData(KlineCandleStickData&& other) noexcept = default;
+		KlineCandleStickData& operator=(KlineCandleStickData&& other) noexcept = default;
+		~KlineCandleStickData() = default;
 
-		friend std::ostream& operator<<(std::ostream& os, const KlineCandleStickData& o)
-		{
-			os
-				<< "{"
-				<< indentation << "\"eventTime\":\"" << o.m_eventTimeMs->GetUnsignedIntData() << "\","
-				<< indentation << "\"klineStartTime\":\"" << o.m_klineStartTime->GetUnsignedIntData() << "\","
-				<< indentation << "\"klineCloseTime\":\"" << o.m_klineCloseTime->GetUnsignedIntData() << "\","
-				// << indentation << "\"interval\":\"" << o.m_interval->GetStringData() << "\","
-				<< indentation << "\"firstTradeId\":\"" << o.m_firstTradeId->GetUnsignedIntData() << "\","
-				<< indentation << "\"lastTradeId\":\"" << o.m_lastTradeId->GetUnsignedIntData() << "\","
-				<< indentation << "\"openPrice\":\"" << o.m_openPrice->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"closePrice\":\"" << o.m_closePrice->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"highPrice\":\"" << o.m_highPrice->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"lowPrice\":\"" << o.m_lowPrice->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"baseAssetVolume\":\"" << o.m_baseAssetVolume->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"numberOfTrades\":\"" << o.m_numberOfTrades->GetUnsignedIntData() << "\","
-				<< indentation << "\"isKlineClosed\":\"" << o.m_isThisKlineClosed->GetBooleanData() << "\","
-				<< indentation << "\"quoteAssetVolume\":\"" << o.m_quoteAssetVolume->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"takerBuyBaseAssetVolume\":\"" << o.m_takerBuyBaseAssetVolume->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"takerBuyQuoteAssetVolume\":\"" << o.m_takerBuyQuoteAssetVolume->GetDoubleMultiprecisionData()  << "\""
-				<< "}";
+		std::unique_ptr<SingleMarketDataFeed> m_klineStartTime;
+		std::unique_ptr<SingleMarketDataFeed> m_klineCloseTime;
+		std::unique_ptr<SingleMarketDataFeed> m_interval;
+		std::unique_ptr<SingleMarketDataFeed> m_firstTradeId;
+		std::unique_ptr<SingleMarketDataFeed> m_lastTradeId;
+		std::unique_ptr<SingleMarketDataFeed> m_openPrice;
+		std::unique_ptr<SingleMarketDataFeed> m_closePrice;
+		std::unique_ptr<SingleMarketDataFeed> m_highPrice;
+		std::unique_ptr<SingleMarketDataFeed> m_lowPrice;
+		std::unique_ptr<SingleMarketDataFeed> m_baseAssetVolume;
+		std::unique_ptr<SingleMarketDataFeed> m_numberOfTrades;
+		std::unique_ptr<SingleMarketDataFeed> m_isThisKlineClosed;
+		std::unique_ptr<SingleMarketDataFeed> m_quoteAssetVolume;
+		std::unique_ptr<SingleMarketDataFeed> m_takerBuyBaseAssetVolume;
+		std::unique_ptr<SingleMarketDataFeed> m_takerBuyQuoteAssetVolume;
+		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
 
-			return os;
-		}
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const KlineCandleStickData& o);
 	};
 
-	class PartDepthData
+	class DLL_CLASS_MARKETDATA_EXPORTS DepthData
 	{
 	public:
-		DECLARE_SINGLE_FEED_POINTER(m_eventTimeMs);
-		DECLARE_SINGLE_FEED_POINTER(m_price);
-		DECLARE_SINGLE_FEED_POINTER(m_amount);
+		// Rule of 5, for class containing unique pointers
+		DepthData();
+		DepthData(const DepthData& other);
+		DepthData& operator=(const DepthData& other);
+		DepthData(DepthData&& other) noexcept = default;
+		DepthData& operator=(DepthData&& other) noexcept = default;
+		~DepthData() = default;
 
-		friend std::ostream& operator<<(std::ostream& os, const PartDepthData& o)
-		{
-			os
-				<< "{"
-				<< indentation << "\"eventTime\":\"" << o.m_eventTimeMs->GetUnsignedIntData() << "\","
-				<< indentation << "\"price\":\"" << o.m_price->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"amount\":\"" << o.m_amount->GetDoubleMultiprecisionData() << "\""
-				<< "}";
+		std::unique_ptr<SingleMarketDataFeed> m_price;
+		std::unique_ptr<SingleMarketDataFeed> m_amount;
+		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
 
-			return os;
-		}
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const DepthData& o);
 	};
 
-	class DiffDepthData
+	class DLL_CLASS_MARKETDATA_EXPORTS AllPartDepthData
 	{
 	public:
-		DECLARE_SINGLE_FEED_POINTER(m_eventTimeMs);
-		DECLARE_SINGLE_FEED_POINTER(m_price);
-		DECLARE_SINGLE_FEED_POINTER(m_amount);
+		// Rule of 5, for class containing unique pointers
+		AllPartDepthData();
+		AllPartDepthData(const AllPartDepthData& other);
+		AllPartDepthData& operator=(const AllPartDepthData& other);
+		AllPartDepthData(AllPartDepthData&& other) noexcept = default;
+		AllPartDepthData& operator=(AllPartDepthData&& other) noexcept = default;
+		~AllPartDepthData() = default;
 
-		friend std::ostream& operator<<(std::ostream& os, const DiffDepthData& o)
-		{
-			os
-				<< "{"
-				<< indentation << "\"eventTime\":\"" << o.m_eventTimeMs->GetUnsignedIntData() << "\","
-				<< indentation << "\"price\":\"" << o.m_price->GetDoubleMultiprecisionData() << "\","
-				<< indentation << "\"amount\":\"" << o.m_amount->GetDoubleMultiprecisionData() << "\""
-				<< "}";
+		std::unique_ptr<ArrayMarketDataFeed<DepthData>> m_bids;
+		std::unique_ptr<ArrayMarketDataFeed<DepthData>> m_asks;
+		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
 
-			return os;
-		}
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const AllPartDepthData& o);
+	};
+
+	class DLL_CLASS_MARKETDATA_EXPORTS AllDiffDepthData
+	{
+	public:
+		// Rule of 5, for class containing unique pointers
+		AllDiffDepthData();
+		AllDiffDepthData(const AllDiffDepthData& other);
+		AllDiffDepthData& operator=(const AllDiffDepthData& other);
+		AllDiffDepthData(AllDiffDepthData&& other) noexcept = default;
+		AllDiffDepthData& operator=(AllDiffDepthData&& other) noexcept = default;
+		~AllDiffDepthData() = default;
+
+		std::unique_ptr<SingleMarketDataFeed> m_firstUpdateID;
+		std::unique_ptr<SingleMarketDataFeed> m_finalUpdateID;
+		std::unique_ptr <ArrayMarketDataFeed<DepthData>> m_bids;
+		std::unique_ptr <ArrayMarketDataFeed<DepthData>> m_asks;
+		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const AllDiffDepthData& o);
 	};
 
 	///////////////////////////////////////////////////////////////
@@ -376,34 +300,26 @@ namespace MarketData {
 		IndividualBookTickerData m_individualBookTickerData;
 		TradeData m_tradeData;
 		IndividualMarketTickerData m_individualMarketTickerData;
-		AllMarketTickersData m_allMarketTickersData;
+		AllMarketTickerData m_allMarketTickerData;
 		IndividualMiniTickerData m_individualMiniTickerData;
-		AllMiniTickersData m_allMiniTickersData;
+		AllMiniTickerData m_allMiniTickerData;
 		AggregateTradeData m_aggregateTradeData;
 		KlineCandleStickData m_klineCandleStickData;
-		PartDepthData m_partDepthData;
-		DiffDepthData m_diffDepthData;
+		AllPartDepthData m_allPartDepthData;
+		AllDiffDepthData m_allDiffDepthData;
 
 		template <typename FeedType>
-		SingleMarketDataFeed* GetFeed(const FeedType id) const;
+		SingleMarketDataFeed* GetSingleFeed(const FeedType id) const;
 
 		std::string GetSymbol() const { return m_symbol; }
 
-		friend std::ostream& operator<<(std::ostream& os, const SynchronousMarketData& o)
-		{
-			os
-				<< "{"
-				<< "\"symbol\":\"" << o.m_symbol << "\","
-				<< "}";
-
-			return os;
-		}
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const SynchronousMarketData& o);
 	protected:
 		std::string m_symbol;
 	};
 
 	template <>
-	inline SingleMarketDataFeed* SynchronousMarketData::GetFeed(const IndividualBookTickerID id) const
+	inline SingleMarketDataFeed* SynchronousMarketData::GetSingleFeed(const IndividualBookTickerID id) const
 	{
 		switch (id)
 		{
@@ -424,7 +340,7 @@ namespace MarketData {
 	}
 
 	template <>
-	inline SingleMarketDataFeed* SynchronousMarketData::GetFeed(const TradeID id) const
+	inline SingleMarketDataFeed* SynchronousMarketData::GetSingleFeed(const TradeID id) const
 	{
 		switch (id)
 		{
@@ -449,7 +365,7 @@ namespace MarketData {
 	}
 
 	template <>
-	inline SingleMarketDataFeed* SynchronousMarketData::GetFeed(const IndividualMarketTickerID id) const
+	inline SingleMarketDataFeed* SynchronousMarketData::GetSingleFeed(const IndividualMarketTickerID id) const
 	{
 		switch (id)
 		{
@@ -503,22 +419,7 @@ namespace MarketData {
 	}
 
 	template <>
-	inline SingleMarketDataFeed* SynchronousMarketData::GetFeed(const AllMarketTickersID id) const
-	{
-		switch (id)
-		{
-		case AllMarketTickersID::TICKERS:
-			return m_allMarketTickersData.m_tickers.begin()->second.m_eventTimeMs.get();
-		case AllMarketTickersID::EVENT_TIME_MS:
-			return m_allMarketTickersData.m_eventTimeMs.get();
-		default:
-			break;
-		}
-		return nullptr;
-	}
-
-	template <>
-	inline SingleMarketDataFeed* SynchronousMarketData::GetFeed(const IndividualMiniTickerID id) const
+	inline SingleMarketDataFeed* SynchronousMarketData::GetSingleFeed(const IndividualMiniTickerID id) const
 	{
 		switch (id)
 		{
@@ -541,22 +442,7 @@ namespace MarketData {
 	}
 
 	template <>
-	inline SingleMarketDataFeed* SynchronousMarketData::GetFeed(const AllMiniTickersID id) const
-	{
-		switch (id)
-		{
-		case AllMiniTickersID::TICKERS:
-			return m_allMiniTickersData.m_tickers.begin()->second.m_eventTimeMs.get();
-		case AllMiniTickersID::EVENT_TIME_MS:
-			return m_allMiniTickersData.m_eventTimeMs.get();
-		default:
-			break;
-		}
-		return nullptr;
-	}
-
-	template <>
-	inline SingleMarketDataFeed* SynchronousMarketData::GetFeed(const AggregateTradeID id) const
+	inline SingleMarketDataFeed* SynchronousMarketData::GetSingleFeed(const AggregateTradeID id) const
 	{
 		switch (id)
 		{
@@ -581,7 +467,7 @@ namespace MarketData {
 	}
 
 	template <>
-	inline SingleMarketDataFeed* SynchronousMarketData::GetFeed(const KlineCandleStickID id) const
+	inline SingleMarketDataFeed* SynchronousMarketData::GetSingleFeed(const KlineCandleStickID id) const
 	{
 		switch (id)
 		{
@@ -615,40 +501,6 @@ namespace MarketData {
 			return m_klineCandleStickData.m_takerBuyBaseAssetVolume.get();
 		case KlineCandleStickID::TAKER_BUY_QUOTE_ASSET_VOLUME:
 			return m_klineCandleStickData.m_takerBuyQuoteAssetVolume.get();
-		default:
-			break;
-		}
-		return nullptr;
-	}
-
-	template <>
-	inline SingleMarketDataFeed* SynchronousMarketData::GetFeed(const PartDepthID id) const
-	{
-		switch (id)
-		{
-		case PartDepthID::PRICE:
-			return m_partDepthData.m_price.get();
-		case PartDepthID::AMOUNT:
-			return m_partDepthData.m_amount.get();
-		case PartDepthID::EVENT_TIME_MS:
-			return m_partDepthData.m_eventTimeMs.get();
-		default:
-			break;
-		}
-		return nullptr;
-	}
-
-	template <>
-	inline SingleMarketDataFeed* SynchronousMarketData::GetFeed(const DiffDepthID id) const
-	{
-		switch (id)
-		{
-		case DiffDepthID::PRICE:
-			return m_diffDepthData.m_price.get();
-		case DiffDepthID::AMOUNT:
-			return m_diffDepthData.m_amount.get();
-		case DiffDepthID::EVENT_TIME_MS:
-			return m_diffDepthData.m_eventTimeMs.get();
 		default:
 			break;
 		}
