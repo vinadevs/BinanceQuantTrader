@@ -49,6 +49,7 @@ namespace OrderManagement {
 		const std::string LimitPrice = "LimitPrice";
 		const std::string FilledAmount = "FilledAmount";
 		const std::string FilledPrice = "FilledPrice";
+		const std::string RemainingAmount = "RemainingAmount";
 		const std::string ClientOrderId = "ClientOrderId";
 		const std::string StopPrice = "StopPrice";
 		const std::string IcebergAmount = "IcebergAmount";

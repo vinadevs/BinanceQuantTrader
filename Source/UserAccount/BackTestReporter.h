@@ -20,8 +20,8 @@ namespace ComplianceNRegulatory {
     class BinanceExchangeProfileMgr;
 }
 
-namespace PortfolioManager {
-    class PortfolioInvestmentBinance;
+namespace OrderManagement {
+    class PositionManager;
 }
 
 namespace UserAccount {
@@ -40,7 +40,7 @@ namespace UserAccount {
             const tinyxml2::XMLElement* reportConfigXml,
             binapi::rest::account_info_t* accountInfo,
             ComplianceNRegulatory::BinanceExchangeProfileMgr* exchangeProfileMgr,
-            PortfolioManager::PortfolioInvestmentBinance* portfolio);
+            OrderManagement::PositionManager* positionManager);
         BackTestReporter() = default;
         ~BackTestReporter() override;
         void SetupReporter(const tinyxml2::XMLElement* reportCfg) override;

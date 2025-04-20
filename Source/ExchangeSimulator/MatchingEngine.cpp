@@ -167,7 +167,7 @@ void MatchingEngine::ProcessIncommingOrders()
 
 				if (std::holds_alternative<BinanceNewOrder>(order))
 				{
-					m_logger->Info("From order matching engine, looking for liquidity, " + orderInfoStr);
+					m_logger->Info("From order matching engine, looking for liquidity for order=" + orderInfoStr);
 
 					auto& newOrder = std::get<BinanceNewOrder>(order);
 					if (m_participant->TryToMatchOrder(newOrder))
@@ -178,19 +178,26 @@ void MatchingEngine::ProcessIncommingOrders()
 				}
 				else if (std::holds_alternative<BinanceCancelOrder>(order))
 				{
-					m_logger->Info("From upstream order queue, cancelling, " + orderInfoStr);
+					m_logger->Info("From upstream order queue, cancelling order=" + orderInfoStr);
 					auto& cancelOrder = std::get<BinanceCancelOrder>(order);
-					m_upstreamOrderQueueMgr->RemoveOrder(cancelOrder.GetOrigClientOrderId());
+					if (m_upstreamOrderQueueMgr->RemoveOrder(cancelOrder.GetOrigClientOrderId()))
+					{
+						PostProcessingMatchedCancelOrder(cancelOrder);
+					}
+					else
+					{
+						m_logger->Info("Failed to cancell order=" + orderInfoStr);
+					}
 				}
 				else if (std::holds_alternative<BinanceReplaceOrder>(order))
 				{
-					m_logger->Info("From upstream order queue, replacing, " + orderInfoStr);
+					m_logger->Info("From upstream order queue, replacing order=" + orderInfoStr);
 					auto& replaceOrder = std::get<BinanceReplaceOrder>(order);
 					m_upstreamOrderQueueMgr->ReplaceOrder(replaceOrder.GetOrigClientOrderId(), replaceOrder);
 				}
 				else if (std::holds_alternative<BinanceQueryOrder>(order))
 				{
-					m_logger->Info("From upstream order queue, querying, " + orderInfoStr);
+					m_logger->Info("From upstream order queue, querying order=" + orderInfoStr);
 
 					auto& queryOrder = std::get<BinanceQueryOrder>(order);
 					auto foundOrder = m_upstreamOrderQueueMgr->LookupOrder(queryOrder.GetOrigClientOrderId());
@@ -351,7 +358,7 @@ void MatchingEngine::PostProcessingMatchedNewOrder(BinanceNewOrder& order)
 	if (order.GetOrderStatus() == BinanceNewOrderStatus::FULL_FILLED)
 	{
 		m_logger->Info("Full filled order info: " + order.ToStringAck());
-		m_logger->Info("Sending full fill execution ack to upstream...");
+		m_logger->Info("Sending filled fill execution ack to upstream...");
 		// Notify the involved parties of the trade execution.
 		const auto ack = AckUtils::CreateFilledOrderAck(order, "Filled");
 		UpstreamGateWay->SendDownstreamOrderAck(ack);
@@ -360,9 +367,9 @@ void MatchingEngine::PostProcessingMatchedNewOrder(BinanceNewOrder& order)
 	else if (order.GetOrderStatus() == BinanceNewOrderStatus::PRTIAL_FILLED)
 	{
 		m_logger->Info("Partial filled order info: " + order.ToStringAck());
-		m_upstreamOrderQueueMgr->PushOrderToQueue(order.GetClientOrderId(), order); // move to back of the queue
+		m_upstreamOrderQueueMgr->PushOrderToQueue(clientOrderId, order); // move to back of the queue
 		// Notify the involved parties of the trade execution.
-		m_logger->Info("Sending partial fill execution ack to upstream...");
+		m_logger->Info("Sending partial filled execution ack to upstream...");
 		const auto ack = AckUtils::CreateFilledOrderAck(order, "Parital filled");
 		UpstreamGateWay->SendDownstreamOrderAck(ack);
 	}
@@ -371,8 +378,31 @@ void MatchingEngine::PostProcessingMatchedNewOrder(BinanceNewOrder& order)
 	else if (order.GetOrderStatus() == BinanceNewOrderStatus::WAITING_FOR_FILL &&
 		     order.GetTimeInForce() == binapi::e_time::GTC)
 	{
-		//m_logger->Info("Tried to match but order has no liquidity from market: " + order.ToStringOrder());
-		m_upstreamOrderQueueMgr->PushOrderToQueue(order.GetClientOrderId(), order); // move to back of the queue
+		if (order.GetTimeInForce() == binapi::e_time::GTC)
+		{
+			m_upstreamOrderQueueMgr->PushOrderToQueue(clientOrderId, order); // move to back of the queue
+		}
+		else
+		{
+			m_logger->Info("Tried to match but order has no liquidity from market: " + order.ToStringOrder());
+		}
+	}
+	else
+	{
+		m_logger->Info("Unknown order status: " + order.ToStringOrder());
+	}
+}
+
+void MatchingEngine::PostProcessingMatchedCancelOrder(BinanceCancelOrder& order)
+{
+	const auto& clientOrderId = order.GetClientOrderId();
+	if (order.GetOrderStatus() == BinanceCancelOrderStatus::FILLED)
+	{
+		m_logger->Info("Cancelled order info: " + order.ToStringAck());
+		m_logger->Info("Sending cancelled execution ack to upstream...");
+		// Notify the involved parties of the trade execution.
+		const auto ack = AckUtils::CreateCancelledOrderAck(order, "Cancelled");
+		UpstreamGateWay->SendDownstreamOrderAck(ack);
 	}
 }
 

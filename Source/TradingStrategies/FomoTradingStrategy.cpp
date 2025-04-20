@@ -141,13 +141,13 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 			{
 				m_logger->Info("Creating order parameters for symbol=" + hints->symbol);
 				const auto orderParammeter = m_orderParammeterGenerator->Generate(hints);
-				if (m_trader->CreateNewPosition(orderParammeter))
+				if (orderParammeter.has_value() && m_trader->CreateNewPosition(orderParammeter.value()))
 				{
-					if (orderParammeter.m_side == binapi::e_side::buy)
+					if (orderParammeter->m_side == binapi::e_side::buy)
 					{
 						m_logger->Info("Created a new [Long Position] for symbol=" + hints->symbol);
 					}
-					else if (orderParammeter.m_side == binapi::e_side::sell)
+					else if (orderParammeter->m_side == binapi::e_side::sell)
 					{
 						m_logger->Info("Created a new [Short Position] for symbol=" + hints->symbol);
 					}

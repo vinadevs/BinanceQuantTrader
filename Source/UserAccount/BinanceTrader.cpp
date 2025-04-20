@@ -64,10 +64,10 @@ BinanceTrader::BinanceTrader(
 	m_positionManager = std::make_unique<PositionManager>();
 #if USE_BACK_TEST_TRADING
 	m_exchangeReporter = std::make_unique<BackTestReporter>(
-		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_portfolio);
+		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_positionManager.get());
 #else
 	m_exchangeReporter = std::make_unique<BinanceReporter>(
-		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_portfolio);
+		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_positionManager.get());
 #endif
 }
 
@@ -239,20 +239,30 @@ void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessag
 	}
 	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::FilledNewOrderAck)
 	{
-		const std::string clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
-		const std::string orderStatus = message.GetStringValueByTag(FieldLabels::OrderStatus);
 		// Updates the trader’s position.
-		if (BinanceNewOrder::GetOrderStatusEnum(orderStatus) == BinanceNewOrderStatus::FULL_FILLED &&
-			m_positionManager->CloseOpenedPositionUpstreamOrder(clientOrderId))
-		{
-			m_logger->Info("Closed full filled upstream position for clientOrderId=" + clientOrderId);
-			// Updates the trader’s portfolio, balancing asset holding.
-			m_portfolio->UpdateBinanceAccountInfo();
-		}
+		const auto clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
+		const auto symbol = message.GetStringValueByTag(FieldLabels::Symbol);
+		const auto filledAmount = message.GetDoubleValueByTag(FieldLabels::FilledAmount);
+		const auto filledPrice = message.GetDoubleValueByTag(FieldLabels::FilledPrice);
+		const auto remainingAmount = message.GetDoubleValueByTag(FieldLabels::RemainingAmount);
+		const auto updateTime = message.GetIntValueByTag(FieldLabels::UpdateTime);
+		const auto orderStatus = BinanceNewOrder::GetOrderStatusEnum(
+			message.GetStringValueByTag(FieldLabels::OrderStatus));
+		m_positionManager->UpdateNewOrderExecutionStatus(
+			clientOrderId, symbol, filledAmount, filledPrice, remainingAmount, updateTime, orderStatus);
+		// Updates the portfolio manager’s account information.
+		m_portfolio->UpdateBinanceAccountInfo();
 	}
 	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::CancelledOrderAck)
 	{
-
+		// Updates the trader’s position.
+		const auto clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
+		const auto symbol = message.GetStringValueByTag(FieldLabels::Symbol);
+		const auto updateTime = message.GetIntValueByTag(FieldLabels::UpdateTime);
+		const auto orderStatus = BinanceCancelOrder::GetOrderStatusEnum(
+			message.GetStringValueByTag(FieldLabels::OrderStatus));
+		m_positionManager->UpdateOrderCancellingStatus(
+			clientOrderId, symbol, updateTime, orderStatus);
 	}
 	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::ReplacedOrderAck)
 	{

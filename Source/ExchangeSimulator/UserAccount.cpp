@@ -11,13 +11,13 @@
 #include "../SettingNConfig/tinyxml2.h"
 #include "../LibraryUtils/FileUtils.h"
 #include "../LibraryUtils/PathUtils.h"
+#include "../LibraryUtils/TimeUtils.h"
 #include "../KernelTrading/flatjson.h"
 #include "../StaticData/StaticDataManager.h"
 
 #include "UserAccount.h"
 
 #include <algorithm>
-#include <chrono>
 #include <cassert>
 
 using namespace ExchangeSimulator;
@@ -50,7 +50,7 @@ UserAccount::UserAccount(
                 child->DoubleAttribute("FreeAmount"),
                 child->DoubleAttribute("LockAmount")));
     }
-    m_updateTime = static_cast<std::size_t>(std::chrono::system_clock::now().time_since_epoch().count());
+    m_updateTime = TimeUtils::GetEpochTimeTickNow();
     EnableUserAccountControls();
 	// init account info from json file
     const std::string accountInfoJsonStr = FileUtils::ReadFileContent(accountInfoJsonFile);
@@ -60,7 +60,7 @@ UserAccount::UserAccount(
 
 std::size_t UserAccount::GetUpdateTime() const
 {
-    return static_cast<std::size_t>(std::chrono::system_clock::now().time_since_epoch().count());
+    return TimeUtils::GetEpochTimeTickNow();
 }
 
 bool UserAccount::IsAccountEligibleToWithdraw() const
@@ -99,13 +99,13 @@ AssetBalance& UserAccount::LookupAssetBalance(const AssetSymbol& symbol)
 
 void UserAccount::EnableUserAccountControls()
 {
-    m_updateTime = static_cast<std::size_t>(std::chrono::system_clock::now().time_since_epoch().count());
+    m_updateTime = TimeUtils::GetEpochTimeTickNow();
     m_canTrade = m_canDeposit = m_canWithdraw = true;
 }
 
 void UserAccount::DisableUserAccountControls()
 {
-    m_updateTime = static_cast<std::size_t>(std::chrono::system_clock::now().time_since_epoch().count());
+    m_updateTime = TimeUtils::GetEpochTimeTickNow();
     m_canTrade = m_canDeposit = m_canWithdraw = false;
 }
 

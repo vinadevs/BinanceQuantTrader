@@ -15,7 +15,7 @@
 #include "../LibraryUtils/PathUtils.h"
 #include "../LibraryUtils/StringUtils.h"
 #include "../SettingNConfig/tinyxml2.h"
-#include "../PortfolioManager/PortfolioInvestmentBinance.h"
+#include "../OrderManagement/PositionManager.h"
 #include "../ComplianceNRegulatory/BinanceExchangeProfile.h"
 
 #include "ReportAPIs.h"
@@ -26,15 +26,15 @@
 #include <filesystem>
 
 using namespace UserAccount;
-using namespace PortfolioManager;
+using namespace OrderManagement;
 using namespace RestAPI;
 
 BinanceReporter::BinanceReporter(
 	const tinyxml2::XMLElement* reportConfigXml,
 	binapi::rest::account_info_t* accountInfo,
 	ComplianceNRegulatory::BinanceExchangeProfileMgr* exchangeProfileMgr,
-	PortfolioInvestmentBinance* portfolio)
-	: ExchangeReporter(accountInfo, exchangeProfileMgr, portfolio)
+	PositionManager* positionManager)
+	: ExchangeReporter(accountInfo, exchangeProfileMgr, positionManager)
 {
 	m_logger = std::make_unique<LibraryUtils::Logger>("BinanceReporter");
 	SetupReporter(reportConfigXml);

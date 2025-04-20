@@ -9,6 +9,7 @@
 #include "pch.h"
 
 #include "../OrderManagement/OrderCreator.h"
+#include "../OrderManagement/FieldLabels.h"
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/GeneralUtils.h"
 #include "../LibraryUtils/StringDefinitions.h"
@@ -100,6 +101,29 @@ bool PositionManager::CloseOpenedPositionUpstreamOrder(const std::string& client
 bool PositionManager::CloseAllOpenedPositions()
 {
     return m_workedOrderManager->RemoveAllNewOrders();
+}
+
+void PositionManager::UpdateNewOrderExecutionStatus(
+    const std::string& clientOrderId,
+    const std::string& symbol, 
+    const double filledAmount, 
+    const double filledPrice, 
+    const double remainingAmount,
+    const std::size_t updateTime,
+    const BinanceNewOrderStatus orderStatus)
+{
+    m_workedOrderManager->UpdateNewOrderExecutionStatus(
+        clientOrderId, symbol, filledAmount, filledPrice, remainingAmount, updateTime, orderStatus);
+}
+
+void PositionManager::UpdateOrderCancellingStatus(
+    const std::string& clientOrderId,
+    const std::string& symbol, 
+    const std::size_t updateTime, 
+    const BinanceCancelOrderStatus orderStatus)
+{
+    m_workedOrderManager->UpdateOrderCancellingStatus(
+        clientOrderId, symbol, updateTime, orderStatus);
 }
 
 bool PositionManager::CloseAllOpenedPositionsBySide(const binapi::e_side posSide)

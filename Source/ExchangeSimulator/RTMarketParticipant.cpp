@@ -11,6 +11,7 @@
 #include "../MarketData/MarketDataSubject.h"
 #include "../MarketData/SynchronousMarketData.h"
 #include "../LibraryUtils/Logger.h"
+#include "../LibraryUtils/TimeUtils.h"
 
 #include "ExchangeRuleAndCompliance.h"
 #include "RTMarketParticipant.h"
@@ -20,6 +21,8 @@
 using namespace ExchangeSimulator;
 using namespace OrderManagement;
 using namespace MarketData;
+
+static constexpr double ZERO_DOUBLE_VALUE = 0;
 
 RTMarketParticipant::RTMarketParticipant(
     const size_t maxDownstreamOrderBookSize,
@@ -86,11 +89,23 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
                         * ExchangeRuleMgr->GetMakerCommission() * ExchangeRuleMgr->GetTakerCommission()));
                     // 3. update filled ack
                     newUpstreamOrder.SetFilledAmount(newUpstreamOrder.GetAmount());
+					newUpstreamOrder.SetRemainingAmount(ZERO_DOUBLE_VALUE);
                     newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::FULL_FILLED);
                 }
                 else if (bestExchangeBidOrder.m_quantity < newUpstreamOrder.GetAmount()) // PARTIAL FILL ORDER
                 {
+                    // update amount for traded asset
+                    // 1. increasing crypto asset coin amount
+                    auto& assetBalance = userAccount->LookupAssetBalance(newUpstreamOrder.GetSymbol());
+                    assetBalance.m_free += bestExchangeBidOrder.m_quantity;
+                    // 2. decreasing stable coin amount
+                    userAccount->m_usdtBalance.m_usdtAmount
+                        -= (Finance::CalculateTradeValue(bestExchangeBidOrder.m_quantity, bestExchangeBidOrder.m_price)
+                            + (Finance::CalculateTradeValue(bestExchangeBidOrder.m_quantity, bestExchangeBidOrder.m_price)
+                                * ExchangeRuleMgr->GetMakerCommission() * ExchangeRuleMgr->GetTakerCommission()));
+                    // 3. update filled ack
                     newUpstreamOrder.SetFilledAmount(bestExchangeBidOrder.m_quantity);
+                    newUpstreamOrder.SetRemainingAmount(newUpstreamOrder.GetAmount() - bestExchangeBidOrder.m_quantity);
                     newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::PRTIAL_FILLED);
                 }
             }
@@ -131,15 +146,27 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
                     userAccount->m_usdtBalance.m_usdtAmount
                         += (Finance::CalculateTradeValue(newUpstreamOrder.GetAmount(), bestExchangeAskOrder.m_price) 
                         - (Finance::CalculateTradeValue(newUpstreamOrder.GetAmount(), bestExchangeAskOrder.m_price) 
-                        * ExchangeRuleMgr->GetMakerCommission() * ExchangeRuleMgr->GetTakerCommission()));
-
+                    * ExchangeRuleMgr->GetMakerCommission() * ExchangeRuleMgr->GetTakerCommission()));
                     newUpstreamOrder.SetFilledAmount(newUpstreamOrder.GetAmount());
+                    newUpstreamOrder.SetRemainingAmount(ZERO_DOUBLE_VALUE);
                     newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::FULL_FILLED);
+                    newUpstreamOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
                 }
                 else if (bestExchangeAskOrder.m_quantity < newUpstreamOrder.GetAmount()) // PARTIAL FILL ORDER
                 {
+                    // update amount for traded asset
+                // 1. decreasing crypto asset coin amount
+                    auto& assetBalance = userAccount->LookupAssetBalance(newUpstreamOrder.GetSymbol());
+                    assetBalance.m_free -= bestExchangeAskOrder.m_quantity;
+                    // 2. increasing stable coin amount
+                    userAccount->m_usdtBalance.m_usdtAmount
+                        += (Finance::CalculateTradeValue(bestExchangeAskOrder.m_quantity, bestExchangeAskOrder.m_price)
+                            - (Finance::CalculateTradeValue(bestExchangeAskOrder.m_quantity, bestExchangeAskOrder.m_price)
+                                * ExchangeRuleMgr->GetMakerCommission() * ExchangeRuleMgr->GetTakerCommission()));
                     newUpstreamOrder.SetFilledAmount(bestExchangeAskOrder.m_quantity);
+                    newUpstreamOrder.SetRemainingAmount(newUpstreamOrder.GetAmount() - bestExchangeAskOrder.m_quantity);
                     newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::PRTIAL_FILLED);
+                    newUpstreamOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
                 }
             }
         }

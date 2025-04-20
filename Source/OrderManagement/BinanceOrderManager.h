@@ -12,6 +12,9 @@
 #include "../KernelTrading/double_type.h"
 #include "../RestAPI/RestAPI.h"
 
+#include "BinanceNewOrder.h"
+#include "BinanceCancelOrder.h"
+
 #include <string>
 #include <memory>
 #include <unordered_map>
@@ -129,11 +132,27 @@ namespace OrderManagement {
 
 		const OrderList<BinanceQueryOrder>& GetQueryOrders() const;
 
-		std::vector<BinanceNewOrder*> GetOrdersOfSymbol(const std::string& symbol) const;
+		std::vector<BinanceNewOrder*> GetOrdersOfSymbol(const std::string& symbol);
 
 		binapi::double_type GetWeightedAveragePrice(
 			const std::string& symbol,
 			const binapi::e_side side);
+ 
+        void UpdateNewOrderExecutionStatus(
+           const std::string& clientOrderId, 
+           const std::string& symbol, 
+           const double filledAmount, 
+           const double filledPrice,
+           const double remainingAmount,
+           const std::size_t updateTime,
+           const BinanceNewOrderStatus orderStatus);
+
+        void UpdateOrderCancellingStatus(
+           const std::string& clientOrderId,
+           const std::string& symbol,
+           const std::size_t updateTime,
+           const BinanceCancelOrderStatus orderStatus);
+
     private:
         std::unique_ptr<LibraryUtils::Logger> m_logger;
         OrderList<BinanceNewOrder> m_newOrders;

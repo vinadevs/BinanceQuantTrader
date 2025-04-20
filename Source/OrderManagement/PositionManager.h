@@ -16,7 +16,6 @@
 
 #include <string>
 #include <memory>
-#include <mutex>
 
 namespace LibraryUtils {
     class Logger;
@@ -87,11 +86,29 @@ namespace OrderManagement {
 			return m_workedOrderManager->GetWeightedAveragePrice(symbol, posSide);
 		}
 
+		// Execution of all new worked orders
+		void UpdateNewOrderExecutionStatus(
+			const std::string& clientOrderId,
+			const std::string& symbol,
+			const double filledAmount,
+			const double filledPrice,
+			const double remainingAmount,
+			const std::size_t updateTime,
+			const BinanceNewOrderStatus orderStatus);
+
+		// Execution of all cancel orders
+		void UpdateOrderCancellingStatus(
+			const std::string& clientOrderId,
+			const std::string& symbol,
+			const std::size_t updateTime,
+			const BinanceCancelOrderStatus orderStatus);
+
 	private:
-		std::mutex m_mutex;
         std::unique_ptr<LibraryUtils::Logger> m_logger;
 		std::unique_ptr<OrderCreator> m_orderCreator;
+		// Order list before sending to exchange
 		std::unique_ptr<OrderManagement::BinanceOrderManager> m_workedOrderManager;
+		// Order list after sending failed to exchange
 		std::unique_ptr<OrderManagement::BinanceOrderManager> m_unworkedOrderManager;
 	};
 };

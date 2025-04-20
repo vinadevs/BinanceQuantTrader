@@ -135,10 +135,6 @@ std::string BinanceNewOrder::GetOrderStatusStr() const
         return "PRTIAL_FILLED";
     case BinanceNewOrderStatus::FULL_FILLED:
         return "FULL_FILLED";
-    case BinanceNewOrderStatus::CANCELLED:
-        return "CANCELLED";
-    case BinanceNewOrderStatus::REPLACED:
-        return "REPLACED";
     default:
         return "UNDEF";
     };
@@ -150,8 +146,6 @@ BinanceNewOrderStatus BinanceNewOrder::GetOrderStatusEnum(const std::string stat
     else if (status == "WAITING_FOR_FILL") return BinanceNewOrderStatus::WAITING_FOR_FILL;
     else if (status == "PRTIAL_FILLED") return BinanceNewOrderStatus::PRTIAL_FILLED;
     else if (status == "FULL_FILLED") return BinanceNewOrderStatus::FULL_FILLED;
-    else if (status == "CANCELLED") return BinanceNewOrderStatus::CANCELLED;
-    else if (status == "REPLACED") return BinanceNewOrderStatus::REPLACED;
     return BinanceNewOrderStatus::UNDEF;
 }
 

@@ -24,9 +24,6 @@ namespace OrderManagement {
         WAITING_FOR_FILL,
         PRTIAL_FILLED,
         FULL_FILLED,
-        CANCELLED,
-        REPLACED,
-        REJECTED,
     };
 
     // Type of new order

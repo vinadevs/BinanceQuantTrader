@@ -24,8 +24,8 @@ namespace ComplianceNRegulatory {
 	class BinanceExchangeProfileMgr;
 }
 
-namespace PortfolioManager {
-	class PortfolioInvestmentBinance;
+namespace OrderManagement {
+	class PositionManager;
 }
 
 namespace UserAccount {
@@ -37,10 +37,10 @@ namespace UserAccount {
 		ExchangeReporter(
 			binapi::rest::account_info_t* accountInfo,
 			ComplianceNRegulatory::BinanceExchangeProfileMgr* exchangeProfileMgr,
-			PortfolioManager::PortfolioInvestmentBinance* portfolio)
+			OrderManagement::PositionManager* positionManager)
 			: m_accountInfo(accountInfo),
 			m_exchangeProfileMgr(exchangeProfileMgr),
-			m_portfolio(portfolio) {}
+			m_positionManager(positionManager) {}
 
 		virtual ~ExchangeReporter() {};
 
@@ -59,7 +59,7 @@ namespace UserAccount {
 		virtual bool MergeLocalAndRemmoteReport() = 0;
 
 		ComplianceNRegulatory::BinanceExchangeProfileMgr* m_exchangeProfileMgr{ nullptr };
-		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr };
+		OrderManagement::PositionManager* m_positionManager{ nullptr };
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
 
 		bool m_enableLastDayTradeReporter{ false };

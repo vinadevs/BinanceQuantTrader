@@ -262,8 +262,9 @@ const OrderList<BinanceQueryOrder>& BinanceOrderManager::GetQueryOrders() const
 	return m_queryOrders;
 }
 
-std::vector<BinanceNewOrder*> BinanceOrderManager::GetOrdersOfSymbol(const std::string& symbol) const
+std::vector<BinanceNewOrder*> BinanceOrderManager::GetOrdersOfSymbol(const std::string& symbol)
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
     std::vector<BinanceNewOrder*> ordersOfSymbol;
 	for (const auto& order : m_newOrders)
 	{
@@ -279,6 +280,7 @@ binapi::double_type BinanceOrderManager::GetWeightedAveragePrice(
     const std::string& symbol,
     const binapi::e_side side)
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
 	binapi::double_type totalPrice = 0.0;
 	binapi::double_type totalAmount = 0.0;
 	for (const auto& order : m_newOrders)
@@ -296,4 +298,62 @@ binapi::double_type BinanceOrderManager::GetWeightedAveragePrice(
 		return totalPrice / totalAmount;
 	}
 	return INVALID_PRICE;
+}
+
+void BinanceOrderManager::UpdateNewOrderExecutionStatus(
+    const std::string& clientOrderId, 
+    const std::string& symbol, 
+    const double filledAmount, 
+    const double filledPrice, 
+    const double remainingAmount,
+    const std::size_t updateTime,
+    const BinanceNewOrderStatus orderStatus)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    auto it = m_newOrders.find(clientOrderId);
+    if (it != m_newOrders.end()) {
+        auto& order = it->second;
+        if (order->GetSymbol() == symbol) {
+            order->SetFilledAmount(filledAmount);
+            order->SetFilledPrice(filledPrice);
+            order->SetRemainingAmount(remainingAmount);
+            order->SetUpdateTime(updateTime);
+            order->SetOrderStatus(orderStatus);
+            LOG_INFO_STREAM(m_logger, "Order with clientOrderId '" << clientOrderId <<
+                ", symbol '" << symbol
+                << "' updated successfully.");
+        } else {
+            LOG_WARNING_STREAM(m_logger, "Symbol mismatch for order with clientOrderId '" 
+                << ", symbol '" << symbol << clientOrderId << "'. Update skipped.");
+        }
+    } else {
+        LOG_WARNING_STREAM(m_logger, "No new order found with clientOrderId '" 
+            << clientOrderId << "'. Update failed.");
+    }
+}
+
+void OrderManagement::BinanceOrderManager::UpdateOrderCancellingStatus(
+    const std::string& clientOrderId, 
+    const std::string& symbol,
+    const std::size_t updateTime,
+    const BinanceCancelOrderStatus orderStatus)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    auto it = m_cancelOrders.find(clientOrderId);
+    if (it != m_cancelOrders.end()) {
+        auto& order = it->second;
+        if (order->GetSymbol() == symbol) {
+            order->SetUpdateTime(updateTime);
+            order->SetOrderStatus(orderStatus);
+            LOG_INFO_STREAM(m_logger, "Cancel order with clientOrderId '" << clientOrderId
+                << "', symbol '" << symbol
+                << "' updated successfully.");
+        } else {
+            LOG_WARNING_STREAM(m_logger, "Symbol mismatch for cancel order with clientOrderId '"
+                << clientOrderId << "', symbol '" << symbol << "'. Update skipped.");
+        }
+    } else {
+        LOG_WARNING_STREAM(m_logger, "No cancel order found with clientOrderId '"
+            << clientOrderId << "'. Update failed.");
+    }
 }

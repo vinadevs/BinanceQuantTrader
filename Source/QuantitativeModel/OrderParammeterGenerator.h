@@ -12,6 +12,8 @@
 
 #include "QuantOrderParammeter.h"
 
+#include <optional>
+
 namespace IndicatorNSignals {
     struct TradingHints;
 };
@@ -53,7 +55,7 @@ namespace QuantitativeModel {
         ~OrderParammeterGenerator();
 		// Generate order parammeter based on the trading hints and binance exchange rules
         // https://developers.binance.com/docs/binance-spot-api-docs/filters
-        QuantOrderParammeter Generate(
+        std::optional<QuantOrderParammeter> Generate(
             const IndicatorNSignals::TradingHints* hints);
     private:
         const ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr };

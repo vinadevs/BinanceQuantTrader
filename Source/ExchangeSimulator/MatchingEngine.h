@@ -99,8 +99,8 @@ namespace ExchangeSimulator {
         bool VerifyUpstreamBinanceQueryOrder(const OrderManagement::BinanceQueryOrder& order);
        
         void PostProcessingMatchedNewOrder(OrderManagement::BinanceNewOrder& order);
-        /*bool PostProcessingMatchedCancelOrder(const OrderManagement::BinanceCancelOrder& order);
-        bool PostProcessingMatchedReplaceOrder(const OrderManagement::BinanceReplaceOrder& order);
+        void PostProcessingMatchedCancelOrder(OrderManagement::BinanceCancelOrder& order);
+        /*bool PostProcessingMatchedReplaceOrder(const OrderManagement::BinanceReplaceOrder& order);
         bool PostProcessingMatchedQueryOrder(const OrderManagement::BinanceQueryOrder& order);*/
 
         OrderManagement::BinanceNewOrder ConstructUpstreamNewOrder(

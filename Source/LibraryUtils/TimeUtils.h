@@ -11,6 +11,7 @@
 #include "dlldefine.h"
 
 #include <string>
+#include <chrono>
 
 namespace TimeUtils {
     enum class TimeUnit : unsigned
@@ -19,6 +20,11 @@ namespace TimeUtils {
         Milliseconds,
         Nanoseconds
     };
+
+    inline std::size_t GetEpochTimeTickNow() {
+        return static_cast<std::size_t>(
+            std::chrono::system_clock::now().time_since_epoch().count());
+    }
 
     std::string DLL_CLASS_LIBRARYUTILS_EXPORTS GetCurrentTimestampString();
     std::size_t DLL_CLASS_LIBRARYUTILS_EXPORTS GetCurrentTimeChrono(const TimeUnit unit);

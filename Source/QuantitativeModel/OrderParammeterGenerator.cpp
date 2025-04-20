@@ -38,7 +38,7 @@ OrderParammeterGenerator::OrderParammeterGenerator(
 
 OrderParammeterGenerator::~OrderParammeterGenerator() {}
 
-QuantOrderParammeter OrderParammeterGenerator::Generate(
+std::optional<QuantOrderParammeter> OrderParammeterGenerator::Generate(
 	const TradingHints* hints)
 {
 	QuantOrderParammeter orderParammeter;
@@ -157,8 +157,8 @@ QuantOrderParammeter OrderParammeterGenerator::Generate(
 		}
 		else
 		{
-			// Throw an exception if the exchange profile for the symbol cannot be found
-			throw std::runtime_error("invalid trend, could not generate order parameters for symbol=" + hints->symbol);
+			m_logger->Info("unclear opportunity, could not generate order parameters for symbol=" + hints->symbol);
+			std::nullopt;
 		}
 	}
 	else
