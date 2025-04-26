@@ -16,14 +16,19 @@
 
 namespace OrderManagement {
 
+    // Enum representing the various statuses of a Binance cancel order.
+    // Each status corresponds to a specific stage in the lifecycle of the cancel order.
     enum class BinanceCancelOrderStatus : unsigned
     {
-        UNDEF,
-        NEW,
-        WAITING_FOR_CANCEL,
-        FILLED,
-        REJECTED,
+        UNDEF,               // Undefined status, used as a default or uninitialized state.
+        NEW,                 // The cancel order has been created but not yet processed.
+        WAITING_FOR_CANCEL,  // The cancel order is waiting to be executed.
+        FILLED,              // The cancel order has been successfully executed.
+        REJECTED,            // The cancel order was rejected.
     };
+
+    // Class representing a Binance cancel order, which is used to cancel an existing order on Binance.
+    // This class provides methods for managing the cancel order's lifecycle, serialization, and execution results.
 
     class DLL_CLASS_ORDERMANAGEMENT_EXPORTS
         BinanceCancelOrder final : public Order

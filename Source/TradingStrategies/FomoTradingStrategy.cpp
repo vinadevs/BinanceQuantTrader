@@ -53,7 +53,6 @@ void FomoTradingStrategy::InitializeParameters(const std::string& strategyCfgPat
 		throw std::runtime_error("FomoTradingStrategy: Load file Xml error=" 
 			+ std::string(XMLDocument::ErrorIDToName(errLoadFileXml)) + ", error path:" + strategyCfgPath);
 	}
-
 	SetupStrategyLifeTime(m_strategyCfgXml.get());
 }
 
@@ -102,7 +101,7 @@ void FomoTradingStrategy::UnsubscribeTargetSymbols()
 {
 	for (const auto& symbol : m_targetTradeSymbols)
 	{
-		m_marketData->SubscribeSymbol(symbol);
+		m_marketData->UnsubscribeSymbol(symbol);
 	}
 }
 
@@ -140,32 +139,28 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 			if (IsNotIsNotExceededTradingRules())
 			{
 				m_logger->Info("Creating order parameters for symbol=" + hints->symbol);
-				const auto orderParammeter = m_orderParammeterGenerator->Generate(hints);
-				if (orderParammeter.has_value() && m_trader->CreateNewPosition(orderParammeter.value()))
+				const auto orderList = m_orderParammeterGenerator->GenerateFomoOrders(hints);
+				for (const auto& order : orderList)
 				{
-					if (orderParammeter->m_side == binapi::e_side::buy)
+					if (m_trader->CreateNewPosition(order))
 					{
-						m_logger->Info("Created a new [Long Position] for symbol=" + hints->symbol);
+						if (order.m_side == binapi::e_side::buy)
+						{
+							m_logger->Info("Created a new [Long Position] for symbol=" + hints->symbol);
+						}
+						else if (order.m_side == binapi::e_side::sell)
+						{
+							m_logger->Info("Created a new [Short Position] for symbol=" + hints->symbol);
+						}
+						IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
+						ReportTradeResults(hints->symbol);
+						IncreaseComplianceRestAPIRequestCounter(2); // register a sent http request to ComplianceNRegulatory
 					}
-					else if (orderParammeter->m_side == binapi::e_side::sell)
-					{
-						m_logger->Info("Created a new [Short Position] for symbol=" + hints->symbol);
-					}
-					ReportTradeResults(hints->symbol);
-					IncreaseComplianceRestAPIRequestCounter(2); // register 2 sent http requests to ComplianceNRegulatory
-
-				}
-				// TODO: should cancel order in a separate callback from hint signal analysis
-				if (hints->isInvertedTrend && hints->isDownTrend && hints->timeInForce == binapi::e_time::GTC)
-				{
-					m_trader->CancelAllOpenPositions(hints->symbol);
-				}
-				IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
+				}		
 			}
 			else
 			{
-				// comment out as this is spamming the log
-				//m_logger->Debug("Strategy received a hint signal but it is exceeded exchange rule/limitations.");
+				m_logger->Debug("Strategy received a hint signal but it is exceeded exchange rule/limitations.");
 			}
 		}
 		else

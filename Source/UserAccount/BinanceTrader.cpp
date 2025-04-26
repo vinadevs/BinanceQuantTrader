@@ -116,7 +116,7 @@ bool BinanceTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParamme
 		}
 		else
 		{
-			m_logger->Warning("User account has no stable coin available, could not create long (buy) position!");
+			m_logger->Warning("User account has no stable coin available, could not create long (buy) position for=" + param.m_symbol);
 			return false;
 		}
 	}
@@ -148,7 +148,7 @@ bool BinanceTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParamme
 		}
 		else
 		{
-			m_logger->Warning("User account has no asset available, could not create short (sell) position!");
+			m_logger->Warning("User account has no asset available, could not create short (sell) position for=" + param.m_symbol);
 			return false;
 		}
 	}
@@ -221,23 +221,8 @@ void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessag
 {
 	m_logger->Info("Received simulator ack=" + message.SerializeMessage());
 	const std::string simulatorAckType = message.GetStringValueByTag(FieldLabels::SimulatorAck::AckType);
-	if (simulatorAckType == FieldLabels::DownstreamAckTypes::NewOrderAck)
-	{
-		
-	}
-	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::CancelOrderAck)
-	{
-
-	}
-	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::ReplaceOrderAck)
-	{
-
-	}
-	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::QueryOrderAck)
-	{
-
-	}
-	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::FilledNewOrderAck)
+	if (simulatorAckType == FieldLabels::DownstreamAckTypes::NewOrderAck ||
+		simulatorAckType == FieldLabels::DownstreamAckTypes::FilledNewOrderAck)
 	{
 		// Updates the trader’s position.
 		const auto clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
@@ -253,7 +238,8 @@ void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessag
 		// Updates the portfolio manager’s account information.
 		m_portfolio->UpdateBinanceAccountInfo();
 	}
-	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::CancelledOrderAck)
+	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::CancelOrderAck ||
+			 simulatorAckType == FieldLabels::DownstreamAckTypes::CancelledOrderAck)
 	{
 		// Updates the trader’s position.
 		const auto clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
@@ -264,13 +250,16 @@ void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessag
 		m_positionManager->UpdateOrderCancellingStatus(
 			clientOrderId, symbol, updateTime, orderStatus);
 	}
-	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::ReplacedOrderAck)
+	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::ReplaceOrderAck ||
+			 simulatorAckType == FieldLabels::DownstreamAckTypes::ReplacedOrderAck)
 	{
-
+	}
+	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::QueryOrderAck ||
+			 simulatorAckType == FieldLabels::DownstreamAckTypes::QueriedOrderAck)
+	{
 	}
 	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::ErrorOrderAck)
 	{
-
 	}
 	else m_logger->Error("Received simulator ack with unknown type=" + simulatorAckType);
 }

@@ -174,6 +174,7 @@ struct DLL_CLASS account_info_t {
         );
 
     static bool write_account_info_to_file(const std::string& filePath, const account_info_t& o);
+    static bool write_account_info_to_file(std::ofstream& fileStream, const account_info_t& o);
     friend DLL_CLASS std::ostream &operator<<(std::ostream &os, const account_info_t &f);
 };
 
@@ -362,6 +363,7 @@ struct DLL_CLASS exchange_info_t {
 
     static exchange_info_t construct(const flatjson::fjson &json);
     static bool write_exchange_info_to_file(const std::string& filePath, const exchange_info_t& o);
+    static bool write_exchange_info_to_file(std::ofstream& file, const exchange_info_t& o);
     friend DLL_CLASS std::ostream& operator<<(std::ostream &os, const exchange_info_t &s);
 };
 

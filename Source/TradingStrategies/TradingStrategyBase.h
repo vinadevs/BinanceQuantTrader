@@ -125,6 +125,7 @@ namespace TradingStrategies {
 		bool IsNotIsNotExceededTradingRules() const;
 		void IncreaseComplianceRestAPIRequestCounter(const size_t noOfRequests);
 	protected:
+		void LogTradingHardLimits();
 #if USE_BACK_TEST_TRADING  
 		void OnHandlingReceivedSimulatorMessage(
 			const MiddlewareMQ::BqtJsonMessage& message) override; // process exchange simulator message

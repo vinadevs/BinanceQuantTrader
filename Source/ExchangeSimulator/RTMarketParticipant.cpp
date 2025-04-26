@@ -109,6 +109,11 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
                     newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::PRTIAL_FILLED);
                 }
             }
+            else // process for unfilled order
+            {
+                newUpstreamOrder.SetRemainingAmount(newUpstreamOrder.GetAmount());
+                newUpstreamOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
+            }
         }
     }
     else if (newUpstreamOrder.GetSide() == binapi::e_side::sell) // short positions
@@ -168,6 +173,11 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
                     newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::PRTIAL_FILLED);
                     newUpstreamOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
                 }
+            }
+            else // process for unfilled order
+            {
+                newUpstreamOrder.SetRemainingAmount(newUpstreamOrder.GetAmount());
+                newUpstreamOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
             }
         }
     }

@@ -126,6 +126,8 @@ namespace OrderManagement {
         // Getters to return the maps
         const OrderList<BinanceNewOrder>& GetOrders() const;
 
+        OrderList<BinanceNewOrder> GetOrdersByStatus(const BinanceNewOrderStatus orderStatus);
+
         const OrderList<BinanceCancelOrder>& GetCancelOrders() const;
 
         const OrderList<BinanceReplaceOrder>& GetReplaceOrders() const;
@@ -139,9 +141,9 @@ namespace OrderManagement {
 			const binapi::e_side side);
  
         void UpdateNewOrderExecutionStatus(
-           const std::string& clientOrderId, 
-           const std::string& symbol, 
-           const double filledAmount, 
+           const std::string& clientOrderId,
+           const std::string& symbol,
+           const double filledAmount,
            const double filledPrice,
            const double remainingAmount,
            const std::size_t updateTime,

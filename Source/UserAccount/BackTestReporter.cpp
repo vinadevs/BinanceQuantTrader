@@ -20,7 +20,7 @@
 #include "ReportAPIs.h"
 #include "BackTestReporter.h"
 
-#include <filesystem>
+
 
 using namespace UserAccount;
 using namespace OrderManagement;
@@ -61,9 +61,13 @@ void BackTestReporter::SetupReporter(const tinyxml2::XMLElement* reportCfg)
 	{
 		m_enableCalculateLossForOrdersReporter = true;
 	}
+
 	std::string reportToFilePath(reportCfg->Attribute("ReportToFilePath"));
 	PathUtils::ReplaceSubString(reportToFilePath, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
 	m_reportToFilePath = reportToFilePath;
+
+	const std::string reportChannel(reportCfg->Attribute("ReportChannel"));
+	m_reportChannel = FromReportChannelTextToEnum(reportChannel);
 }
 
 void BackTestReporter::UpdateRemoteData(const std::string& symbol)
@@ -123,8 +127,43 @@ void BackTestReporter::DoTradeExecutionReport(const std::string& symbol)
 	{
 		UpdateRemoteData(symbol);
 		DoRemoteExecutionReport(symbol);
-		binapi::rest::account_info_t::write_account_info_to_file(
-			m_reportToFilePath, *m_accountInfo);
+		if (m_reportChannel == ReportChannel::CONSOLE)
+		{
+		}
+		else if (m_reportChannel == ReportChannel::EXTERNAL_FILE)
+		{
+			std::ofstream externalFileStream(m_reportToFilePath);
+			if (!externalFileStream.is_open()) {
+				throw std::runtime_error("BackTestReporter: could not open report file="
+					+ m_reportToFilePath);
+			}
+			externalFileStream << "-- User Account Balance -------------------------" << std::endl;
+			binapi::rest::account_info_t::write_account_info_to_file(
+				externalFileStream, *m_accountInfo);
+			externalFileStream << std::endl;
+			const auto* orderManager = m_positionManager->GetWorkedOrderManager();
+			if (orderManager)
+			{
+				externalFileStream << "-- Traded Order List -------------------------" << std::endl;
+				
+				const auto& listOrder = orderManager->GetOrders();
+				externalFileStream << "Total new order=" << listOrder.size() << std::endl;
+				for (const auto& order : listOrder)
+				{
+					externalFileStream << order.second.get()->ToStringAck() << std::endl;
+				}
+
+				const auto& listCancelOrder = orderManager->GetCancelOrders();
+				externalFileStream << "Total cancel order=" << listCancelOrder.size() << std::endl;
+				for (const auto& order : listCancelOrder)
+				{
+					externalFileStream << order.second.get()->ToStringAck() << std::endl;
+				}
+			}
+		}
+		else if (m_reportChannel == ReportChannel::GUI_APP)
+		{
+		}
 	}
 }
 

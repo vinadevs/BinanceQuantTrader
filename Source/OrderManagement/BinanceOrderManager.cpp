@@ -249,6 +249,20 @@ const OrderList<BinanceNewOrder>& BinanceOrderManager::GetOrders() const {
     return m_newOrders;
 }
 
+OrderList<BinanceNewOrder> BinanceOrderManager::GetOrdersByStatus(const BinanceNewOrderStatus orderStatus)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    OrderList<BinanceNewOrder> filteredOrders;
+    for (const auto& order : m_newOrders)
+    {
+        if (order.second->GetOrderStatus() == orderStatus)
+        {
+            filteredOrders.try_emplace(order.first, std::make_unique<BinanceNewOrder>(*order.second));
+        }
+    }
+    return filteredOrders;
+}
+
 const OrderList<BinanceCancelOrder>& BinanceOrderManager::GetCancelOrders() const {
     return m_cancelOrders;
 }
@@ -311,9 +325,11 @@ void BinanceOrderManager::UpdateNewOrderExecutionStatus(
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     auto it = m_newOrders.find(clientOrderId);
-    if (it != m_newOrders.end()) {
+    if (it != m_newOrders.end()) 
+    {
         auto& order = it->second;
-        if (order->GetSymbol() == symbol) {
+        if (order->GetSymbol() == symbol)
+        {
             order->SetFilledAmount(filledAmount);
             order->SetFilledPrice(filledPrice);
             order->SetRemainingAmount(remainingAmount);
@@ -322,11 +338,15 @@ void BinanceOrderManager::UpdateNewOrderExecutionStatus(
             LOG_INFO_STREAM(m_logger, "Order with clientOrderId '" << clientOrderId <<
                 ", symbol '" << symbol
                 << "' updated successfully.");
-        } else {
+        } 
+        else 
+        {
             LOG_WARNING_STREAM(m_logger, "Symbol mismatch for order with clientOrderId '" 
                 << ", symbol '" << symbol << clientOrderId << "'. Update skipped.");
         }
-    } else {
+    } 
+    else 
+    {
         LOG_WARNING_STREAM(m_logger, "No new order found with clientOrderId '" 
             << clientOrderId << "'. Update failed.");
     }
@@ -340,19 +360,25 @@ void OrderManagement::BinanceOrderManager::UpdateOrderCancellingStatus(
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     auto it = m_cancelOrders.find(clientOrderId);
-    if (it != m_cancelOrders.end()) {
+    if (it != m_cancelOrders.end()) 
+    {
         auto& order = it->second;
-        if (order->GetSymbol() == symbol) {
+        if (order->GetSymbol() == symbol) 
+        {
             order->SetUpdateTime(updateTime);
             order->SetOrderStatus(orderStatus);
             LOG_INFO_STREAM(m_logger, "Cancel order with clientOrderId '" << clientOrderId
                 << "', symbol '" << symbol
                 << "' updated successfully.");
-        } else {
+        } 
+        else 
+        {
             LOG_WARNING_STREAM(m_logger, "Symbol mismatch for cancel order with clientOrderId '"
                 << clientOrderId << "', symbol '" << symbol << "'. Update skipped.");
         }
-    } else {
+    } 
+    else 
+    {
         LOG_WARNING_STREAM(m_logger, "No cancel order found with clientOrderId '"
             << clientOrderId << "'. Update failed.");
     }

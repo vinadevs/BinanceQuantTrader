@@ -84,17 +84,11 @@ bool UserAccount::IsAccountHavingAssets() const
         [](const auto& asset) { return asset.second.m_free > 0; });
 }
 
-// Order symsol from upstream side is trading pair format
-// BTCUSDT not BTC only so we have to parse symbol before lookup
-static std::string GetSymbolFromTradingPair(const std::string& input) {
-    size_t pos = input.find(StaticDataMgr->GetStableCoinUSDTSymbol()); // Find "USDT" in the string
-    return (pos != std::string::npos) ? input.substr(0, pos) : input;
-}
-
 AssetBalance& UserAccount::LookupAssetBalance(const AssetSymbol& symbol)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    return m_assetBalances.at(GetSymbolFromTradingPair(symbol)); // Throws std::out_of_range if symbol not found
+    return m_assetBalances.at(StaticData::StaticDataManager::GetSymbolFromTradingPair(symbol,
+        StaticDataMgr->GetStableCoinUSDTSymbol())); // Throws std::out_of_range if symbol not found
 }
 
 void UserAccount::EnableUserAccountControls()

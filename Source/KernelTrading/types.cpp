@@ -366,10 +366,15 @@ account_info_t account_info_t::construct(
 bool account_info_t::write_account_info_to_file(const std::string& filePath, const account_info_t& o)
 {
     std::ofstream file(filePath);
-    if (!file.is_open()) {
+    return write_account_info_to_file(file, o);
+}
+
+bool account_info_t::write_account_info_to_file(std::ofstream& fileStream, const account_info_t& o)
+{
+    if (!fileStream.is_open()) {
         return false; // Failed to open file
     }
-    file
+    fileStream
         << "{"
         << "\"makerCommission\":" << o.makerCommission << ","
         << "\"takerCommission\":" << o.takerCommission << ","
@@ -384,12 +389,12 @@ bool account_info_t::write_account_info_to_file(const std::string& filePath, con
 #endif
         << "\"balances\":[";
     for (auto it = o.balances.begin(); it != o.balances.end(); ++it) {
-        file << it->second;
+        fileStream << it->second;
         if (std::next(it) != o.balances.end()) {
-            file << ",";
+            fileStream << ",";
         }
     }
-    file << "]}";
+    fileStream << "]}";
     return true;
 }
 
@@ -900,6 +905,11 @@ std::ostream& operator<<(std::ostream &os, const exchange_info_t &o) {
 
 bool exchange_info_t::write_exchange_info_to_file(const std::string& filePath, const exchange_info_t& o) {
     std::ofstream file(filePath);
+    return write_exchange_info_to_file(file, o);
+}
+
+bool exchange_info_t::write_exchange_info_to_file(std::ofstream& file, const exchange_info_t& o)
+{
     if (!file.is_open()) {
         return false; // Failed to open file
     }

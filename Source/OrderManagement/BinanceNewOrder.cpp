@@ -70,9 +70,11 @@ std::string BinanceNewOrder::ToStringAck() const
         ", IcebergAmount: " + GetIcebergAmountStr() +
         ", OrderStatus: " + GetOrderStatusStr() +
         ", FilledAmount: " + GetFilledAmountStr() +
-        ", FilledAmount: " + GetFilledAmountStr() +
         ", FilledPrice: " + GetFilledPriceStr() +
-        ", RemainingAmount: " + GetRemainingAmountStr() +
+        ", RemainingAmount: " + GetOrigQuoteOrderQuantityStr() +
+        ", OrigQuoteOrderQuantity: " + GetOrigQuoteOrderQuantityStr() +
+        ", CummulativeQuoteQty: " + GetCumulativeQuoteQuantityStr() +
+        ", UpdateTime: " + GetUpdateTimeStr() +
         ")";
 }
 
@@ -95,7 +97,7 @@ BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrder() const
     return message;
 }
 
-BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageAck() const
+BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrderAck() const
 {
     BqtJsonMessage message;
     message.AddPair(FieldLabels::UserAccountID, m_userAccountID);
@@ -112,6 +114,7 @@ BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageAck() const
     message.AddPair(FieldLabels::OrderStatus, GetOrderStatusStr());
     message.AddPair(FieldLabels::FilledAmount, GetFilledAmountStr());
     message.AddPair(FieldLabels::FilledPrice, GetFilledPriceStr());
+    message.AddPair(FieldLabels::RemainingAmount, GetRemainingAmountStr());
     message.AddPair(FieldLabels::OrigQuoteOrderQuantity, GetOrigQuoteOrderQuantityStr());
     message.AddPair(FieldLabels::CummulativeQuoteQty, GetCumulativeQuoteQuantityStr());
     message.AddPair(FieldLabels::UpdateTime, GetUpdateTimeStr());

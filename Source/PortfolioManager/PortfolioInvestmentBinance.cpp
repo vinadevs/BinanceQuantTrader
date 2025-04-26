@@ -147,7 +147,7 @@ void PortfolioInvestmentBinance::AddNewAssetToManage(const std::string& asset)
     }
 }
 
-binapi::rest::account_info_t* PortfolioInvestmentBinance::GetBinanceAccountInfo()
+const binapi::rest::account_info_t* PortfolioInvestmentBinance::GetBinanceAccountInfo() const
 {
     return m_binanceAccountInfo;
 }

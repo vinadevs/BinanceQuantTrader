@@ -11,6 +11,8 @@
 #include "../RestAPI/RestAPI.h"
 
 #include <memory>
+#include <filesystem>
+#include <fstream>
 
 namespace tinyxml2 {
 	class XMLElement;
@@ -30,6 +32,14 @@ namespace OrderManagement {
 
 namespace UserAccount {
 
+	enum class ReportChannel : unsigned
+	{
+		CONSOLE, // print report to console cmd
+		EXTERNAL_FILE, // log report to file
+		GUI_APP, // send report to external Gui app
+		UNDEF,
+	};
+	
 	// The ExchangeReporter class is responsible for generating reports on trading activities.
 	class ExchangeReporter
 	{
@@ -58,6 +68,18 @@ namespace UserAccount {
 	protected:
 		virtual bool MergeLocalAndRemmoteReport() = 0;
 
+        ReportChannel FromReportChannelTextToEnum(const std::string& reportChannel)
+        {
+            if (reportChannel == "Console")
+                return ReportChannel::CONSOLE;
+            else if (reportChannel == "ExternalFile")
+                return ReportChannel::EXTERNAL_FILE;
+            else if (reportChannel == "GuiApp")
+                return ReportChannel::GUI_APP;
+            else
+                return ReportChannel::UNDEF;
+        }
+
 		ComplianceNRegulatory::BinanceExchangeProfileMgr* m_exchangeProfileMgr{ nullptr };
 		OrderManagement::PositionManager* m_positionManager{ nullptr };
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
@@ -72,6 +94,8 @@ namespace UserAccount {
 		binapi::rest::account_info_t* m_accountInfo;
 		// external file to store report
 		std::string m_reportToFilePath;
+		// report channel
+		ReportChannel m_reportChannel{ ReportChannel::UNDEF };
 	};
 };
 

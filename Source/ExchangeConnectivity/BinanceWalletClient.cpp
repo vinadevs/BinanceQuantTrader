@@ -59,7 +59,7 @@ bool BinanceWalletClient::GetUserAccountDataResponse(
             account->canWithdraw = response.can_withdraw();
             account->canDeposit = response.can_deposit();
             account->updateTime = response.update_time();
-#ifdef USE_BACK_TEST_TRADING
+#if USE_BACK_TEST_TRADING
             account->stableCoinAmount = response.stable_coin_amount();
 #endif
             for (const auto& balancePair : response.balances()) {

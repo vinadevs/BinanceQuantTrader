@@ -88,5 +88,6 @@ namespace BinanceQuantTrader {
 		std::unique_ptr<TradingStrategies::StrategyMessageServer> m_strategyMessageServer;
 #endif
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
+		bool m_allowMutipleThreadTrade{ false };
 	};
 };

@@ -25,16 +25,16 @@
 </PortfolioInvestment>
 
 <TradingModel>
-  <Field Setting1="xxx" Setting2="yyy"/>
+  <MultipleThreads Enable="true"/>
 </TradingModel>
 
 <TraderInfo>
   <UsingTrader Type="BinanceTrader"/>
-  <Report TradeReport="true" OrderReport="true" BalanceReport="true" ExchangerPriceForOrdersReport="true" CalculateLossForOrdersReport="true" ReportToFilePath="[ROOT_BQT_PATH]\AppData\trade_results.txt"/>
+  <Report TradeReport="true" OrderReport="true" BalanceReport="true" ExchangerPriceForOrdersReport="true" CalculateLossForOrdersReport="true" ReportToFilePath="[ROOT_BQT_PATH]\AppData\trade_results.txt" ReportChannel="ExternalFile"/>
 </TraderInfo>
 
 <ComplianceNRegulatory>
-  <TradingLimits MaxRequestWeightPerMinute="5000" MaxOrdersPerTenSeconds="50" MaxOrdersPerTwentyFourHours="160000"/>
+  <TradingLimits MaxRequestWeightPerMinute="6000" MaxOrdersPerTenSeconds="100" MaxOrdersPerTwentyFourHours="200000"/>
   <StaticExchangeProfile File="[ROOT_BQT_PATH]\Configurations\Common\BinanceStaticExchangeProfile.txt"/>
 </ComplianceNRegulatory>
 

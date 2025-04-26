@@ -171,6 +171,10 @@ void TradingModel::PrepareTradingComponents(
 	m_strategyMessageServer = std::make_unique<StrategyMessageServer>(messageServerCfg);
 	m_strategyMessageServer->RegisterMessageHandler(m_strategy.get());
 #endif
+
+	m_logger->Info("Initiating Trading Model.");
+	const auto* tradingModelCfg = configBQTXml->FirstChildElement("TradingModel");
+	m_allowMutipleThreadTrade = tradingModelCfg->FirstChildElement("MultipleThreads")->BoolAttribute("Enable");
 }
 
 void TradingModel::RunModel()
@@ -189,12 +193,19 @@ void TradingModel::RunModel()
 	m_logger->Info(USE_REAL_TRADING_MESSAGE);
 #endif
 	m_logger->Info(USE_MULTITHREADING_MESSAGE);
-#if USE_MULTITHREADING
+#if USE_MULTITHREADING // control from build setup
 	// If Strategies and Trading Services (Market Data,...) want to run in mutiple threads
 	// to avoid stale trading signals but the trade might be slower than single thread mode
-	if (m_strategy && m_strategyHost)
+	if (m_strategy && m_strategyHost && m_allowMutipleThreadTrade)
 	{
-		m_strategyHost->StartStrategyThread(m_strategy.get());
+		if (m_strategyHost && m_allowMutipleThreadTrade) // control from configuration setup
+		{
+			m_strategyHost->StartStrategyThread(m_strategy.get());
+		}
+		else //If Strategies and Trading Services (Market Data,...) want to run in single thread
+		{
+			m_strategy->StartLive();
+		}
 	}
 #else
 	//If Strategies and Trading Services (Market Data,...) want to run in single thread

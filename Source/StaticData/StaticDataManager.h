@@ -37,6 +37,14 @@ namespace StaticData {
 
 		static StaticDataManager* GetInstance();
 
+		// Get BTC from BTCUSDT
+		static std::string GetSymbolFromTradingPair(
+			const std::string& input,
+			const std::string& stableCoin) {
+			size_t pos = input.find(stableCoin); // Find "USDT" in the string
+			return (pos != std::string::npos) ? input.substr(0, pos) : input;
+		}
+
 		void LoadStaticDatabase(const tinyxml2::XMLElement* staticDataConfigXml);
 
 		//USDT(Tether) is a type of stablecoin,

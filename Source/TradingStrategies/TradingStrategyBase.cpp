@@ -45,9 +45,20 @@ TradingStrategyBase::TradingStrategyBase(
 	m_logger->Info("Trading strategy name=" + m_strategyName);
 	m_logger->Info("Trading strategy description=" + m_strategyDescription);
 	m_compilanceChecker = std::make_unique<CompilanceChecker>();
+	LogTradingHardLimits();
 }
 
 TradingStrategyBase::~TradingStrategyBase() {}
+
+void TradingStrategyBase::LogTradingHardLimits()
+{
+    m_logger->Info("[Binance Hard Limitation] Orders per ten seconds limit=" 
+		+ std::to_string(m_tradingRules->GetTradingLimits()->m_maxOrdersPerTenSeconds));
+    m_logger->Info("[Binance Hard Limitation] Request weight per minute limit=" 
+		+ std::to_string(m_tradingRules->GetTradingLimits()->m_maxRequestWeightPerMinute));
+	m_logger->Info("[Binance Hard Limitation] Orders per twenty-four hours limit=" 
+		+ std::to_string(m_tradingRules->GetTradingLimits()->m_maxOrdersPerTwentyFourHours));
+}
 
 StrategyRunStatus TradingStrategyBase::GetStrategyRunStatus() const
 {

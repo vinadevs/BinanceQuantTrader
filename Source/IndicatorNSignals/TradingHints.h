@@ -16,6 +16,7 @@
 
 #include "../KernelTrading/double_type.h"
 #include "../KernelTrading/types.h"
+#include "../StaticData/StaticDataManager.h"
 
 #include <string>
 
@@ -23,8 +24,12 @@ namespace IndicatorNSignals {
 
 	struct DLL_CLASS_INDICATORNSIGNALS_EXPORTS TradingHints
 	{
-		TradingHints(const std::string& s) : symbol(s) {}
+		TradingHints(const std::string& s) : symbol(s) {
+			assetName = StaticData::StaticDataManager::GetSymbolFromTradingPair(symbol,
+				StaticDataMgr->GetStableCoinUSDTSymbol());
+		}
 		std::string symbol;
+		std::string assetName;
 		bool isInvertedTrend{ false };
 		bool isUpTrend{ false };
 		bool isDownTrend{ false };

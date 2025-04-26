@@ -22,6 +22,7 @@
 #include <stdexcept>
 
 namespace OrderManagement {
+
 	// Type of order message which will send to the exchange/downstream/simulator
 	enum class MessageType : unsigned
 	{

@@ -18,6 +18,8 @@
 
 #include "OrderParammeterGenerator.h"
 
+#include <cmath>
+
 using namespace QuantitativeModel;
 using namespace IndicatorNSignals;
 using namespace ComplianceNRegulatory;
@@ -38,10 +40,10 @@ OrderParammeterGenerator::OrderParammeterGenerator(
 
 OrderParammeterGenerator::~OrderParammeterGenerator() {}
 
-std::optional<QuantOrderParammeter> OrderParammeterGenerator::Generate(
+OrderQuantList OrderParammeterGenerator::GenerateFomoOrders(
 	const TradingHints* hints)
 {
-	QuantOrderParammeter orderParammeter;
+	OrderQuantList orderList;
 
 	// Access the exchange profile for the given symbol from the trading rules
 	const auto* symbolProfile 
@@ -55,6 +57,8 @@ std::optional<QuantOrderParammeter> OrderParammeterGenerator::Generate(
 		if (hints->isUpTrend)
 		{
 			m_logger->Info("Market's upTrend detected, calculating order parameters...");
+
+			QuantOrderParammeter orderParammeter;
 
 			// Set order parameters for a buy order
 			orderParammeter.m_symbol = hints->symbol;
@@ -102,63 +106,125 @@ std::optional<QuantOrderParammeter> OrderParammeterGenerator::Generate(
 			{
 				orderParammeter.m_amount = notationFilter.minNotional.convert_to<double>() / orderParammeter.m_price;
 			}
+			orderList.emplace_back(orderParammeter);
+			m_logger->Info(orderParammeter.AsString());
 		}
 		// Check if the market trend is downward
 		else if (hints->isDownTrend)
 		{
 			m_logger->Info("Market's downTrend detected, calculating order parameters...");
 
-			// Set order parameters for a sell order
-			orderParammeter.m_symbol = hints->symbol;
-			orderParammeter.m_side = binapi::e_side::sell;
-			orderParammeter.m_type = binapi::e_type::limit;
-			orderParammeter.m_time = hints->timeInForce;
+			const auto* accountInfo = m_portfolio->GetBinanceAccountInfo();
+			const auto& balance = accountInfo->get_balance(hints->assetName);
+			const auto& notationFilter = symbolExchangeInfo.get_filter_notional();
+			const auto currentSymbolAsset = balance.free.convert_to<double>();
+			if (currentSymbolAsset > ZERO_DOUBLE_VALUE)
+			{
+				const auto maxSliceOrder
+					= static_cast<int>(std::floor(currentSymbolAsset
+						/ notationFilter.minNotional.convert_to<double>()));
 
-			// Retrieve price filters for the symbol
-			const auto& percentPriceBySideFilter = symbolExchangeInfo.get_filter_percent_price_by_side();
-			auto weightedAveragePrice 
-				= m_positionManager->GetWeightedAveragePrice(hints->symbol, binapi::e_side::sell);
-			if (weightedAveragePrice == INVALID_PRICE)
-			{
-				// If the weighted average price is invalid, use the window best bid price
-				weightedAveragePrice = hints->windowBestBidPrice;
-			}
-			const auto limitPrice = weightedAveragePrice;
+				auto weightedAveragePrice
+					= m_positionManager->GetWeightedAveragePrice(hints->symbol, binapi::e_side::sell);
+				if (weightedAveragePrice == INVALID_PRICE)
+				{
+					// If the weighted average price is invalid, use the window best bid price
+					weightedAveragePrice = hints->windowBestBidPrice;
+				}
 
-			// Adjust the price based on the bid price multiplier filters
-			if (limitPrice > weightedAveragePrice * percentPriceBySideFilter.bidMultiplierUp)
-			{
-				orderParammeter.m_price = (weightedAveragePrice * percentPriceBySideFilter.bidMultiplierUp).convert_to<double>();
-			}
-			else if (limitPrice < weightedAveragePrice * percentPriceBySideFilter.bidMultiplierDown)
-			{
-				orderParammeter.m_price = (weightedAveragePrice * percentPriceBySideFilter.bidMultiplierDown).convert_to<double>();
+				double totalSellAmount{ 0 };
+				for (int i = 0; i < maxSliceOrder; ++i)
+				{
+					QuantOrderParammeter orderParammeter;
+
+					// Set order parameters for a sell order
+					orderParammeter.m_symbol = hints->symbol;
+					orderParammeter.m_side = binapi::e_side::sell;
+					orderParammeter.m_type = binapi::e_type::limit;
+					orderParammeter.m_time = hints->timeInForce;
+
+					// Retrieve price filters for the symbol
+					const auto& percentPriceBySideFilter = symbolExchangeInfo.get_filter_percent_price_by_side();
+
+					const auto limitPrice = weightedAveragePrice;
+
+					// Adjust the price based on the bid price multiplier filters
+					if (limitPrice > weightedAveragePrice * percentPriceBySideFilter.bidMultiplierUp)
+					{
+						orderParammeter.m_price = (weightedAveragePrice * percentPriceBySideFilter.bidMultiplierUp).convert_to<double>();
+					}
+					else if (limitPrice < weightedAveragePrice * percentPriceBySideFilter.bidMultiplierDown)
+					{
+						orderParammeter.m_price = (weightedAveragePrice * percentPriceBySideFilter.bidMultiplierDown).convert_to<double>();
+					}
+					else
+					{
+						orderParammeter.m_price = limitPrice.convert_to<double>();
+					}
+
+					// Set the order amount based on the lot size filter
+					const auto& lotSizeFilter = symbolExchangeInfo.get_filter_lot_size();
+					orderParammeter.m_amount = lotSizeFilter.minQty.convert_to<double>() * 10;
+
+					// Validate the order's notional value against the notional filter
+					const double notationValue = orderParammeter.m_price * orderParammeter.m_amount;
+					if (notationValue > notationFilter.maxNotional)
+					{
+						orderParammeter.m_amount = notationFilter.maxNotional.convert_to<double>() / orderParammeter.m_price;
+					}
+					else if (notationValue < notationFilter.minNotional)
+					{
+						orderParammeter.m_amount = notationFilter.minNotional.convert_to<double>() / orderParammeter.m_price;
+					}
+					totalSellAmount += orderParammeter.m_amount;
+					orderList.emplace_back(orderParammeter);
+					m_logger->Info(orderParammeter.AsString());
+				}
+				if (totalSellAmount < currentSymbolAsset)
+				{
+					QuantOrderParammeter orderParammeter;
+
+					// Set order parameters for a sell order
+					orderParammeter.m_symbol = hints->symbol;
+					orderParammeter.m_side = binapi::e_side::sell;
+					orderParammeter.m_type = binapi::e_type::limit;
+					orderParammeter.m_time = hints->timeInForce;
+
+					// Retrieve price filters for the symbol
+					const auto& percentPriceBySideFilter = symbolExchangeInfo.get_filter_percent_price_by_side();
+
+					const auto limitPrice = weightedAveragePrice;
+
+					// Adjust the price based on the bid price multiplier filters
+					if (limitPrice > weightedAveragePrice * percentPriceBySideFilter.bidMultiplierUp)
+					{
+						orderParammeter.m_price = (weightedAveragePrice * percentPriceBySideFilter.bidMultiplierUp).convert_to<double>();
+					}
+					else if (limitPrice < weightedAveragePrice * percentPriceBySideFilter.bidMultiplierDown)
+					{
+						orderParammeter.m_price = (weightedAveragePrice * percentPriceBySideFilter.bidMultiplierDown).convert_to<double>();
+					}
+					else
+					{
+						orderParammeter.m_price = limitPrice.convert_to<double>();
+					}
+
+					// Set the order amount based on the lot size filter
+					const auto& lotSizeFilter = symbolExchangeInfo.get_filter_lot_size();
+					orderParammeter.m_amount = currentSymbolAsset - totalSellAmount;
+					totalSellAmount += orderParammeter.m_amount;
+					orderList.emplace_back(orderParammeter);
+					m_logger->Info(orderParammeter.AsString());
+				}
 			}
 			else
 			{
-				orderParammeter.m_price = limitPrice.convert_to<double>();
-			}
-
-			// Set the order amount based on the lot size filter
-			const auto& lotSizeFilter = symbolExchangeInfo.get_filter_lot_size();
-			orderParammeter.m_amount = lotSizeFilter.minQty.convert_to<double>() * 10;
-
-			// Validate the order's notional value against the notional filter
-			const auto& notationFilter = symbolExchangeInfo.get_filter_notional();
-			const double notationValue = orderParammeter.m_price * orderParammeter.m_amount;
-			if (notationValue > notationFilter.maxNotional)
-			{
-				orderParammeter.m_amount = notationFilter.maxNotional.convert_to<double>() / orderParammeter.m_price;
-			}
-			else if (notationValue < notationFilter.minNotional)
-			{
-				orderParammeter.m_amount = notationFilter.minNotional.convert_to<double>() / orderParammeter.m_price;
+				m_logger->Info("user account has no asset available, could not generate order parameters for symbol=" + hints->symbol);
 			}
 		}
 		else
 		{
 			m_logger->Info("unclear opportunity, could not generate order parameters for symbol=" + hints->symbol);
-			std::nullopt;
 		}
 	}
 	else
@@ -166,9 +232,6 @@ std::optional<QuantOrderParammeter> OrderParammeterGenerator::Generate(
 		// Throw an exception if the exchange profile for the symbol cannot be found
 		throw std::runtime_error("could not lookup Exchange Profile for symbol=" + hints->symbol);
 	}
-
-	// Log and return the generated order parameters
-	m_logger->Info(orderParammeter.AsString());
-	return orderParammeter;
+	return orderList;
 }
 

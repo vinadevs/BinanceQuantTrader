@@ -6,7 +6,6 @@
 # This source code can be used, distributed or modified under Apache license
 #*******************************************************************************/ 
 
-
 #include "pch.h"
 #include "MarketDataEvents.h"
 #include "MarketDataFeedHandler.h"
@@ -190,7 +189,10 @@ void MarketDataEvents::StartAndWait()
     std::unique_lock<std::mutex> lock(m_marketDataMutex, std::defer_lock);
     lock.lock();
     while(m_subscribedSymbols.empty()) {} // only go ahead when we have as leat one subcribed symbol
-    lock.unlock(); // because below call will never return so we have to unlock it here to avoid deadlock
+    lock.unlock(); // because below call will never returned so we have to unlock it here to avoid deadlock
+    // If there is any bloclking call at our side then Binance side will disconnect websocket 
+    // connection with the error: ec=10053, emsg=An established connection was aborted 
+    // by the software in your host machine, so please carefully to use lock stuffs within this class
     m_ioContext.run(); // never return!!!
 }
 

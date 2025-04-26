@@ -20,7 +20,6 @@
 
 #include "ReportAPIs.h"
 #include "BinanceReporter.h"
-
 #include "BinanceTrader.h"
 
 #include <filesystem>
@@ -93,9 +92,13 @@ void BinanceReporter::SetupReporter(const tinyxml2::XMLElement* reportCfg)
 	{
 		m_enableCalculateLossForOrdersReporter = true;
 	}
+
 	std::string reportToFilePath(reportCfg->Attribute("ReportToFilePath"));
 	PathUtils::ReplaceSubString(reportToFilePath, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
 	m_reportToFilePath = reportToFilePath;
+
+	const std::string reportChannel(reportCfg->Attribute("ReportChannel"));
+	m_reportChannel = FromReportChannelTextToEnum(reportChannel);
 }
 
 void BinanceReporter::UpdateRemoteReportTrades(const std::string& symbol)
@@ -104,11 +107,20 @@ void BinanceReporter::UpdateRemoteReportTrades(const std::string& symbol)
 	{
 		LOG_INFO_STREAM(m_logger, o.symbol << " - " << o.orderId);
 	};
-	LOG_INFO_STREAM(m_logger, "********************* TRADES REPORT *********************************");
-	binapi::make_trades_report_for_last_day(std::cout, 
-		*BinanceApiGateWay, DEREF_V(m_accountInfo),
-		DEREF_V(m_exchangeProfileMgr->AccessRemoteExchangeProfile(symbol)),
-		{ symbol }, trades_report_cb);
+	if (m_reportChannel == ReportChannel::CONSOLE)
+	{
+		LOG_INFO_STREAM(m_logger, "********************* TRADES REPORT *********************************");
+		binapi::make_trades_report_for_last_day(std::cout,
+			*BinanceApiGateWay, DEREF_V(m_accountInfo),
+			DEREF_V(m_exchangeProfileMgr->AccessRemoteExchangeProfile(symbol)),
+			{ symbol }, trades_report_cb);
+	}
+	else if (m_reportChannel == ReportChannel::EXTERNAL_FILE)
+	{
+	}
+	else if (m_reportChannel == ReportChannel::GUI_APP)
+	{
+	}
 }
 
 void BinanceReporter::UpdateRemoteReportOpenOrders(const std::string& symbol)

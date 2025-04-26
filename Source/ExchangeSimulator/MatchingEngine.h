@@ -93,6 +93,7 @@ namespace ExchangeSimulator {
     private:
         void SubscribeTargetSymbols(const tinyxml2::XMLDocument* matchingEngineXmlCfg);
         void ProcessIncommingOrders();
+
         bool VerifyUpstreamBinanceNewOrder(const OrderManagement::BinanceNewOrder& order);
         bool VerifyUpstreamBinanceCancelOrder(const OrderManagement::BinanceCancelOrder& order);
         bool VerifyUpstreamBinanceReplaceOrder(const OrderManagement::BinanceReplaceOrder& order);
@@ -100,8 +101,8 @@ namespace ExchangeSimulator {
        
         void PostProcessingMatchedNewOrder(OrderManagement::BinanceNewOrder& order);
         void PostProcessingMatchedCancelOrder(OrderManagement::BinanceCancelOrder& order);
-        /*bool PostProcessingMatchedReplaceOrder(const OrderManagement::BinanceReplaceOrder& order);
-        bool PostProcessingMatchedQueryOrder(const OrderManagement::BinanceQueryOrder& order);*/
+        void PostProcessingMatchedReplaceOrder(OrderManagement::BinanceReplaceOrder& order);
+        void PostProcessingMatchedQueryOrder(OrderManagement::BinanceQueryOrder& order);
 
         OrderManagement::BinanceNewOrder ConstructUpstreamNewOrder(
             const MiddlewareMQ::BqtJsonMessage& message);

@@ -16,14 +16,21 @@
 
 namespace OrderManagement {
 
-    enum class BinanceReplaceOrderStatus : unsigned
-    {
-        UNDEF,
-        NEW,
-        WAITING_FOR_REPLACE,
-        FILLED,
-        REJECTED,
+    // Enum representing the various statuses of a Binance replace order.    
+    enum class BinanceReplaceOrderStatus : unsigned  
+    {  
+      UNDEF,  // Undefined status, used as a default or uninitialized state. 
+      NEW, // The order has been created and is new.  
+      WAITING_FOR_REPLACE, // The order is waiting to be replaced.  
+      FILLED, // The order has been completely filled.  
+      REJECTED, // The order has been rejected.  
     };
+
+    // Class representing a Binance replace order, which extends the base Order class.  
+    // This class provides functionality to manage and serialize replace orders,  
+    // including tracking their status, original client order ID, and other metadata.  
+    // It also includes methods for converting the order to string representations  
+    // and for simulator testing with MiddlewareMQ messages.  
 
     class DLL_CLASS_ORDERMANAGEMENT_EXPORTS
         BinanceReplaceOrder final : public Order

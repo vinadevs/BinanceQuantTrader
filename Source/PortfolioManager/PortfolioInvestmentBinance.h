@@ -73,7 +73,7 @@ namespace PortfolioManager {
 		void UpdateBinanceAccountInfo();
 		void UpdateBinanceTradingPairs();
 		void AddNewAssetToManage(const std::string& asset);
-		binapi::rest::account_info_t* GetBinanceAccountInfo();
+		const binapi::rest::account_info_t* GetBinanceAccountInfo() const;
 		BinanceTradingPairManager& GetBinanceTradingPairManager(bool updateNewData = false);
 		BinanceTradingPair* GetBinanceTradingPair(const std::string& asset, bool updateNewData = false);
 	private:

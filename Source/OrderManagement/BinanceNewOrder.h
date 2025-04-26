@@ -17,22 +17,40 @@
 
 namespace OrderManagement {
 
+    // Represents the status of a Binance new order
     enum class BinanceNewOrderStatus : unsigned
     {
-        UNDEF,
-        NEW,
-        WAITING_FOR_FILL,
-        PRTIAL_FILLED,
-        FULL_FILLED,
+        UNDEF,               // Undefined status
+        NEW,                 // Order has been created but not yet processed
+        WAITING_FOR_FILL,    // Order is waiting to be filled
+        PRTIAL_FILLED,       // Order has been partially filled
+        FULL_FILLED,         // Order has been fully filled
+        SKIPPED,             // Order was skipped
     };
 
-    // Type of new order
+    // Represents the type of trade for a new order
     enum class TradeType : unsigned
     {
-        UNDEF,
-        REAL,
-        TEST,
+        UNDEF,  // Undefined trade type
+        REAL,   // Real trade
+        TEST,   // Test trade
     };
+
+    /**
+    * @class BinanceNewOrder
+    * @brief Represents a new order in the Binance trading system.
+    *
+    * This class encapsulates the details of a new order, including its type, side,
+    * price, quantity, and other relevant attributes. It provides methods to
+    * retrieve and modify these attributes, as well as to serialize the order
+    * for communication with external systems.
+    *
+    * Key Features:
+    * - Supports various order types (e.g., limit, market) and trade types (e.g., real, test).
+    * - Tracks the status of the order (e.g., new, partially filled, fully filled).
+    * - Provides serialization methods for order and acknowledgment messages.
+    * - Includes support for simulator testing and execution results.
+    */
 
     class DLL_CLASS_ORDERMANAGEMENT_EXPORTS
         BinanceNewOrder final : public Order 
@@ -108,7 +126,7 @@ namespace OrderManagement {
 
         // Simulator test
         MiddlewareMQ::BqtJsonMessage ToBqtJsonMessageOrder() const;
-        MiddlewareMQ::BqtJsonMessage ToBqtJsonMessageAck () const;
+        MiddlewareMQ::BqtJsonMessage ToBqtJsonMessageOrderAck () const;
         // Execution Result
         using Order::SetSendingOrderResult;
         void SetSendingOrderResult(
