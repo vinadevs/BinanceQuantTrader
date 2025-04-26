@@ -51,11 +51,6 @@ bool MarketDataObserver::OnAllMiniTickersChange(MarketDataSubject* marketDatacon
 	return true;
 }
 
-bool MarketDataObserver::OnAllBookTickersChange(MarketDataSubject* marketDataconst, const std::string& symbol)
-{
-	return true;
-}
-
 bool MarketDataObserver::OnAllMarketDepthChange(MarketDataSubject* marketDataconst, const std::string& symbol)
 {
 	return true;
@@ -63,5 +58,5 @@ bool MarketDataObserver::OnAllMarketDepthChange(MarketDataSubject* marketDatacon
 
 bool MarketDataObserver::OnAllMarketDepthDiffChange(MarketDataSubject* marketData, const std::string& symbol)
 {
-	return false;
+	return true;
 }

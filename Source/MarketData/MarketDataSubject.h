@@ -54,7 +54,6 @@ public:
 	virtual int NotifyAggregateTradeChange(const std::string& symbol);
 	virtual int NotifyAllMarketTickersChange(const std::string& symbol);
 	virtual int NotifyAllMiniTickersChange(const std::string& symbol);
-	virtual int NotifyAllBookTickersChange(const std::string& symbol);
 	virtual int NotifyAllPartDepthChange(const std::string& symbol);
 	virtual int NotifyAllDiffDepthChange(const std::string& symbol);
 

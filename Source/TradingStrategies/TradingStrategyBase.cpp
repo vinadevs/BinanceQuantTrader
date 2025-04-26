@@ -48,6 +48,20 @@ TradingStrategyBase::TradingStrategyBase(
 	LogTradingHardLimits();
 }
 
+TradingStrategyBase::TradingStrategyBase(
+	const std::string& strategyName,
+	const std::string& strategyDescription,
+	const std::string& strategyCfgPath, MarketData::RealTimeMarketData* marketData)
+	: m_strategyName(strategyName),
+	m_strategyDescription(strategyDescription),
+	m_strategyCfgPath(strategyCfgPath),
+	m_marketData(marketData)
+{
+	m_logger = std::make_unique<Logger>(m_strategyName);
+	m_logger->Info("Trading strategy name=" + m_strategyName);
+	m_logger->Info("Trading strategy description=" + m_strategyDescription);
+}
+
 TradingStrategyBase::~TradingStrategyBase() {}
 
 void TradingStrategyBase::LogTradingHardLimits()

@@ -112,8 +112,8 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
             else // process for unfilled order
             {
                 newUpstreamOrder.SetRemainingAmount(newUpstreamOrder.GetAmount());
-                newUpstreamOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
             }
+            newUpstreamOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
         }
     }
     else if (newUpstreamOrder.GetSide() == binapi::e_side::sell) // short positions
@@ -155,7 +155,6 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
                     newUpstreamOrder.SetFilledAmount(newUpstreamOrder.GetAmount());
                     newUpstreamOrder.SetRemainingAmount(ZERO_DOUBLE_VALUE);
                     newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::FULL_FILLED);
-                    newUpstreamOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
                 }
                 else if (bestExchangeAskOrder.m_quantity < newUpstreamOrder.GetAmount()) // PARTIAL FILL ORDER
                 {
@@ -171,14 +170,13 @@ bool RTMarketParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newU
                     newUpstreamOrder.SetFilledAmount(bestExchangeAskOrder.m_quantity);
                     newUpstreamOrder.SetRemainingAmount(newUpstreamOrder.GetAmount() - bestExchangeAskOrder.m_quantity);
                     newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::PRTIAL_FILLED);
-                    newUpstreamOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
                 }
             }
             else // process for unfilled order
             {
                 newUpstreamOrder.SetRemainingAmount(newUpstreamOrder.GetAmount());
-                newUpstreamOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
             }
+            newUpstreamOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
         }
     }
     return hasLiquidity;

@@ -43,6 +43,9 @@
     <Filter Include="Trading Rules">
       <UniqueIdentifier>{27739fa1-90fa-4dcd-ad72-19abff18dd30}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Auto Strategies\Stop Loss">
+      <UniqueIdentifier>{76ad005a-54c1-40a4-9d87-b5913dfb2594}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -81,6 +84,12 @@
     <ClInclude Include="StrategyMessageServer.h">
       <Filter>Message Server</Filter>
     </ClInclude>
+    <ClInclude Include="StopLossStrategy.h">
+      <Filter>Auto Strategies\Stop Loss</Filter>
+    </ClInclude>
+    <ClInclude Include="MarketMonitorStrategy.h">
+      <Filter>Advising Strategies</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -115,6 +124,12 @@
     </ClCompile>
     <ClCompile Include="CompilanceChecker.cpp">
       <Filter>Trading Rules</Filter>
+    </ClCompile>
+    <ClCompile Include="StopLossStrategy.cpp">
+      <Filter>Auto Strategies\Stop Loss</Filter>
+    </ClCompile>
+    <ClCompile Include="MarketMonitorStrategy.cpp">
+      <Filter>Advising Strategies</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

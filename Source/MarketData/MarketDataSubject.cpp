@@ -93,11 +93,6 @@ int MarketDataSubject::NotifyAllMiniTickersChange(const std::string& symbol)
 	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllMiniTickersChange);
 }
 
-int MarketDataSubject::NotifyAllBookTickersChange(const std::string& symbol)
-{
-	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllBookTickersChange);
-}
-
 int MarketDataSubject::NotifyAllPartDepthChange(const std::string& symbol)
 {
 	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllMarketDepthChange);

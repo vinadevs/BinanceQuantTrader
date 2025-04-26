@@ -4,10 +4,10 @@
 # This is a part of Binance Quant Trader Project
 # Copyright(C) - vinadevs
 # This source code can be used, distributed or modified under Apache license
-#*******************************************************************************/ 
+#*******************************************************************************/
 
 #include "pch.h"
-#include "FomoTradingStrategy.h"
+#include "StopLossStrategy.h"
 
 #include "../MarketData/RealTimeMarketData.h"
 #include "../UserAccount/BinanceTrader.h"
@@ -29,12 +29,12 @@ using namespace tinyxml2;
 
 #define WAIT_TIME_OUT std::chrono::seconds(1)
 
-FomoTradingStrategy::FomoTradingStrategy(
+StopLossStrategy::StopLossStrategy(
 	const std::string& strategyCfgPath,
 	RealTimeMarketData* marketData,
 	BinanceTrader* trader,
 	BinanceTradingRules* tradingRules)
-	: TradingStrategyBase("FomoTradingStrategy", "The fear of missing out...",
+	: TradingStrategyBase("StopLossStrategy", "The fear of missing out...",
 		strategyCfgPath, marketData, trader, tradingRules)
 {
 	InitializeParameters(strategyCfgPath);
@@ -44,25 +44,25 @@ FomoTradingStrategy::FomoTradingStrategy(
 	m_logger->Info("Completed initialization for the strategy.");
 }
 
-void FomoTradingStrategy::InitializeParameters(const std::string& strategyCfgPath)
+void StopLossStrategy::InitializeParameters(const std::string& strategyCfgPath)
 {
 	m_strategyCfgXml = std::make_unique<XMLDocument>();
 	const auto errLoadFileXml = m_strategyCfgXml->LoadFile(strategyCfgPath.c_str());
 	if (errLoadFileXml != XML_SUCCESS)
 	{
-		throw std::runtime_error("FomoTradingStrategy: Load file Xml error=" 
+		throw std::runtime_error("StopLossStrategy: Load file Xml error="
 			+ std::string(XMLDocument::ErrorIDToName(errLoadFileXml)) + ", error path:" + strategyCfgPath);
 	}
 	SetupStrategyLifeTime(m_strategyCfgXml.get());
 }
 
-FomoTradingStrategy::~FomoTradingStrategy()
+StopLossStrategy::~StopLossStrategy()
 {
 	m_tradingSignalService->UnregisterTradingHintsListener(this);
 	m_marketData->UnRegisterDataListener(m_tradingSignalService.get());
 }
 
-bool FomoTradingStrategy::OnReceivedTradingHints(const TradingHints* hints)
+bool StopLossStrategy::OnReceivedTradingHints(const TradingHints* hints)
 {
 #if USE_MULTITHREADING
 	std::unique_lock<std::mutex> lock(m_tradingHintsMutex);
@@ -75,7 +75,7 @@ bool FomoTradingStrategy::OnReceivedTradingHints(const TradingHints* hints)
 #endif
 }
 
-void FomoTradingStrategy::CreateTradingSignalServices()
+void StopLossStrategy::CreateTradingSignalServices()
 {
 	const auto* signalXml = m_strategyCfgXml->FirstChildElement("IndicatorAndSignals");
 	assert(signalXml);
@@ -84,7 +84,7 @@ void FomoTradingStrategy::CreateTradingSignalServices()
 	m_marketData->RegisterDataListener(m_tradingSignalService.get());
 }
 
-void FomoTradingStrategy::SubscribeTargetSymbols()
+void StopLossStrategy::SubscribeTargetSymbols()
 {
 	const auto* targetSymbolXml = m_strategyCfgXml->FirstChildElement("TargetSymbols");
 	assert(targetSymbolXml);
@@ -97,7 +97,7 @@ void FomoTradingStrategy::SubscribeTargetSymbols()
 	}
 }
 
-void FomoTradingStrategy::UnsubscribeTargetSymbols()
+void StopLossStrategy::UnsubscribeTargetSymbols()
 {
 	for (const auto& symbol : m_targetTradeSymbols)
 	{
@@ -105,13 +105,13 @@ void FomoTradingStrategy::UnsubscribeTargetSymbols()
 	}
 }
 
-void FomoTradingStrategy::CreatePortfolioManagement()
+void StopLossStrategy::CreatePortfolioManagement()
 {
 	m_trader->CreatePortfolioManagement(m_targetTradeSymbols);
 	IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
 }
 
-void FomoTradingStrategy::CreateOrderParameterGenerator()
+void StopLossStrategy::CreateOrderParameterGenerator()
 {
 	m_orderParammeterGenerator = std::make_unique<OrderParammeterGenerator>(
 		m_trader->GetTradingRules(),
@@ -121,7 +121,7 @@ void FomoTradingStrategy::CreateOrderParameterGenerator()
 		m_logger.get());
 }
 
-void FomoTradingStrategy::CreateBinanceExchangeProfile()
+void StopLossStrategy::CreateBinanceExchangeProfile()
 {
 	for (const auto& symbol : m_targetTradeSymbols)
 	{
@@ -130,7 +130,7 @@ void FomoTradingStrategy::CreateBinanceExchangeProfile()
 	}
 }
 
-bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
+bool StopLossStrategy::TradeAsHints(const TradingHints* hints)
 {
 	try
 	{
@@ -156,7 +156,7 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 						ReportTradeResults(hints->symbol);
 						IncreaseComplianceRestAPIRequestCounter(2); // register a sent http request to ComplianceNRegulatory
 					}
-				}		
+				}
 			}
 			else
 			{
@@ -181,12 +181,12 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 	return true;
 }
 
-void FomoTradingStrategy::ReportTradeResults(const std::string& symbol)
+void StopLossStrategy::ReportTradeResults(const std::string& symbol)
 {
 	m_trader->ReportTradeResults(symbol);
 }
 
-void FomoTradingStrategy::StartLive()
+void StopLossStrategy::StartLive()
 {
 	// Change Strategy state to live
 	m_strategyRunStatus = StrategyRunStatus::LIVE;
@@ -209,7 +209,7 @@ void FomoTradingStrategy::StartLive()
 #endif
 }
 
-void FomoTradingStrategy::StopLive()
+void StopLossStrategy::StopLive()
 {
 #if USE_MULTITHREADING
 	m_isThreadTradeOngoing.store(false); // break while loop
@@ -219,7 +219,7 @@ void FomoTradingStrategy::StopLive()
 
 #if USE_MULTITHREADING
 // Thread's main trading loop
-void FomoTradingStrategy::TradingLoop()
+void StopLossStrategy::TradingLoop()
 {
 	m_isThreadTradeOngoing.store(true);
 	while (m_isThreadTradeOngoing.load())
@@ -234,13 +234,13 @@ void FomoTradingStrategy::TradingLoop()
 		// If new trading hint is available, process it
 		if (m_hasNewTradingHint.load())
 		{
-		    while (!m_tradingHintsQueue.IsEmpty())
+			while (!m_tradingHintsQueue.IsEmpty())
 			{
 				const TradingHints* hint = m_tradingHintsQueue.GetFifoItem();
-		        lock.unlock();  // Unlock mutex during processing
+				lock.unlock();  // Unlock mutex during processing
 				TradeAsHints(hint);
-		        lock.lock();  // Lock mutex again for the next iteration
-		    }
+				lock.lock();  // Lock mutex again for the next iteration
+			}
 			m_hasNewTradingHint.store(false); // Reset the flag after processing
 		}
 	}

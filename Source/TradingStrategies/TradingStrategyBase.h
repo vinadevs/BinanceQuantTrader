@@ -90,6 +90,7 @@ namespace TradingStrategies {
 #endif
 	{
 	public:
+		// This construcor is used for strategies that needs to send order to exchange
 		TradingStrategyBase(
 			const std::string& strategyName,
 			const std::string& strategyDescription,
@@ -98,6 +99,13 @@ namespace TradingStrategies {
 			UserAccount::BinanceTrader* trader,
 			ComplianceNRegulatory::BinanceTradingRules* tradingRules);
 		
+		// This constructor is used for strategies that only need to receive market data
+		TradingStrategyBase(
+			const std::string& strategyName,
+			const std::string& strategyDescription,
+			const std::string& strategyCfgPath,
+			MarketData::RealTimeMarketData* marketData);
+
 		virtual ~TradingStrategyBase();
 
 		// -After this function called, then real trading will start, the preparation is finished.

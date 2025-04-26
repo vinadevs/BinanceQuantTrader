@@ -52,7 +52,6 @@ namespace MarketDataCapture {
 		bool OnKlineCandleStickChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
         bool OnAllMarketTickersChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
         bool OnAllMiniTickersChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
-        bool OnAllBookTickersChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
         bool OnAllMarketDepthChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
         bool OnAllMarketDepthDiffChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
     private:

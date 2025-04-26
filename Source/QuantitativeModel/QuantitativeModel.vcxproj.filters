@@ -19,6 +19,9 @@
     <Filter Include="Order Parammeter Creator">
       <UniqueIdentifier>{682cf977-a4c1-4566-8691-4b4633e45017}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Market Data Analyzer">
+      <UniqueIdentifier>{6a2787c1-f052-4366-b0a2-5a511d31042f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -39,6 +42,12 @@
     <ClInclude Include="QuantOrderParammeter.h">
       <Filter>Order Parammeter Creator</Filter>
     </ClInclude>
+    <ClInclude Include="MarketDataAnalyzer.h">
+      <Filter>Market Data Analyzer</Filter>
+    </ClInclude>
+    <ClInclude Include="QuantMarketDataAnalyzer.h">
+      <Filter>Market Data Analyzer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -52,6 +61,12 @@
     </ClCompile>
     <ClCompile Include="OrderParammeterGenerator.cpp">
       <Filter>Order Parammeter Creator</Filter>
+    </ClCompile>
+    <ClCompile Include="MarketDataAnalyzer.cpp">
+      <Filter>Market Data Analyzer</Filter>
+    </ClCompile>
+    <ClCompile Include="QuantMarketDataAnalyzer.cpp">
+      <Filter>Market Data Analyzer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

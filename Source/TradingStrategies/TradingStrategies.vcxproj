@@ -153,6 +153,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="MarketMonitorStrategy.h" />
+    <ClInclude Include="StopLossStrategy.h" />
     <ClInclude Include="StrategyMessageServer.h" />
     <ClInclude Include="CompilanceChecker.h" />
     <ClInclude Include="dlldefine.h" />
@@ -168,6 +170,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CompilanceChecker.cpp" />
+    <ClCompile Include="MarketMonitorStrategy.cpp" />
+    <ClCompile Include="StopLossStrategy.cpp" />
     <ClCompile Include="StrategyMessageServer.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FomoTradingStrategy.cpp" />

@@ -148,21 +148,6 @@ bool MarketDataListener::OnAllMiniTickersChange(MarketData::MarketDataSubject* m
     return false;
 }
 
-bool MarketDataListener::OnAllBookTickersChange(MarketData::MarketDataSubject* marketData, const std::string& symbol)
-{
-    if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
-    {
-
-        return true;
-    }
-    else
-    {
-        m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
-    }
-
-    return false;
-}
-
 bool MarketDataListener::OnAllMarketDepthChange(MarketData::MarketDataSubject* marketData, const std::string& symbol)
 {
     if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
