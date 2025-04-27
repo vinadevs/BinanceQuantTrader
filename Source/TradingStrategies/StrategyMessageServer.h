@@ -26,6 +26,15 @@ namespace MiddlewareMQ {
 };
 
 namespace TradingStrategies {
+
+	// The StrategyMessageServer class is responsible for managing the communication 
+	// between trading strategies and the middleware message queue (Exchange Simulator).
+	// It inherits from MiddlewareMQ::MessageReceiver to handle incoming messages and
+	// provides functionality to start the server, process received messages, and 
+	// register message handlers. This class is designed to be non-copyable but 
+	// movable, ensuring efficient resource management. It utilizes a logger for 
+	// logging purposes and adheres to the C++17 standard.
+
 	class DLL_CLASS_TRADING_TRATEGIES_EXPORTS
 		StrategyMessageServer final : public MiddlewareMQ::MessageReceiver
 	{

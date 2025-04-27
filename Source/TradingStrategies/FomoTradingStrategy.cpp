@@ -214,7 +214,11 @@ void FomoTradingStrategy::StopLive()
 #if USE_MULTITHREADING
 	m_isThreadTradeOngoing.store(false); // break while loop
 #endif
+	// Change Strategy state to stop
 	m_strategyRunStatus = StrategyRunStatus::STOP;
+	// Unsubscribe target symbols to stop receiving real time market data
+	m_logger->Info("Unsubscribe target symbols.");
+	UnsubscribeTargetSymbols();
 }
 
 #if USE_MULTITHREADING

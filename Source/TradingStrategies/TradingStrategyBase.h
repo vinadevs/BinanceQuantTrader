@@ -119,6 +119,7 @@ namespace TradingStrategies {
 		// m_isThreadTradeOngoing (in case we use mutiple threads)
 		virtual void StopLive() = 0;
 
+		// Report PNL, trades, ...
 		virtual void ReportTradeResults(const std::string& symbol) = 0;
 
 		// -We will control strategy parameters from external file...
@@ -128,15 +129,27 @@ namespace TradingStrategies {
 		StrategyType GetStrategyType() const;
 		const std::string& GetStrategyName() const;
 		const std::string& GetStrategyID() const;
-
+		// Sets up the lifetime of the trading strategy based on the provided XML configuration.
+		// The configuration defines whether the strategy runs intra-day, intra-week, or intra-month.
 		void SetupStrategyLifeTime(tinyxml2::XMLDocument* strategyCfgPathXml);
+
+		// Checks if the trading strategy has not exceeded the defined trading rules.
+		// This ensures compliance with exchange regulations and prevents violations.
 		bool IsNotIsNotExceededTradingRules() const;
+
+		// Increases the counter for REST API requests made to the exchange for compliance tracking.
+		// This helps monitor and limit the number of requests to avoid exceeding API rate limits.
 		void IncreaseComplianceRestAPIRequestCounter(const size_t noOfRequests);
-	protected:
+protected:
+		// Logs the hard limits for trading, such as maximum orders or API requests allowed.
+		// This is useful for debugging and ensuring the strategy operates within defined constraints.
 		void LogTradingHardLimits();
-#if USE_BACK_TEST_TRADING  
+
+#if USE_BACK_TEST_TRADING
+		// Handles messages received from the exchange simulator during backtesting.
+		// This function processes simulated market data or order responses for testing purposes.
 		void OnHandlingReceivedSimulatorMessage(
-			const MiddlewareMQ::BqtJsonMessage& message) override; // process exchange simulator message
+			const MiddlewareMQ::BqtJsonMessage& message) override;
 #endif
 		/// <strategy data members>
 		const std::string m_strategyName; // what is algo's name?
@@ -146,7 +159,7 @@ namespace TradingStrategies {
 		MarketData::RealTimeMarketData* m_marketData {nullptr}; // real time market data
 		UserAccount::BinanceTrader* m_trader{ nullptr }; // user account and trade actions
 		ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr }; // exchange compliance and regulatory
-		std::unique_ptr<CompilanceChecker> m_compilanceChecker;
+		std::unique_ptr<CompilanceChecker> m_compilanceChecker; // reset trading hard limits from exchange
 		std::unique_ptr<LibraryUtils::Logger> m_logger; // log message
 		const StrategyType m_strategyType { StrategyType::UNDEF};
 		StrategyLifeTime m_StrategyLifeTime { StrategyLifeTime::INTRA_DAY };
@@ -159,5 +172,7 @@ namespace TradingStrategies {
 #if USE_MULTITHREADING
 		std::atomic<bool> m_isThreadTradeOngoing; // non blocking
 #endif
+		// Config for strategy, we will use it to setup strategy parameters
+		std::unique_ptr<tinyxml2::XMLDocument> m_strategyCfgXml;
 	};
 };

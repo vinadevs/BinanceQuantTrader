@@ -17,9 +17,15 @@
 
 using namespace QuantitativeModel;
 
-MarketDataAnalyzer::MarketDataAnalyzer(LibraryUtils::Logger* logger)
+MarketDataAnalyzer::MarketDataAnalyzer(
+	const std::unordered_set<std::string>& symbolList,
+	LibraryUtils::Logger* logger)
 	: m_logger(logger)
 {
+	for (const auto& symbol : symbolList)
+	{
+		m_quantMarketDataAnalyzers[symbol] = std::make_shared<QuantMarketDataAnalyzer>(symbol);
+	}
 }
 
 MarketDataAnalyzer::~MarketDataAnalyzer()

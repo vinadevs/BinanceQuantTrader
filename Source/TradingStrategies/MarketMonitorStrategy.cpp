@@ -8,6 +8,9 @@
 
 #include "pch.h"
 #include "MarketMonitorStrategy.h"
+
+#include "../SettingNConfig/tinyxml2.h"
+#include "../LibraryUtils/StringUtils.h"
 #include "../MarketData/RealTimeMarketData.h"
 #include "../MarketData/SynchronousMarketData.h"
 #include "../QuantitativeModel/MarketDataAnalyzer.h"
@@ -16,6 +19,8 @@
 using namespace TradingStrategies;
 using namespace MarketData;
 using namespace QuantitativeModel;
+using namespace LibraryUtils;
+using namespace tinyxml2;
 
 MarketMonitorStrategy::MarketMonitorStrategy(
 	const std::string& strategyCfgPath,
@@ -25,13 +30,18 @@ MarketMonitorStrategy::MarketMonitorStrategy(
 		strategyCfgPath, marketData)
 {
 	InitializeParameters(strategyCfgPath);
-	//m_marketDataAnalyzer = std::make_unique<QuantitativeModel::MarketDataAnalyzer>(m_logger.get());
-	marketData->RegisterDataListener(this); // I want receive market data to get fun!
+	m_logger->Info("Completed initialization for the strategy.");
 }
 
 MarketMonitorStrategy::~MarketMonitorStrategy()
 {
 	m_marketData->UnRegisterDataListener(this); // I earn enough money, leave the market now!
+}
+
+void MarketMonitorStrategy::InitializeMarketDataAnalyzer()
+{
+	const auto& symbolList = m_marketData->GetSubscribingSymbols();
+	m_marketDataAnalyzer = std::make_unique<QuantitativeModel::MarketDataAnalyzer>(symbolList, m_logger.get());
 }
 
 bool MarketMonitorStrategy::OnIndividualBookTickerChange(MarketDataSubject* marketData, const std::string& symbol)
@@ -206,12 +216,50 @@ bool MarketMonitorStrategy::OnAllMarketDepthDiffChange(MarketDataSubject* market
 
 void MarketMonitorStrategy::InitializeParameters(const std::string& strategyCfgPath)
 {
+	m_strategyCfgXml = std::make_unique<XMLDocument>();
+	const auto errLoadFileXml = m_strategyCfgXml->LoadFile(strategyCfgPath.c_str());
+	if (errLoadFileXml != XML_SUCCESS)
+	{
+		throw std::runtime_error("FomoTradingStrategy: Load file Xml error="
+			+ std::string(XMLDocument::ErrorIDToName(errLoadFileXml)) + ", error path:" + strategyCfgPath);
+	}
+	SetupStrategyLifeTime(m_strategyCfgXml.get());
 }
 
 void MarketMonitorStrategy::StartLive()
 {
+	// Change Strategy state to live
+	m_strategyRunStatus = StrategyRunStatus::LIVE;
+	// Subscribe target symbols to receive real time market data
+	m_logger->Info("Subscribe target symbols.");
+	SubscribeTargetSymbols();
 }
 
 void MarketMonitorStrategy::StopLive()
 {
+	m_strategyRunStatus = StrategyRunStatus::STOP;
+	// Unsubscribe target symbols to stop receiving real time market data
+	m_logger->Info("Unsubscribe target symbols.");
+	UnsubscribeTargetSymbols();
+}
+
+void MarketMonitorStrategy::SubscribeTargetSymbols()
+{
+	const auto* targetSymbolXml = m_strategyCfgXml->FirstChildElement("TargetSymbols");
+	assert(targetSymbolXml);
+	const XMLElement* symbolsXml = targetSymbolXml->FirstChildElement("Symbols");
+	assert(symbolsXml);
+	m_targetMonitorSymbols = StringUtils::SplitAndTrimString(symbolsXml->Attribute("List"), ',');
+	for (const auto& symbol : m_targetMonitorSymbols)
+	{
+		m_marketData->SubscribeSymbol(symbol);
+	}
+}
+
+void MarketMonitorStrategy::UnsubscribeTargetSymbols()
+{
+	for (const auto& symbol : m_targetMonitorSymbols)
+	{
+		m_marketData->UnsubscribeSymbol(symbol);
+	}
 }

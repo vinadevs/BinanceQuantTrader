@@ -15,6 +15,7 @@
 
 #include <string>
 #include <memory>
+#include <vector>
 
 namespace MarketData {
 	class RealTimeMarketData;
@@ -58,10 +59,16 @@ namespace TradingStrategies {
 
 		void InitializeParameters(const std::string& strategyCfgPath) override;
 
+		void InitializeMarketDataAnalyzer();
+
 		void StartLive() override;
 
 		void StopLive() override;
 	private:
+		void SubscribeTargetSymbols();
+		void UnsubscribeTargetSymbols();
+
+		std::vector<std::string> m_targetMonitorSymbols;
 		std::unique_ptr<QuantitativeModel::MarketDataAnalyzer> m_marketDataAnalyzer;
 	};
 };

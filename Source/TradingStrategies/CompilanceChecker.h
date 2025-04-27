@@ -20,6 +20,7 @@ namespace ComplianceNRegulatory {
 
 namespace TradingStrategies {
 	
+	// This class checks the number of orders placed within a 10-second interval
 	class OrdersPerTenSecondsChecker final
 		: public LibraryUtils::AlarmSystem
 	{
@@ -39,6 +40,7 @@ namespace TradingStrategies {
 
 	///////////////////////////////////////////////////////////////
 
+	// This class monitors the request weight per minute to ensure compliance with API limits
 	class RequestWeightPerMinuteChecker final 
 		: public LibraryUtils::AlarmSystem
 	{
@@ -58,6 +60,7 @@ namespace TradingStrategies {
 
 	///////////////////////////////////////////////////////////////
 
+	// This class checks the number of orders placed within a 24-hour period
 	class OrdersPerTwentyFourHoursChecker final 
 		: public LibraryUtils::AlarmSystem
 	{
@@ -77,6 +80,7 @@ namespace TradingStrategies {
 
 	///////////////////////////////////////////////////////////////
 
+	// This class manages and starts alarms for various trading rule checks
 	class CompilanceChecker final
 	{
 	public:
