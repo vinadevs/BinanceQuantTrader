@@ -20,11 +20,8 @@
 #include <vector>
 #include <string>
 #include <unordered_set>
-#if USE_MULTITHREADING
-#include <queue>
 #include <mutex>
 #include <condition_variable>
-#endif
 
 namespace tinyxml2 {
 	class XMLElement;
@@ -51,12 +48,12 @@ namespace MarketData {
 			MarketDataFeedHandler* feedHandler);
 		~MarketDataEvents();
 
+		void StartIOContext();
 		bool Subscribe(const std::string& symbol);
 		bool Unsubscribe(const std::string& symbol);
 		bool IsSubscribed(const std::string& symbol);
-		// Start market data events and wait
 		// NOTE: we must always subscribe symbols before calling this function!
-		void StartAndWait();
+		void Wait();
 		const std::unordered_set<std::string>& GetSubscribingSymbols() const;
 
 	private:
@@ -94,7 +91,10 @@ namespace MarketData {
 		std::unique_ptr<MarketDataSubscriptionManager> m_mdSubscriptionMgr;
 		MarketDataFeedHandler* m_feedHandler{ nullptr };
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
-		std::mutex m_marketDataMutex; // this class need to be thread safe!
 		const tinyxml2::XMLElement* m_marketDataConfigXml{ nullptr };
+		// mutil threads
+		std::mutex m_marketDataMutex; // this class need to be thread safe!
+		std::condition_variable m_marketDataCond; // avoid polling thread
+		std::atomic<bool> m_startIOContext{ false }; // lock free thread
 	};
 };

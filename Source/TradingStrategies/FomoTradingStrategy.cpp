@@ -37,6 +37,7 @@ FomoTradingStrategy::FomoTradingStrategy(
 	: TradingStrategyBase("FomoTradingStrategy", "The fear of missing out...",
 		strategyCfgPath, marketData, trader, tradingRules)
 {
+	SetStrategyType(StrategyType::FULL_AUTO);
 	InitializeParameters(strategyCfgPath);
 	// Subscribe target symbols to receive real time market data
 	m_logger->Info("Subscribe target symbols.");
@@ -81,20 +82,23 @@ void FomoTradingStrategy::CreateTradingSignalServices()
 	assert(signalXml);
 	m_tradingSignalService = std::make_unique<TradingSignalService>(m_trader->GetPortfolio(), signalXml);
 	m_tradingSignalService->RegisterTradingHintsListener(this);
-	m_marketData->RegisterDataListener(m_tradingSignalService.get());
 }
 
 void FomoTradingStrategy::SubscribeTargetSymbols()
 {
-	const auto* targetSymbolXml = m_strategyCfgXml->FirstChildElement("TargetSymbols");
+	const auto* targetSymbolXml = m_strategyCfgXml->FirstChildElement("TargetSymbol");
 	assert(targetSymbolXml);
 	const XMLElement* symbolsXml = targetSymbolXml->FirstChildElement("Symbols");
 	assert(symbolsXml);
 	m_targetTradeSymbols = StringUtils::SplitAndTrimString(symbolsXml->Attribute("List"), ',');
+	// register TradingSignalService class with market data to receive real time data
+	m_marketData->RegisterDataListener(m_tradingSignalService.get());
+	// subscibe all target symbols
 	for (const auto& symbol : m_targetTradeSymbols)
 	{
 		m_marketData->SubscribeSymbol(symbol);
 	}
+	m_marketData->StartIOContext();
 }
 
 void FomoTradingStrategy::UnsubscribeTargetSymbols()

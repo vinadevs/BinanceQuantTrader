@@ -13,6 +13,11 @@
 #include "../LibraryUtils/StringUtils.h"
 #include "../MarketData/RealTimeMarketData.h"
 #include "../MarketData/SynchronousMarketData.h"
+#include "../StaticData/StaticDataManager.h"
+#include "../LibraryUtils/PathUtils.h"
+#include "../LibraryUtils/FileUtils.h"
+#include "../RestAPI/RestAPI.h"
+#include "../RestAPI/BinanceAPI.h"
 #include "../QuantitativeModel/MarketDataAnalyzer.h"
 #include "../QuantitativeModel/QuantMarketDataAnalyzer.h"
 
@@ -29,6 +34,7 @@ MarketMonitorStrategy::MarketMonitorStrategy(
 		"analysis real time market data and generate trading signals...",
 		strategyCfgPath, marketData)
 {
+	SetStrategyType(StrategyType::ADVISING);
 	InitializeParameters(strategyCfgPath);
 	m_logger->Info("Completed initialization for the strategy.");
 }
@@ -40,8 +46,7 @@ MarketMonitorStrategy::~MarketMonitorStrategy()
 
 void MarketMonitorStrategy::InitializeMarketDataAnalyzer()
 {
-	const auto& symbolList = m_marketData->GetSubscribingSymbols();
-	m_marketDataAnalyzer = std::make_unique<QuantitativeModel::MarketDataAnalyzer>(symbolList, m_logger.get());
+	m_marketDataAnalyzer = std::make_unique<QuantitativeModel::MarketDataAnalyzer>(m_targetMonitorSymbols, m_logger.get());
 }
 
 bool MarketMonitorStrategy::OnIndividualBookTickerChange(MarketDataSubject* marketData, const std::string& symbol)
@@ -230,6 +235,12 @@ void MarketMonitorStrategy::StartLive()
 {
 	// Change Strategy state to live
 	m_strategyRunStatus = StrategyRunStatus::LIVE;
+	// Prepare target symbols list
+	m_logger->Info("Prepare target symbols list.");
+	PrepareTargetMonitorSymbols();
+	// Create Market Data Analyzer
+	m_logger->Info("Create market data analyzer.");
+	InitializeMarketDataAnalyzer();
 	// Subscribe target symbols to receive real time market data
 	m_logger->Info("Subscribe target symbols.");
 	SubscribeTargetSymbols();
@@ -243,17 +254,36 @@ void MarketMonitorStrategy::StopLive()
 	UnsubscribeTargetSymbols();
 }
 
-void MarketMonitorStrategy::SubscribeTargetSymbols()
+void MarketMonitorStrategy::PrepareTargetMonitorSymbols()
 {
-	const auto* targetSymbolXml = m_strategyCfgXml->FirstChildElement("TargetSymbols");
+	const auto* targetSymbolXml = m_strategyCfgXml->FirstChildElement("TargetSymbol");
 	assert(targetSymbolXml);
 	const XMLElement* symbolsXml = targetSymbolXml->FirstChildElement("Symbols");
 	assert(symbolsXml);
-	m_targetMonitorSymbols = StringUtils::SplitAndTrimString(symbolsXml->Attribute("List"), ',');
+	const bool useRemoteExchangeList = symbolsXml->BoolAttribute("UseRemoteExchangeList");
+	if (useRemoteExchangeList)
+	{
+		m_targetMonitorSymbols = StaticDataMgr->GetAllRemoteListingSymbols(true);
+	}
+	else
+	{
+		std::string localListingFile(symbolsXml->Attribute("LocalListingFile"));
+		PathUtils::ReplaceSubString(localListingFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
+		auto const listingAssets = FileUtils::ReadFileContentToLines(localListingFile, true);
+		UpdateTargetSymbolsFromLocalListingAssets(listingAssets);
+	}
+}
+
+void MarketMonitorStrategy::SubscribeTargetSymbols()
+{
+	// register this class with market data to receive real time data
+	m_marketData->RegisterDataListener(this);
+	// subscibe all target symbols
 	for (const auto& symbol : m_targetMonitorSymbols)
 	{
 		m_marketData->SubscribeSymbol(symbol);
 	}
+	m_marketData->StartIOContext();
 }
 
 void MarketMonitorStrategy::UnsubscribeTargetSymbols()
@@ -261,5 +291,16 @@ void MarketMonitorStrategy::UnsubscribeTargetSymbols()
 	for (const auto& symbol : m_targetMonitorSymbols)
 	{
 		m_marketData->UnsubscribeSymbol(symbol);
+	}
+}
+
+void MarketMonitorStrategy::UpdateTargetSymbolsFromLocalListingAssets(const std::vector<std::string>& symbols)
+{
+	m_targetMonitorSymbols.clear();
+	for (const auto& symbol : symbols)
+	{
+		if (symbol.empty()) 
+			continue;
+		m_targetMonitorSymbols.emplace_back(symbol + StaticDataMgr->GetStableCoinUSDTSymbol());
 	}
 }

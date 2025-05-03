@@ -47,6 +47,7 @@ bool BinanceExchangeProfileMgr::UpdateRemoteExchangeProfiles(
         else
         {
             m_logger->Error("account_info: emsg=" + errorMessage);
+            return false;
         }
         if (logDataToFile)
         {
@@ -87,6 +88,7 @@ bool BinanceExchangeProfileMgr::UpdateRemoteExchangeProfiles(
         else
         {
             m_logger->Error("account_info: emsg=" + errorMessage);
+            return false;
         }
         if (logDataToFile)
         {

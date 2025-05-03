@@ -36,7 +36,12 @@ void RealTimeMarketData::UnRegisterDataListener(MarketDataObserver* observer)
 
 void RealTimeMarketData::StartStreamingData()
 {
-	m_dataEvents->StartAndWait();
+	m_dataEvents->Wait();
+}
+
+void RealTimeMarketData::StartIOContext()
+{
+	m_dataEvents->StartIOContext();
 }
 
 bool RealTimeMarketData::SubscribeSymbol(const std::string& symbol)

@@ -33,7 +33,8 @@ namespace QuantitativeModel {
 
 namespace TradingStrategies {
 	class DLL_CLASS_TRADING_TRATEGIES_EXPORTS
-		MarketMonitorStrategy : public TradingStrategyBase,
+		MarketMonitorStrategy :
+		public TradingStrategyBase,
 		public MarketData::MarketDataObserver
 	{
 	public:
@@ -65,8 +66,10 @@ namespace TradingStrategies {
 
 		void StopLive() override;
 	private:
+		void PrepareTargetMonitorSymbols();
 		void SubscribeTargetSymbols();
 		void UnsubscribeTargetSymbols();
+		void UpdateTargetSymbolsFromLocalListingAssets(const std::vector<std::string>& symbols);
 
 		std::vector<std::string> m_targetMonitorSymbols;
 		std::unique_ptr<QuantitativeModel::MarketDataAnalyzer> m_marketDataAnalyzer;

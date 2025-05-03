@@ -100,6 +100,14 @@ void MarketDataEvents::LoadInterestingDataSymbols(const char* filePath)
     }
 }
 
+void MarketDataEvents::StartIOContext()
+{
+    // Set the atomic flag to true, indicating that the IO context should start.
+    m_startIOContext.store(true);
+    // Notify MarketDataEvents::Wait() that the condition variable has been triggered.
+    m_marketDataCond.notify_one();
+}
+
 bool MarketDataEvents::Subscribe(const std::string& symbol)
 {
     std::lock_guard<std::mutex> lock(m_marketDataMutex);
@@ -183,17 +191,19 @@ bool MarketDataEvents::IsSubscribed(const std::string& symbol)
     return m_subscribedSymbols.find(symbol) != m_subscribedSymbols.end();
 }
 
-void MarketDataEvents::StartAndWait()
+void MarketDataEvents::Wait()
 {
-    // ansyn wait in main loop, using defer_lock to explicitly lock/unlock thread
-    std::unique_lock<std::mutex> lock(m_marketDataMutex, std::defer_lock);
-    lock.lock();
-    while(m_subscribedSymbols.empty()) {} // only go ahead when we have as leat one subcribed symbol
-    lock.unlock(); // because below call will never returned so we have to unlock it here to avoid deadlock
+	// Wait for the condition variable to be notified
+    std::unique_lock<std::mutex> lock(m_marketDataMutex);
+	m_marketDataCond.wait(lock, [&]()
+	{
+		return m_startIOContext.load();
+	});
     // If there is any bloclking call at our side then Binance side will disconnect websocket 
     // connection with the error: ec=10053, emsg=An established connection was aborted 
     // by the software in your host machine, so please carefully to use lock stuffs within this class
     m_ioContext.run(); // never return!!!
+	assert(false); // alert if we reach here, maybe missing call StartIOContext()
 }
 
 const std::unordered_set<std::string>& MarketDataEvents::GetSubscribingSymbols() const

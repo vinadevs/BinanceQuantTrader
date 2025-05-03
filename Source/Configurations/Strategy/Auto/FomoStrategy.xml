@@ -2,6 +2,7 @@
 
 <GeneralConfig>
   <LifeTime LifeTimeForStrategy="IntraDay"/>
+  <EnableComplianceChecker Enable="true"/>
 </GeneralConfig>
 
 <IndicatorAndSignals>
@@ -16,7 +17,7 @@
   <Parameters TriggerMaxiumUpTick="5" TriggerMaxiumDownTick="2"/>
 </ShortSell>
 
-<TargetSymbols>
+<TargetSymbol>
   <Symbols List="BTCUSDT"/>
-</TargetSymbols>
+</TargetSymbol>
   

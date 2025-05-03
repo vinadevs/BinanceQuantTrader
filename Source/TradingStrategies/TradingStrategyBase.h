@@ -117,6 +117,7 @@ namespace TradingStrategies {
 		// Shutdown strategy or stop trading
 		// We need to set these variables to unlive, m_strategyRunStatus,
 		// m_isThreadTradeOngoing (in case we use mutiple threads)
+		// We should also unsubscribe all symbols to stop receiving market data
 		virtual void StopLive() = 0;
 
 		// Report PNL, trades, ...
@@ -127,6 +128,8 @@ namespace TradingStrategies {
 		// -Can we trade now?
 		StrategyRunStatus GetStrategyRunStatus() const;
 		StrategyType GetStrategyType() const;
+		void SetStrategyType(const StrategyType strategyType);
+		std::string GetStrategyTypeStr(const StrategyType strategyType);
 		const std::string& GetStrategyName() const;
 		const std::string& GetStrategyID() const;
 		// Sets up the lifetime of the trading strategy based on the provided XML configuration.
@@ -161,7 +164,7 @@ protected:
 		ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr }; // exchange compliance and regulatory
 		std::unique_ptr<CompilanceChecker> m_compilanceChecker; // reset trading hard limits from exchange
 		std::unique_ptr<LibraryUtils::Logger> m_logger; // log message
-		const StrategyType m_strategyType { StrategyType::UNDEF};
+		StrategyType m_strategyType { StrategyType::UNDEF};
 		StrategyLifeTime m_StrategyLifeTime { StrategyLifeTime::INTRA_DAY };
 		// For strategies that run in a same thread with main thread
 		// then we can check this flag to know if the strategy is still live

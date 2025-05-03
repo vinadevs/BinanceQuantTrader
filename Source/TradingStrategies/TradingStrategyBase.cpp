@@ -44,8 +44,6 @@ TradingStrategyBase::TradingStrategyBase(
 	m_logger = std::make_unique<Logger>(m_strategyName);
 	m_logger->Info("Trading strategy name=" + m_strategyName);
 	m_logger->Info("Trading strategy description=" + m_strategyDescription);
-	m_compilanceChecker = std::make_unique<CompilanceChecker>();
-	LogTradingHardLimits();
 }
 
 TradingStrategyBase::TradingStrategyBase(
@@ -84,6 +82,27 @@ StrategyType TradingStrategyBase::GetStrategyType() const
 	return m_strategyType;
 }
 
+void TradingStrategyBase::SetStrategyType(const StrategyType strategyType)
+{
+	m_strategyType = strategyType;
+	m_logger->Info("Strategy type=" + GetStrategyTypeStr(m_strategyType));
+}
+
+std::string TradingStrategyBase::GetStrategyTypeStr(const StrategyType strategyType)
+{
+	switch (strategyType)
+	{
+	case StrategyType::FULL_AUTO:
+		return "FULL_AUTO";
+	case StrategyType::SEMI_AUTO:
+		return "SEMI_AUTO";
+	case StrategyType::ADVISING:
+		return "ADVISING";
+	default:
+		return "UnknownStrategyType";
+	}
+}
+
 const std::string& TradingStrategyBase::GetStrategyName() const
 {
 	return m_strategyName;
@@ -116,10 +135,17 @@ void TradingStrategyBase::SetupStrategyLifeTime(tinyxml2::XMLDocument* strategyC
 	{
 		throw std::runtime_error("TradingStrategyBase: unsupported StrategyLifeTime config");
 	}
-	m_compilanceChecker->StartAlarmOnTradingRules(
-		m_tradingRules,
-		AlarmSystem::AlarmMode::REPEAT,
-		m_StrategyLifeTime != StrategyLifeTime::INTRA_DAY ? true : false);
+	const XMLElement* enableComplianceCheckerXml = generalConfigXml->FirstChildElement("EnableComplianceChecker");
+	assert(enableComplianceCheckerXml);
+	if (enableComplianceCheckerXml->BoolAttribute("Enable"))
+	{
+		LogTradingHardLimits();
+		m_compilanceChecker = std::make_unique<CompilanceChecker>();
+		m_compilanceChecker->StartAlarmOnTradingRules(
+			m_tradingRules,
+			AlarmSystem::AlarmMode::REPEAT,
+			m_StrategyLifeTime != StrategyLifeTime::INTRA_DAY ? true : false);
+	}
 }
 
 bool TradingStrategyBase::IsNotIsNotExceededTradingRules() const

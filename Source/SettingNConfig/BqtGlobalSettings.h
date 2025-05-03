@@ -13,6 +13,7 @@
 #include "../LibraryUtils/MacroUtils.h"
 
 #include <string>
+#include <memory>
 
 namespace tinyxml2 {
 	class XMLElement;

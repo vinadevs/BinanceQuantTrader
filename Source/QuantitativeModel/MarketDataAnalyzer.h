@@ -12,7 +12,7 @@
 
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
+#include <vector>
 #include <memory>
 
 #include "QuantMarketDataAnalyzer.h"
@@ -26,7 +26,7 @@ namespace QuantitativeModel {
 	class DLL_CLASS_QUANTITATIVEMODEL_EXPORTS MarketDataAnalyzer final {
 	public:
 		MarketDataAnalyzer(
-			const std::unordered_set<std::string>& symbolList,
+			const std::vector<std::string>& symbolList,
 			LibraryUtils::Logger* logger);
 		~MarketDataAnalyzer();
 		QuantMarketDataAnalyzer* GetQuantMarketDataAnalyzer(const std::string& symbol);

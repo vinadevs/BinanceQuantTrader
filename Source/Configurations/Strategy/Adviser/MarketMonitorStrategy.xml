@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<GeneralConfig>
+  <LifeTime LifeTimeForStrategy="IntraDay"/>
+  <EnableComplianceChecker Enable="false"/>
+</GeneralConfig>
+
+<TargetSymbol>
+  <Symbols UseRemoteExchangeList="false" LocalListingFile="[ROOT_BQT_PATH]\Configurations\Common\BinanceListings.txt"/>
+</TargetSymbol>
+  

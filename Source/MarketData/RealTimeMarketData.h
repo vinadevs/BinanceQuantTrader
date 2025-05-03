@@ -79,6 +79,8 @@ public:
 	void UnRegisterDataListener(MarketDataObserver* observer);
 
 	void StartStreamingData();
+	// This function must be called after subscribing symbols
+	void StartIOContext();
 	bool SubscribeSymbol(const std::string& symbol);
 	bool UnsubscribeSymbol(const std::string& symbol);
 	bool IsSubscribedSymbol(const std::string& symbol);

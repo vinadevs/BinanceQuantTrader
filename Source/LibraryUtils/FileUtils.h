@@ -11,9 +11,13 @@
 #include "dlldefine.h"
 
 #include <string>
+#include <vector>
 
 namespace FileUtils {
 
     std::string DLL_CLASS_LIBRARYUTILS_EXPORTS 
         ReadFileContent(const std::string& file);
+    std::vector<std::string> DLL_CLASS_LIBRARYUTILS_EXPORTS ReadFileContentToLines(
+        const std::string& file,
+        const bool trimLine);
 };

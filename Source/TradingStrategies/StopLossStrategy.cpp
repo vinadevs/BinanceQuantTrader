@@ -37,6 +37,7 @@ StopLossStrategy::StopLossStrategy(
 	: TradingStrategyBase("StopLossStrategy", "The fear of missing out...",
 		strategyCfgPath, marketData, trader, tradingRules)
 {
+	SetStrategyType(StrategyType::FULL_AUTO);
 	InitializeParameters(strategyCfgPath);
 	// Subscribe target symbols to receive real time market data
 	m_logger->Info("Subscribe target symbols.");
