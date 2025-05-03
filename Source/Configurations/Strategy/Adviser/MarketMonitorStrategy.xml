@@ -6,6 +6,6 @@
 </GeneralConfig>
 
 <TargetSymbol>
-  <Symbols UseRemoteExchangeList="false" LocalListingFile="[ROOT_BQT_PATH]\Configurations\Common\BinanceListings.txt"/>
+  <Symbols UseRemoteExchangeList="true" LocalListingFile="[ROOT_BQT_PATH]\Configurations\Common\BinanceListings.txt"/>
 </TargetSymbol>
   

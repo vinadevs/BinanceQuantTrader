@@ -18,7 +18,7 @@
 </BinanceAPI>
 
 <TradingStrategy>
-  <UsingStrategy Name="FomoStrategy" File="[ROOT_BQT_PATH]\Configurations\Strategy\Auto\FomoStrategy.xml"/>
+  <UsingStrategy Name="MarketMonitorStrategy" File="[ROOT_BQT_PATH]\Configurations\Strategy\Adviser\MarketMonitorStrategy.xml"/>
 </TradingStrategy>
 
 <PortfolioInvestment>

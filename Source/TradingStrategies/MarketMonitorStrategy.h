@@ -69,7 +69,6 @@ namespace TradingStrategies {
 		void PrepareTargetMonitorSymbols();
 		void SubscribeTargetSymbols();
 		void UnsubscribeTargetSymbols();
-		void UpdateTargetSymbolsFromLocalListingAssets(const std::vector<std::string>& symbols);
 
 		std::vector<std::string> m_targetMonitorSymbols;
 		std::unique_ptr<QuantitativeModel::MarketDataAnalyzer> m_marketDataAnalyzer;

@@ -263,14 +263,18 @@ void MarketMonitorStrategy::PrepareTargetMonitorSymbols()
 	const bool useRemoteExchangeList = symbolsXml->BoolAttribute("UseRemoteExchangeList");
 	if (useRemoteExchangeList)
 	{
+		m_logger->Info("Querying remote binance exchange listing symbols info...");
 		m_targetMonitorSymbols = StaticDataMgr->GetAllRemoteListingSymbols(true);
+#ifdef SAVE_BINANCE_LISTINGS // remove this macro to saving binance listings
+		FileUtils::FromVectorStringToFile(m_targetMonitorSymbols, PathUtils::GetApplicationFolderPath()
+			+ "\\Configurations\\Common\\BinanceListings.txt");
+#endif // DEBUG
 	}
 	else
 	{
 		std::string localListingFile(symbolsXml->Attribute("LocalListingFile"));
 		PathUtils::ReplaceSubString(localListingFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
-		auto const listingAssets = FileUtils::ReadFileContentToLines(localListingFile, true);
-		UpdateTargetSymbolsFromLocalListingAssets(listingAssets);
+		m_targetMonitorSymbols = FileUtils::ReadFileContentToLines(localListingFile, true);
 	}
 }
 
@@ -291,16 +295,5 @@ void MarketMonitorStrategy::UnsubscribeTargetSymbols()
 	for (const auto& symbol : m_targetMonitorSymbols)
 	{
 		m_marketData->UnsubscribeSymbol(symbol);
-	}
-}
-
-void MarketMonitorStrategy::UpdateTargetSymbolsFromLocalListingAssets(const std::vector<std::string>& symbols)
-{
-	m_targetMonitorSymbols.clear();
-	for (const auto& symbol : symbols)
-	{
-		if (symbol.empty()) 
-			continue;
-		m_targetMonitorSymbols.emplace_back(symbol + StaticDataMgr->GetStableCoinUSDTSymbol());
 	}
 }

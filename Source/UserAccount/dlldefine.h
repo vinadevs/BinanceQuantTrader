@@ -20,5 +20,5 @@
 #endif
 #endif  // USERACCOUNT_EXPORTS
 #else
-#define DLL_CLASS
+#define DLL_CLASS_USERACCOUNT_EXPORTS
 #endif  // _MSC_VER

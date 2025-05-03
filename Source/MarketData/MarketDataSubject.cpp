@@ -14,7 +14,7 @@ using namespace MarketData;
 
 #define IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(callback) \
 int updated{ 0 };  \
-for (auto obverver : m_marketDataObservers)  \
+for (auto& obverver : m_marketDataObservers)  \
 {  \
 	if (obverver->callback(this, symbol))  \
 	{ \

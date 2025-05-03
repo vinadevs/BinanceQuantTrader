@@ -22,6 +22,7 @@ using namespace UserAccount;
 using namespace MarketData;
 using namespace LibraryUtils;
 using namespace tinyxml2;
+
 #if USE_BACK_TEST_TRADING 
 using namespace MiddlewareMQ;
 #endif

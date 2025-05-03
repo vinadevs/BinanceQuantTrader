@@ -19,6 +19,22 @@ std::string FileUtils::ReadFileContent(const std::string& file)
     return buffer.str();
 }
 
+void FileUtils::FromVectorStringToFile(
+	const std::vector<std::string>& vectorString,
+	const std::string& ouputFile)
+{
+	std::ofstream ofs(ouputFile);
+	if (!ofs.is_open())
+	{
+		throw std::runtime_error("Could not open file: " + ouputFile);
+	}
+	for (const auto& line : vectorString)
+	{
+		ofs << line << std::endl;
+	}
+	ofs.close();
+}
+
 std::vector<std::string> FileUtils::ReadFileContentToLines(
 	const std::string& file,
 	const bool trimLine)
