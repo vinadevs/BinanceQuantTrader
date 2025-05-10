@@ -153,7 +153,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ExternalController.h" />
     <ClInclude Include="MarketMonitorStrategy.h" />
+    <ClInclude Include="protobuf\strategy_control_request.grpc.pb.h" />
+    <ClInclude Include="protobuf\strategy_control_request.pb.h" />
+    <ClInclude Include="protobuf\strategy_parent_order.grpc.pb.h" />
+    <ClInclude Include="protobuf\strategy_parent_order.pb.h" />
     <ClInclude Include="StopLossStrategy.h" />
     <ClInclude Include="StrategyMessageServer.h" />
     <ClInclude Include="CompilanceChecker.h" />
@@ -165,12 +170,19 @@
     <ClInclude Include="StrategyControler.h" />
     <ClInclude Include="SingleStrategyHost.h" />
     <ClInclude Include="StrategyManager.h" />
+    <ClInclude Include="StrategyParentOrderHttpService.h" />
+    <ClInclude Include="StrategyRequestHttpService.h" />
     <ClInclude Include="TestTradingStrategy.h" />
     <ClInclude Include="TradingStrategyBase.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CompilanceChecker.cpp" />
+    <ClCompile Include="ExternalController.cpp" />
     <ClCompile Include="MarketMonitorStrategy.cpp" />
+    <ClCompile Include="protobuf\strategy_control_request.grpc.pb.cc" />
+    <ClCompile Include="protobuf\strategy_control_request.pb.cc" />
+    <ClCompile Include="protobuf\strategy_parent_order.grpc.pb.cc" />
+    <ClCompile Include="protobuf\strategy_parent_order.pb.cc" />
     <ClCompile Include="StopLossStrategy.cpp" />
     <ClCompile Include="StrategyMessageServer.cpp" />
     <ClCompile Include="dllmain.cpp" />
@@ -185,6 +197,8 @@
     <ClCompile Include="StrategyControler.cpp" />
     <ClCompile Include="SingleStrategyHost.cpp" />
     <ClCompile Include="StrategyManager.cpp" />
+    <ClCompile Include="StrategyParentOrderHttpService.cpp" />
+    <ClCompile Include="StrategyRequestHttpService.cpp" />
     <ClCompile Include="TestTradingStrategy.cpp" />
     <ClCompile Include="TradingStrategyBase.cpp" />
   </ItemGroup>

@@ -57,5 +57,12 @@ void BinanceRestAPIServer::Start()
 
 void BinanceRestAPIServer::Stop()
 {
-    m_grpcServer->Shutdown(); // unblock release Wait()
+    if (m_grpcServer) 
+    {
+        m_grpcServer->Shutdown(); // unblock release Wait()
+    }
+    if (m_grpcThread.joinable())
+    {
+        m_grpcThread.join();
+    }
 }

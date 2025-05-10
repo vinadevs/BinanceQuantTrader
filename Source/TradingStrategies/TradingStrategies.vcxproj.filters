@@ -46,6 +46,15 @@
     <Filter Include="Auto Strategies\Stop Loss">
       <UniqueIdentifier>{76ad005a-54c1-40a4-9d87-b5913dfb2594}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External Controller">
+      <UniqueIdentifier>{08b8d721-1ff2-4bc7-91df-efb0724262e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Advising Strategies\Market Monitor Strategy">
+      <UniqueIdentifier>{6ff854d1-8316-4dc4-987a-a3444ee4693a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External Controller\Protobuf">
+      <UniqueIdentifier>{c3f8727e-7fd6-4ee4-87b5-3f1619db96b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -88,7 +97,28 @@
       <Filter>Auto Strategies\Stop Loss</Filter>
     </ClInclude>
     <ClInclude Include="MarketMonitorStrategy.h">
-      <Filter>Advising Strategies</Filter>
+      <Filter>Advising Strategies\Market Monitor Strategy</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\strategy_control_request.grpc.pb.h">
+      <Filter>External Controller\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\strategy_control_request.pb.h">
+      <Filter>External Controller\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\strategy_parent_order.grpc.pb.h">
+      <Filter>External Controller\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\strategy_parent_order.pb.h">
+      <Filter>External Controller\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="StrategyParentOrderHttpService.h">
+      <Filter>External Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="StrategyRequestHttpService.h">
+      <Filter>External Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternalController.h">
+      <Filter>External Controller</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -129,7 +159,28 @@
       <Filter>Auto Strategies\Stop Loss</Filter>
     </ClCompile>
     <ClCompile Include="MarketMonitorStrategy.cpp">
-      <Filter>Advising Strategies</Filter>
+      <Filter>Advising Strategies\Market Monitor Strategy</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\strategy_control_request.grpc.pb.cc">
+      <Filter>External Controller\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\strategy_control_request.pb.cc">
+      <Filter>External Controller\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\strategy_parent_order.grpc.pb.cc">
+      <Filter>External Controller\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\strategy_parent_order.pb.cc">
+      <Filter>External Controller\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="StrategyParentOrderHttpService.cpp">
+      <Filter>External Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="StrategyRequestHttpService.cpp">
+      <Filter>External Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="ExternalController.cpp">
+      <Filter>External Controller</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

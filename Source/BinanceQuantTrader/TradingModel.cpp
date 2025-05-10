@@ -185,7 +185,7 @@ void TradingModel::RunModel()
 	// for testing trade
 	// -We dont have a Binance message server, because Binance API 
 	// is using REST protocol so we will use HTTP/REST protocol instead
-	m_strategyMessageServer->Start();
+	m_strategyMessageServer->Start(); // this is a child thread
 	m_logger->Info(USE_BACK_TEST_TRADING_MESSAGE);
 #elif USE_BINANCE_TEST_TRADING
 	m_logger->Info(USE_BINANCE_TEST_TRADING_MESSAGE);
@@ -200,7 +200,7 @@ void TradingModel::RunModel()
 	{
 		if (m_strategyHost && m_allowMutipleThreadTrade) // control from configuration setup
 		{
-			m_strategyHost->StartStrategyThread(m_strategy.get());
+			m_strategyHost->StartStrategyThread(m_strategy.get());  // this is a child thread
 		}
 		else //If Strategies and Trading Services (Market Data,...) want to run in single thread
 		{
@@ -217,6 +217,6 @@ void TradingModel::RunModel()
 	if (m_marketData)
 	{
 		// Start receive real time market data and analyze to find trading opportunity signals
-		m_marketData->StartStreamingData();
+		m_marketData->StartStreamingData();  // this is a child thread
 	}
 }
