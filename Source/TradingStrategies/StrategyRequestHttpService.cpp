@@ -1,7 +1,18 @@
 #include "pch.h"
 #include "StrategyRequestHttpService.h"
 
-grpc::Status TradingStrategies::StrategyRequestServiceImpl::ControlStrategy(grpc::ServerContext* context, const strategy::StrategyRequest* request, strategy::StrategyResponse* response)
+using namespace TradingStrategies;
+using namespace LibraryUtils;
+
+StrategyRequestHttpService::StrategyRequestHttpService()
+{
+}
+
+StrategyRequestHttpService::~StrategyRequestHttpService()
+{
+}
+
+grpc::Status StrategyRequestHttpService::ControlStrategy(grpc::ServerContext* context, const strategy::StrategyRequest* request, strategy::StrategyResponse* response)
 {
     return grpc::Status();
 }

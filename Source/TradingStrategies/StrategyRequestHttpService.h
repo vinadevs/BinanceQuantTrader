@@ -11,6 +11,9 @@
 #include "Protobuf/strategy_control_request.pb.h"
 #include "Protobuf/strategy_control_request.grpc.pb.h"
 
+#undef max
+#undef min
+#include <grpcpp/grpcpp.h>
 #include <memory>
 
 namespace LibraryUtils {
@@ -19,7 +22,12 @@ namespace LibraryUtils {
 
 namespace TradingStrategies {
 
-    class StrategyRequestServiceImpl final : public strategy::StrategyRequestService::Service {
+    class StrategyRequestHttpService final
+        : public strategy::StrategyRequestService::Service {
+	public:
+        StrategyRequestHttpService();
+        ~StrategyRequestHttpService() override;
+    private:
         grpc::Status ControlStrategy(grpc::ServerContext* context,
             const strategy::StrategyRequest* request,
             strategy::StrategyResponse* response) override;

@@ -43,6 +43,7 @@ namespace RiskManagement {
 namespace TradingStrategies {
 	class SingleStrategyHost;
 	class TradingStrategyBase;
+	class ExternalController;
 #if USE_BACK_TEST_TRADING
 	class StrategyMessageServer;
 #endif
@@ -83,6 +84,7 @@ namespace BinanceQuantTrader {
 		std::unique_ptr<RiskManagement::RiskManager> m_riskManager;
 		std::unique_ptr<TradingStrategies::TradingStrategyBase> m_strategy;
 		std::unique_ptr<TradingStrategies::SingleStrategyHost> m_strategyHost;
+		std::unique_ptr<TradingStrategies::ExternalController> m_externalController;
 		std::unique_ptr<tinyxml2::XMLDocument> m_binanceMarketDataConfig;
 #if USE_BACK_TEST_TRADING
 		std::unique_ptr<TradingStrategies::StrategyMessageServer> m_strategyMessageServer;

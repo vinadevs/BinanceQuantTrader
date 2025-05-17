@@ -34,7 +34,12 @@ BinanceRestAPIServer::BinanceRestAPIServer(
     m_serverConnection = m_serverIpAddress + ":" + m_serverPort;
 }
 
-BinanceRestAPIServer::~BinanceRestAPIServer() {}
+BinanceRestAPIServer::~BinanceRestAPIServer() 
+{
+	m_logger->Info("Stopping BinanceRestAPIServer.");
+	Stop();
+	m_logger->Info("BinanceRestAPIServer stopped.");
+}
 
 void BinanceRestAPIServer::WaitForIncomingMessage()
 {

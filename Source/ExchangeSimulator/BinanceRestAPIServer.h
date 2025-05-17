@@ -11,6 +11,8 @@
 #include "ExchangeServiceInterface.h"
 
 #include <memory>
+#include <thread>
+#include <string>
 
 namespace tinyxml2 {
     class XMLElement;

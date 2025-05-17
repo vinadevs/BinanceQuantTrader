@@ -17,6 +17,7 @@
 #include "../RiskManagement/RiskManager.h"
 #include "../TradingStrategies/TradingStrategyBase.h"
 #include "../TradingStrategies/SingleStrategyHost.h"
+#include "../TradingStrategies/ExternalController.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../SettingNConfig/BqtXmlUtils.h"
 #include "../LibraryUtils/Logger.h"
@@ -172,6 +173,11 @@ void TradingModel::PrepareTradingComponents(
 	m_strategyMessageServer->RegisterMessageHandler(m_strategy.get());
 #endif
 
+	m_logger->Info("Starting External Controller.");
+	const auto* externalControllerCfg = configBQTXml->FirstChildElement("ExternalController");
+	assert(externalControllerCfg);
+	m_externalController = std::make_unique<ExternalController>(externalControllerCfg);
+
 	m_logger->Info("Initiating Trading Model.");
 	const auto* tradingModelCfg = configBQTXml->FirstChildElement("TradingModel");
 	m_allowMutipleThreadTrade = tradingModelCfg->FirstChildElement("MultipleThreads")->BoolAttribute("Enable");
@@ -179,6 +185,12 @@ void TradingModel::PrepareTradingComponents(
 
 void TradingModel::RunModel()
 {
+	// Start the external controller, this is for setup parameter control from external applications
+	m_externalController->Start(); // this is a child thread
+	// Start the strategy message server
+	// This is a child thread
+	// It will be used to receive messages from the exchange simulator
+	// for testing trade
 #if USE_BACK_TEST_TRADING
 	// -This message receiver is a BQT Json Message server
 	// We will use it to receive acks from the Exchange Simulator
@@ -208,12 +220,13 @@ void TradingModel::RunModel()
 		}
 	}
 #else
-	//If Strategies and Trading Services (Market Data,...) want to run in single thread
+	// If Strategies and Trading Services (Market Data,...) want to run in single thread
 	if (m_strategy)
 	{
 		m_strategy->StartLive();
 	}
 #endif
+	// Start market data streaming
 	if (m_marketData)
 	{
 		// Start receive real time market data and analyze to find trading opportunity signals
