@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Future Binnance API">
+      <UniqueIdentifier>{3041bc60-e742-4018-b981-232c32a49195}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -27,6 +30,9 @@
     <ClInclude Include="dlldefine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BinanceFutureApiGateway.h">
+      <Filter>Future Binnance API</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -37,6 +43,9 @@
     </ClCompile>
     <ClCompile Include="CurlAPIGateWay.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BinanceFutureApiGateway.cpp">
+      <Filter>Future Binnance API</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

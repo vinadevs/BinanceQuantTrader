@@ -225,7 +225,7 @@ void MarketMonitorStrategy::InitializeParameters(const std::string& strategyCfgP
 	const auto errLoadFileXml = m_strategyCfgXml->LoadFile(strategyCfgPath.c_str());
 	if (errLoadFileXml != XML_SUCCESS)
 	{
-		throw std::runtime_error("FomoTradingStrategy: Load file Xml error="
+		throw std::runtime_error("MarketMonitorStrategy: Load file Xml error="
 			+ std::string(XMLDocument::ErrorIDToName(errLoadFileXml)) + ", error path:" + strategyCfgPath);
 	}
 	SetupStrategyLifeTime(m_strategyCfgXml.get());
@@ -258,13 +258,16 @@ void MarketMonitorStrategy::PrepareTargetMonitorSymbols()
 {
 	const auto* targetSymbolXml = m_strategyCfgXml->FirstChildElement("TargetSymbol");
 	assert(targetSymbolXml);
-	const XMLElement* symbolsXml = targetSymbolXml->FirstChildElement("Symbols");
+	const XMLElement* symbolsXml = targetSymbolXml->FirstChildElement("AllSymbols");
 	assert(symbolsXml);
 	const bool useRemoteExchangeList = symbolsXml->BoolAttribute("UseRemoteExchangeList");
 	if (useRemoteExchangeList)
 	{
 		m_logger->Info("Querying remote binance exchange listing symbols info...");
-		m_targetMonitorSymbols = StaticDataMgr->GetAllRemoteListingSymbols(true);
+		//m_targetMonitorSymbols = StaticDataMgr->GetAllRemoteListingSymbols(true);
+		m_targetMonitorSymbols.emplace_back("BTCUSDT");
+		m_targetMonitorSymbols.emplace_back("ETHUSDT");
+		m_targetMonitorSymbols.emplace_back("BNBUSDT");
 #ifdef SAVE_BINANCE_LISTINGS // remove this macro to saving binance listings
 		FileUtils::FromVectorStringToFile(m_targetMonitorSymbols, PathUtils::GetApplicationFolderPath()
 			+ "\\Configurations\\Common\\BinanceListings.txt");

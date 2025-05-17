@@ -15,6 +15,7 @@
 #include <string>
 #include <unordered_map>
 #include <memory>
+#include <deque>
 
 namespace LibraryUtils {
 	class Logger;
@@ -30,6 +31,7 @@ namespace QuantitativeModel {
 	public:
 		QuantMarketDataAnalyzer(const std::string& symbol);
 		~QuantMarketDataAnalyzer();
+
 		void AnalysisIndividualBookTicker(const MarketData::IndividualBookTickerData& data);
 		void AnalysisTrade(const MarketData::TradeData& data);
 		void AnalysisIndividualMarketTicker(const MarketData::IndividualMarketTickerData& data);
@@ -43,5 +45,22 @@ namespace QuantitativeModel {
 		void AnalysisAllMarketDepthDiff(const MarketData::AllDiffDepthData& data);
 	private:
 		std::string m_symbol;
+		std::deque<binapi::double_type> m_bestBidPrices;
+		std::deque<binapi::double_type> m_bestAskPrices;
+		std::deque<binapi::double_type> m_bestBidQty;
+		std::deque<binapi::double_type> m_bestAskQty;
+		size_t m_windowSize{ 20 };
+		binapi::double_type m_smaPrice{ 0.0 };
+		binapi::double_type m_lastBestBidPrice{ 0.0 };
+		bool m_isInvertedTrend{ false };
+		size_t m_triggerMaxiumUpTick{ 5 };
+		size_t m_triggerMaxiumDownTick{ 5 };
+		size_t m_triggerMaxiumUpPeriod{ 5 };
+		size_t m_triggerMaxiumDownPeriod{ 5 };
+		size_t m_tickbyTickUpCounter{ 10 };
+		size_t m_tickbyTickDownCounter{ 10 };
+		size_t m_periodUpCounter{ 10 };
+		size_t m_periodDownCounter{ 10 };
+		std::unique_ptr<LibraryUtils::Logger> m_logger;
 	};
 };

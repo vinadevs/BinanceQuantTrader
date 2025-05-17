@@ -57,3 +57,7 @@
 <BinanceExchangeClient>
   <Connection ServerIpAddress="localhost" ServerPort="50051"/>
 </BinanceExchangeClient>
+
+<ExternalController>
+  <Connection ServerIpAddress="0.0.0.0" ServerPort="12346"/>
+</ExternalController>
