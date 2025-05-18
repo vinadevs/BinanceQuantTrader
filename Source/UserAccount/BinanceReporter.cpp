@@ -10,7 +10,7 @@
 
 #include "../KernelTrading/errors.h"
 #include "../RestAPI/RestAPI.h"
-#include "../RestAPI/BinanceAPI.h"
+#include "../RestAPI/BinanceSpotApiGateWay.h"
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/PathUtils.h"
 #include "../LibraryUtils/StringUtils.h"
@@ -44,7 +44,7 @@ BinanceReporter::~BinanceReporter() {}
 
 void BinanceReporter::UpdateRemoteData(const std::string& symbol)
 {
-	const auto accountInfoResult = BinanceApiGateWay->account_info();
+	const auto accountInfoResult = BinanceSpotApiGateWayMgr->account_info();
 	if (!accountInfoResult)
 	{
 		LOG_ERROR_STREAM(m_logger, "account_info: ec=" << std::to_string(accountInfoResult.ec)
@@ -56,7 +56,7 @@ void BinanceReporter::UpdateRemoteData(const std::string& symbol)
 		m_logger->Info("updating account info finished.");
 		DEREF_V(m_accountInfo) = accountInfoResult.v;
 	}
-	const auto exchangeInfoResult = BinanceApiGateWay->exchange_info(symbol);
+	const auto exchangeInfoResult = BinanceSpotApiGateWayMgr->exchange_info(symbol);
 	if (!exchangeInfoResult)
 	{
 		LOG_ERROR_STREAM(m_logger, "exchange_info: ec=" << std::to_string(exchangeInfoResult.ec)
@@ -111,7 +111,7 @@ void BinanceReporter::UpdateRemoteReportTrades(const std::string& symbol)
 	{
 		LOG_INFO_STREAM(m_logger, "********************* TRADES REPORT *********************************");
 		binapi::make_trades_report_for_last_day(std::cout,
-			*BinanceApiGateWay, DEREF_V(m_accountInfo),
+			*BinanceSpotApiGateWayMgr, DEREF_V(m_accountInfo),
 			DEREF_V(m_exchangeProfileMgr->AccessRemoteExchangeProfile(symbol)),
 			{ symbol }, trades_report_cb);
 	}
@@ -127,14 +127,14 @@ void BinanceReporter::UpdateRemoteReportOpenOrders(const std::string& symbol)
 {
 	LOG_INFO_STREAM(m_logger, "******************* OPEN ORDERS REPORT ******************************");
 	binapi::make_open_orders_report(std::cout, 
-		*BinanceApiGateWay, DEREF_V(m_exchangeProfileMgr->AccessRemoteExchangeProfile(symbol)), { symbol });
+		*BinanceSpotApiGateWayMgr, DEREF_V(m_exchangeProfileMgr->AccessRemoteExchangeProfile(symbol)), { symbol });
 }
 
 void BinanceReporter::UpdateRemoteReportAccountBalance(const std::string& symbol)
 {
 	LOG_INFO_STREAM(m_logger, "******************** USER BALANCE REPORT *********************************");
 	binapi::make_balance_report(std::cout, 
-		*BinanceApiGateWay, DEREF_V(m_accountInfo),
+		*BinanceSpotApiGateWayMgr, DEREF_V(m_accountInfo),
 		DEREF_V(m_exchangeProfileMgr->AccessRemoteExchangeProfile(symbol)));
 }
 
@@ -142,14 +142,14 @@ void BinanceReporter::UpdateRemoteReportExchangerPriceForOrders(const std::strin
 {
 	LOG_INFO_STREAM(m_logger, "******************** EXCHANGE ORDER PRICE REPORT *********************************");
 	binapi::show_exchanger_price_for_orders(std::cout,
-		*BinanceApiGateWay, DEREF_V(m_exchangeProfileMgr->AccessRemoteExchangeProfile(symbol)), { symbol });
+		*BinanceSpotApiGateWayMgr, DEREF_V(m_exchangeProfileMgr->AccessRemoteExchangeProfile(symbol)), { symbol });
 }
 
 void BinanceReporter::UpdateRemoteReportCalculateLossForOrders(const std::string& symbol)
 {
 	LOG_INFO_STREAM(m_logger, "******************** CALCULATE ORDER LOSS REPORT *********************************");
 	binapi::calc_loss_for_orders(std::cout,
-		*BinanceApiGateWay, DEREF_V(m_exchangeProfileMgr->AccessRemoteExchangeProfile(symbol)), { symbol });
+		*BinanceSpotApiGateWayMgr, DEREF_V(m_exchangeProfileMgr->AccessRemoteExchangeProfile(symbol)), { symbol });
 }
 
 void BinanceReporter::DoRemoteExecutionReport(const std::string& symbol)

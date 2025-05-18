@@ -156,7 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="RestAPI.h" />
-    <ClInclude Include="BinanceAPI.h" />
+    <ClInclude Include="BinanceSpotApiGateWay.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
@@ -164,7 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RestAPI.cpp" />
-    <ClCompile Include="BinanceAPI.cpp" />
+    <ClCompile Include="BinanceSpotApiGateWay.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

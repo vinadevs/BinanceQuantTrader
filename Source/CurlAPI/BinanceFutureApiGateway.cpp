@@ -3,85 +3,88 @@
 
 #include <chrono>
 #include <sstream>
+#include <iostream>
 #include <iomanip>
 #include <openssl/hmac.h>
 #include <openssl/evp.h>
 
 using json = nlohmann::json;
+using namespace CurlAPI;
 
-BinanceFutureApiGateway& BinanceFutureApiGateway::getInstance() {
+BinanceFutureApiGateway& BinanceFutureApiGateway::GetInstance() {
     static BinanceFutureApiGateway instance;
     return instance;
 }
 
-void BinanceFutureApiGateway::initUserKey(const std::string& apiKey, const std::string& secretKey) {
+void BinanceFutureApiGateway::InitiateAPI(const std::string& futureApiBinanceUrl, const std::string& apiKey, const std::string& secretKey) {
+	m_baseUrl = futureApiBinanceUrl;
     m_apiKey = apiKey;
     m_secretKey = secretKey;
     curl_global_init(CURL_GLOBAL_ALL);
 }
 
-void BinanceFutureApiGateway::sendTestOrder(const std::string& symbol,
+void BinanceFutureApiGateway::SendTestOrder(const std::string& symbol,
     const std::string& side,
     const std::string& type,
     const std::string& quantity,
     const std::string& origClientOrderId) {
     std::string endpoint = "/fapi/v1/order/test";
-    sendOrder(endpoint, symbol, side, type, quantity, origClientOrderId);
+    SendOrder(endpoint, symbol, side, type, quantity, origClientOrderId);
 }
 
-void BinanceFutureApiGateway::sendRealOrder(const std::string& symbol,
+void BinanceFutureApiGateway::SendRealOrder(const std::string& symbol,
     const std::string& side,
     const std::string& type,
     const std::string& quantity,
     const std::string& origClientOrderId) {
     std::string endpoint = "/fapi/v1/order";
-    sendOrder(endpoint, symbol, side, type, quantity, origClientOrderId);
+    SendOrder(endpoint, symbol, side, type, quantity, origClientOrderId);
 }
 
-void BinanceFutureApiGateway::setLeverageRate(const std::string& symbol, int leverage) {
+void BinanceFutureApiGateway::SetLeverageRate(const std::string& symbol, int leverage) {
     std::string endpoint = "/fapi/v1/leverage";
-    std::string timestamp = getTimestamp();
+    std::string timestamp = GetTimestamp();
 
     std::string query = "symbol=" + symbol +
         "&leverage=" + std::to_string(leverage) +
         "&timestamp=" + timestamp;
 
-    std::string signature = hmacSha256(m_secretKey, query);
+    std::string signature = HmacSha256(m_secretKey, query);
     query += "&signature=" + signature;
 
-    std::string response = sendSignedPostRequest(endpoint, query);
-    printJsonResponse(response);
+    std::string response = SendSignedPostRequest(endpoint, query);
+    PrintJsonResponse(response);
 }
 
-void BinanceFutureApiGateway::cancelOrder(const std::string& symbol, const std::string& origClientOrderId) {
+void BinanceFutureApiGateway::CancelOrder(const std::string& symbol, const std::string& origClientOrderId) {
     std::string endpoint = "/fapi/v1/order";
-    std::string timestamp = getTimestamp();
+    std::string timestamp = GetTimestamp();
     std::string query = "symbol=" + symbol +
         "&origClientOrderId=" + origClientOrderId +
         "&timestamp=" + timestamp;
-    query += "&signature=" + hmacSha256(m_secretKey, query);
-    std::string response = sendSignedDeleteRequest(endpoint, query);
-    printJsonResponse(response);
+    query += "&signature=" + HmacSha256(m_secretKey, query);
+    std::string response = SendSignedDeleteRequest(endpoint, query);
+    PrintJsonResponse(response);
 }
 
-void BinanceFutureApiGateway::queryOrder(const std::string& symbol, const std::string& origClientOrderId) {
+void BinanceFutureApiGateway::QueryOrder(const std::string& symbol, const std::string& origClientOrderId) {
     std::string endpoint = "/fapi/v1/order";
-    std::string timestamp = getTimestamp();
+    std::string timestamp = GetTimestamp();
     std::string query = "symbol=" + symbol +
         "&origClientOrderId=" + origClientOrderId +
         "&timestamp=" + timestamp;
-    query += "&signature=" + hmacSha256(m_secretKey, query);
-    std::string response = sendSignedGetRequest(endpoint, query);
-    printJsonResponse(response);
+    query += "&signature=" + HmacSha256(m_secretKey, query);
+    std::string response = SendSignedGetRequest(endpoint, query);
+    PrintJsonResponse(response);
 }
 
-void BinanceFutureApiGateway::sendOrder(const std::string& endpoint,
+void BinanceFutureApiGateway::SendOrder(const std::string& endpoint,
     const std::string& symbol,
     const std::string& side,
     const std::string& type,
     const std::string& quantity,
     const std::string& origClientOrderId) const {
-    std::string timestamp = getTimestamp();
+    std::string timestamp = GetTimestamp();
     std::string query = "symbol=" + symbol +
         "&side=" + side +
         "&type=" + type +
@@ -90,12 +93,12 @@ void BinanceFutureApiGateway::sendOrder(const std::string& endpoint,
     if (!origClientOrderId.empty()) {
         query += "&newClientOrderId=" + origClientOrderId;
     }
-    query += "&signature=" + hmacSha256(m_secretKey, query);
-    std::string response = sendSignedPostRequest(endpoint, query);
-    printJsonResponse(response);
+    query += "&signature=" + HmacSha256(m_secretKey, query);
+    std::string response = SendSignedPostRequest(endpoint, query);
+    PrintJsonResponse(response);
 }
 
-std::string BinanceFutureApiGateway::sendSignedPostRequest(const std::string& endpoint, const std::string& query) const {
+std::string BinanceFutureApiGateway::SendSignedPostRequest(const std::string& endpoint, const std::string& query) const {
     CURL* curl = curl_easy_init();
     std::string response;
     if (curl) {
@@ -106,7 +109,7 @@ std::string BinanceFutureApiGateway::sendSignedPostRequest(const std::string& en
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, query.c_str());
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 
         CURLcode res = curl_easy_perform(curl);
@@ -119,7 +122,7 @@ std::string BinanceFutureApiGateway::sendSignedPostRequest(const std::string& en
     return response;
 }
 
-std::string BinanceFutureApiGateway::sendSignedGetRequest(const std::string& endpoint, const std::string& query) const {
+std::string BinanceFutureApiGateway::SendSignedGetRequest(const std::string& endpoint, const std::string& query) const {
     CURL* curl = curl_easy_init();
     std::string response;
     if (curl) {
@@ -130,7 +133,7 @@ std::string BinanceFutureApiGateway::sendSignedGetRequest(const std::string& end
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 
         CURLcode res = curl_easy_perform(curl);
@@ -143,7 +146,7 @@ std::string BinanceFutureApiGateway::sendSignedGetRequest(const std::string& end
     return response;
 }
 
-std::string BinanceFutureApiGateway::sendSignedDeleteRequest(const std::string& endpoint, const std::string& query) const {
+std::string BinanceFutureApiGateway::SendSignedDeleteRequest(const std::string& endpoint, const std::string& query) const {
     CURL* curl = curl_easy_init();
     std::string response;
     if (curl) {
@@ -154,7 +157,7 @@ std::string BinanceFutureApiGateway::sendSignedDeleteRequest(const std::string& 
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 
         CURLcode res = curl_easy_perform(curl);
@@ -167,12 +170,12 @@ std::string BinanceFutureApiGateway::sendSignedDeleteRequest(const std::string& 
     return response;
 }
 
-size_t BinanceFutureApiGateway::writeCallback(void* contents, size_t size, size_t nmemb, void* userp) {
+size_t BinanceFutureApiGateway::WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
     ((std::string*)userp)->append((char*)contents, size * nmemb);
     return size * nmemb;
 }
 
-void BinanceFutureApiGateway::printJsonResponse(const std::string& response) const {
+void BinanceFutureApiGateway::PrintJsonResponse(const std::string& response) const {
     if (!response.empty()) {
         try {
             auto parsed = json::parse(response);
@@ -188,13 +191,13 @@ void BinanceFutureApiGateway::printJsonResponse(const std::string& response) con
     }
 }
 
-std::string BinanceFutureApiGateway::getTimestamp() const {
+std::string BinanceFutureApiGateway::GetTimestamp() const {
     using namespace std::chrono;
     auto now = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
     return std::to_string(now);
 }
 
-std::string BinanceFutureApiGateway::hmacSha256(const std::string& key, const std::string& data) const {
+std::string BinanceFutureApiGateway::HmacSha256(const std::string& key, const std::string& data) const {
     unsigned char* digest;
     digest = HMAC(EVP_sha256(), key.c_str(), key.length(),
         (unsigned char*)data.c_str(), data.length(), nullptr, nullptr);

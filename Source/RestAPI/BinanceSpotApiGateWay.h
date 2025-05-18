@@ -31,15 +31,15 @@ namespace RestAPI {
 	building trading bots, portfolio management tools, or other 
 	financial applications on Binance. */
 
-	class DLL_CLASS_RESTAPI_EXPORTS BinanceAPI final
+	class DLL_CLASS_RESTAPI_EXPORTS BinanceSpotApiGateWay final
 	{
 	public:
-		BinanceAPI() = default;
-		~BinanceAPI();
+		BinanceSpotApiGateWay() = default;
+		~BinanceSpotApiGateWay();
 
-		DISABLE_COPY_AND_MOVE(BinanceAPI);
+		DISABLE_COPY_AND_MOVE(BinanceSpotApiGateWay);
 
-		static BinanceAPI* GetInstance();
+		static BinanceSpotApiGateWay* GetInstance();
 
 		void InitiateAPI(const std::string& host,
 						 const std::string& port,
@@ -55,4 +55,4 @@ namespace RestAPI {
 	};
 };
 // Lets shorten the code line!
-#define BinanceApiGateWay RestAPI::BinanceAPI::GetInstance()->AccessAPI()
+#define BinanceSpotApiGateWayMgr RestAPI::BinanceSpotApiGateWay::GetInstance()->AccessAPI()

@@ -12,7 +12,7 @@
 #include "../OrderManagement/BinanceCancelOrder.h"
 #include "../OrderManagement/BinanceReplaceOrder.h"
 #include "../OrderManagement/BinanceQueryOrder.h"
-#include "../RestAPI/BinanceAPI.h"
+#include "../RestAPI/BinanceSpotApiGateWay.h"
 #include "../LibraryUtils/StringDefinitions.h"
 #include "../LibraryUtils/Logger.h"
 
@@ -39,7 +39,7 @@ BinanceExchangeConnectivity::SendNewBinanceOrderFull(
     // IMPORTANT NOTES: NEVER USE 0 FOR NUMBERIC FIELDS, IF YOU DON'T WANT TO 
     // USE IT THEN JUST NEEDS TO SET IT'S STRING BE EMPTY NOT 0
     // BINANCE COULD REJECT ORDER THAT USE 0 
-    const auto newOrderResult = BinanceApiGateWay->new_order(
+    const auto newOrderResult = BinanceSpotApiGateWayMgr->new_order(
         newOrder->GetSymbol().c_str()
         , newOrder->GetSide()
         , newOrder->GetType()
@@ -80,7 +80,7 @@ BinanceExchangeConnectivity::SendNewBinanceTestOrderFull(
     // BINANCE COULD REJECT ORDER THAT USE 0 
     // Ensure that param is a valid const char*. 
     // If you are passing an object that isn't a C-style string, it might be an crashing issue.
-    const auto newTestOrderResult = BinanceApiGateWay->new_test_order(
+    const auto newTestOrderResult = BinanceSpotApiGateWayMgr->new_test_order(
         newTestOrder->GetSymbol().c_str()
         , newTestOrder->GetSide()
         , newTestOrder->GetType()
@@ -109,7 +109,7 @@ binapi::rest::api::result<binapi::rest::order_info_t>
 BinanceExchangeConnectivity::QueryBinanceOrderStatus(
     OrderManagement::BinanceQueryOrder* queryOrder)
 {
-    const auto queryOrderResult = BinanceApiGateWay->order_info(
+    const auto queryOrderResult = BinanceSpotApiGateWayMgr->order_info(
         queryOrder->GetSymbol(),
         queryOrder->GetOrderId(),
         queryOrder->GetOrigClientOrderId());
@@ -130,7 +130,7 @@ binapi::rest::api::result<binapi::rest::cancel_order_info_t>
 BinanceExchangeConnectivity::SendCancelBinanceOrder(
     OrderManagement::BinanceCancelOrder* cancelOrder)
 {
-    const auto cancelOrderResult = BinanceApiGateWay->cancel_order(
+    const auto cancelOrderResult = BinanceSpotApiGateWayMgr->cancel_order(
         cancelOrder->GetSymbol(),
         cancelOrder->GetOrderId(),
         cancelOrder->GetOrigClientOrderId(),
@@ -152,7 +152,7 @@ binapi::rest::api::result<binapi::rest::cancel_order_info_t>
 BinanceExchangeConnectivity::SendCancelReplaceBinanceOrder(
     OrderManagement::BinanceReplaceOrder* replaceOrder)
 {
-    const auto replaceOrderResult = BinanceApiGateWay->cancel_order(
+    const auto replaceOrderResult = BinanceSpotApiGateWayMgr->cancel_order(
         replaceOrder->GetSymbol(),
         replaceOrder->GetOrderId(),
         replaceOrder->GetOrigClientOrderId(),

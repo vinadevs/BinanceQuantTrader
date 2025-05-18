@@ -12,7 +12,7 @@
 #include "../PortfolioManager/PortfolioInvestmentBinance.h"
 #include "../ExchangeConnectivity/BinanceExchangeConnectivity.h"
 #include "../RestAPI/RestAPI.h"
-#include "../RestAPI/BinanceAPI.h"
+#include "../RestAPI/BinanceSpotApiGateWay.h"
 #include "../StaticData/StaticDataManager.h"
 #include "../OrderManagement/BinanceNewOrder.h"
 #include "../OrderManagement/BinanceCancelOrder.h"

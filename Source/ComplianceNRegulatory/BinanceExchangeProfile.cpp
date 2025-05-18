@@ -9,7 +9,7 @@
 #include "pch.h"
 
 #include "../RestAPI/RestAPI.h"
-#include "../RestAPI/BinanceAPI.h"
+#include "../RestAPI/BinanceSpotApiGateWay.h"
 #include "../LibraryUtils/Logger.h"
 #include "../SettingNConfig/BqtGlobalSettings.h"
 #if USE_BACK_TEST_TRADING
@@ -56,7 +56,7 @@ bool BinanceExchangeProfileMgr::UpdateRemoteExchangeProfiles(
         }
         return true;
 #else
-        const auto exchangeInfoResult = BinanceApiGateWay->exchange_info(symbol);
+        const auto exchangeInfoResult = BinanceSpotApiGateWayMgr->exchange_info(symbol);
         if (!exchangeInfo)
         {
             LOG_ERROR_STREAM(m_logger, "exchange_info error=" << exchangeInfoResult.errmsg);
@@ -97,7 +97,7 @@ bool BinanceExchangeProfileMgr::UpdateRemoteExchangeProfiles(
         }
         return m_exchangeRemoteProfiles.insert_or_assign(symbol, std::move(newExchangeInfo)).second;
 #else
-        const auto newExchangeInfoResult = BinanceApiGateWay->exchange_info(symbol);
+        const auto newExchangeInfoResult = BinanceSpotApiGateWayMgr->exchange_info(symbol);
         if (!newExchangeInfoResult)
         {
             LOG_ERROR_STREAM(m_logger, "exchange_info error=" << newExchangeInfoResult.errmsg);

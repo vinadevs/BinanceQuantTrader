@@ -1,32 +1,40 @@
 // BinanceFutureApiGateway.h
 #pragma once
 
+#include "dlldefine.h"
+
 #include <string>
-#include <iostream>
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
 
-class BinanceFutureApiGateway {
+namespace CurlAPI {
+
+// BinanceFutureApiGateway is a singleton class that provides an interface to interact with the Binance Futures API.
+// It supports sending test and real orders, setting leverage, canceling and querying orders, and handles
+// authentication, request signing, and response parsing using cURL and nlohmann::json.
+// The class is designed to be thread-safe and ensures that only one instance exists throughout the application.
+
+class DLL_CLASS_CURLAPI_EXPORTS BinanceFutureApiGateway final {
 public:
-    static BinanceFutureApiGateway& getInstance();
+    static BinanceFutureApiGateway& GetInstance();
 
-    void initUserKey(const std::string& apiKey, const std::string& secretKey);
+    void InitiateAPI(const std::string& futureApiBinanceUrl, const std::string& apiKey, const std::string& secretKey);
 
-    void sendTestOrder(const std::string& symbol,
+    void SendTestOrder(const std::string& symbol,
         const std::string& side = "BUY",
         const std::string& type = "MARKET",
         const std::string& quantity = "0.001",
         const std::string& origClientOrderId = "");
 
-    void sendRealOrder(const std::string& symbol,
+    void SendRealOrder(const std::string& symbol,
         const std::string& side = "BUY",
         const std::string& type = "MARKET",
         const std::string& quantity = "0.001",
         const std::string& origClientOrderId = "");
 
-    void setLeverageRate(const std::string& symbol, int leverage);
-    void cancelOrder(const std::string& symbol, const std::string& origClientOrderId);
-    void queryOrder(const std::string& symbol, const std::string& origClientOrderId);
+    void SetLeverageRate(const std::string& symbol, int leverage);
+    void CancelOrder(const std::string& symbol, const std::string& origClientOrderId);
+    void QueryOrder(const std::string& symbol, const std::string& origClientOrderId);
 
 private:
     BinanceFutureApiGateway() = default;
@@ -34,23 +42,26 @@ private:
     BinanceFutureApiGateway(const BinanceFutureApiGateway&) = delete;
     BinanceFutureApiGateway& operator=(const BinanceFutureApiGateway&) = delete;
 
-    void sendOrder(const std::string& endpoint,
+    void SendOrder(const std::string& endpoint,
         const std::string& symbol,
         const std::string& side,
         const std::string& type,
         const std::string& quantity,
         const std::string& origClientOrderId) const;
 
-    std::string sendSignedPostRequest(const std::string& endpoint, const std::string& query) const;
-    std::string sendSignedGetRequest(const std::string& endpoint, const std::string& query) const;
-    std::string sendSignedDeleteRequest(const std::string& endpoint, const std::string& query) const;
+    std::string SendSignedPostRequest(const std::string& endpoint, const std::string& query) const;
+    std::string SendSignedGetRequest(const std::string& endpoint, const std::string& query) const;
+    std::string SendSignedDeleteRequest(const std::string& endpoint, const std::string& query) const;
 
-    static size_t writeCallback(void* contents, size_t size, size_t nmemb, void* userp);
-    void printJsonResponse(const std::string& response) const;
-    std::string getTimestamp() const;
-    std::string hmacSha256(const std::string& key, const std::string& data) const;
+    static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp);
+    void PrintJsonResponse(const std::string& response) const;
+    std::string GetTimestamp() const;
+    std::string HmacSha256(const std::string& key, const std::string& data) const;
 
     std::string m_apiKey;
     std::string m_secretKey;
     std::string m_baseUrl = "https://fapi.binance.com";
 };
+} // namespace CurlAPI
+// Lets shorten the code line!
+#define BinanceFutureApiGatewayMgr CurlAPI::BinanceFutureApiGateway::GetInstance()

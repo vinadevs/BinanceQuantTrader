@@ -11,7 +11,7 @@
 #include "dlldefine.h"
 
 #include "../RestAPI/RestAPI.h"
-#include "../RestAPI/BinanceAPI.h"
+#include "../RestAPI/BinanceSpotApiGateWay.h"
 #include "../OrderManagement/TypeToStringUtils.h"
 
 #include <string>

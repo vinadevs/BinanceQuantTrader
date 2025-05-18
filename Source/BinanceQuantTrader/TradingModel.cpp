@@ -23,7 +23,8 @@
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/SourceBuildFlags.h"
 #include "../RestAPI/ApiKeyInfoManager.h"
-#include "../RestAPI/BinanceAPI.h"
+#include "../RestAPI/BinanceSpotApiGateWay.h"
+#include "../CurlAPI/BinanceFutureApiGateway.h"
 #include "../SettingNConfig/BqtGlobalSettings.h"
 
 #if USE_BACK_TEST_TRADING
@@ -50,6 +51,7 @@ using namespace tinyxml2;
 using namespace LibraryUtils;
 using namespace SettingNConfig;
 using namespace RestAPI;
+using namespace CurlAPI;
 
 TradingModel::TradingModel(
 	const XMLDocument* configBQTXml,
@@ -92,7 +94,7 @@ void TradingModel::PrepareTradingComponents(
 	const auto* globalSettingsCfg = configBQTXml->FirstChildElement("GlobalSettings");
 	BqtGlobalSettingsMgr->InitGlobalSetting(globalSettingsCfg);
 
-	m_logger->Info("Initiating User Account And Binance API.");
+	m_logger->Info("Initiating Binance Spot API.");
 	const auto* userAccountXml = configAccessKeyXml->FirstChildElement("UserAccount");
 	assert(userAccountXml);
 	const auto* keyXml = userAccountXml->FirstChildElement("Key");
@@ -115,14 +117,21 @@ void TradingModel::PrepareTradingComponents(
 	const auto* binanceExchangeClientCfg = configBQTXml->FirstChildElement("BinanceExchangeClient");
 	ExchangeSimulatorGateWay->InitBinanceExchangeClient(binanceExchangeClientCfg);
 #else
-	const auto* binanceAPICfg = configBQTXml->FirstChildElement("BinanceAPI");
+	const auto* binanceAPICfg = configBQTXml->FirstChildElement("BinanceSpotApiGateWay");
 	assert(binanceAPICfg);
 	const auto* connectionXml = binanceAPICfg->FirstChildElement("Connection");
 	assert(connectionXml);
-	const auto* apiBinanceCom = connectionXml->Attribute("ApiBinanceCom");
+	const auto* spotApiBinanceUrl = connectionXml->Attribute("SpotApiBinanceUrl");
 	const auto* apiBinancePort = connectionXml->Attribute("ApiBinancePort");
 	const auto* connectionTimeoutMs = connectionXml->Attribute("ConnectionTimeoutMs");
-	BinanceAPI::GetInstance()->InitiateAPI(apiBinanceCom, apiBinancePort, pk, sk, connectionTimeoutMs);
+	BinanceSpotApiGateWay::GetInstance()->InitiateAPI(spotApiBinanceUrl, apiBinancePort, pk, sk, connectionTimeoutMs);
+	m_logger->Info("Initiating Binance Future API.");
+	const auto* binanceFutureAPICfg = configBQTXml->FirstChildElement("BinanceFutureApiGateWay");
+	assert(binanceFutureAPICfg);
+	const auto* connectionFutureXml = binanceFutureAPICfg->FirstChildElement("Connection");
+	assert(connectionFutureXml);
+	const auto* futureApiBinanceUrl = connectionFutureXml->Attribute("FutureApiBinanceUrl");
+	BinanceFutureApiGateway::GetInstance().InitiateAPI(futureApiBinanceUrl, pk, sk);
 #endif
 	m_logger->Info("Initiating Static Data.");
 	const auto* staticDataCfg = configBQTXml->FirstChildElement("StaticData");
@@ -173,7 +182,7 @@ void TradingModel::PrepareTradingComponents(
 	m_strategyMessageServer->RegisterMessageHandler(m_strategy.get());
 #endif
 
-	m_logger->Info("Starting External Controller.");
+	m_logger->Info("Initiating External Controller.");
 	const auto* externalControllerCfg = configBQTXml->FirstChildElement("ExternalController");
 	assert(externalControllerCfg);
 	m_externalController = std::make_unique<ExternalController>(externalControllerCfg);

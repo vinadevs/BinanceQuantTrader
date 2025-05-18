@@ -12,7 +12,7 @@
 #include "../KernelTrading/errors.h"
 #include "../KernelTrading/types.h"
 #include "../RestAPI/RestAPI.h"
-#include "../RestAPI/BinanceAPI.h"
+#include "../RestAPI/BinanceSpotApiGateWay.h"
 #include "../RestAPI/ApiKeyInfoManager.h"
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/SourceBuildFlags.h"
@@ -45,9 +45,9 @@ bool BinanceAccountUtils::QueryBinanceAccount(
         return false;
     }
 #else // use Binance HTTP API
-    if (BinanceApiGateWay)
+    if (BinanceSpotApiGateWayMgr)
     {
-        const auto accountInfoResult = BinanceApiGateWay->account_info();
+        const auto accountInfoResult = BinanceSpotApiGateWayMgr->account_info();
         if (!binapi::rest::e_error_equal(accountInfoResult.ec, binapi::rest::e_error::OK))
         {
             // If you are seeing the error:

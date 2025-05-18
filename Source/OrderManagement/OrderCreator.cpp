@@ -9,7 +9,7 @@
 #include "pch.h"
 #include "OrderCreator.h"
 
-#include "../RestAPI/BinanceAPI.h"
+#include "../RestAPI/BinanceSpotApiGateWay.h"
 
 #include <iostream>
 

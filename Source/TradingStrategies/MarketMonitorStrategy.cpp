@@ -17,7 +17,7 @@
 #include "../LibraryUtils/PathUtils.h"
 #include "../LibraryUtils/FileUtils.h"
 #include "../RestAPI/RestAPI.h"
-#include "../RestAPI/BinanceAPI.h"
+#include "../RestAPI/BinanceSpotApiGateWay.h"
 #include "../QuantitativeModel/MarketDataAnalyzer.h"
 #include "../QuantitativeModel/QuantMarketDataAnalyzer.h"
 

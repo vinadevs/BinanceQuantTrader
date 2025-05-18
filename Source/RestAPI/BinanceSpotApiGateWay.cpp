@@ -8,7 +8,7 @@
 
 #include "pch.h"
 
-#include "BinanceAPI.h"
+#include "BinanceSpotApiGateWay.h"
 
 #pragma warning(disable : 4005)
 
@@ -19,15 +19,15 @@
 
 using namespace RestAPI;
 
-BinanceAPI::~BinanceAPI() {}
+BinanceSpotApiGateWay::~BinanceSpotApiGateWay() {}
 
-BinanceAPI* BinanceAPI::GetInstance()
+BinanceSpotApiGateWay* BinanceSpotApiGateWay::GetInstance()
 {
-    static BinanceAPI instance;
+    static BinanceSpotApiGateWay instance;
     return &instance;
 }
 
-void BinanceAPI::InitiateAPI(
+void BinanceSpotApiGateWay::InitiateAPI(
     const std::string& host,
     const std::string& port,
     const std::string& pk,
@@ -38,7 +38,7 @@ void BinanceAPI::InitiateAPI(
         host, port, pk, sk, static_cast<std::size_t>(std::stoul(timeout)));
 }
 
-binapi::rest::api* BinanceAPI::AccessAPI()
+binapi::rest::api* BinanceSpotApiGateWay::AccessAPI()
 {
     return m_binAPI.get();
 }
