@@ -17,22 +17,12 @@
 #include "../LibraryUtils/TimeUtils.h"
 
 #include "dlldefine.h"
+#include "OrderDefinitions.h"
 
 #include <string>
 #include <stdexcept>
 
 namespace OrderManagement {
-
-	// Type of order message which will send to the exchange/downstream/simulator
-	enum class MessageType : unsigned
-	{
-		UNDEF,
-		NEW,
-		CANCEL,
-		REPLACE,
-		QUERY,
-		TEST,
-	};
 
 	// -In trading, an "order" is an instruction given by a trader to a broker
 	// or trading platform to buy or sell an asset
@@ -42,8 +32,8 @@ namespace OrderManagement {
 	public:
 		Order() = default;
 
-		Order(const std::string& symbol, const std::string& clientOrderId, const MessageType binanceOrderType)
-			: m_symbol(symbol), m_clientOrderId(clientOrderId), m_binanceOrderType(binanceOrderType)
+		Order(const std::string& symbol, const std::string& clientOrderId, const MessageType binanceMessageType)
+			: m_symbol(symbol), m_clientOrderId(clientOrderId), m_binanceMessageType(binanceMessageType)
 		{
 			UpdateOrderTypeStr();
 			m_userAccountID = ApiKeyInfoMgr->GetApiKeyInfo().m_userID;
@@ -51,20 +41,20 @@ namespace OrderManagement {
 
 		virtual ~Order() {}
 
-		void SetSymbol(const std::string& symbol) { 
-			m_symbol = symbol; 
+		void SetSymbol(const std::string& symbol) {
+			m_symbol = symbol;
 		}
 
 		const std::string& GetSymbol() const {
 			return m_symbol;
 		}
 
-		MessageType GetOrderType() const {
-			return m_binanceOrderType;
+		MessageType GetOrderMessageType() const {
+			return m_binanceMessageType;
 		}
 
-		const std::string& GetOrderTypeStr() const {
-			return m_binanceOrderTypeStr;
+		const std::string& GetOrderMessageTypeStr() const {
+			return m_binanceMessageTypeStr;
 		}
 
 		const std::string& GetClientOrderId() const { return m_clientOrderId; }
@@ -107,30 +97,30 @@ namespace OrderManagement {
 
 	protected:
 		void UpdateOrderTypeStr() {
-			switch (m_binanceOrderType)
+			switch (m_binanceMessageType)
 			{
 			case OrderManagement::MessageType::UNDEF: {
-				m_binanceOrderTypeStr = "UNDEF";
+				m_binanceMessageTypeStr = "UNDEF";
 				break;
 			}
 			case OrderManagement::MessageType::NEW: {
-				m_binanceOrderTypeStr = "NEW";
+				m_binanceMessageTypeStr = "NEW";
 				break;
 			}
 			case OrderManagement::MessageType::CANCEL: {
-				m_binanceOrderTypeStr = "CANCEL";
+				m_binanceMessageTypeStr = "CANCEL";
 				break;
 			}
 			case OrderManagement::MessageType::REPLACE: {
-				m_binanceOrderTypeStr = "REPLACE";
+				m_binanceMessageTypeStr = "REPLACE";
 				break;
 			}
 			case OrderManagement::MessageType::QUERY: {
-				m_binanceOrderTypeStr = "QUERY";
+				m_binanceMessageTypeStr = "QUERY";
 				break;
 			}
 			case OrderManagement::MessageType::TEST: {
-				m_binanceOrderTypeStr = "TEST";
+				m_binanceMessageTypeStr = "TEST";
 				break;
 			}
 			default:
@@ -141,8 +131,8 @@ namespace OrderManagement {
 		std::string m_symbol;
 		std::size_t m_orderId{ 0 }; // m_orderId is order ID from Binance
 		std::string m_clientOrderId; // m_clientOrderId is new order ID from us
-		std::string m_binanceOrderTypeStr;
-		MessageType m_binanceOrderType{ MessageType::UNDEF };
+		std::string m_binanceMessageTypeStr;
+		MessageType m_binanceMessageType{ MessageType::UNDEF };
 		std::size_t m_updateTime{ 0 }; // Time order changed status
 		// Execution Result
 		MiddlewareMQ::MiddlewareMQResult m_sendingSimulatorOrderResult;

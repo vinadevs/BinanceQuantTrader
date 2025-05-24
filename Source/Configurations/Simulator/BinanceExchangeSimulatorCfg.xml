@@ -9,7 +9,7 @@
 </MessageTransporter>
 
 <MatchingEngine>
-  <UsingParticipant Name="RTMarketParticipant" MaximumDownstreamOrderBookSize="10"/>
+  <UsingParticipant Name="RTMarketSpotParticipant" MaximumDownstreamOrderBookSize="10"/>
   <RealTimeMarketData>
 	  <UsingMarketData Name="BinanceMarketData" File="[ROOT_BQT_PATH]\Configurations\MarketData\BinanceMarketDataCfg.xml"/>
   </RealTimeMarketData>

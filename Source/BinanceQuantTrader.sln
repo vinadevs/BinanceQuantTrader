@@ -224,6 +224,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MarketDataCapture", "Market
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CurlAPI", "CurlAPI\CurlAPI.vcxproj", "{2D8D0B45-4916-4125-B333-B95E3BA16AD6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApplicationTest", "ApplicationTest\ApplicationTest.vcxproj", "{14EF4273-9C73-43DC-B060-9B52C5039161}"
+	ProjectSection(ProjectDependencies) = postProject
+		{076F8746-1B3B-48BE-9932-FF30D5C8B356} = {076F8746-1B3B-48BE-9932-FF30D5C8B356}
+		{2D8D0B45-4916-4125-B333-B95E3BA16AD6} = {2D8D0B45-4916-4125-B333-B95E3BA16AD6}
+		{47C37C7D-89BD-4D0E-B91A-FF56A619002F} = {47C37C7D-89BD-4D0E-B91A-FF56A619002F}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug (static runtime)|x64 = Debug (static runtime)|x64
@@ -748,6 +755,22 @@ Global
 		{2D8D0B45-4916-4125-B333-B95E3BA16AD6}.Release|x64.Build.0 = Release|x64
 		{2D8D0B45-4916-4125-B333-B95E3BA16AD6}.Release|x86.ActiveCfg = Release|Win32
 		{2D8D0B45-4916-4125-B333-B95E3BA16AD6}.Release|x86.Build.0 = Release|Win32
+		{14EF4273-9C73-43DC-B060-9B52C5039161}.Debug (static runtime)|x64.ActiveCfg = Debug|x64
+		{14EF4273-9C73-43DC-B060-9B52C5039161}.Debug (static runtime)|x64.Build.0 = Debug|x64
+		{14EF4273-9C73-43DC-B060-9B52C5039161}.Debug (static runtime)|x86.ActiveCfg = Debug|Win32
+		{14EF4273-9C73-43DC-B060-9B52C5039161}.Debug (static runtime)|x86.Build.0 = Debug|Win32
+		{14EF4273-9C73-43DC-B060-9B52C5039161}.Debug|x64.ActiveCfg = Debug|x64
+		{14EF4273-9C73-43DC-B060-9B52C5039161}.Debug|x64.Build.0 = Debug|x64
+		{14EF4273-9C73-43DC-B060-9B52C5039161}.Debug|x86.ActiveCfg = Debug|Win32
+		{14EF4273-9C73-43DC-B060-9B52C5039161}.Debug|x86.Build.0 = Debug|Win32
+		{14EF4273-9C73-43DC-B060-9B52C5039161}.Release (static runtime)|x64.ActiveCfg = Release|x64
+		{14EF4273-9C73-43DC-B060-9B52C5039161}.Release (static runtime)|x64.Build.0 = Release|x64
+		{14EF4273-9C73-43DC-B060-9B52C5039161}.Release (static runtime)|x86.ActiveCfg = Release|Win32
+		{14EF4273-9C73-43DC-B060-9B52C5039161}.Release (static runtime)|x86.Build.0 = Release|Win32
+		{14EF4273-9C73-43DC-B060-9B52C5039161}.Release|x64.ActiveCfg = Release|x64
+		{14EF4273-9C73-43DC-B060-9B52C5039161}.Release|x64.Build.0 = Release|x64
+		{14EF4273-9C73-43DC-B060-9B52C5039161}.Release|x86.ActiveCfg = Release|Win32
+		{14EF4273-9C73-43DC-B060-9B52C5039161}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

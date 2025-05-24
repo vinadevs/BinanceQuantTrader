@@ -71,8 +71,9 @@ namespace ExchangeSimulator {
         USING_TCPIP_MQ, // get auto acks via tcpip connection from macthing engine
     };
 
-    class Participant; // fake traders
-    class RTMarketParticipant; // fake traders
+    class Participant; // simulative traders
+	class RTMarketSpotParticipant; // simulative spot traders
+	class RTMarketFutureParticipant; // simulative future traders
     class UserAccountManager; // user wallet info 
     class UpstreamOrderQueueMgr; // lisst pre-orders matching process
     class UpstreamOrderMatchedMgr; // list post-orders matching process
@@ -123,7 +124,8 @@ namespace ExchangeSimulator {
         std::unique_ptr<UpstreamOrderMatchedMgr> m_upstreamOrderMatchedMgr;
         UserAccountManager* m_userAccountManager{ nullptr };
         std::unique_ptr<Participant> m_participant;
-        RTMarketParticipant* m_rtMarketDataParticipant{ nullptr };
+        RTMarketSpotParticipant* m_rtMarketSpotParticipant{ nullptr };
+        RTMarketFutureParticipant* m_rtMarketFutureParticipant{ nullptr };
         std::unique_ptr<MarketData::RealTimeMarketData> m_marketData;
         std::unique_ptr<tinyxml2::XMLDocument> m_binanceMarketDataConfig;
         DownstreamAckBehaviour m_downstreamAckBehaviour{ DownstreamAckBehaviour::USING_HTTP_REQUEST };

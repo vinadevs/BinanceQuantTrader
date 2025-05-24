@@ -65,6 +65,7 @@ OrderQuantList OrderParammeterGenerator::GenerateFomoOrders(
 			orderParammeter.m_side = binapi::e_side::buy;
 			orderParammeter.m_type = binapi::e_type::limit;
 			orderParammeter.m_time = hints->timeInForce;
+			orderParammeter.m_tradeType = OrderManagement::BinanceNewOrderTradingType::SPOT;
 
 			// Retrieve price filters for the symbol
 			const auto& percentPriceBySideFilter = symbolExchangeInfo.get_filter_percent_price_by_side();
@@ -142,6 +143,7 @@ OrderQuantList OrderParammeterGenerator::GenerateFomoOrders(
 					orderParammeter.m_side = binapi::e_side::sell;
 					orderParammeter.m_type = binapi::e_type::limit;
 					orderParammeter.m_time = hints->timeInForce;
+					orderParammeter.m_tradeType = OrderManagement::BinanceNewOrderTradingType::SPOT;
 
 					// Retrieve price filters for the symbol
 					const auto& percentPriceBySideFilter = symbolExchangeInfo.get_filter_percent_price_by_side();

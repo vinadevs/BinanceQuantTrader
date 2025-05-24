@@ -86,10 +86,11 @@ namespace BinanceQuantTrader {
 		std::unique_ptr<TradingStrategies::SingleStrategyHost> m_strategyHost;
 		std::unique_ptr<TradingStrategies::ExternalController> m_externalController;
 		std::unique_ptr<tinyxml2::XMLDocument> m_binanceMarketDataConfig;
+		std::unique_ptr<LibraryUtils::Logger> m_logger;
 #if USE_BACK_TEST_TRADING
 		std::unique_ptr<TradingStrategies::StrategyMessageServer> m_strategyMessageServer;
 #endif
-		std::unique_ptr<LibraryUtils::Logger> m_logger;
 		bool m_allowMutipleThreadTrade{ false };
+		bool m_allowExternalControlling{ false };
 	};
 };

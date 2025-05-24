@@ -54,6 +54,7 @@ namespace OrderManagement {
 		const std::string StopPrice = "StopPrice";
 		const std::string IcebergAmount = "IcebergAmount";
 		const std::string OrderStatus = "OrderStatus";
+		const std::string TradingType = "TradingType";
 		const std::string OrigQuoteOrderQuantity = "OrigQuoteOrderQuantity";
 		const std::string CummulativeQuoteQty = "CummulativeQuoteQty";
 		const std::string UpdateTime = "UpdateTime";

@@ -16,16 +16,6 @@
 
 namespace OrderManagement {
 
-    // Enum representing the various statuses of a Binance order query.
-    enum class BinanceQueryOrderStatus : unsigned
-    {
-        UNDEF, // Undefined status, used as a default or uninitialized state.
-        NEW, // The order has been created but not yet processed.
-        WAITING_FOR_QUERY, //The order is awaiting a query or response from the system.
-        FILLED,// The order has been successfully completed.
-        REJECTED, // The order has been rejected by the system.
-    };
-
     // The BinanceQueryOrder class represents an order query in the Binance trading system.  
     // It includes functionality to manage order status, serialization, and simulator testing.  
     // The BinanceQueryOrderStatus enum defines the possible states of an order query.

@@ -24,16 +24,20 @@ BinanceNewOrder::BinanceNewOrder(
     const double price,
     const double stopPrice,
     const double icebergAmount,
-    const TradeType tradeType)
-    : Order(symbol, clientOrderId,
-        tradeType == TradeType::TEST ? MessageType::TEST : MessageType::NEW),
+    const BinanceNewOrderTradingType tradingType,
+    const ExchangeConnectivityType exchangeConnectivityType)
+    : Order(
+        symbol,
+        clientOrderId,
+        exchangeConnectivityType == ExchangeConnectivityType::TEST ? MessageType::TEST : MessageType::NEW),
     m_side(side),
     m_type(type),
     m_timeInForce(timeInForce),
     m_amount(amount),
     m_price(price),
     m_stopPrice(stopPrice),
-    m_icebergAmount(icebergAmount) {}
+    m_icebergAmount(icebergAmount),
+    m_orderTradingType(tradingType) {}
 
 BinanceNewOrder::~BinanceNewOrder() {}
 
@@ -51,6 +55,7 @@ std::string BinanceNewOrder::ToStringOrder() const
         ", StopPrice: " + GetStopPriceStr() +
         ", IcebergAmount: " + GetIcebergAmountStr() +
         ", OrderStatus: " + GetOrderStatusStr() +
+		", TradingType: " + GetOrderTradingTypeStr() +
         ", UpdateTime: " + GetUpdateTimeStr() +
         ")";
 }
@@ -69,6 +74,7 @@ std::string BinanceNewOrder::ToStringAck() const
         ", StopPrice: " + GetStopPriceStr() +
         ", IcebergAmount: " + GetIcebergAmountStr() +
         ", OrderStatus: " + GetOrderStatusStr() +
+        ", TradingType: " + GetOrderTradingTypeStr() +
         ", FilledAmount: " + GetFilledAmountStr() +
         ", FilledPrice: " + GetFilledPriceStr() +
         ", RemainingAmount: " + GetOrigQuoteOrderQuantityStr() +
@@ -93,6 +99,7 @@ BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrder() const
     message.AddPair(FieldLabels::StopPrice, GetStopPriceStr());
     message.AddPair(FieldLabels::IcebergAmount, GetIcebergAmountStr());
     message.AddPair(FieldLabels::OrderStatus, GetOrderStatusStr());
+    message.AddPair(FieldLabels::TradingType, GetOrderTradingTypeStr());
     message.AddPair(FieldLabels::UpdateTime, GetUpdateTimeStr());
     return message;
 }
@@ -112,6 +119,7 @@ BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrderAck() const
     message.AddPair(FieldLabels::StopPrice, GetStopPriceStr());
     message.AddPair(FieldLabels::IcebergAmount, GetIcebergAmountStr());
     message.AddPair(FieldLabels::OrderStatus, GetOrderStatusStr());
+	message.AddPair(FieldLabels::TradingType, GetOrderTradingTypeStr());
     message.AddPair(FieldLabels::FilledAmount, GetFilledAmountStr());
     message.AddPair(FieldLabels::FilledPrice, GetFilledPriceStr());
     message.AddPair(FieldLabels::RemainingAmount, GetRemainingAmountStr());
@@ -155,4 +163,17 @@ BinanceNewOrderStatus BinanceNewOrder::GetOrderStatusEnum(const std::string stat
 void BinanceNewOrder::SetOrderStatus(const BinanceNewOrderStatus status)
 {
     m_orderStatus = status;
+}
+
+std::string BinanceNewOrder::GetOrderTradingTypeStr() const
+{
+	switch (m_orderTradingType)
+	{
+	case BinanceNewOrderTradingType::SPOT:
+		return "SPOT";
+	case BinanceNewOrderTradingType::FUTURE:
+		return "FUTURE";
+	default:
+		return "UNDEF";
+	};
 }

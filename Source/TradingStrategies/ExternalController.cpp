@@ -9,6 +9,7 @@
 
 using namespace TradingStrategies;
 using namespace LibraryUtils;
+
 ExternalController::ExternalController(const tinyxml2::XMLElement* binanceRestAPIServerXmlCfg)
 	: m_logger{ std::make_unique<LibraryUtils::Logger>("ExternalController") }
 	, m_strategyRequestHttpService{ std::make_unique<StrategyRequestHttpService>() }

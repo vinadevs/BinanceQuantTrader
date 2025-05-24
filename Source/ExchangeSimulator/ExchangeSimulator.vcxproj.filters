@@ -63,7 +63,7 @@
     <ClInclude Include="BinanceExchangeSimulator.h">
       <Filter>Binance Exchange Simulator</Filter>
     </ClInclude>
-    <ClInclude Include="RTMarketParticipant.h">
+    <ClInclude Include="RTMarketSpotParticipant.h">
       <Filter>Binance Exchange Simulator\Participants</Filter>
     </ClInclude>
     <ClInclude Include="UpstreamOrderMatchedMgr.h">
@@ -150,6 +150,9 @@
     <ClInclude Include="BinanceRestAPIServer.h">
       <Filter>Binance Exchange Simulator</Filter>
     </ClInclude>
+    <ClInclude Include="RTMarketFutureParticipant.h">
+      <Filter>Binance Exchange Simulator\Participants</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -161,7 +164,7 @@
     <ClCompile Include="BinanceExchangeSimulator.cpp">
       <Filter>Binance Exchange Simulator</Filter>
     </ClCompile>
-    <ClCompile Include="RTMarketParticipant.cpp">
+    <ClCompile Include="RTMarketSpotParticipant.cpp">
       <Filter>Binance Exchange Simulator\Participants</Filter>
     </ClCompile>
     <ClCompile Include="AlgosConnectivity.cpp">
@@ -235,6 +238,9 @@
     </ClCompile>
     <ClCompile Include="BinanceRestAPIServer.cpp">
       <Filter>Binance Exchange Simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="RTMarketFutureParticipant.cpp">
+      <Filter>Binance Exchange Simulator\Participants</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

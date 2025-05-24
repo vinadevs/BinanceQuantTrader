@@ -31,7 +31,6 @@ PositionManager::~PositionManager() {}
 std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewPositionUpstreamOrder(
     const QuantitativeModel::QuantOrderParammeter& param)
 {
-    const double icebergAmount = 0;
     const auto clientOrderId = GeneralUtils::GenerateUniqueID(StringDefinitions::BQTNewLongOrder);
     return m_orderCreator->CreateNewBinanceOrderFull(
           clientOrderId
@@ -42,13 +41,13 @@ std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewPositionUpstreamOrder(
         , param.m_amount
         , param.m_price
         , param.m_stopPrice
-        , icebergAmount);
+        , param.m_icebergAmount
+        , param.m_tradeType);
 }
 
 std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewTestPositionUpstreamOrder(
     const QuantitativeModel::QuantOrderParammeter& param)
 {
-    const double icebergAmount = 0;
     const auto clientOrderId = GeneralUtils::GenerateUniqueID(StringDefinitions::BQTNewLongOrder);
     return m_orderCreator->CreateNewBinanceTestOrderFull(
         clientOrderId
@@ -59,7 +58,8 @@ std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewTestPositionUpstreamOrd
         , param.m_amount
         , param.m_price
         , param.m_stopPrice
-        , icebergAmount);
+        , param.m_icebergAmount
+        , param.m_tradeType);
 }
 
 std::unique_ptr<BinanceCancelOrder> PositionManager::CancelPositionUpstreamOrder(

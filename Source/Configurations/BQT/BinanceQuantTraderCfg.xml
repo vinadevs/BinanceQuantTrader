@@ -13,9 +13,13 @@
 <HistoricalData>
 </HistoricalData>
 
-<BinanceAPI>
-  <Connection ApiBinanceCom="api.binance.com" ApiBinancePort="443" ConnectionTimeoutMs="10000"/>
-</BinanceAPI>
+<BinanceSpotApiGateWay>
+  <Connection Enable="true" SpotApiBinanceUrl="api.binance.com" ApiBinancePort="443" ConnectionTimeoutMs="10000"/>
+</BinanceSpotApiGateWay>
+
+<BinanceFutureApiGateWay>
+  <Connection Enable="false" FutureApiBinanceUrl="fapi.binance.com" ApiBinancePort="443" ConnectionTimeoutMs="10000"/>
+</BinanceFutureApiGateWay>
 
 <TradingStrategy>
   <UsingStrategy Name="MarketMonitorStrategy" File="[ROOT_BQT_PATH]\Configurations\Strategy\Adviser\MarketMonitorStrategy.xml"/>

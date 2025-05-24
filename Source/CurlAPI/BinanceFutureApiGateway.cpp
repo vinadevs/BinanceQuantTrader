@@ -17,7 +17,7 @@ BinanceFutureApiGateway& BinanceFutureApiGateway::GetInstance() {
 }
 
 void BinanceFutureApiGateway::InitiateAPI(const std::string& futureApiBinanceUrl, const std::string& apiKey, const std::string& secretKey) {
-	m_baseUrl = futureApiBinanceUrl;
+	m_baseUrl = "https://" + futureApiBinanceUrl;
     m_apiKey = apiKey;
     m_secretKey = secretKey;
     curl_global_init(CURL_GLOBAL_ALL);

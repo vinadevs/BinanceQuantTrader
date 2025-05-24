@@ -13,6 +13,7 @@
 #include "../RestAPI/RestAPI.h"
 #include "../RestAPI/BinanceSpotApiGateWay.h"
 #include "../OrderManagement/TypeToStringUtils.h"
+#include "../OrderManagement/OrderDefinitions.h"
 
 #include <string>
 
@@ -32,6 +33,8 @@ namespace QuantitativeModel {
 // - m_amount: The quantity of the asset to trade.  
 // - m_price: The price at which the order is placed (applicable for limit orders).  
 // - m_stopPrice: The stop price for stop-limit orders.  
+// - m_icebergAmount: The amount for iceberg orders.
+// - m_tradeType: The trading type (e.g., spot, margin).
 // This struct is designed to be lightweight and final, ensuring no inheritance.
 
     struct DLL_CLASS_QUANTITATIVEMODEL_EXPORTS
@@ -43,6 +46,8 @@ namespace QuantitativeModel {
            double m_amount{ 0 };
            double m_price{ 0 };
            double m_stopPrice{ 0 };
+		   double m_icebergAmount{ 0 };
+           OrderManagement::BinanceNewOrderTradingType m_tradeType{ OrderManagement::BinanceNewOrderTradingType::UNDEF };
 
            QuantOrderParammeter() = default;
 
@@ -70,14 +75,17 @@ namespace QuantitativeModel {
                binapi::e_time time,
                const double amount,
                const double price,
-               const double stopPrice
-           )
+			   const double stopPrice,
+			   const double icebergAmount,
+			   const OrderManagement::BinanceNewOrderTradingType tradeType)
                : m_symbol(symbol),
                  m_side(side),
                  m_type(type),
                  m_time(time),
                  m_amount(amount),
                  m_price(price),
-                 m_stopPrice(stopPrice) {}
+                 m_stopPrice(stopPrice),
+			     m_icebergAmount(icebergAmount),
+			     m_tradeType(tradeType) {}
        };
 };

@@ -17,25 +17,6 @@
 
 namespace OrderManagement {
 
-    // Represents the status of a Binance new order
-    enum class BinanceNewOrderStatus : unsigned
-    {
-        UNDEF,               // Undefined status
-        NEW,                 // Order has been created but not yet processed
-        WAITING_FOR_FILL,    // Order is waiting to be filled
-        PRTIAL_FILLED,       // Order has been partially filled
-        FULL_FILLED,         // Order has been fully filled
-        SKIPPED,             // Order was skipped
-    };
-
-    // Represents the type of trade for a new order
-    enum class TradeType : unsigned
-    {
-        UNDEF,  // Undefined trade type
-        REAL,   // Real trade
-        TEST,   // Test trade
-    };
-
     /**
     * @class BinanceNewOrder
     * @brief Represents a new order in the Binance trading system.
@@ -68,7 +49,8 @@ namespace OrderManagement {
             const double price,
             const double stopPrice,
             const double icebergAmount,
-            const TradeType tradeType);
+			const BinanceNewOrderTradingType tradingType,
+            const ExchangeConnectivityType exchangeConnectivityType);
 
         ~BinanceNewOrder() override;
 
@@ -114,6 +96,11 @@ namespace OrderManagement {
         std::string GetOrderStatusStr() const;
         static BinanceNewOrderStatus GetOrderStatusEnum(const std::string status);
         void SetOrderStatus(const BinanceNewOrderStatus status);
+		void SetOrderTradingType(const BinanceNewOrderTradingType tradingType) { m_orderTradingType = tradingType; }
+		BinanceNewOrderTradingType GetOrderTradingType() const { return m_orderTradingType; }
+        std::string GetOrderTradingTypeStr() const;
+		binapi::e_type GetOrderType() const { return m_orderType; }
+		void SetOrderType(const binapi::e_type orderType) { m_orderType = orderType; }
 
         // Serialization
         std::string ToStringOrder() const;
@@ -160,6 +147,8 @@ namespace OrderManagement {
         // If we trade with a basket of orders
         std::unordered_set<std::string> m_clientOrderIdList;
         BinanceNewOrderStatus m_orderStatus{ BinanceNewOrderStatus::NEW };
+		BinanceNewOrderTradingType m_orderTradingType{ BinanceNewOrderTradingType::UNDEF };
         binapi::rest::api::result<binapi::rest::new_order_resp_type> m_sendingBinananceOrderResult;
+        binapi::e_type m_orderType{ binapi::e_type::limit };
     };
 };

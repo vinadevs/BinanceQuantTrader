@@ -22,7 +22,8 @@
 #include "UpstreamOrderMatchedMgr.h"
 
 #include "Participant.h"
-#include "RTMarketParticipant.h"
+#include "RTMarketSpotParticipant.h"
+#include "RTMarketFutureParticipant.h"
 #include "HistoricalParticipant.h"
 #include "SimulatorParticipant.h"
 
@@ -49,21 +50,37 @@ MatchingEngine::MatchingEngine(
 	assert(matchingEngineXmlCfg);
 	const auto* usingParticipantXml = matchingEngineXmlCfg->FirstChildElement("UsingParticipant");
 	assert(usingParticipantXml);
-	if (StringUtils::IsConfigAttributeMatched(usingParticipantXml->Attribute("Name"), "RTMarketParticipant"))
+	if (StringUtils::IsConfigAttributeMatched(usingParticipantXml->Attribute("Name"), "RTMarketSpotParticipant"))
 	{
 		m_logger->Info("Initiating RTMarketParticipant.");
 		const auto maxDownstreamOrderBookSize = usingParticipantXml->UnsignedAttribute("MaximumDownstreamOrderBookSize");
-		m_participant = std::make_unique<RTMarketParticipant>(maxDownstreamOrderBookSize, userAccountManager);
+		m_participant = std::make_unique<RTMarketSpotParticipant>(maxDownstreamOrderBookSize, userAccountManager);
 		m_logger->Info("Initiating Real Time Market Data.");
 		const auto* realTimeMarketDataCfg = matchingEngineXmlCfg->FirstChildElement("RealTimeMarketData");
 		m_binanceMarketDataConfig = SettingNConfig::BqtXmlUtils::GetBinanceMarketDataConfig(realTimeMarketDataCfg);
 		const auto* exchangeSimulatorMarketDataCfg = m_binanceMarketDataConfig->FirstChildElement("RealTimeMarketData");
 		m_marketData = std::make_unique<RealTimeMarketData>(exchangeSimulatorMarketDataCfg);
 		SubscribeTargetSymbols(m_binanceMarketDataConfig.get());
-		m_rtMarketDataParticipant = dynamic_cast<RTMarketParticipant*>(m_participant.get());
-		assert(m_rtMarketDataParticipant);
-		m_rtMarketDataParticipant->CreateDownstreamOrderBooks(m_marketData->GetSubscribingSymbols());
-		m_marketData->RegisterDataListener(m_rtMarketDataParticipant);
+		m_rtMarketSpotParticipant = dynamic_cast<RTMarketSpotParticipant*>(m_participant.get());
+		assert(m_rtMarketSpotParticipant);
+		m_rtMarketSpotParticipant->CreateDownstreamOrderBooks(m_marketData->GetSubscribingSymbols());
+		m_marketData->RegisterDataListener(m_rtMarketSpotParticipant);
+	}
+	else if (StringUtils::IsConfigAttributeMatched(usingParticipantXml->Attribute("Name"), "RTMarketFutureParticipant"))
+	{
+		m_logger->Info("Initiating RTMarketFutureParticipant.");
+		const auto maxDownstreamOrderBookSize = usingParticipantXml->UnsignedAttribute("MaximumDownstreamOrderBookSize");
+		m_participant = std::make_unique<RTMarketFutureParticipant>(maxDownstreamOrderBookSize, userAccountManager);
+		m_logger->Info("Initiating Real Time Market Data.");
+		const auto* realTimeMarketDataCfg = matchingEngineXmlCfg->FirstChildElement("RealTimeMarketData");
+		m_binanceMarketDataConfig = SettingNConfig::BqtXmlUtils::GetBinanceMarketDataConfig(realTimeMarketDataCfg);
+		const auto* exchangeSimulatorMarketDataCfg = m_binanceMarketDataConfig->FirstChildElement("RealTimeMarketData");
+		m_marketData = std::make_unique<RealTimeMarketData>(exchangeSimulatorMarketDataCfg);
+		SubscribeTargetSymbols(m_binanceMarketDataConfig.get());
+		m_rtMarketFutureParticipant = dynamic_cast<RTMarketFutureParticipant*>(m_participant.get());
+		assert(m_rtMarketFutureParticipant);
+		m_rtMarketFutureParticipant->CreateDownstreamFuturePriceManagers(m_marketData->GetSubscribingSymbols());
+		m_marketData->RegisterDataListener(m_rtMarketFutureParticipant);
 	}
 	else if (StringUtils::IsConfigAttributeMatched(usingParticipantXml->Attribute("Name"), "HistoricalParticipant"))
 	{
@@ -101,7 +118,8 @@ void MatchingEngine::Start()
 	m_isRunning.store(true);
 	m_thread = std::thread(&MatchingEngine::ProcessIncommingOrders, this);
 	if (m_participant 
-		&& m_participant->GetParticipantType() == ParticipantType::REAL_TIME_MARKET_DATA
+		&& (m_participant->GetParticipantType() == ParticipantType::REAL_TIME_SPOT_MARKET_DATA
+			|| m_participant->GetParticipantType() == ParticipantType::REAL_TIME_FUTURE_MARKET_DATA)
 		&& m_marketData) // if using RTMarketParticipant
 	{
 		// Start receive real time market data
@@ -117,11 +135,12 @@ void MatchingEngine::Start()
 void MatchingEngine::Stop()
 {
 	if (m_participant
-		&& m_participant->GetParticipantType() == ParticipantType::REAL_TIME_MARKET_DATA
+		&& (m_participant->GetParticipantType() == ParticipantType::REAL_TIME_SPOT_MARKET_DATA
+			|| m_participant->GetParticipantType() == ParticipantType::REAL_TIME_FUTURE_MARKET_DATA)
 		&& m_marketData) // if using RTMarketParticipant
 	{
 		// Start receive real time market data
-		m_marketData->UnRegisterDataListener(m_rtMarketDataParticipant);
+		m_marketData->UnRegisterDataListener(m_rtMarketSpotParticipant);
 	}
 	m_isRunning.store(false);
 	m_thread.join();
@@ -161,7 +180,7 @@ void MatchingEngine::ProcessIncommingOrders()
 				const auto orderInfoStr = "OrderClientId="
 					+ UpstreamOrderUtils::GetOrderClientId(order) + ", Symbol="
 					+ UpstreamOrderUtils::GetOrderSymbol(order) + ", OrderType="
-					+ UpstreamOrderUtils::GetOrderTypeName(order);
+					+ UpstreamOrderUtils::GetOrderMessageTypeName(order);
 
 				lock.unlock();  // Unlock mutex during processing			
 
@@ -282,7 +301,7 @@ void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& me
 		}
 		else
 		{
-			const auto errMsg = "Unsupported BinanceOrder =" + messageType;
+			const auto errMsg = "Unsupported BinanceOrder=" + messageType;
 			m_logger->Error(errMsg);
 			const auto ack = AckUtils::CreateErrorRejectOrderAck(message.GetStringValueByTag(FieldLabels::Symbol),
 				message.GetStringValueByTag(FieldLabels::ClientOrderId), errMsg);
@@ -303,23 +322,36 @@ void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& me
 
 bool MatchingEngine::VerifyUpstreamBinanceNewOrder(const BinanceNewOrder& order)
 {
+	bool isValidOrder = true;
 	if (order.GetAmount() <= ZERO_DOUBLE_VALUE)
 	{
-		const auto errMsg = "Received an invalid BinanceNewOrder with ammount is less than zero.";
-		m_logger->Error(errMsg);
-		const auto ack = AckUtils::CreateErrorRejectOrderAck(order.GetSymbol(), order.GetClientOrderId(), errMsg);
-		UpstreamGateWay->SendDownstreamOrderAck(ack);
-		return false;
+		const auto errMsg = "Received an invalid BinanceNewOrder with amount/quantity is less than zero.";
+		isValidOrder = false;
 	}
 	if (order.GetPrice() <= ZERO_DOUBLE_VALUE)
 	{
 		const auto errMsg = "Received an invalid BinanceNewOrder with price is less than zero.";
-		m_logger->Error(errMsg);
-		const auto ack = AckUtils::CreateErrorRejectOrderAck(order.GetSymbol(), order.GetClientOrderId(), errMsg);
-		UpstreamGateWay->SendDownstreamOrderAck(ack);
-		return false;
+		isValidOrder = false;
 	}
-	return true;
+	if (m_participant->GetParticipantType() == ParticipantType::REAL_TIME_SPOT_MARKET_DATA
+		&& order.GetOrderTradingType() != BinanceNewOrderTradingType::SPOT)
+	{
+		const auto errMsg = "Received an invalid BinanceNewOrder with order trading type is not SPOT.";
+		isValidOrder = false;
+	}
+	if (m_participant->GetParticipantType() == ParticipantType::REAL_TIME_FUTURE_MARKET_DATA
+		&& order.GetOrderTradingType() != BinanceNewOrderTradingType::FUTURE)
+	{
+		const auto errMsg = "Received an invalid BinanceNewOrder with order trading type is not FUTURE.";
+		isValidOrder = false;
+	}
+	if (!isValidOrder)
+	{
+		m_logger->Error("Received an invalid BinanceNewOrder with order=" + order.ToStringOrder());
+		const auto ack = AckUtils::CreateErrorRejectOrderAck(order.GetSymbol(), order.GetClientOrderId(), "Invalid Order");
+		UpstreamGateWay->SendDownstreamOrderAck(ack);
+	}
+	return isValidOrder;
 }
 
 bool MatchingEngine::VerifyUpstreamBinanceCancelOrder(const BinanceCancelOrder& order)
@@ -462,6 +494,8 @@ BinanceNewOrder MatchingEngine::ConstructUpstreamNewOrder(
 	const double price = message.GetDoubleValueByTag(FieldLabels::LimitPrice);
 	const double stopPrice = message.GetDoubleValueByTag(FieldLabels::StopPrice);
 	const double icebergAmount = message.GetDoubleValueByTag(FieldLabels::IcebergAmount);
+	const BinanceNewOrderTradingType tradingType = message.GetStringValueByTag(FieldLabels::TradingType) == "SPOT" ?
+		BinanceNewOrderTradingType::SPOT : BinanceNewOrderTradingType::FUTURE;
 	BinanceNewOrder order(
 		clientOrderId,
 		symbol,
@@ -472,7 +506,8 @@ BinanceNewOrder MatchingEngine::ConstructUpstreamNewOrder(
 		price,
 		stopPrice,
 		icebergAmount,
-		TradeType::TEST);
+		tradingType,
+		ExchangeConnectivityType::TEST);
 
 	order.SetUserAccountID(message.GetStringValueByTag(FieldLabels::UserAccountID));
 

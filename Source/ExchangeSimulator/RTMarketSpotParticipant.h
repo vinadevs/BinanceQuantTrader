@@ -20,13 +20,26 @@
 namespace ExchangeSimulator {
 
     class UserAccountManager;
-    class RTMarketParticipant final
+
+    /**
+     * @class RTMarketSpotParticipant
+     * @brief Represents a real-time market spot participant in the exchange simulator.
+     *
+     * This class is responsible for handling order matching for upstream orders and managing
+     * downstream order books for subscribed symbols. It observes market data changes and updates
+     * the best bid and ask order books accordingly. The class interacts with the UserAccountManager
+     * to manage user accounts and ensures efficient order book management for spot trading simulation.
+     *
+     * Inherits from Participant and MarketDataObserver to integrate with the trading and market data systems.
+     */
+    class RTMarketSpotParticipant final
         : public Participant,
           public MarketData::MarketDataObserver
     {
     public:
-        RTMarketParticipant(const size_t maxDownstreamOrderBookSize, UserAccountManager* userAccountManager);
-        ~RTMarketParticipant() override;
+        RTMarketSpotParticipant(const size_t maxDownstreamOrderBookSize, UserAccountManager* userAccountManager);
+        ~RTMarketSpotParticipant() override;
+
         // order matching for upstream orders
         bool TryToMatchOrder(OrderManagement::BinanceNewOrder& newUpstreamOrder) override;
         // book quote for downstream orders

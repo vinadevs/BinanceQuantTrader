@@ -31,6 +31,6 @@ namespace ExchangeSimulator {
 
 		const std::string& GetOrderSymbol(const UpstreamOrder& order);
 
-		const std::string& GetOrderTypeName(const UpstreamOrder& order);
+		const std::string& GetOrderMessageTypeName(const UpstreamOrder& order);
 	};
 };

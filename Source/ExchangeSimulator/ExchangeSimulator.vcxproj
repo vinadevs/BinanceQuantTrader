@@ -165,6 +165,7 @@
     <ClInclude Include="ExchangeRuleAndCompliance.h" />
     <ClInclude Include="protobuf\exchange_info_data.grpc.pb.h" />
     <ClInclude Include="protobuf\exchange_info_data.pb.h" />
+    <ClInclude Include="RTMarketFutureParticipant.h" />
     <ClInclude Include="TimeInForceHandler.h" />
     <ClInclude Include="TradeUtils.h" />
     <ClInclude Include="UpstreamOrderMatchedMgr.h" />
@@ -178,7 +179,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="protobuf\user_account_data.grpc.pb.h" />
     <ClInclude Include="protobuf\user_account_data.pb.h" />
-    <ClInclude Include="RTMarketParticipant.h" />
+    <ClInclude Include="RTMarketSpotParticipant.h" />
     <ClInclude Include="ExchangeServiceInterface.h" />
     <ClInclude Include="SimulatorParticipant.h" />
     <ClInclude Include="UpstreamOrder.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="OrderAckManager.cpp" />
     <ClCompile Include="protobuf\exchange_info_data.grpc.pb.cc" />
     <ClCompile Include="protobuf\exchange_info_data.pb.cc" />
+    <ClCompile Include="RTMarketFutureParticipant.cpp" />
     <ClCompile Include="TimeInForceHandler.cpp" />
     <ClCompile Include="UpstreamOrder.cpp" />
     <ClCompile Include="UpstreamOrderMatchedMgr.cpp" />
@@ -215,7 +217,7 @@
     </ClCompile>
     <ClCompile Include="protobuf\user_account_data.grpc.pb.cc" />
     <ClCompile Include="protobuf\user_account_data.pb.cc" />
-    <ClCompile Include="RTMarketParticipant.cpp" />
+    <ClCompile Include="RTMarketSpotParticipant.cpp" />
     <ClCompile Include="SimulatorParticipant.cpp" />
     <ClCompile Include="DownstreamOrderAck.cpp" />
     <ClCompile Include="UserAccount.cpp" />

@@ -25,11 +25,12 @@ std::unique_ptr<BinanceNewOrder> OrderCreator::CreateNewBinanceOrderFull(
     , const double amount
     , const double price
     , const double stopPrice
-    , const double icebergAmount)
+    , const double icebergAmount
+    , const BinanceNewOrderTradingType tradingType)
 {
     // last param is true mean this is real order
     return std::make_unique<BinanceNewOrder>(clientOrderId, symbol, side, type, time,
-        amount, price, stopPrice, icebergAmount, TradeType::REAL);
+        amount, price, stopPrice, icebergAmount, tradingType, ExchangeConnectivityType::REAL);
 }
 
 std::unique_ptr<BinanceNewOrder> OrderCreator::CreateNewBinanceTestOrderFull(
@@ -41,11 +42,12 @@ std::unique_ptr<BinanceNewOrder> OrderCreator::CreateNewBinanceTestOrderFull(
     , const double amount
     , const double price
     , const double stopPrice
-    , const double icebergAmount)
+    , const double icebergAmount
+    , const BinanceNewOrderTradingType tradingType)
 {
     // last param is false mean this is test order
     return std::make_unique<BinanceNewOrder>(clientOrderId, symbol, side, type, time,
-        amount, price, stopPrice, icebergAmount, TradeType::TEST);
+        amount, price, stopPrice, icebergAmount, tradingType, ExchangeConnectivityType::TEST);
 }
 
 std::unique_ptr<BinanceCancelOrder> OrderCreator::CreateCancelBinanceOrder(

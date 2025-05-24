@@ -60,7 +60,7 @@ private:
 
     std::string m_apiKey;
     std::string m_secretKey;
-    std::string m_baseUrl = "https://fapi.binance.com";
+    std::string m_baseUrl;
 };
 } // namespace CurlAPI
 // Lets shorten the code line!

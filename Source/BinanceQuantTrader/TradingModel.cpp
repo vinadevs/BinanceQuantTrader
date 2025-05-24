@@ -94,7 +94,7 @@ void TradingModel::PrepareTradingComponents(
 	const auto* globalSettingsCfg = configBQTXml->FirstChildElement("GlobalSettings");
 	BqtGlobalSettingsMgr->InitGlobalSetting(globalSettingsCfg);
 
-	m_logger->Info("Initiating Binance Spot API.");
+	// User account and API key (Strictly confidential information, be careful !!!!)
 	const auto* userAccountXml = configAccessKeyXml->FirstChildElement("UserAccount");
 	assert(userAccountXml);
 	const auto* keyXml = userAccountXml->FirstChildElement("Key");
@@ -117,21 +117,41 @@ void TradingModel::PrepareTradingComponents(
 	const auto* binanceExchangeClientCfg = configBQTXml->FirstChildElement("BinanceExchangeClient");
 	ExchangeSimulatorGateWay->InitBinanceExchangeClient(binanceExchangeClientCfg);
 #else
+	// Spot API
 	const auto* binanceAPICfg = configBQTXml->FirstChildElement("BinanceSpotApiGateWay");
 	assert(binanceAPICfg);
 	const auto* connectionXml = binanceAPICfg->FirstChildElement("Connection");
 	assert(connectionXml);
-	const auto* spotApiBinanceUrl = connectionXml->Attribute("SpotApiBinanceUrl");
-	const auto* apiBinancePort = connectionXml->Attribute("ApiBinancePort");
-	const auto* connectionTimeoutMs = connectionXml->Attribute("ConnectionTimeoutMs");
-	BinanceSpotApiGateWay::GetInstance()->InitiateAPI(spotApiBinanceUrl, apiBinancePort, pk, sk, connectionTimeoutMs);
-	m_logger->Info("Initiating Binance Future API.");
+	const auto enableSpotTrading = connectionXml->BoolAttribute("Enable");
+	if (enableSpotTrading)
+	{
+		const auto* spotApiBinanceUrl = connectionXml->Attribute("SpotApiBinanceUrl");
+		const auto* apiBinancePort = connectionXml->Attribute("ApiBinancePort");
+		const auto* connectionTimeoutMs = connectionXml->Attribute("ConnectionTimeoutMs");
+		m_logger->Info("Initiating Binance Spot API.");
+		BinanceSpotApiGateWay::GetInstance()->InitiateAPI(spotApiBinanceUrl, apiBinancePort, pk, sk, connectionTimeoutMs);
+	}
+	else
+	{
+		m_logger->Info("Binance Spot API is disabled.");
+	}
+	// Future API
+	// -Binance Future API is not supported in this country yet, so we can not trade with it for now
 	const auto* binanceFutureAPICfg = configBQTXml->FirstChildElement("BinanceFutureApiGateWay");
 	assert(binanceFutureAPICfg);
 	const auto* connectionFutureXml = binanceFutureAPICfg->FirstChildElement("Connection");
 	assert(connectionFutureXml);
-	const auto* futureApiBinanceUrl = connectionFutureXml->Attribute("FutureApiBinanceUrl");
-	BinanceFutureApiGateway::GetInstance().InitiateAPI(futureApiBinanceUrl, pk, sk);
+	const auto enableFutureTrading = connectionFutureXml->BoolAttribute("Enable");
+	if (enableFutureTrading)
+	{
+		const auto* futureApiBinanceUrl = connectionFutureXml->Attribute("FutureApiBinanceUrl");
+		m_logger->Info("Initiating Binance Future API.");
+		BinanceFutureApiGateway::GetInstance().InitiateAPI(futureApiBinanceUrl, pk, sk);
+	}
+	else
+	{
+		m_logger->Error("Binance Future API is not configured.");
+	}
 #endif
 	m_logger->Info("Initiating Static Data.");
 	const auto* staticDataCfg = configBQTXml->FirstChildElement("StaticData");
@@ -182,20 +202,27 @@ void TradingModel::PrepareTradingComponents(
 	m_strategyMessageServer->RegisterMessageHandler(m_strategy.get());
 #endif
 
-	m_logger->Info("Initiating External Controller.");
-	const auto* externalControllerCfg = configBQTXml->FirstChildElement("ExternalController");
-	assert(externalControllerCfg);
-	m_externalController = std::make_unique<ExternalController>(externalControllerCfg);
-
 	m_logger->Info("Initiating Trading Model.");
 	const auto* tradingModelCfg = configBQTXml->FirstChildElement("TradingModel");
 	m_allowMutipleThreadTrade = tradingModelCfg->FirstChildElement("MultipleThreads")->BoolAttribute("Enable");
+	m_allowExternalControlling = tradingModelCfg->FirstChildElement("ExternalControlling")->BoolAttribute("Enable");
+	
+	if (m_allowExternalControlling)
+	{
+		m_logger->Info("Initiating External Controller.");
+		const auto* externalControllerCfg = configBQTXml->FirstChildElement("ExternalController");
+		assert(externalControllerCfg);
+		m_externalController = std::make_unique<ExternalController>(externalControllerCfg);
+	}
 }
 
 void TradingModel::RunModel()
 {
 	// Start the external controller, this is for setup parameter control from external applications
-	m_externalController->Start(); // this is a child thread
+	if (m_allowExternalControlling)
+	{
+		m_externalController->Start(); // this is a child thread
+	}
 	// Start the strategy message server
 	// This is a child thread
 	// It will be used to receive messages from the exchange simulator
