@@ -194,6 +194,7 @@ bool MarketDataEvents::IsSubscribed(const std::string& symbol)
 void MarketDataEvents::Wait()
 {
 	// Wait for the condition variable to be notified
+    m_logger->Info("Wait for subscription setup completed...");
     std::unique_lock<std::mutex> lock(m_marketDataMutex);
 	m_marketDataCond.wait(lock, [&]()
 	{
@@ -202,6 +203,7 @@ void MarketDataEvents::Wait()
     // If there is any bloclking call at our side then Binance side will disconnect websocket 
     // connection with the error: ec=10053, emsg=An established connection was aborted 
     // by the software in your host machine, so please carefully to use lock stuffs within this class
+    m_logger->Info("Starting market data feed events...");
     m_ioContext.run(); // never return!!!
 	assert(false); // alert if we reach here, maybe missing call StartIOContext()
 }

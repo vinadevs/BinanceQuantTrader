@@ -24,8 +24,7 @@ ExchangeInfoManager::ExchangeInfoManager(
     std::string exchangeInfoJsonFile(exchangeInfoXml->Attribute("File"));
     PathUtils::ReplaceSubString(exchangeInfoJsonFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
 	const std::string exchangeInfoJsonStr = FileUtils::ReadFileContent(exchangeInfoJsonFile);
-	const flatjson::fjson exchangeInfoJson{ exchangeInfoJsonStr.c_str(), exchangeInfoJsonStr.size()};
-	m_exchangeInfo = binapi::rest::exchange_info_t::construct(exchangeInfoJson);
+    m_exchangeInfo = binapi::rest::exchange_info_t::construct(exchangeInfoJsonStr);
 }
 
 ExchangeInfoManager::~ExchangeInfoManager() {}

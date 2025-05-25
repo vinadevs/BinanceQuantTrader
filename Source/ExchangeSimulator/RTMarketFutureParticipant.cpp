@@ -95,13 +95,13 @@ void RTMarketFutureParticipant::CreateDownstreamFuturePriceManagers(const std::u
 
 void RTMarketFutureParticipant::UpdateCurrentMarketPrice(const std::string& symbol, const double price)
 {
-    auto* futurePrice = m_downstreamFuturePriceManagers[symbol].get();
-	if (futurePrice)
+	if (auto futurePrice = m_downstreamFuturePriceManagers.find(symbol);
+        m_downstreamFuturePriceManagers.end() != futurePrice)
 	{
-		futurePrice->SetNewMarketPrice(price);
+        futurePrice->second->SetNewMarketPrice(price);
 	}
-	else
-	{
-		m_logger->Warning("Could not found downstream future price manager for symbol=" + symbol);
-	}
+    else
+    {
+        m_logger->Warning("Could not found downstream future price manager for symbol=" + symbol);
+    }
 }

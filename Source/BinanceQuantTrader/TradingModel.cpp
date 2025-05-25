@@ -150,7 +150,7 @@ void TradingModel::PrepareTradingComponents(
 	}
 	else
 	{
-		m_logger->Error("Binance Future API is not configured.");
+		m_logger->Info("Binance Future API is disabled.");
 	}
 #endif
 	m_logger->Info("Initiating Static Data.");

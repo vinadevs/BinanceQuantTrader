@@ -33,7 +33,7 @@ std::vector<std::string> CurlAPI::GetBinanceListingSymbols(const std::string& sy
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
 
-        CURLcode res = curl_easy_perform(curl);
+        const CURLcode res = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
 
         if (res == CURLE_OK) {
@@ -49,4 +49,25 @@ std::vector<std::string> CurlAPI::GetBinanceListingSymbols(const std::string& sy
         }
     }
     return symbols;
+}
+
+binapi::rest::exchange_info_t CurlAPI::GetExchangeInfo()
+{
+	std::string readBuffer;
+	CURL* curl = curl_easy_init();
+	if (curl) {
+		std::string url = "https://api.binance.com/api/v3/exchangeInfo";
+		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+		const CURLcode res = curl_easy_perform(curl);
+		curl_easy_cleanup(curl);
+		if (res == CURLE_OK) {
+			return binapi::rest::exchange_info_t::construct(readBuffer);
+		}
+		else {
+			throw std::runtime_error("CURL API error: " + std::string(curl_easy_strerror(res)));
+		}
+	}
+	return binapi::rest::exchange_info_t();
 }

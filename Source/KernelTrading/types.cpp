@@ -16,6 +16,7 @@
 #include <fstream>
 
 #include <boost/utility/string_view.hpp>
+#include <nlohmann/json.hpp>
 
 #include "../LibraryUtils/TimeUtils.h"
 
@@ -970,6 +971,122 @@ bool exchange_info_t::write_exchange_info_to_file(std::ofstream& file, const exc
     file << "}";
 
     return true;
+}
+
+bool exchange_info_t::write_exchange_info_to_file(const std::string& filePath, const std::string& nlohmannJson)
+{
+    std::ofstream file(filePath);
+	if (!file.is_open()) {
+		return false; // Failed to open file
+	}
+	file << nlohmannJson;
+	return true;
+}
+
+///////////////////// For Curl API ////////////////////////////////
+
+static double_type to_double(const nlohmann::json& j, const std::string& key) {
+    return j.contains(key) ? std::stod(j.at(key).get<std::string>()) : 0.0;
+}
+
+static std::size_t to_size(const nlohmann::json& j, const std::string& key) {
+    return j.contains(key) ? j.at(key).get<std::size_t>() : 0;
+}
+
+static bool to_bool(const nlohmann::json& j, const std::string& key) {
+    return j.contains(key) ? j.at(key).get<bool>() : false;
+}
+
+exchange_info_t exchange_info_t::construct(const std::string& nlohmannJson) {
+    exchange_info_t result;
+    nlohmann::json doc = nlohmann::json::parse(nlohmannJson);
+
+    result.timezone = doc["timezone"];
+    result.serverTime = doc["serverTime"];
+    result.exchangeFilters = doc["exchangeFilters"].get<std::vector<std::string>>();
+
+    for (const auto& rl : doc["rateLimits"]) {
+        result.rateLimits.push_back({
+            rl["rateLimitType"],
+            rl["interval"],
+            rl["limit"]
+            });
+    }
+
+    for (const auto& s : doc["symbols"]) {
+        exchange_info_t::symbol_t symbol;
+        symbol.symbol = s["symbol"];
+        symbol.status = s["status"];
+        symbol.baseAsset = s["baseAsset"];
+        symbol.baseAssetPrecision = s["baseAssetPrecision"];
+        symbol.quoteAsset = s["quoteAsset"];
+        symbol.quotePrecision = s["quotePrecision"];
+        symbol.orderTypes = s["orderTypes"].get<std::vector<std::string>>();
+        symbol.icebergAllowed = s["icebergAllowed"];
+        symbol.ocoAllowed = s["ocoAllowed"];
+        symbol.quoteOrderQtyMarketAllowed = s["quoteOrderQtyMarketAllowed"];
+        symbol.allowTrailingStop = s["allowTrailingStop"];
+        symbol.cancelReplaceAllowed = s["cancelReplaceAllowed"];
+
+        for (const auto& f : s["filters"]) {
+            exchange_info_t::symbol_t::filter_t filter;
+            filter.filterType = f["filterType"];
+
+            using F = exchange_info_t::symbol_t::filter_t;
+            const std::string& type = filter.filterType;
+
+            if (type == "PRICE_FILTER") {
+                filter.filter = F::price_t{ to_double(f, "minPrice"), to_double(f, "maxPrice"), to_double(f, "tickSize") };
+            }
+            else if (type == "PERCENT_PRICE") {
+                filter.filter = F::percent_price_t{ to_double(f, "multiplierUp"), to_double(f, "multiplierDown"), to_size(f, "avgPriceMins") };
+            }
+            else if (type == "PERCENT_PRICE_BY_SIDE") {
+                filter.filter = F::percent_price_by_side_t{
+                    to_double(f, "bidMultiplierUp"), to_double(f, "bidMultiplierDown"),
+                    to_double(f, "askMultiplierUp"), to_double(f, "askMultiplierDown"),
+                    to_size(f, "avgPriceMins")
+                };
+            }
+            else if (type == "LOT_SIZE") {
+                filter.filter = F::lot_size_t{ to_double(f, "minQty"), to_double(f, "maxQty"), to_double(f, "stepSize") };
+            }
+            else if (type == "MARKET_LOT_SIZE") {
+                filter.filter = F::market_lot_size_t{ to_double(f, "minQty"), to_double(f, "maxQty"), to_double(f, "stepSize") };
+            }
+            else if (type == "MIN_NOTIONAL") {
+                filter.filter = F::min_notional_t{ to_double(f, "minNotional") };
+            }
+            else if (type == "ICEBERG_PARTS") {
+                filter.filter = F::iceberg_parts_t{ to_size(f, "limit") };
+            }
+            else if (type == "MAX_NUM_ORDERS") {
+                filter.filter = F::max_num_orders_t{ to_size(f, "maxNumOrders") };
+            }
+            else if (type == "MAX_NUM_ALGO_ORDERS") {
+                filter.filter = F::max_num_algo_orders_t{ to_size(f, "maxNumAlgoOrders") };
+            }
+            else if (type == "MAX_POSITION") {
+                filter.filter = F::max_position_t{ to_double(f, "maxPosition") };
+            }
+            else if (type == "TRAILING_DELTA") {
+                filter.filter = F::trailing_delta_t{
+                    to_size(f, "minTrailingAboveDelta"), to_size(f, "maxTrailingAboveDelta"),
+                    to_size(f, "minTrailingBelowDelta"), to_size(f, "maxTrailingBelowDelta")
+                };
+            }
+            else if (type == "NOTIONAL") {
+                filter.filter = F::notional_t{
+                    to_double(f, "minNotional"), to_bool(f, "applyMinToMarket"),
+                    to_double(f, "maxNotional"), to_bool(f, "applyMaxToMarket"),
+                    to_size(f, "avgPriceMins")
+                };
+            }
+            symbol.filters.emplace_back(filter);
+        }
+        result.symbols.emplace(std::move(symbol.symbol), std::move(symbol));
+    }
+    return result;
 }
 
 /*************************************************************************************************/
