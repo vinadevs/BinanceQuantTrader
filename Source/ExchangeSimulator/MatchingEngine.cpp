@@ -324,32 +324,48 @@ void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& me
 bool MatchingEngine::VerifyUpstreamBinanceNewOrder(const BinanceNewOrder& order)
 {
 	bool isValidOrder = true;
+	std::string errMsg;
 	if (order.GetAmount() <= ZERO_DOUBLE_VALUE)
 	{
-		const auto errMsg = "Received an invalid BinanceNewOrder with amount/quantity is less than zero.";
+		errMsg = "Received an invalid BinanceNewOrder with amount/quantity is less than zero.";
 		isValidOrder = false;
 	}
-	if (order.GetPrice() <= ZERO_DOUBLE_VALUE)
+	if (order.GetOrderType() == binapi::e_type::limit)
 	{
-		const auto errMsg = "Received an invalid BinanceNewOrder with price is less than zero.";
-		isValidOrder = false;
+		/*Order types that do NOT need a price field :
+		1. MARKET Order
+			Description : Executes immediately at the best available market price.
+			Price : You don’t provide a price; the system matches your quantity at the current market price.
+			Use case: When you want immediate execution, regardless of price.
+		2. STOP_MARKET Order
+			Description : A stop order that triggers a market order once a trigger price is hit.
+			Price : You provide a trigger price(called stopPrice), but no limit price is needed.
+			Use case: When you want to exit or enter a position as soon as the market hits a certain level, at the best available price.
+		3. TAKE_PROFIT_MARKET Order
+			Same as stop market but for taking profit; requires a trigger price but no fixed price.*/
+		if (order.GetPrice() <= ZERO_DOUBLE_VALUE)
+		{
+			errMsg = "Received an invalid BinanceNewOrder with price is less than zero.";
+			isValidOrder = false;
+		}
 	}
 	if (m_participant->GetParticipantType() == ParticipantType::REAL_TIME_SPOT_MARKET_DATA
 		&& order.GetOrderTradingType() != BinanceNewOrderTradingType::SPOT)
 	{
-		const auto errMsg = "Received an invalid BinanceNewOrder with order trading type is not SPOT.";
+		errMsg = "Received an invalid BinanceNewOrder with order trading type is not SPOT.";
 		isValidOrder = false;
 	}
 	if (m_participant->GetParticipantType() == ParticipantType::REAL_TIME_FUTURE_MARKET_DATA
 		&& order.GetOrderTradingType() != BinanceNewOrderTradingType::FUTURE)
 	{
-		const auto errMsg = "Received an invalid BinanceNewOrder with order trading type is not FUTURE.";
+		errMsg = "Received an invalid BinanceNewOrder with order trading type is not FUTURE.";
 		isValidOrder = false;
 	}
 	if (!isValidOrder)
 	{
-		m_logger->Error("Received an invalid BinanceNewOrder with order=" + order.ToStringOrder());
-		const auto ack = AckUtils::CreateErrorRejectOrderAck(order.GetSymbol(), order.GetClientOrderId(), "Invalid Order");
+		errMsg =+ ", orderInfo=" + order.ToStringOrder();
+		m_logger->Error(errMsg);
+		const auto ack = AckUtils::CreateErrorRejectOrderAck(order.GetSymbol(), order.GetClientOrderId(), errMsg);
 		UpstreamGateWay->SendDownstreamOrderAck(ack);
 	}
 	return isValidOrder;

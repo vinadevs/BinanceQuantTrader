@@ -81,6 +81,10 @@ namespace ExchangeSimulator {
         void ClearAll();
 
         const Accounts& GetUserAccounts();
+
+		bool IsAccountHavingSufficientMargin(
+			const std::string& symbol,
+			const double requiredMarginCash) const;
     protected:
         std::unique_ptr<LibraryUtils::Logger> m_logger;
         Accounts m_accounts;

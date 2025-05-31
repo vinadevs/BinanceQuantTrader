@@ -16,6 +16,8 @@
 #include "ExchangeRuleAndCompliance.h"
 #include "RTMarketFutureParticipant.h"
 #include "UserAccountManager.h"
+#include "FutureTradeManager.h"
+#include "UserTradeProfile.h"
 #include "TradeUtils.h"
 
 using namespace ExchangeSimulator;
@@ -56,6 +58,18 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
         Becomes active when a trigger price is reached.
         Then acts as a regular market or limit order. */
 
+    /* 1. Formula for PNL(no fees) For One - Way Mode and no partial fills :
+    Long Position : PNL = (Exit Price − Entry Price) × Quantity
+    Short Position : PNL = (Entry Price − Exit Price) × Quantity*/
+    
+    /* Fee = Entry Price×Quantity×Fee Rate + Exit Price×Quantity×Fee Rate
+    
+    Typical fee rate(for USDT - M futures) :
+        Maker: 0.02 % = 0.0002
+        Taker : 0.04 % = 0.0004
+
+    Final PNL formula(with fees) : Net PNL = Gross PNL − Total Fee */ 
+
     std::unique_lock<std::mutex> lock(m_mutex);
 
     //Check the Order Book:
@@ -64,11 +78,28 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
     if (newUpstreamOrder.GetSide() == binapi::e_side::buy) // long positions
     {
         // For a Buy Side:
+        // Required margin = quantity × price / leverage
+		const auto currentMarketPrice = m_downstreamFuturePriceManagers[newUpstreamOrder.GetSymbol()]->GetCurrentMarketPrice();
+		// Calculate the required margin
+		const auto leverageRate = m_futureTradeManager->LookupUserTradeProfile(newUpstreamOrder.GetUserAccountID())->GetLeverageRate();
+		const auto requiredMarginCash = (newUpstreamOrder.GetAmount() * currentMarketPrice) / leverageRate;
+		const auto hasSufficientMarginCash = m_userAccountManager->IsAccountHavingSufficientMargin(newUpstreamOrder.GetSymbol(), requiredMarginCash);
+        if (hasSufficientMarginCash)
+        {
+
+        }
+        else
+        {
+			m_logger->Warning("User account does not have sufficient margin cash to open a new position for order: " +
+				newUpstreamOrder.ToStringOrder());
+			return false; // Insufficient margin, cannot proceed with the order
+        }
        
     }
     else if (newUpstreamOrder.GetSide() == binapi::e_side::sell) // short positions
     {
         // For a Sell Side:
+		// Required margin = quantity × price / leverage
     }
     return hasLiquidity;
 }
@@ -78,8 +109,18 @@ bool RTMarketFutureParticipant::OnTradeChange(MarketData::MarketDataSubject* mar
     std::unique_lock<std::mutex> lock(m_mutex);
     if (const auto* data = marketData->GetSynchronousMarketData(symbol))
     {
-        UpdateCurrentMarketPrice(symbol, data->GetSingleFeed(TradeID::PRICE)->GetDoubleData());
-        return true;
+		const auto& singleFeedData = data->GetSingleFeed(TradeID::PRICE);
+        if (singleFeedData->GetDataStatus() == MarketData::MarketDataFeedStatus::UPDATED)
+        {
+            UpdateCurrentMarketPrice(symbol, data->GetSingleFeed(TradeID::PRICE)->GetDoubleData());
+            return true;
+        }
+        else
+        {
+			m_logger->Warning("Market data for symbol=" + symbol + " is not updated, status=" +
+				MarketData::SingleMarketDataFeed::MarketDataFeedStatusToString(singleFeedData->GetDataStatus()));
+			return false;
+        }
     }
     m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
     return false;

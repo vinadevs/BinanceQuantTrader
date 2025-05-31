@@ -21,6 +21,7 @@
 namespace ExchangeSimulator {
 
     class UserAccountManager;
+	class FutureTradeManager;
 
 	/**
 	 * @class DownstreamFuturePriceManager
@@ -71,5 +72,6 @@ namespace ExchangeSimulator {
         void UpdateCurrentMarketPrice(const std::string& symbol, const double price);
 
 		std::unordered_map<std::string, std::unique_ptr<DownstreamFuturePriceManager>> m_downstreamFuturePriceManagers;
+		std::unique_ptr<FutureTradeManager> m_futureTradeManager;
     };
 };

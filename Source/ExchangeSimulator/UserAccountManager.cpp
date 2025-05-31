@@ -121,3 +121,8 @@ const Accounts& UserAccountManager::GetUserAccounts()
 {
 	return m_accounts;
 }
+
+bool UserAccountManager::IsAccountHavingSufficientMargin(const std::string& symbol, const double requiredMarginCash) const
+{
+    return false;
+}

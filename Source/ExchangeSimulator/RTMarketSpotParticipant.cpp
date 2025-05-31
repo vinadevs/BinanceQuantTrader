@@ -73,11 +73,10 @@ bool RTMarketSpotParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& 
         {
             auto bestExchangeBidOrder = exchangeBidOrderBook->GetAllItems().front();
 
-			if (newUpstreamOrder.GetOrderType() == binapi::e_type::limit
-                || newUpstreamOrder.GetOrderType() == binapi::e_type::market)
+			if (newUpstreamOrder.GetOrderType() == binapi::e_type::limit)
 			{
-				// If the order type is LIMIT or MARKET, we need to check the order book for matching orders.
-				// Find the best exchange bid order that satisfies the buy price and volume.
+				// If the order type is LIMIT, we need to check the order book for matching orders.
+				// Find the best exchange bid order that satisfies the buy price.
 				// The best exchange bid order is the one with the highest price that is less than or equal to the buy price.
                 for (const auto& exchangeOrder : exchangeBidOrderBook->GetAllItems())
                 {
@@ -89,6 +88,18 @@ bool RTMarketSpotParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& 
                     }
                 }
 			}
+            else if (newUpstreamOrder.GetOrderType() == binapi::e_type::market)
+            {
+				// If the order type is MARKET, we need to find the best exchange bid order match market upstream order.
+                for (const auto& exchangeOrder : exchangeBidOrderBook->GetAllItems())
+                {
+                    if (exchangeOrder.m_price <= bestExchangeBidOrder.m_price)
+                    {
+                        bestExchangeBidOrder = exchangeOrder;
+                        hasLiquidity = true;
+                    }
+                }
+            }
 			else if (newUpstreamOrder.GetOrderType() == binapi::e_type::stop_loss)
 			{
 			}
@@ -145,16 +156,15 @@ bool RTMarketSpotParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& 
     {
         // For a Sell Side:
         //  Look at the buy-side of the order book (bids).
-        //  Find the highest-price buy order that satisfies the sell price and volume.
+        //  Find the highest-price buy order that satisfies the sell price.
         if (auto* exchangeAskOrderBook = m_askDownstreamOrderBooks->LookupOrderBook(newUpstreamOrder.GetSymbol()))
         {
             auto bestExchangeAskOrder = exchangeAskOrderBook->GetAllItems().front();
 
-			if (newUpstreamOrder.GetOrderType() == binapi::e_type::limit
-                || newUpstreamOrder.GetOrderType() == binapi::e_type::market)
+			if (newUpstreamOrder.GetOrderType() == binapi::e_type::limit)
 			{
 				// If the order type is LIMIT or MARKET, we need to check the order book for matching orders.
-				// Find the best exchange ask order that satisfies the sell price and volume.
+				// Find the best exchange ask order that satisfies the sell price.
 				// The best exchange ask order is the one with the lowest price that is greater than or equal to the sell price.
 				for (const auto& exchangeOrder : exchangeAskOrderBook->GetAllItems())
 				{
@@ -166,10 +176,20 @@ bool RTMarketSpotParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& 
 					}
 				}
 			}
+            else if (newUpstreamOrder.GetOrderType() == binapi::e_type::market)
+            {
+                // If the order type is MARKET, we need to find the best exchange ask order match market upstream order.
+                for (const auto& exchangeOrder : exchangeAskOrderBook->GetAllItems())
+                {
+                    if (exchangeOrder.m_price <= bestExchangeAskOrder.m_price)
+                    {
+                        bestExchangeAskOrder = exchangeOrder;
+                        hasLiquidity = true;
+                    }
+                }
+            }
 			else if (newUpstreamOrder.GetOrderType() == binapi::e_type::stop_loss)
-			{
-				// If the order type is MARKET, we need to find the best exchange ask order that satisfies the sell price and volume.
-				// The best exchange ask order is the one with the lowest price that is greater than or equal to the sell price.
+			{		
 			}
 
             if (hasLiquidity)

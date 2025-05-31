@@ -156,7 +156,7 @@ namespace ExchangeSimulator {
         AssetBalance& LookupAssetBalance(const AssetSymbol& symbol);
 
 		const binapi::rest::account_info_t& GetAccountInfo() const { 
-            return m_accountInfo; 
+            return m_accountInfo;
         }
     private:
         void EnableUserAccountControls();

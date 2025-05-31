@@ -14,6 +14,7 @@ namespace MarketData
 	{
 		UNDEF,  // can not trade
 		INIT,  // can not trade
+		STALED, // can not trade
 		UPDATED, // can trade
 	};
 

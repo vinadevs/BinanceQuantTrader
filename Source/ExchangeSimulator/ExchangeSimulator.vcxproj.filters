@@ -49,6 +49,9 @@
     <Filter Include="Binance Exchange Simulator\Protobuf">
       <UniqueIdentifier>{a96dfb6b-083e-4d00-bf8b-627144c27b8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Binance Exchange Simulator\User Trade Profile">
+      <UniqueIdentifier>{7e1b27b7-ef84-45bc-a856-c783a9fad03a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -153,6 +156,12 @@
     <ClInclude Include="RTMarketFutureParticipant.h">
       <Filter>Binance Exchange Simulator\Participants</Filter>
     </ClInclude>
+    <ClInclude Include="FutureTradeManager.h">
+      <Filter>Binance Exchange Simulator\Participants</Filter>
+    </ClInclude>
+    <ClInclude Include="UserTradeProfile.h">
+      <Filter>Binance Exchange Simulator\User Trade Profile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -241,6 +250,12 @@
     </ClCompile>
     <ClCompile Include="RTMarketFutureParticipant.cpp">
       <Filter>Binance Exchange Simulator\Participants</Filter>
+    </ClCompile>
+    <ClCompile Include="FutureTradeManager.cpp">
+      <Filter>Binance Exchange Simulator\Participants</Filter>
+    </ClCompile>
+    <ClCompile Include="UserTradeProfile.cpp">
+      <Filter>Binance Exchange Simulator\User Trade Profile</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

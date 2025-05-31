@@ -163,6 +163,7 @@
     <ClInclude Include="ExchangeInfoManager.h" />
     <ClInclude Include="ExchangeInfoHttpService.h" />
     <ClInclude Include="ExchangeRuleAndCompliance.h" />
+    <ClInclude Include="FutureTradeManager.h" />
     <ClInclude Include="protobuf\exchange_info_data.grpc.pb.h" />
     <ClInclude Include="protobuf\exchange_info_data.pb.h" />
     <ClInclude Include="RTMarketFutureParticipant.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="UserAccount.h" />
     <ClInclude Include="UserAccountHttpService.h" />
     <ClInclude Include="UserAccountManager.h" />
+    <ClInclude Include="UserTradeProfile.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BqtJsonMessageServer.cpp" />
@@ -198,6 +200,7 @@
     <ClCompile Include="ExchangeInfoManager.cpp" />
     <ClCompile Include="ExchangeInfoHttpService.cpp" />
     <ClCompile Include="ExchangeRuleAndCompliance.cpp" />
+    <ClCompile Include="FutureTradeManager.cpp" />
     <ClCompile Include="HistoricalParticipant.cpp" />
     <ClCompile Include="MatchingEngine.cpp" />
     <ClCompile Include="OrderAckManager.cpp" />
@@ -223,6 +226,7 @@
     <ClCompile Include="UserAccount.cpp" />
     <ClCompile Include="UserAccountHttpService.cpp" />
     <ClCompile Include="UserAccountManager.cpp" />
+    <ClCompile Include="UserTradeProfile.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

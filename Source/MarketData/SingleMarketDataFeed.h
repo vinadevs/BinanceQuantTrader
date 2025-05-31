@@ -49,6 +49,18 @@ public:
             }, o.m_data);
         return os;
 	}
+
+	static std::string MarketDataFeedStatusToString(const MarketDataFeedStatus status)
+	{
+		switch (status)
+		{
+			case MarketDataFeedStatus::UNDEF: return "UNDEF";
+			case MarketDataFeedStatus::INIT: return "INIT";
+			case MarketDataFeedStatus::STALED: return "STALED";
+			case MarketDataFeedStatus::UPDATED: return "UPDATED";
+			default: return "UNKNOWN";
+		}
+	}
 private:
     SingleMarketData m_data;
     MarketDataFeedStatus m_mkdataFeedStatus{ MarketDataFeedStatus::INIT };
