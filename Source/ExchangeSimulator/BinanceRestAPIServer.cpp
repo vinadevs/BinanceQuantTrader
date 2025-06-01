@@ -13,6 +13,7 @@
 
 #include "UserAccountHttpService.h"
 #include "ExchangeInfoHttpService.h"
+#include "UserTradeProfileService.h"
 #include "BinanceRestAPIServer.h"
 
 using namespace ExchangeSimulator;
@@ -20,10 +21,12 @@ using namespace ExchangeSimulator;
 BinanceRestAPIServer::BinanceRestAPIServer(
     const tinyxml2::XMLElement* binanceRestAPIServerXmlCfg,
     UserAccountManager* userAccountManager,
-    ExchangeInfoManager* exchangeInfoManager)
+    ExchangeInfoManager* exchangeInfoManager,
+    UserTradeProfileManager* userTradeProfileManager)
 	: m_logger{ std::make_unique<LibraryUtils::Logger>("BinanceRestAPIServer") }
     , m_userAccountHttpService{ std::make_unique<UserAccountHttpService>(userAccountManager) }
 	, m_exchangeInfoHttpService{ std::make_unique<ExchangeInfoHttpService>(exchangeInfoManager) }
+	, m_userTradeProfileService{ std::make_unique<UserTradeProfileService>(userTradeProfileManager) }
 {
     assert(binanceRestAPIServerXmlCfg);
     const auto* connectionXml = binanceRestAPIServerXmlCfg->FirstChildElement("Connection");
@@ -45,8 +48,10 @@ void BinanceRestAPIServer::WaitForIncomingMessage()
 {
     grpc::ServerBuilder builder;
     builder.AddListeningPort(m_serverConnection, grpc::InsecureServerCredentials());
+	// Register the services
     builder.RegisterService(m_userAccountHttpService.get());
     builder.RegisterService(m_exchangeInfoHttpService.get());
+	builder.RegisterService(m_userTradeProfileService.get());
 
     m_grpcServer = builder.BuildAndStart();
     m_logger->Info("BinanceRestAPIServer listening on " + m_serverConnection);

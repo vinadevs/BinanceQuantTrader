@@ -37,8 +37,10 @@ namespace ExchangeSimulator {
 
     class UserAccountManager;
 	class ExchangeInfoManager;
+	class UserTradeProfileManager;
     class UserAccountHttpService;
 	class ExchangeInfoHttpService;
+	class UserTradeProfileService;
 
     class BinanceRestAPIServer final : public ExchangeServiceInterface
     {
@@ -46,7 +48,8 @@ namespace ExchangeSimulator {
         BinanceRestAPIServer(
             const tinyxml2::XMLElement* binanceRestAPIServerXmlCfg,
             UserAccountManager* userAccountManager,
-            ExchangeInfoManager* exchangeInfoManager);
+            ExchangeInfoManager* exchangeInfoManager,
+            UserTradeProfileManager* userTradeProfileManager);
         ~BinanceRestAPIServer();
 
         void Start() override;
@@ -58,6 +61,7 @@ namespace ExchangeSimulator {
 		// http services
         std::unique_ptr<UserAccountHttpService> m_userAccountHttpService;
         std::unique_ptr<ExchangeInfoHttpService> m_exchangeInfoHttpService;
+		std::unique_ptr<UserTradeProfileService> m_userTradeProfileService;
         // http services
         std::unique_ptr<grpc::Server> m_grpcServer;
         std::thread m_grpcThread;

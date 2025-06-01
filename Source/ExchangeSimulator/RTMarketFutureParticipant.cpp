@@ -16,7 +16,7 @@
 #include "ExchangeRuleAndCompliance.h"
 #include "RTMarketFutureParticipant.h"
 #include "UserAccountManager.h"
-#include "FutureTradeManager.h"
+#include "UserTradeProfileManager.h"
 #include "UserTradeProfile.h"
 #include "TradeUtils.h"
 
@@ -81,7 +81,7 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
         // Required margin = quantity × price / leverage
 		const auto currentMarketPrice = m_downstreamFuturePriceManagers[newUpstreamOrder.GetSymbol()]->GetCurrentMarketPrice();
 		// Calculate the required margin
-		const auto leverageRate = m_futureTradeManager->LookupUserTradeProfile(newUpstreamOrder.GetUserAccountID())->GetLeverageRate();
+		const auto leverageRate = m_userTradeProfileManager->LookupUserTradeProfile(newUpstreamOrder.GetUserAccountID()).GetLeverageRate();
 		const auto requiredMarginCash = (newUpstreamOrder.GetAmount() * currentMarketPrice) / leverageRate;
 		const auto hasSufficientMarginCash = m_userAccountManager->IsAccountHavingSufficientMargin(newUpstreamOrder.GetSymbol(), requiredMarginCash);
         if (hasSufficientMarginCash)

@@ -34,6 +34,7 @@ namespace ExchangeSimulator {
 
     class UserAccountManager;
 	class ExchangeInfoManager;
+	class UserTradeProfileManager;
 
     class DLL_CLASS_EXCHANGESIMULATOR_EXPORTS BinanceExchangeSimulator final
     {
@@ -58,6 +59,7 @@ namespace ExchangeSimulator {
 
         std::unique_ptr<UserAccountManager> m_userAccountManager;
         std::unique_ptr<ExchangeInfoManager> m_exchangeInfoManager;
+		std::unique_ptr<UserTradeProfileManager> m_userTradeProfileManager;
         std::unique_ptr<LibraryUtils::Logger> m_logger;
     };
 };

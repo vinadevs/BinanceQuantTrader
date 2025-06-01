@@ -156,11 +156,20 @@
     <ClInclude Include="RTMarketFutureParticipant.h">
       <Filter>Binance Exchange Simulator\Participants</Filter>
     </ClInclude>
-    <ClInclude Include="FutureTradeManager.h">
-      <Filter>Binance Exchange Simulator\Participants</Filter>
-    </ClInclude>
     <ClInclude Include="UserTradeProfile.h">
       <Filter>Binance Exchange Simulator\User Trade Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="UserTradeProfileService.h">
+      <Filter>Binance Exchange Simulator\User Trade Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="UserTradeProfileManager.h">
+      <Filter>Binance Exchange Simulator\User Trade Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\user_trade_profile.grpc.pb.h">
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\user_trade_profile.pb.h">
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -251,11 +260,20 @@
     <ClCompile Include="RTMarketFutureParticipant.cpp">
       <Filter>Binance Exchange Simulator\Participants</Filter>
     </ClCompile>
-    <ClCompile Include="FutureTradeManager.cpp">
-      <Filter>Binance Exchange Simulator\Participants</Filter>
-    </ClCompile>
     <ClCompile Include="UserTradeProfile.cpp">
       <Filter>Binance Exchange Simulator\User Trade Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="UserTradeProfileService.cpp">
+      <Filter>Binance Exchange Simulator\User Trade Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="UserTradeProfileManager.cpp">
+      <Filter>Binance Exchange Simulator\User Trade Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\user_trade_profile.grpc.pb.cc">
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\user_trade_profile.pb.cc">
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

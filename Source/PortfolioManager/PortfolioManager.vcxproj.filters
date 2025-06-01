@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Local Test Only">
-      <UniqueIdentifier>{e224fa65-4e80-45ad-a77a-4bbb2ff58736}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Binance Portfolio">
       <UniqueIdentifier>{6b6635f4-e3e1-4c3a-b39d-de26c0003bd0}</UniqueIdentifier>
     </Filter>
