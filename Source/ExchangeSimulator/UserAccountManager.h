@@ -74,17 +74,13 @@ namespace ExchangeSimulator {
 
         void RemoveUserAccount(const std::string& userId);
 
-        const UserAccount* LookupUserAccount(const std::string& userId);
+        UserAccount* LookupUserAccount(const std::string& userId);
 
         UserAccount* OpenEditSessionForUserAccount(const std::string& userId);
 
         void ClearAll();
 
         const Accounts& GetUserAccounts();
-
-		bool IsAccountHavingSufficientMargin(
-			const std::string& symbol,
-			const double requiredMarginCash) const;
     protected:
         std::unique_ptr<LibraryUtils::Logger> m_logger;
         Accounts m_accounts;

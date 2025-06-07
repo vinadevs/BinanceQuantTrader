@@ -78,10 +78,31 @@ bool UserAccount::IsAccountEligibleToTrade() const
     return m_canTrade;
 }
 
-bool UserAccount::IsAccountHavingAssets() const
+bool UserAccount::IsAccountHavingAssets()
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
     return std::any_of(m_assetBalances.begin(), m_assetBalances.end(),
         [](const auto& asset) { return asset.second.m_free > 0; });
+}
+
+bool UserAccount::IsAccountHavingFutureAssets()
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+	return std::any_of(m_futureAssetBalances.begin(), m_futureAssetBalances.end(),
+		[](const auto& asset) { return asset.second.m_free > 0; });
+}
+
+bool UserAccount::IsAccountHavingSufficientFutureMargin(const std::string& symbol, const double requiredMarginCash)
+{
+	std::lock_guard<std::mutex> lock(m_mutex);
+	const auto it = m_futureAssetBalances.find(
+        StaticData::StaticDataManager::GetSymbolFromTradingPair(symbol,
+		StaticDataMgr->GetStableCoinUSDTSymbol()));
+	if (it != m_futureAssetBalances.end())
+	{
+		return it->second.m_margin >= requiredMarginCash;
+	}
+	return false;
 }
 
 AssetBalance& UserAccount::LookupAssetBalance(const AssetSymbol& symbol)
@@ -89,6 +110,13 @@ AssetBalance& UserAccount::LookupAssetBalance(const AssetSymbol& symbol)
     std::lock_guard<std::mutex> lock(m_mutex);
     return m_assetBalances.at(StaticData::StaticDataManager::GetSymbolFromTradingPair(symbol,
         StaticDataMgr->GetStableCoinUSDTSymbol())); // Throws std::out_of_range if symbol not found
+}
+
+FutureAssetBalance& UserAccount::LookupFutureAssetBalance(const AssetSymbol& symbol)
+{
+	std::lock_guard<std::mutex> lock(m_mutex);
+	return m_futureAssetBalances.at(StaticData::StaticDataManager::GetSymbolFromTradingPair(symbol,
+		StaticDataMgr->GetStableCoinUSDTSymbol())); // Throws std::out_of_range if symbol not found
 }
 
 void UserAccount::EnableUserAccountControls()

@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BinanceExchangeClient.h" />
+    <ClInclude Include="BinanceTradeProfile.h" />
     <ClInclude Include="BqtMessageEnhancer.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="ExchangeSimulatorConnectivity.h" />
@@ -166,9 +167,12 @@
     <ClInclude Include="protobuf\user_account_data.grpc.pb.h" />
     <ClInclude Include="protobuf\user_account_data.pb.h" />
     <ClInclude Include="BinanceWalletClient.h" />
+    <ClInclude Include="protobuf\user_trade_profile.grpc.pb.h" />
+    <ClInclude Include="protobuf\user_trade_profile.pb.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BinanceExchangeClient.cpp" />
+    <ClCompile Include="BinanceTradeProfile.cpp" />
     <ClCompile Include="BqtMessageEnhancer.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="BinanceExchangeConnectivity.cpp" />
@@ -184,6 +188,8 @@
     <ClCompile Include="protobuf\user_account_data.grpc.pb.cc" />
     <ClCompile Include="protobuf\user_account_data.pb.cc" />
     <ClCompile Include="BinanceWalletClient.cpp" />
+    <ClCompile Include="protobuf\user_trade_profile.grpc.pb.cc" />
+    <ClCompile Include="protobuf\user_trade_profile.pb.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

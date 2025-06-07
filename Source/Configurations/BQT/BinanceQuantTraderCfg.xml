@@ -63,6 +63,10 @@
   <Connection ServerIpAddress="localhost" ServerPort="50051"/>
 </BinanceExchangeClient>
 
+<BinanceTradeProfile>
+  <Connection ServerIpAddress="localhost" ServerPort="50051"/>
+</BinanceTradeProfile>
+
 <ExternalController>
   <Connection ServerIpAddress="0.0.0.0" ServerPort="12346"/>
 </ExternalController>

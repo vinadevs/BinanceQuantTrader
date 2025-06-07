@@ -89,7 +89,7 @@ void UserAccountManager::RemoveUserAccount(const std::string& userId)
     }
 }
 
-const UserAccount* UserAccountManager::LookupUserAccount(const std::string& userId)
+UserAccount* UserAccountManager::LookupUserAccount(const std::string& userId)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     const auto it = m_accounts.find(userId);
@@ -120,9 +120,4 @@ void UserAccountManager::ClearAll()
 const Accounts& UserAccountManager::GetUserAccounts()
 {
 	return m_accounts;
-}
-
-bool UserAccountManager::IsAccountHavingSufficientMargin(const std::string& symbol, const double requiredMarginCash) const
-{
-    return false;
 }

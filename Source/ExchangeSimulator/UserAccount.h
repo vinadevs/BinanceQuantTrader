@@ -105,7 +105,31 @@ namespace ExchangeSimulator {
         }
     };
 
+	struct FutureAssetBalance final
+	{
+		AssetSymbol m_symbol; // asset name
+		double m_free{ 0 }; // amount can be traded
+		double m_locked{ 0 }; // amount is being locked
+		double m_margin{ 0 }; // margin amount
+		FutureAssetBalance() = default;
+		FutureAssetBalance(const AssetSymbol& symbol, double free, double locked, double margin)
+			: m_symbol(symbol), m_free(free), m_locked(locked), m_margin(margin)
+		{}
+
+		friend std::ostream& operator<<(std::ostream& os, const FutureAssetBalance& balance)
+		{
+			os << "FutureAssetBalance { "
+				<< "symbol: \"" << balance.m_symbol << "\", "
+				<< "free: " << balance.m_free << ", "
+				<< "locked: " << balance.m_locked << ", "
+				<< "margin: " << balance.m_margin
+				<< " }";
+			return os;
+		}
+	};
+
     using AssetBalances = std::unordered_map<AssetSymbol, AssetBalance>;
+	using FutureAssetBalances = std::unordered_map<AssetSymbol, FutureAssetBalance>;
 
     /**
      * @struct UserAccount
@@ -126,6 +150,7 @@ namespace ExchangeSimulator {
         AssetBalances m_assetBalances;
         FiatBalance m_fiatBalance;
         StableCoinUSDTBalance m_usdtBalance;
+		FutureAssetBalances m_futureAssetBalances;
 
         friend std::ostream& operator<<(std::ostream& os, const UserAccount& account)
         {
@@ -151,9 +176,14 @@ namespace ExchangeSimulator {
         bool IsAccountEligibleToWithdraw() const;
         bool IsAccountEligibleToDeposit() const;
         bool IsAccountEligibleToTrade() const;
-        bool IsAccountHavingAssets() const;
+        bool IsAccountHavingAssets();
+        bool IsAccountHavingFutureAssets();
+        bool IsAccountHavingSufficientFutureMargin(
+            const std::string& symbol,
+            const double requiredMarginCash);
 
         AssetBalance& LookupAssetBalance(const AssetSymbol& symbol);
+		FutureAssetBalance& LookupFutureAssetBalance(const AssetSymbol& symbol);
 
 		const binapi::rest::account_info_t& GetAccountInfo() const { 
             return m_accountInfo;

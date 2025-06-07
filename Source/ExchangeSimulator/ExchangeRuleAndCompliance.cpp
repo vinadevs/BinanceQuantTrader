@@ -60,3 +60,18 @@ RateCommission ExchangeRuleAndCompliance::GetSellerCommission() const
 {
     return m_sellerCommission;
 }
+
+RateCommission ExchangeRuleAndCompliance::GetFutureMakerCommission() const
+{
+	return m_makerCommission; // Assuming same as spot for now
+}
+
+RateCommission ExchangeRuleAndCompliance::GetFutureTakerCommission() const
+{
+	return m_takerCommission; // Assuming same as spot for now
+}
+
+MaintenanceMarginRate ExchangeSimulator::ExchangeRuleAndCompliance::GetMaintenanceMarginRate(const std::string& symbol) const
+{
+    return MaintenanceMarginRate();
+}

@@ -116,6 +116,10 @@ void TradingModel::PrepareTradingComponents(
 	m_logger->Info("Initiating Test Binance Exchange Client.");
 	const auto* binanceExchangeClientCfg = configBQTXml->FirstChildElement("BinanceExchangeClient");
 	ExchangeSimulatorGateWay->InitBinanceExchangeClient(binanceExchangeClientCfg);
+
+	m_logger->Info("Initiating Test Binance Trade Profile.");
+	const auto* binanceTradeProfileCfg = configBQTXml->FirstChildElement("BinanceTradeProfile");
+	ExchangeSimulatorGateWay->InitBinanceTradeProfile(binanceTradeProfileCfg);
 #else
 	// Spot API
 	const auto* binanceAPICfg = configBQTXml->FirstChildElement("BinanceSpotApiGateWay");
@@ -218,7 +222,8 @@ void TradingModel::PrepareTradingComponents(
 
 void TradingModel::RunModel()
 {
-	// Start the external controller, this is for setup parameter control from external applications
+	// Start the external controller,
+	// this is for setup parameter control (admin request, parent order) from external applications
 	if (m_allowExternalControlling)
 	{
 		m_externalController->Start(); // this is a child thread

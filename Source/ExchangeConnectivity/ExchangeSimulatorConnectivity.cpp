@@ -19,6 +19,7 @@
 
 #include "BinanceWalletClient.h"
 #include "BinanceExchangeClient.h"
+#include "BinanceTradeProfile.h"
 #include "ExchangeSimulatorConnectivity.h"
 
 using namespace ExchangeConnectivity;
@@ -49,6 +50,11 @@ void ExchangeSimulatorConnectivity::InitBinanceWalletClient(const XMLElement* bi
 void ExchangeSimulatorConnectivity::InitBinanceExchangeClient(const tinyxml2::XMLElement* binanceExchangeClientXmlCfg)
 {
     m_binanceExchangeClient = std::make_unique<BinanceExchangeClient>(binanceExchangeClientXmlCfg);
+}
+
+void ExchangeSimulatorConnectivity::InitBinanceTradeProfile(const tinyxml2::XMLElement* binanceTradeProfileXmlCfg)
+{
+	m_binanceTradeProfile = std::make_unique<BinanceTradeProfile>(binanceTradeProfileXmlCfg);
 }
 
 MiddlewareMQ::MiddlewareMQResult
@@ -136,4 +142,12 @@ bool ExchangeSimulatorConnectivity::GetExchangeInfo(
     std::string& errorMessage)
 {
     return m_binanceExchangeClient->GetExchangeInfoResponse(symbol, exchangeInfo, errorMessage);
+}
+
+bool ExchangeSimulatorConnectivity::UpdateUserTradeProfileData(
+    const std::string& userId,
+    const double leverageRate,
+    std::string& resultMessage)
+{
+	return m_binanceTradeProfile->UpdateUserTradeProfileData(userId, leverageRate, resultMessage);
 }

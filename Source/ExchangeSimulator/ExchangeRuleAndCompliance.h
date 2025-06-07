@@ -30,6 +30,7 @@ namespace ExchangeSimulator {
 
 	// NOTE: 
 	using RateCommission = double;
+	using MaintenanceMarginRate = double;
 
 	class ExchangeRuleAndCompliance
 	{
@@ -47,11 +48,16 @@ namespace ExchangeSimulator {
 		RateCommission GetTakerCommission() const;
 		RateCommission GetBuyerCommission() const;
 		RateCommission GetSellerCommission() const;
+		RateCommission GetFutureMakerCommission() const;
+		RateCommission GetFutureTakerCommission() const;
+		MaintenanceMarginRate GetMaintenanceMarginRate(const std::string& symbol) const;
 	private:
 		RateCommission m_makerCommission{ 0 }; // fee commission from binance
 		RateCommission m_takerCommission{ 0 }; // fee commission from binance
 		RateCommission m_buyerCommission{ 0 }; // fee commission from buy side
 		RateCommission m_sellerCommission{ 0 };// fee commission from sell side
+		RateCommission m_futureMakerCommission{ 0 }; // fee commission from binance for future market
+
 	};
 };
 // Lets shorten the code line!

@@ -66,6 +66,15 @@
     <ClInclude Include="BinanceExchangeConnectivity.h">
       <Filter>Binance Connectivity</Filter>
     </ClInclude>
+    <ClInclude Include="protobuf\user_trade_profile.grpc.pb.h">
+      <Filter>Backtest Simulator\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\user_trade_profile.pb.h">
+      <Filter>Backtest Simulator\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="BinanceTradeProfile.h">
+      <Filter>Backtest Simulator</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -103,6 +112,15 @@
     </ClCompile>
     <ClCompile Include="BinanceExchangeConnectivity.cpp">
       <Filter>Binance Connectivity</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\user_trade_profile.grpc.pb.cc">
+      <Filter>Backtest Simulator\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\user_trade_profile.pb.cc">
+      <Filter>Backtest Simulator\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="BinanceTradeProfile.cpp">
+      <Filter>Backtest Simulator</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
