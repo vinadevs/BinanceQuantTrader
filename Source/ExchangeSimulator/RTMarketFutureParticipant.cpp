@@ -87,9 +87,9 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
     const auto userSymbolMargin = userFutureAssetBalance.m_margin;
 	// Calculate position value = orderEntryPrice * numberOfContracts
 	const double positionValue = orderEntryPrice * numberOfContracts;
-    // Calculate Exit Fee = Position Value × fee_rate
+    // Calculate Exit Fee = Position Value × Free Rate
 	const double exitFee = positionValue * (ExchangeRuleMgr->GetFutureMakerCommission() + ExchangeRuleMgr->GetFutureTakerCommission());
-	// Calculate Entry Fee = Position Value × fee_rate
+	// Calculate Entry Fee = Position Value × Free Rate
 	const double entryFee = positionValue * (ExchangeRuleMgr->GetFutureMakerCommission() + ExchangeRuleMgr->GetFutureTakerCommission());
 	// Calculate total fee = Entry Fee + Exit Fee
 	const double totalFee = entryFee + exitFee;
@@ -97,8 +97,10 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
     const double maximumPostitionValue = userSymbolMargin * userLeverageRate;
     // Required margin = quantity × price / leverage
     const auto requiredMarginCash = positionValue / userLeverageRate;
+	// Get future margin rate for the symbol from ExchangeRuleMgr
+	const auto& symbolLeverageBracketInfo = ExchangeRuleMgr->GetFutureLeverageBracketByNotional(newUpstreamOrder.GetSymbol(), positionValue);
     // Calculate Maintenance Margin = Maintenance Margin Rate × Quantity × Entry Price
-    const double maintenanceMarginRate = ExchangeRuleMgr->GetMaintenanceMarginRate(newUpstreamOrder.GetSymbol());
+    const double maintenanceMarginRate = symbolLeverageBracketInfo.m_MaintMarginRate;
     const double maintenanceMargin = maintenanceMarginRate * positionValue;
     // Calculate liquidity price = Entry Price × [1 - (Initial Margin - Maintenance Margin - Total Fee) / Position Value]
     const double liquidityPrice = orderEntryPrice * (1 - (requiredMarginCash - maintenanceMargin - totalFee) / positionValue);

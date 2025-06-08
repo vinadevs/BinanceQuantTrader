@@ -3,6 +3,8 @@
 
 #include "dlldefine.h"
 
+#include "BinanceMarginRateInfo.h"
+
 #include <string>
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
@@ -35,6 +37,7 @@ public:
     void SetLeverageRate(const std::string& symbol, int leverage);
     void CancelOrder(const std::string& symbol, const std::string& origClientOrderId);
     void QueryOrder(const std::string& symbol, const std::string& origClientOrderId);
+    SymbolMarginRateInfo GetLeverageBracket(const std::string& symbol);
 
 private:
     BinanceFutureApiGateway() = default;

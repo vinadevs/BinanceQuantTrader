@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BinanceFutureApiGateway.h" />
+    <ClInclude Include="BinanceMarginRateInfo.h" />
     <ClInclude Include="CurlAPIGateWay.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="framework.h" />

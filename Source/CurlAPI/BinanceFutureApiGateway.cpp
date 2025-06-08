@@ -78,6 +78,39 @@ void BinanceFutureApiGateway::QueryOrder(const std::string& symbol, const std::s
     PrintJsonResponse(response);
 }
 
+SymbolMarginRateInfo BinanceFutureApiGateway::GetLeverageBracket(const std::string& symbol)
+{
+	std::string endpoint = "/fapi/v1/leverageBracket";
+	std::string query = "symbol=" + symbol;
+	std::string response = SendSignedGetRequest(endpoint, query);
+	PrintJsonResponse(response);
+
+    SymbolMarginRateInfo result(symbol);
+
+    // Parse JSON and extract relevant data
+    try {
+        const auto jsonData = json::parse(response);
+
+        for (const auto& item : jsonData) {
+            if (item.contains("symbol") && item["symbol"] == symbol) {
+                for (const auto& bracket : item["brackets"]) {
+					const int tier = bracket["tier"].get<int>();
+                    const double notionalCap = bracket["notionalCap"].get<double>();
+                    const int leverage = bracket["initialLeverage"].get<int>();
+                    const double imr = bracket["initialMarginRatio"].get<double>();
+                    const double mmr = bracket["maintMarginRatio"].get<double>();
+                    result.m_Brackets.emplace_back(tier, notionalCap, leverage, imr, mmr);
+                }
+                break; // stop searching once the symbol is found
+            }
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "JSON parsing error: " << e.what() << "\n";
+    }
+    return result;
+}
+
 void BinanceFutureApiGateway::SendOrder(const std::string& endpoint,
     const std::string& symbol,
     const std::string& side,
@@ -192,8 +225,8 @@ void BinanceFutureApiGateway::PrintJsonResponse(const std::string& response) con
 }
 
 std::string BinanceFutureApiGateway::GetTimestamp() const {
-    using namespace std::chrono;
-    auto now = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+    auto now = std::chrono::duration_cast<
+        std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     return std::to_string(now);
 }
 
@@ -204,7 +237,7 @@ std::string BinanceFutureApiGateway::HmacSha256(const std::string& key, const st
 
     std::ostringstream oss;
     for (int i = 0; i < 32; i++) {
-        oss << std::hex << std::setw(2) << std::setfill('0') << (int)digest[i];
+        oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(digest[i]);
     }
     return oss.str();
 }
