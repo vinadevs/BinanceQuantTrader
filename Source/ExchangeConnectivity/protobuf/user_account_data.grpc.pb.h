@@ -27,49 +27,51 @@
 #include <grpcpp/support/stub_options.h>
 #include <grpcpp/support/sync_stream.h>
 
+namespace account {
+
 class UserAccountService final {
  public:
   static constexpr char const* service_full_name() {
-    return "UserAccountService";
+    return "account.UserAccountService";
   }
   class StubInterface {
    public:
     virtual ~StubInterface() {}
-    virtual ::grpc::Status GetUserAccountData(::grpc::ClientContext* context, const ::UserAccountDataRequest& request, ::UserAccountDataResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::UserAccountDataResponse>> AsyncGetUserAccountData(::grpc::ClientContext* context, const ::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::UserAccountDataResponse>>(AsyncGetUserAccountDataRaw(context, request, cq));
+    virtual ::grpc::Status GetUserAccountData(::grpc::ClientContext* context, const ::account::UserAccountDataRequest& request, ::account::UserAccountDataResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::account::UserAccountDataResponse>> AsyncGetUserAccountData(::grpc::ClientContext* context, const ::account::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::account::UserAccountDataResponse>>(AsyncGetUserAccountDataRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::UserAccountDataResponse>> PrepareAsyncGetUserAccountData(::grpc::ClientContext* context, const ::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::UserAccountDataResponse>>(PrepareAsyncGetUserAccountDataRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::account::UserAccountDataResponse>> PrepareAsyncGetUserAccountData(::grpc::ClientContext* context, const ::account::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::account::UserAccountDataResponse>>(PrepareAsyncGetUserAccountDataRaw(context, request, cq));
     }
     class async_interface {
      public:
       virtual ~async_interface() {}
-      virtual void GetUserAccountData(::grpc::ClientContext* context, const ::UserAccountDataRequest* request, ::UserAccountDataResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void GetUserAccountData(::grpc::ClientContext* context, const ::UserAccountDataRequest* request, ::UserAccountDataResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void GetUserAccountData(::grpc::ClientContext* context, const ::account::UserAccountDataRequest* request, ::account::UserAccountDataResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetUserAccountData(::grpc::ClientContext* context, const ::account::UserAccountDataRequest* request, ::account::UserAccountDataResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
     class async_interface* experimental_async() { return async(); }
    private:
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::UserAccountDataResponse>* AsyncGetUserAccountDataRaw(::grpc::ClientContext* context, const ::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::UserAccountDataResponse>* PrepareAsyncGetUserAccountDataRaw(::grpc::ClientContext* context, const ::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::account::UserAccountDataResponse>* AsyncGetUserAccountDataRaw(::grpc::ClientContext* context, const ::account::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::account::UserAccountDataResponse>* PrepareAsyncGetUserAccountDataRaw(::grpc::ClientContext* context, const ::account::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
     Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
-    ::grpc::Status GetUserAccountData(::grpc::ClientContext* context, const ::UserAccountDataRequest& request, ::UserAccountDataResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::UserAccountDataResponse>> AsyncGetUserAccountData(::grpc::ClientContext* context, const ::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::UserAccountDataResponse>>(AsyncGetUserAccountDataRaw(context, request, cq));
+    ::grpc::Status GetUserAccountData(::grpc::ClientContext* context, const ::account::UserAccountDataRequest& request, ::account::UserAccountDataResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::account::UserAccountDataResponse>> AsyncGetUserAccountData(::grpc::ClientContext* context, const ::account::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::account::UserAccountDataResponse>>(AsyncGetUserAccountDataRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::UserAccountDataResponse>> PrepareAsyncGetUserAccountData(::grpc::ClientContext* context, const ::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::UserAccountDataResponse>>(PrepareAsyncGetUserAccountDataRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::account::UserAccountDataResponse>> PrepareAsyncGetUserAccountData(::grpc::ClientContext* context, const ::account::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::account::UserAccountDataResponse>>(PrepareAsyncGetUserAccountDataRaw(context, request, cq));
     }
     class async final :
       public StubInterface::async_interface {
      public:
-      void GetUserAccountData(::grpc::ClientContext* context, const ::UserAccountDataRequest* request, ::UserAccountDataResponse* response, std::function<void(::grpc::Status)>) override;
-      void GetUserAccountData(::grpc::ClientContext* context, const ::UserAccountDataRequest* request, ::UserAccountDataResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void GetUserAccountData(::grpc::ClientContext* context, const ::account::UserAccountDataRequest* request, ::account::UserAccountDataResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetUserAccountData(::grpc::ClientContext* context, const ::account::UserAccountDataRequest* request, ::account::UserAccountDataResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -81,8 +83,8 @@ class UserAccountService final {
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
     class async async_stub_{this};
-    ::grpc::ClientAsyncResponseReader< ::UserAccountDataResponse>* AsyncGetUserAccountDataRaw(::grpc::ClientContext* context, const ::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::UserAccountDataResponse>* PrepareAsyncGetUserAccountDataRaw(::grpc::ClientContext* context, const ::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::account::UserAccountDataResponse>* AsyncGetUserAccountDataRaw(::grpc::ClientContext* context, const ::account::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::account::UserAccountDataResponse>* PrepareAsyncGetUserAccountDataRaw(::grpc::ClientContext* context, const ::account::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_GetUserAccountData_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
@@ -91,7 +93,7 @@ class UserAccountService final {
    public:
     Service();
     virtual ~Service();
-    virtual ::grpc::Status GetUserAccountData(::grpc::ServerContext* context, const ::UserAccountDataRequest* request, ::UserAccountDataResponse* response);
+    virtual ::grpc::Status GetUserAccountData(::grpc::ServerContext* context, const ::account::UserAccountDataRequest* request, ::account::UserAccountDataResponse* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_GetUserAccountData : public BaseClass {
@@ -105,11 +107,11 @@ class UserAccountService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetUserAccountData(::grpc::ServerContext* /*context*/, const ::UserAccountDataRequest* /*request*/, ::UserAccountDataResponse* /*response*/) override {
+    ::grpc::Status GetUserAccountData(::grpc::ServerContext* /*context*/, const ::account::UserAccountDataRequest* /*request*/, ::account::UserAccountDataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGetUserAccountData(::grpc::ServerContext* context, ::UserAccountDataRequest* request, ::grpc::ServerAsyncResponseWriter< ::UserAccountDataResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestGetUserAccountData(::grpc::ServerContext* context, ::account::UserAccountDataRequest* request, ::grpc::ServerAsyncResponseWriter< ::account::UserAccountDataResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -121,25 +123,25 @@ class UserAccountService final {
    public:
     WithCallbackMethod_GetUserAccountData() {
       ::grpc::Service::MarkMethodCallback(0,
-          new ::grpc::internal::CallbackUnaryHandler< ::UserAccountDataRequest, ::UserAccountDataResponse>(
+          new ::grpc::internal::CallbackUnaryHandler< ::account::UserAccountDataRequest, ::account::UserAccountDataResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::UserAccountDataRequest* request, ::UserAccountDataResponse* response) { return this->GetUserAccountData(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::account::UserAccountDataRequest* request, ::account::UserAccountDataResponse* response) { return this->GetUserAccountData(context, request, response); }));}
     void SetMessageAllocatorFor_GetUserAccountData(
-        ::grpc::MessageAllocator< ::UserAccountDataRequest, ::UserAccountDataResponse>* allocator) {
+        ::grpc::MessageAllocator< ::account::UserAccountDataRequest, ::account::UserAccountDataResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::UserAccountDataRequest, ::UserAccountDataResponse>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::account::UserAccountDataRequest, ::account::UserAccountDataResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_GetUserAccountData() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetUserAccountData(::grpc::ServerContext* /*context*/, const ::UserAccountDataRequest* /*request*/, ::UserAccountDataResponse* /*response*/) override {
+    ::grpc::Status GetUserAccountData(::grpc::ServerContext* /*context*/, const ::account::UserAccountDataRequest* /*request*/, ::account::UserAccountDataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* GetUserAccountData(
-      ::grpc::CallbackServerContext* /*context*/, const ::UserAccountDataRequest* /*request*/, ::UserAccountDataResponse* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::account::UserAccountDataRequest* /*request*/, ::account::UserAccountDataResponse* /*response*/)  { return nullptr; }
   };
   typedef WithCallbackMethod_GetUserAccountData<Service > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
@@ -155,7 +157,7 @@ class UserAccountService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetUserAccountData(::grpc::ServerContext* /*context*/, const ::UserAccountDataRequest* /*request*/, ::UserAccountDataResponse* /*response*/) override {
+    ::grpc::Status GetUserAccountData(::grpc::ServerContext* /*context*/, const ::account::UserAccountDataRequest* /*request*/, ::account::UserAccountDataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -172,7 +174,7 @@ class UserAccountService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetUserAccountData(::grpc::ServerContext* /*context*/, const ::UserAccountDataRequest* /*request*/, ::UserAccountDataResponse* /*response*/) override {
+    ::grpc::Status GetUserAccountData(::grpc::ServerContext* /*context*/, const ::account::UserAccountDataRequest* /*request*/, ::account::UserAccountDataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -195,7 +197,7 @@ class UserAccountService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetUserAccountData(::grpc::ServerContext* /*context*/, const ::UserAccountDataRequest* /*request*/, ::UserAccountDataResponse* /*response*/) override {
+    ::grpc::Status GetUserAccountData(::grpc::ServerContext* /*context*/, const ::account::UserAccountDataRequest* /*request*/, ::account::UserAccountDataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -210,10 +212,10 @@ class UserAccountService final {
     WithStreamedUnaryMethod_GetUserAccountData() {
       ::grpc::Service::MarkMethodStreamed(0,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::UserAccountDataRequest, ::UserAccountDataResponse>(
+          ::account::UserAccountDataRequest, ::account::UserAccountDataResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::UserAccountDataRequest, ::UserAccountDataResponse>* streamer) {
+                     ::account::UserAccountDataRequest, ::account::UserAccountDataResponse>* streamer) {
                        return this->StreamedGetUserAccountData(context,
                          streamer);
                   }));
@@ -222,17 +224,19 @@ class UserAccountService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetUserAccountData(::grpc::ServerContext* /*context*/, const ::UserAccountDataRequest* /*request*/, ::UserAccountDataResponse* /*response*/) override {
+    ::grpc::Status GetUserAccountData(::grpc::ServerContext* /*context*/, const ::account::UserAccountDataRequest* /*request*/, ::account::UserAccountDataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedGetUserAccountData(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::UserAccountDataRequest,::UserAccountDataResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedGetUserAccountData(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::account::UserAccountDataRequest,::account::UserAccountDataResponse>* server_unary_streamer) = 0;
   };
   typedef WithStreamedUnaryMethod_GetUserAccountData<Service > StreamedUnaryService;
   typedef Service SplitStreamedService;
   typedef WithStreamedUnaryMethod_GetUserAccountData<Service > StreamedService;
 };
+
+}  // namespace account
 
 
 #endif  // GRPC_user_5faccount_5fdata_2eproto__INCLUDED

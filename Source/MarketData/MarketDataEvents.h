@@ -20,9 +20,12 @@
 #include <vector>
 #include <string>
 #include <unordered_set>
+#include <mutex>
+#include <condition_variable>
 
 namespace tinyxml2 {
 	class XMLElement;
+	class XMLDocument;
 };
 
 namespace LibraryUtils {
@@ -41,13 +44,18 @@ namespace MarketData {
 	{
 	public:
 		MarketDataEvents(
-			const tinyxml2::XMLElement* mkDataConfigXml,
+			const tinyxml2::XMLElement* marketDataConfigXml,
 			MarketDataFeedHandler* feedHandler);
 		~MarketDataEvents();
 
-		void StartSubscriptionEvents();
+		void StartIOContext();
+		bool Subscribe(const std::string& symbol);
+		bool Unsubscribe(const std::string& symbol);
+		bool IsSubscribed(const std::string& symbol);
+		// NOTE: we must always subscribe symbols before calling this function!
 		void Wait();
 		const std::unordered_set<std::string>& GetSubscribingSymbols() const;
+
 	private:
 		// choose what we want to receive from exchange
 		void SubscibeIndividualBookTicker(const std::string& symbol);
@@ -72,15 +80,21 @@ namespace MarketData {
 			const std::string& dataName,
 			binapi::ws::websockets::handle h,
 			const SubscriptionHandleType type);
+		void CreateWebSocketConnection();
 		// load static symbols to subscribe
 		void LoadInterestingDataSymbols(const char* filePath);
 
-		std::unordered_set<std::string> m_subscribingSymbols;
+		std::unordered_set<std::string> m_subscribedSymbols;
+		std::unordered_set<std::string> m_staticSymbols;
 		boost::asio::io_context m_ioContext;
 		std::unique_ptr<binapi::ws::websockets> m_webSocketRealTime;
 		std::unique_ptr<MarketDataSubscriptionManager> m_mdSubscriptionMgr;
 		MarketDataFeedHandler* m_feedHandler{ nullptr };
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
-		const tinyxml2::XMLElement* m_configXml{ nullptr };
+		const tinyxml2::XMLElement* m_marketDataConfigXml{ nullptr };
+		// mutil threads
+		std::mutex m_marketDataMutex; // this class need to be thread safe!
+		std::condition_variable m_marketDataCond; // avoid polling thread
+		std::atomic<bool> m_startIOContext{ false }; // lock free thread
 	};
 };

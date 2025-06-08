@@ -39,7 +39,8 @@ namespace ExchangeSimulator {
     {
         UNDEF,
         SIMULATOR, // Participant is trader simulation
-        REAL_TIME_MARKET_DATA, // Participant is from live market data
+		REAL_TIME_SPOT_MARKET_DATA, // Participant is from real-time spot market data
+		REAL_TIME_FUTURE_MARKET_DATA, // Participant is from real-time future market data
         HISTORICAL_DATA, // Participant is from historical market data
     };
 

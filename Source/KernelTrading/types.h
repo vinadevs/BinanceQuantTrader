@@ -130,7 +130,7 @@ struct DLL_CLASS account_info_t {
     bool canWithdraw;
     bool canDeposit;
     std::size_t updateTime;
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
     double_type stableCoinAmount; // USDT/Tether
 #endif
 
@@ -173,6 +173,8 @@ struct DLL_CLASS account_info_t {
         const std::map<std::string, balance_t>& balances
         );
 
+    static bool write_account_info_to_file(const std::string& filePath, const account_info_t& o);
+    static bool write_account_info_to_file(std::ofstream& fileStream, const account_info_t& o);
     friend DLL_CLASS std::ostream &operator<<(std::ostream &os, const account_info_t &f);
 };
 
@@ -360,6 +362,10 @@ struct DLL_CLASS exchange_info_t {
     const symbol_t& get_by_symbol(const char *sym) const;
 
     static exchange_info_t construct(const flatjson::fjson &json);
+    static exchange_info_t construct(const std::string& nlohmannJson);
+    static bool write_exchange_info_to_file(const std::string& filePath, const exchange_info_t& o);
+    static bool write_exchange_info_to_file(std::ofstream& file, const exchange_info_t& o);
+    static bool write_exchange_info_to_file(const std::string& filePath, const std::string& nlohmannJson);
     friend DLL_CLASS std::ostream& operator<<(std::ostream &os, const exchange_info_t &s);
 };
 

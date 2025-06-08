@@ -38,7 +38,10 @@ namespace PortfolioManager {
 	public:
 		BinanceTradingPairManager() = default;
 		// Thread safe methods
-		bool CreateNewTradingPair(const std::string& tradingPairPair, const MarketData::RealTimeMarketData* marketData, const BinanceBalance& balance);
+		bool CreateNewTradingPair(
+			const std::string& tradingPairPair,
+			MarketData::RealTimeMarketData* marketData,
+			const BinanceBalance& balance);
 		bool RemoveTradingPair(const std::string& tradingPairPair);
 		BinanceTradingPair* GetTradingPair(const std::string& asset);
 		const BinanceTradingPairMap& GetTradingPairs() const;
@@ -59,7 +62,7 @@ namespace PortfolioManager {
 	{
 	public:
 		PortfolioInvestmentBinance(const tinyxml2::XMLElement* portfolioCfg,
-								   const MarketData::RealTimeMarketData* marketData);
+								   MarketData::RealTimeMarketData* marketData);
 		~PortfolioInvestmentBinance() override;
 		
 		void SetUserAccountInfo(binapi::rest::account_info_t* account);
@@ -69,22 +72,23 @@ namespace PortfolioManager {
 		// PLEASE CHECK IN ComplianceNRegulatory CODE
 		void UpdateBinanceAccountInfo();
 		void UpdateBinanceTradingPairs();
-		binapi::rest::account_info_t* GetBinanceAccountInfo();
+		void AddNewAssetToManage(const std::string& asset);
+		const binapi::rest::account_info_t* GetBinanceAccountInfo() const;
 		BinanceTradingPairManager& GetBinanceTradingPairManager(bool updateNewData = false);
 		BinanceTradingPair* GetBinanceTradingPair(const std::string& asset, bool updateNewData = false);
-		
+	private:
 		static std::string CreateTradingPairSymbol(const std::string& tartgetSymbol);
 
-	private:
 		const BinanceBalances& GetAllBinanceBalances(bool updateNewData = false);
 		BinanceBalances GetTradableBinanceBalances(bool updateNewData = false);
 		const BinanceBalance& GetBinanceBalance(const std::string& asset, bool updateNewData = false);
 
-		bool IsCryptoAssetAbleToTrade(const BinanceBalance& asset) const;
-		bool IsCryptoAssetHasMarketData(const std::string& asset) const;
+		bool IsCryptoAssetAbleToTrade(const BinanceBalance& balance);
+		bool HasCryptoAssetBalance(const BinanceBalance& balance);
+		bool IsCryptoAssetHasMarketData(const std::string& asset);
 
 		binapi::rest::account_info_t* m_binanceAccountInfo {nullptr};
 		BinanceTradingPairManager m_binanceTradingPairMgr;
-		const MarketData::RealTimeMarketData* m_marketData{nullptr};
+		MarketData::RealTimeMarketData* m_marketData{nullptr};
 	};
 };

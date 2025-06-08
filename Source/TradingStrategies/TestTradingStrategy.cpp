@@ -25,13 +25,14 @@ TestTradingStrategy::TestTradingStrategy(
 	: TradingStrategyBase("TestTradingStrategy", "test market data feed only...",
 		strategyCfgPath, marketData, trader, tradingRules)
 {
+	SetStrategyType(StrategyType::FULL_AUTO);
 	InitializeParameters(strategyCfgPath);
-	marketData->RegisterDataStream(this); // I want receive market data to get fun!
+	marketData->RegisterDataListener(this); // I want receive market data to get fun!
 }
 
 TestTradingStrategy::~TestTradingStrategy()
 {
-	m_marketData->UnregisterDataStream(this); // I earn enough money, leave the market now!
+	m_marketData->UnRegisterDataListener(this); // I earn enough money, leave the market now!
 }
 
 bool TestTradingStrategy::OnIndividualBookTickerChange(MarketDataSubject* marketData, const std::string& symbol)

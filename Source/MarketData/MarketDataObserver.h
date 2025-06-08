@@ -34,10 +34,18 @@ class DLL_CLASS_MARKETDATA_EXPORTS MarketDataObserver
 public:
 	MarketDataObserver() = default;
 	virtual ~MarketDataObserver() = default;
-	// This is a asychronously callback, and will be listened 
+	// These are asychronously callbacks, and will be listened 
 	// at child classes for market data change events
 	virtual bool OnIndividualBookTickerChange(MarketDataSubject* marketData, const std::string& symbol);
 	virtual bool OnTradeChange(MarketDataSubject* marketData, const std::string& symbol);
+	virtual bool OnIndividualMarketTickerChange(MarketDataSubject* marketData, const std::string& symbol);
+	virtual bool OnMiniTickerChange(MarketDataSubject* marketData, const std::string& symbol);
+	virtual bool OnAggregateTradeChange(MarketDataSubject* marketData, const std::string& symbol);
+	virtual bool OnKlineCandleStickChange(MarketDataSubject* marketData, const std::string& symbol);
+	virtual bool OnAllMarketTickersChange(MarketDataSubject* marketData, const std::string& symbol);
+	virtual bool OnAllMiniTickersChange(MarketDataSubject* marketData, const std::string& symbol);
+	virtual bool OnAllMarketDepthChange(MarketDataSubject* marketData, const std::string& symbol);
+	virtual bool OnAllMarketDepthDiffChange(MarketDataSubject* marketData, const std::string& symbol);
 };
 
 };

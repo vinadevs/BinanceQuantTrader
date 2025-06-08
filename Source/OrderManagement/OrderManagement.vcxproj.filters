@@ -27,9 +27,6 @@
     <ClInclude Include="OrderCreator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TestOrder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Order.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -54,7 +51,10 @@
     <ClInclude Include="BinanceQueryOrder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BinanceWorkedOrderManager.h">
+    <ClInclude Include="BinanceOrderManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OrderDefinitions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -66,9 +66,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OrderCreator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TestOrder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PositionManager.cpp">
@@ -86,7 +83,7 @@
     <ClCompile Include="BinanceQueryOrder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BinanceWorkedOrderManager.cpp">
+    <ClCompile Include="BinanceOrderManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

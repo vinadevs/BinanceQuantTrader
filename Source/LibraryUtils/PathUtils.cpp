@@ -15,10 +15,12 @@
 std::string PathUtils::GetApplicationFolderPath()
 {
     char szPath[MAX_PATH];
+#ifdef _WIN32
     if (GetModuleFileNameA(NULL, szPath, ARRAYSIZE(szPath)) == 0)
     {
         throw std::runtime_error("Error: GetModuleFileName failed, error code:" + std::to_string(GetLastError()));
     }
+#endif
 #ifdef _DEBUG
     return std::filesystem::path(szPath).parent_path().parent_path().parent_path().string();
 #else
@@ -42,6 +44,8 @@ std::string PathUtils::GetConfigFolderPath(const Path_Type type)
         return PathUtils::GetApplicationFolderPath() + "\\Configurations\\Simulator";
     case Path_Type::MESSAGE_SERVER:
         return PathUtils::GetApplicationFolderPath() + "\\Configurations\\MessageServer";
+    case Path_Type::MARKET_DATA_CAPTURE:
+        return PathUtils::GetApplicationFolderPath() + "\\Configurations\\MarketData";
     default:
         throw std::runtime_error("Error: GetConfigFolderPath failed, wrong path type.");
     }

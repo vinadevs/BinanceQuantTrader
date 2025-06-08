@@ -1,0 +1,101 @@
+[
+  {
+    "symbol": "BTCUSDT",
+    "leverageBrackets": [
+      {
+        "tier": 1,
+        "notionalCap": 50000,
+        "maintenanceMarginRate": 0.005,
+        "initialMarginRate": 0.008,
+        "maxLeverage": 125
+      },
+      {
+        "tier": 2,
+        "notionalCap": 250000,
+        "maintenanceMarginRate": 0.01,
+        "initialMarginRate": 0.0125,
+        "maxLeverage": 100
+      },
+      {
+        "tier": 3,
+        "notionalCap": 1000000,
+        "maintenanceMarginRate": 0.025,
+        "initialMarginRate": 0.05,
+        "maxLeverage": 50
+      },
+      {
+        "tier": 4,
+        "notionalCap": 2000000,
+        "maintenanceMarginRate": 0.05,
+        "initialMarginRate": 0.1,
+        "maxLeverage": 20
+      }
+    ]
+  },
+  {
+    "symbol": "ETHUSDT",
+    "leverageBrackets": [
+      {
+        "tier": 1,
+        "notionalCap": 20000,
+        "maintenanceMarginRate": 0.005,
+        "initialMarginRate": 0.008,
+        "maxLeverage": 100
+      },
+      {
+        "tier": 2,
+        "notionalCap": 100000,
+        "maintenanceMarginRate": 0.01,
+        "initialMarginRate": 0.0125,
+        "maxLeverage": 75
+      },
+      {
+        "tier": 3,
+        "notionalCap": 400000,
+        "maintenanceMarginRate": 0.025,
+        "initialMarginRate": 0.05,
+        "maxLeverage": 40
+      },
+      {
+        "tier": 4,
+        "notionalCap": 1000000,
+        "maintenanceMarginRate": 0.05,
+        "initialMarginRate": 0.1,
+        "maxLeverage": 20
+      }
+    ]
+  },
+  {
+    "symbol": "BNBUSDT",
+    "leverageBrackets": [
+      {
+        "tier": 1,
+        "notionalCap": 10000,
+        "maintenanceMarginRate": 0.005,
+        "initialMarginRate": 0.01,
+        "maxLeverage": 75
+      },
+      {
+        "tier": 2,
+        "notionalCap": 50000,
+        "maintenanceMarginRate": 0.01,
+        "initialMarginRate": 0.013,
+        "maxLeverage": 50
+      },
+      {
+        "tier": 3,
+        "notionalCap": 200000,
+        "maintenanceMarginRate": 0.025,
+        "initialMarginRate": 0.05,
+        "maxLeverage": 25
+      },
+      {
+        "tier": 4,
+        "notionalCap": 500000,
+        "maintenanceMarginRate": 0.05,
+        "initialMarginRate": 0.1,
+        "maxLeverage": 10
+      }
+    ]
+  }
+]

@@ -1,0 +1,130 @@
+syntax = "proto3";
+
+package exchange;
+
+service ExchangeService {
+    rpc GetExchangeInfo (ExchangeInfoRequest) returns (ExchangeInfoResponse);
+}
+
+message ExchangeInfoRequest {
+    string symbol_id = 1;
+}
+
+message ExchangeInfoResponse {
+    ExchangeInfo exchange_info = 1;
+}
+
+message RateLimit {
+    string rateLimitType = 1;
+    string interval = 2;
+    uint64 limit = 3;
+}
+
+message PriceFilter {
+    double minPrice = 1;
+    double maxPrice = 2;
+    double tickSize = 3;
+}
+
+message PercentPriceFilter {
+    double multiplierUp = 1;
+    double multiplierDown = 2;
+    uint64 avgPriceMins = 3;
+}
+
+message PercentPriceBySideFilter {
+    double bidMultiplierUp = 1;
+    double bidMultiplierDown = 2;
+    double askMultiplierUp = 3;
+    double askMultiplierDown = 4;
+    uint64 avgPriceMins = 5;
+}
+
+message LotSizeFilter {
+    double minQty = 1;
+    double maxQty = 2;
+    double stepSize = 3;
+}
+
+message MarketLotSizeFilter {
+    double minQty = 1;
+    double maxQty = 2;
+    double stepSize = 3;
+}
+
+message MinNotionalFilter {
+    double minNotional = 1;
+}
+
+message IcebergPartsFilter {
+    uint64 limit = 1;
+}
+
+message MaxNumOrdersFilter {
+    uint64 maxNumOrders = 1;
+}
+
+message MaxNumAlgoOrdersFilter {
+    uint64 maxNumAlgoOrders = 1;
+}
+
+message MaxPositionFilter {
+    double maxPosition = 1;
+}
+
+message TrailingDeltaFilter {
+    uint64 minTrailingAboveDelta = 1;
+    uint64 maxTrailingAboveDelta = 2;
+    uint64 minTrailingBelowDelta = 3;
+    uint64 maxTrailingBelowDelta = 4;
+}
+
+message NotionalFilter {
+    double minNotional = 1;
+    bool applyMinToMarket = 2;
+    double maxNotional = 3;
+    bool applyMaxToMarket = 4;
+    uint64 avgPriceMins = 5;
+}
+
+message Filter {
+    oneof filter_type {
+        PriceFilter price = 1;
+        PercentPriceFilter percentPrice = 2;
+        PercentPriceBySideFilter percentPriceBySide = 3;
+        LotSizeFilter lotSize = 4;
+        MarketLotSizeFilter marketLotSize = 5;
+        MinNotionalFilter minNotional = 6;
+        IcebergPartsFilter icebergParts = 7;
+        MaxNumOrdersFilter maxNumOrders = 8;
+        MaxNumAlgoOrdersFilter maxNumAlgoOrders = 9;
+        MaxPositionFilter maxPosition = 10;
+        TrailingDeltaFilter trailingDelta = 11;
+        NotionalFilter notional = 12;
+    }
+}
+
+message Symbol {
+    string symbol = 1;
+    string status = 2;
+    string baseAsset = 3;
+    uint64 baseAssetPrecision = 4;
+    string quoteAsset = 5;
+    uint64 quotePrecision = 6;
+    repeated string orderTypes = 7;
+    bool icebergAllowed = 8;
+    bool ocoAllowed = 9;
+    bool quoteOrderQtyMarketAllowed = 10;
+    bool allowTrailingStop = 11;
+    bool cancelReplaceAllowed = 12;
+    repeated Filter filters = 13;
+}
+
+message ExchangeInfo {
+    string timezone = 1;
+    uint64 serverTime = 2;
+    repeated string exchangeFilters = 3;
+    repeated RateLimit rateLimits = 4;
+    map<string, Symbol> symbols = 5;
+    uint64 permissions = 6;
+}

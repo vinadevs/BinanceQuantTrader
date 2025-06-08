@@ -37,7 +37,7 @@ Logger::~Logger()
 void Logger::Log(const LogLevel level, const std::string& message)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    const std::string timestamp = TimeUtils::GetCurrentTimestamp();
+    const std::string timestamp = TimeUtils::GetCurrentTimestampString();
     const std::string threadAddress = GetThreadAddress();
     const std::string moduleName = GetModuleName();
     const std::string levelStr = LogLevelToString(level);

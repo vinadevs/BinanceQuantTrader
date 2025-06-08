@@ -16,9 +16,6 @@
     <Filter Include="Binance Exchange Simulator">
       <UniqueIdentifier>{1b2d9261-28d1-4408-91e9-155e2226604d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Binance Exchange Simulator\Participants">
-      <UniqueIdentifier>{db44705d-4d7a-430b-963e-6afa9cb82fb3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Binance Exchange Simulator\Book">
       <UniqueIdentifier>{773455ea-c6d4-44fe-a3aa-1bf65076b797}</UniqueIdentifier>
     </Filter>
@@ -27,9 +24,6 @@
     </Filter>
     <Filter Include="Binance Exchange Simulator\User Account Wallet">
       <UniqueIdentifier>{087093b0-8147-44d1-a090-7d97de5527e1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Binance Exchange Simulator\User Account Wallet\Protobuf">
-      <UniqueIdentifier>{a96dfb6b-083e-4d00-bf8b-627144c27b8a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Binance Exchange Simulator\Matching Engine">
       <UniqueIdentifier>{31e43ca4-7a6a-43d4-8717-13a69c287ef6}</UniqueIdentifier>
@@ -46,6 +40,18 @@
     <Filter Include="Binance Exchange Simulator\Finance">
       <UniqueIdentifier>{99d85b07-5023-45d7-8e30-c0c7b2cdd67d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Binance Exchange Simulator\Exchange Information">
+      <UniqueIdentifier>{92527ebb-ccd2-4c3e-8dd3-302041f70556}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Binance Exchange Simulator\Participants">
+      <UniqueIdentifier>{db44705d-4d7a-430b-963e-6afa9cb82fb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Binance Exchange Simulator\Protobuf">
+      <UniqueIdentifier>{a96dfb6b-083e-4d00-bf8b-627144c27b8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Binance Exchange Simulator\User Trade Profile">
+      <UniqueIdentifier>{7e1b27b7-ef84-45bc-a856-c783a9fad03a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -60,7 +66,7 @@
     <ClInclude Include="BinanceExchangeSimulator.h">
       <Filter>Binance Exchange Simulator</Filter>
     </ClInclude>
-    <ClInclude Include="RTMarketParticipant.h">
+    <ClInclude Include="RTMarketSpotParticipant.h">
       <Filter>Binance Exchange Simulator\Participants</Filter>
     </ClInclude>
     <ClInclude Include="UpstreamOrderMatchedMgr.h">
@@ -96,17 +102,14 @@
     <ClInclude Include="UserAccountManager.h">
       <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
     </ClInclude>
-    <ClInclude Include="BinanceWalletServer.h">
-      <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
-    </ClInclude>
     <ClInclude Include="UserAccountHttpService.h">
       <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
     </ClInclude>
     <ClInclude Include="protobuf\user_account_data.grpc.pb.h">
-      <Filter>Binance Exchange Simulator\User Account Wallet\Protobuf</Filter>
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
     </ClInclude>
     <ClInclude Include="protobuf\user_account_data.pb.h">
-      <Filter>Binance Exchange Simulator\User Account Wallet\Protobuf</Filter>
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
     </ClInclude>
     <ClInclude Include="ExchangeServiceInterface.h">
       <Filter>Binance Exchange Simulator</Filter>
@@ -135,6 +138,39 @@
     <ClInclude Include="TradeUtils.h">
       <Filter>Binance Exchange Simulator\Finance</Filter>
     </ClInclude>
+    <ClInclude Include="protobuf\exchange_info_data.grpc.pb.h">
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\exchange_info_data.pb.h">
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="ExchangeInfoHttpService.h">
+      <Filter>Binance Exchange Simulator\Exchange Information</Filter>
+    </ClInclude>
+    <ClInclude Include="ExchangeInfoManager.h">
+      <Filter>Binance Exchange Simulator\Exchange Information</Filter>
+    </ClInclude>
+    <ClInclude Include="BinanceRestAPIServer.h">
+      <Filter>Binance Exchange Simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="RTMarketFutureParticipant.h">
+      <Filter>Binance Exchange Simulator\Participants</Filter>
+    </ClInclude>
+    <ClInclude Include="UserTradeProfile.h">
+      <Filter>Binance Exchange Simulator\User Trade Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="UserTradeProfileService.h">
+      <Filter>Binance Exchange Simulator\User Trade Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="UserTradeProfileManager.h">
+      <Filter>Binance Exchange Simulator\User Trade Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\user_trade_profile.grpc.pb.h">
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\user_trade_profile.pb.h">
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -146,7 +182,7 @@
     <ClCompile Include="BinanceExchangeSimulator.cpp">
       <Filter>Binance Exchange Simulator</Filter>
     </ClCompile>
-    <ClCompile Include="RTMarketParticipant.cpp">
+    <ClCompile Include="RTMarketSpotParticipant.cpp">
       <Filter>Binance Exchange Simulator\Participants</Filter>
     </ClCompile>
     <ClCompile Include="AlgosConnectivity.cpp">
@@ -176,17 +212,14 @@
     <ClCompile Include="UserAccountManager.cpp">
       <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
     </ClCompile>
-    <ClCompile Include="BinanceWalletServer.cpp">
-      <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
-    </ClCompile>
     <ClCompile Include="UserAccountHttpService.cpp">
       <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
     </ClCompile>
     <ClCompile Include="protobuf\user_account_data.grpc.pb.cc">
-      <Filter>Binance Exchange Simulator\User Account Wallet\Protobuf</Filter>
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
     </ClCompile>
     <ClCompile Include="protobuf\user_account_data.pb.cc">
-      <Filter>Binance Exchange Simulator\User Account Wallet\Protobuf</Filter>
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
     </ClCompile>
     <ClCompile Include="UserAccount.cpp">
       <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
@@ -208,6 +241,39 @@
     </ClCompile>
     <ClCompile Include="TimeInForceHandler.cpp">
       <Filter>Binance Exchange Simulator\Participants</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\exchange_info_data.grpc.pb.cc">
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\exchange_info_data.pb.cc">
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="ExchangeInfoHttpService.cpp">
+      <Filter>Binance Exchange Simulator\Exchange Information</Filter>
+    </ClCompile>
+    <ClCompile Include="ExchangeInfoManager.cpp">
+      <Filter>Binance Exchange Simulator\Exchange Information</Filter>
+    </ClCompile>
+    <ClCompile Include="BinanceRestAPIServer.cpp">
+      <Filter>Binance Exchange Simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="RTMarketFutureParticipant.cpp">
+      <Filter>Binance Exchange Simulator\Participants</Filter>
+    </ClCompile>
+    <ClCompile Include="UserTradeProfile.cpp">
+      <Filter>Binance Exchange Simulator\User Trade Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="UserTradeProfileService.cpp">
+      <Filter>Binance Exchange Simulator\User Trade Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="UserTradeProfileManager.cpp">
+      <Filter>Binance Exchange Simulator\User Trade Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\user_trade_profile.grpc.pb.cc">
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\user_trade_profile.pb.cc">
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

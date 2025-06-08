@@ -10,19 +10,15 @@
 
 #include "dlldefine.h"
 
-#include "../LibraryUtils/SourceBuildFlags.h"
-#include "../KernelTrading/double_type.h"
-#include "../RestAPI/RestAPI.h"
-
-#if USE_TEST_TRADING
-#include "../MiddlewareMQ/BqtJsonMessage.h"
-#endif
-
 #include "Order.h"
 
 #include <string>
 
 namespace OrderManagement {
+
+    // Class representing a Binance cancel order, which is used to cancel an existing order on Binance.
+    // This class provides methods for managing the cancel order's lifecycle, serialization, and execution results.
+
     class DLL_CLASS_ORDERMANAGEMENT_EXPORTS
         BinanceCancelOrder final : public Order
     {
@@ -38,22 +34,47 @@ namespace OrderManagement {
         ~BinanceCancelOrder() override;
 
         // Getters
-        std::size_t GetOrderId() const { return m_orderId; }
-        std::string GetOrderIdString() const { return std::to_string(m_orderId); }
         const std::string& GetOrigClientOrderId() const { return m_origClientOrderId; }
+
+        // Execution
+        BinanceCancelOrderStatus GetOrderStatus() const;
+        std::string GetOrderStatusStr() const;
+        static BinanceCancelOrderStatus GetOrderStatusEnum(const std::string status);
+        void SetOrderStatus(const BinanceCancelOrderStatus status);
+
+        // Serialization
+        std::string ToStringOrder() const;
+        std::string ToStringAck() const;
+        friend std::ostream& operator<<(std::ostream& os, const BinanceCancelOrder& order)
+        {
+            os << order.ToStringOrder();
+            return os;
+        }
 
         // Setters
         void SetOrderId(const std::size_t orderId) { m_orderId = orderId; }
         void SetOrigClientOrderId(const std::string& origClientOrderId) { m_origClientOrderId = origClientOrderId; }
 
-#if USE_TEST_TRADING
         // Simulator test
-        MiddlewareMQ::BqtJsonMessage ToBqtJsonMessage();
-#endif
+        MiddlewareMQ::BqtJsonMessage ToBqtJsonMessageOrder() const;
+        MiddlewareMQ::BqtJsonMessage ToBqtJsonMessageOrderAck() const;
+
+        // Execution Result
+        using Order::SetSendingOrderResult;
+        void SetSendingOrderResult(
+            const binapi::rest::api::result<binapi::rest::cancel_order_info_t>& sendingOrderResult)
+        {
+            m_sendingBinananceOrderResult = sendingOrderResult;
+        }
+
+        binapi::rest::api::result<binapi::rest::cancel_order_info_t> GetSendingBinananceOrderResult() const
+        {
+            return m_sendingBinananceOrderResult;
+        }
     private:
-        // m_orderId is order ID from Binance
-        std::size_t m_orderId {0};
         // m_origClientOrderId is original order ID from us
         std::string m_origClientOrderId;
+        BinanceCancelOrderStatus m_orderStatus{ BinanceCancelOrderStatus::NEW };
+        binapi::rest::api::result<binapi::rest::cancel_order_info_t> m_sendingBinananceOrderResult;
     };
 };

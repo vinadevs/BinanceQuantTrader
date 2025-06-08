@@ -35,7 +35,8 @@ namespace OrderManagement {
 			, const double amount
 			, const double price
 			, const double stopPrice
-			, const double icebergAmount);
+			, const double icebergAmount
+			, const BinanceNewOrderTradingType tradingType);
 
 		std::unique_ptr<BinanceNewOrder> CreateNewBinanceTestOrderFull(
 			  const std::string& clientOrderId
@@ -46,7 +47,8 @@ namespace OrderManagement {
 			, const double amount
 			, const double price
 			, const double stopPrice
-			, const double icebergAmount);
+			, const double icebergAmount
+			, const BinanceNewOrderTradingType tradingType);
 
 		std::unique_ptr<BinanceCancelOrder> CreateCancelBinanceOrder(
 			  const std::string& clientOrderId

@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <random>
 
+#ifdef _WIN32
 BOOL WINAPI GeneralUtils::ConsoleCtrlHandler(DWORD ctrlType)
 {
     switch (ctrlType)
@@ -30,6 +31,7 @@ BOOL WINAPI GeneralUtils::ConsoleCtrlHandler(DWORD ctrlType)
         return FALSE; // Pass the event to the default handler
     }
 }
+#endif
 
 std::string GeneralUtils::GenerateUniqueID(const std::string& instanceName)
 {

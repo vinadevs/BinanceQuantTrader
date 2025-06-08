@@ -43,12 +43,13 @@ BINANCE_QUANT_TRADING_MODEL
 	// SYSTEMS
 	// if the binary has been terminated by signal, exit(), ctrl + C,... then
 	// destructors will never be called, this hooker will clean up resources
+#ifdef _WIN32
 	if (!SetConsoleCtrlHandler(GeneralUtils::ConsoleCtrlHandler, TRUE))
 	{
 		logger->Error("Failed to set exit control handler.");
 		return EXIT_FAILURE;
 	}
-
+#endif
 	try
 	{
 #ifdef _DEBUG
@@ -86,9 +87,10 @@ BINANCE_QUANT_TRADING_MODEL
 		}
 
 		// APPLICATION: BUILD AND START TRADING MODEL
-		logger->Info("Starting Trading Model.");
+		logger->Info("Preparing Trading Model.");
 		std::unique_ptr<BinanceQuantTrader::TradingModel> model
 			= std::make_unique<BinanceQuantTrader::TradingModel>(configBQTXml.get(), configAccessKeyXml.get());
+		logger->Info("Starting Trading Model.");
 		model->RunModel();
 	}
 	catch (const std::exception& e)

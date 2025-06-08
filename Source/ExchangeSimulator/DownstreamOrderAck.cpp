@@ -23,7 +23,7 @@ DownstreamOrderAck AckUtils::CreateErrorRejectOrderAck(
 	const std::string& errorMsg)
 {
 	DownstreamOrderAck ack;
-	ack.AddPair(FieldLabels::SimulatorAck::AckType, DownstreamAckTypes::ErrorOrderAck);
+	ack.AddPair(FieldLabels::SimulatorAck::AckType, FieldLabels::DownstreamAckTypes::ErrorOrderAck);
 	ack.AddPair(FieldLabels::Symbol, symbol);
 	ack.AddPair(FieldLabels::ClientOrderId, clientOrderId);
 	ack.AddPair(FieldLabels::SimulatorAck::ExchangeText, errorMsg);
@@ -35,8 +35,8 @@ DownstreamOrderAck AckUtils::CreateNewOrderAck(
 	const BinanceNewOrder& order,
 	const std::string& text)
 {
-	DownstreamOrderAck ack = order.ToBqtJsonMessageAck();
-	ack.AddPair(FieldLabels::SimulatorAck::AckType, DownstreamAckTypes::NewOrderAck);
+	DownstreamOrderAck ack = order.ToBqtJsonMessageOrderAck();
+	ack.AddPair(FieldLabels::SimulatorAck::AckType, FieldLabels::DownstreamAckTypes::NewOrderAck);
 	ack.AddPair(FieldLabels::SimulatorAck::ExchangeText, text);
 	return ack;
 }
@@ -45,8 +45,8 @@ DownstreamOrderAck AckUtils::CreateFilledOrderAck(
 	const BinanceNewOrder& order,
 	const std::string& text)
 {
-	DownstreamOrderAck ack = order.ToBqtJsonMessageAck();
-	ack.AddPair(FieldLabels::SimulatorAck::AckType, DownstreamAckTypes::FilledNewOrderAck);
+	DownstreamOrderAck ack = order.ToBqtJsonMessageOrderAck();
+	ack.AddPair(FieldLabels::SimulatorAck::AckType, FieldLabels::DownstreamAckTypes::FilledNewOrderAck);
 	ack.AddPair(FieldLabels::SimulatorAck::ExchangeText, text);
 	return ack;
 }
@@ -55,7 +55,10 @@ DownstreamOrderAck AckUtils::CreateCancelOrderAck(
 	const BinanceCancelOrder& order,
 	const std::string& text)
 {
-	return DownstreamOrderAck();
+	DownstreamOrderAck ack = order.ToBqtJsonMessageOrderAck();
+	ack.AddPair(FieldLabels::SimulatorAck::AckType, FieldLabels::DownstreamAckTypes::CancelledOrderAck);
+	ack.AddPair(FieldLabels::SimulatorAck::ExchangeText, text);
+	return ack;
 }
 
 DownstreamOrderAck AckUtils::CreateCancelledOrderAck(

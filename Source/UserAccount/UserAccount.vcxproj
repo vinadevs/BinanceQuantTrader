@@ -124,7 +124,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>MiddlewareMQD.lib;SettingNConfigD.lib;ExchangeConnectivityD.lib;StaticDataD.lib;LibraryUtilsD.lib;RestAPID.lib;ExchangeSimulatorD.lib;PortfolioManagerD.lib;OrderManagementD.lib;KernelTradingD.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>QuantitativeModelD.lib;ComplianceNRegulatoryD.lib;MiddlewareMQD.lib;SettingNConfigD.lib;ExchangeConnectivityD.lib;StaticDataD.lib;LibraryUtilsD.lib;RestAPID.lib;ExchangeSimulatorD.lib;PortfolioManagerD.lib;OrderManagementD.lib;KernelTradingD.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -147,7 +147,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>MiddlewareMQ.lib;SettingNConfig.lib;ExchangeConnectivity.lib;StaticData.lib;LibraryUtils.lib;RestAPI.lib;ExchangeSimulator.lib;PortfolioManager.lib;OrderManagement.lib;KernelTrading.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>QuantitativeModel.lib;ComplianceNRegulatory.lib;MiddlewareMQ.lib;SettingNConfig.lib;ExchangeConnectivity.lib;StaticData.lib;LibraryUtils.lib;RestAPI.lib;ExchangeSimulator.lib;PortfolioManager.lib;OrderManagement.lib;KernelTrading.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
     </Link>

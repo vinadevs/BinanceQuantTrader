@@ -11,7 +11,9 @@
 // TODO: WE ASSUMED THAT ALL APPLICATIONS WILL RUN ON WINDOWS
 // PLATFORM ONLY, BUT WE SHOULD HAVE SUPPORTED FOR LINUX AS WELL
 // SOMETHING LIKE #IFDEF WINDOWS_ ELSE LINUX_
+#ifdef _WIN32
 #include <windows.h>
+#endif
 #include <Lmcons.h>
 #include <iostream>
 #include <cstdio>
@@ -29,6 +31,7 @@ namespace ProgramUtils {
         BQT, // auto trading system
         EXCHANGE_SIMULATOR, // exchange simulator
         MESSAGE_HUB_SERVER, // message broker
+        MARKET_DATA_CAPTURE, // market data capture tool
         // If you add new type here, you have to update PRINT_PROGRAM_HEADER() below too!
     };
 
@@ -48,14 +51,17 @@ namespace ProgramUtils {
         else if (exe == Programs::MESSAGE_HUB_SERVER) {
             std::cout << "     BINANCE MESSAGE HUB SERVER" << std::endl;;
         }
+        else if (exe == Programs::MARKET_DATA_CAPTURE) {
+            std::cout << "     BINANCE DATA CAPTURE TOOL" << std::endl;;
+        }
         else {
             throw std::runtime_error("Header: Invalid program type...");
         }
 
         // Print start time
 
-        std::cout << "StartTime: " << TimeUtils::GetCurrentTimestamp() << std::endl;
-
+        std::cout << "StartTime: " << TimeUtils::GetCurrentTimestampString() << std::endl;
+#ifdef _WIN32
         // Print system info
         char computerName[MAX_COMPUTERNAME_LENGTH + 1];
         DWORD size = sizeof(computerName) / sizeof(computerName[0]);
@@ -90,7 +96,7 @@ namespace ProgramUtils {
         {
             std::cout << "Error getting executable path" << std::endl;
         }
-
+#endif
         std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n" << std::endl;
     }
 };
@@ -118,3 +124,11 @@ int main(int argc, char** argv)
 #define BINANCE_MESSAGE_HUB_SERVER \
 int main(int argc, char** argv)
 #endif // BINANCE_MESSAGE_HUB_SERVER
+
+/*************************************************************************************************/
+
+#ifndef BINANCE_MARKET_DATA_CAPTURE_TOOL
+#define BINANCE_MARKET_DATA_CAPTURE_TOOL_TITLE "BINANCE_MARKET_DATA_CAPTURE_TOOL"
+#define BINANCE_MARKET_DATA_CAPTURE_TOOL \
+int main(int argc, char** argv)
+#endif // BINANCE_DATA_CAPTURE_TOOL

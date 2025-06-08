@@ -18,12 +18,14 @@
 
 using namespace BinanceQuantTrader;
 using namespace PortfolioManager;
+using namespace ComplianceNRegulatory;
 using namespace RiskManagement;
 using namespace UserAccount;
 using namespace tinyxml2;
 
 std::unique_ptr<BinanceTrader> TraderFactory::CreateSmartTrader(
 	PortfolioInvestmentBinance* portfolio, 
+	BinanceTradingRules* tradingRules,
 	RiskManager* riskManager,
 	const XMLElement* traderXmlCfg)
 {
@@ -34,7 +36,7 @@ std::unique_ptr<BinanceTrader> TraderFactory::CreateSmartTrader(
 	{
 		const auto* reportXml = traderXmlCfg->FirstChildElement("Report");
 		assert(reportXml);
-		return std::make_unique<UserAccount::BinanceTrader>(reportXml, portfolio, riskManager);
+		return std::make_unique<UserAccount::BinanceTrader>(reportXml, portfolio, tradingRules, riskManager);
 	}
 	else
 	{

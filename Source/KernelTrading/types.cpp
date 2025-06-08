@@ -13,8 +13,12 @@
 #include "fnv1a.h"
 
 #include <type_traits>
+#include <fstream>
 
 #include <boost/utility/string_view.hpp>
+#include <nlohmann/json.hpp>
+
+#include "../LibraryUtils/TimeUtils.h"
 
 //#include <iostream> // TODO: comment out
 
@@ -360,6 +364,41 @@ account_info_t account_info_t::construct(
     return res;
 }
 
+bool account_info_t::write_account_info_to_file(const std::string& filePath, const account_info_t& o)
+{
+    std::ofstream file(filePath);
+    return write_account_info_to_file(file, o);
+}
+
+bool account_info_t::write_account_info_to_file(std::ofstream& fileStream, const account_info_t& o)
+{
+    if (!fileStream.is_open()) {
+        return false; // Failed to open file
+    }
+    fileStream
+        << "{"
+        << "\"makerCommission\":" << o.makerCommission << ","
+        << "\"takerCommission\":" << o.takerCommission << ","
+        << "\"buyerCommission\":" << o.buyerCommission << ","
+        << "\"sellerCommission\":" << o.sellerCommission << ","
+        << "\"canTrade\":" << (o.canTrade ? "true" : "false") << ","
+        << "\"canWithdraw\":" << (o.canWithdraw ? "true" : "false") << ","
+        << "\"canDeposit\":" << (o.canDeposit ? "true" : "false") << ","
+        << "\"updateTime\":" << TimeUtils::ConvertEpochTickToTimeString(o.updateTime) << ","
+#if USE_BACK_TEST_TRADING
+        << "\"stableCoinAmount\":" << o.stableCoinAmount << ","
+#endif
+        << "\"balances\":[";
+    for (auto it = o.balances.begin(); it != o.balances.end(); ++it) {
+        fileStream << it->second;
+        if (std::next(it) != o.balances.end()) {
+            fileStream << ",";
+        }
+    }
+    fileStream << "]}";
+    return true;
+}
+
 const account_info_t::balance_t& account_info_t::get_balance(const char *symbol) const {
     auto it = balances.find(symbol);
     if ( it != balances.end() ) {
@@ -399,8 +438,8 @@ std::ostream &operator<<(std::ostream &os, const account_info_t &o) {
     << "\"canTrade\":" << (o.canTrade ? "true" : "false") << ","
     << "\"canWithdraw\":" << (o.canWithdraw ? "true" : "false") << ","
     << "\"canDeposit\":" << (o.canDeposit ? "true" : "false") << ","
-    << "\"updateTime\":" << o.updateTime << ","
-#if USE_TEST_TRADING
+    << "\"updateTime\":" << TimeUtils::ConvertEpochTickToTimeString(o.updateTime) << ","
+#if USE_BACK_TEST_TRADING
     << "\"stableCoinAmount\":" << o.stableCoinAmount << ","
 #endif
     << "\"balances\":[";
@@ -865,6 +904,191 @@ std::ostream& operator<<(std::ostream &os, const exchange_info_t &o) {
     return os;
 }
 
+bool exchange_info_t::write_exchange_info_to_file(const std::string& filePath, const exchange_info_t& o) {
+    std::ofstream file(filePath);
+    return write_exchange_info_to_file(file, o);
+}
+
+bool exchange_info_t::write_exchange_info_to_file(std::ofstream& file, const exchange_info_t& o)
+{
+    if (!file.is_open()) {
+        return false; // Failed to open file
+    }
+
+    file << "{";
+    file << "\"timezone\":\"" << o.timezone << "\",";
+    file << "\"serverTime\":" << o.serverTime << ",";
+
+    file << "\"exchangeFilters\":[";
+    for (auto it = o.exchangeFilters.begin(); it != o.exchangeFilters.end(); ++it) {
+        file << "\"" << *it << "\"";
+        if (std::next(it) != o.exchangeFilters.end()) {
+            file << ",";
+        }
+    }
+    file << "],";
+
+    file << "\"rateLimits\":[";
+    for (auto it = o.rateLimits.begin(); it != o.rateLimits.end(); ++it) {
+        file << *it;
+        if (std::next(it) != o.rateLimits.end()) {
+            file << ",";
+        }
+    }
+    file << "],";
+
+    file << "\"symbols\":[";
+    for (auto it = o.symbols.begin(); it != o.symbols.end(); ++it) {
+        file << it->second;
+        if (std::next(it) != o.symbols.end()) {
+            file << ",";
+        }
+    }
+    file << "],";
+
+    static const std::size_t perms_arr[] = {
+        static_cast<std::underlying_type<e_permissions>::type>(e_permissions::NONE),
+        static_cast<std::underlying_type<e_permissions>::type>(e_permissions::SPOT),
+        static_cast<std::underlying_type<e_permissions>::type>(e_permissions::MARGIN),
+        static_cast<std::underlying_type<e_permissions>::type>(e_permissions::LEVERAGED),
+        static_cast<std::underlying_type<e_permissions>::type>(e_permissions::TRD_GRP_002),
+        static_cast<std::underlying_type<e_permissions>::type>(e_permissions::TRD_GRP_003),
+        static_cast<std::underlying_type<e_permissions>::type>(e_permissions::TRD_GRP_004),
+        static_cast<std::underlying_type<e_permissions>::type>(e_permissions::TRD_GRP_005)
+    };
+
+    file << "\"permissions\":[";
+    for (const auto* it = std::begin(perms_arr); it != std::end(perms_arr); ++it) {
+        if (o.permissions & (*it)) {
+            file << "\"" << e_permissions_to_string(static_cast<e_permissions>(*it)) << "\"";
+            if (std::next(it) != std::end(perms_arr)) {
+                file << ",";
+            }
+        }
+    }
+    file << "]";
+
+    file << "}";
+
+    return true;
+}
+
+bool exchange_info_t::write_exchange_info_to_file(const std::string& filePath, const std::string& nlohmannJson)
+{
+    std::ofstream file(filePath);
+	if (!file.is_open()) {
+		return false; // Failed to open file
+	}
+	file << nlohmannJson;
+	return true;
+}
+
+///////////////////// For Curl API ////////////////////////////////
+
+static double_type to_double(const nlohmann::json& j, const std::string& key) {
+    return j.contains(key) ? std::stod(j.at(key).get<std::string>()) : 0.0;
+}
+
+static std::size_t to_size(const nlohmann::json& j, const std::string& key) {
+    return j.contains(key) ? j.at(key).get<std::size_t>() : 0;
+}
+
+static bool to_bool(const nlohmann::json& j, const std::string& key) {
+    return j.contains(key) ? j.at(key).get<bool>() : false;
+}
+
+exchange_info_t exchange_info_t::construct(const std::string& nlohmannJson) {
+    exchange_info_t result;
+    nlohmann::json doc = nlohmann::json::parse(nlohmannJson);
+
+    result.timezone = doc["timezone"];
+    result.serverTime = doc["serverTime"];
+    result.exchangeFilters = doc["exchangeFilters"].get<std::vector<std::string>>();
+
+    for (const auto& rl : doc["rateLimits"]) {
+        result.rateLimits.push_back({
+            rl["rateLimitType"],
+            rl["interval"],
+            rl["limit"]
+            });
+    }
+
+    for (const auto& s : doc["symbols"]) {
+        exchange_info_t::symbol_t symbol;
+        symbol.symbol = s["symbol"];
+        symbol.status = s["status"];
+        symbol.baseAsset = s["baseAsset"];
+        symbol.baseAssetPrecision = s["baseAssetPrecision"];
+        symbol.quoteAsset = s["quoteAsset"];
+        symbol.quotePrecision = s["quotePrecision"];
+        symbol.orderTypes = s["orderTypes"].get<std::vector<std::string>>();
+        symbol.icebergAllowed = s["icebergAllowed"];
+        symbol.ocoAllowed = s["ocoAllowed"];
+        symbol.quoteOrderQtyMarketAllowed = s["quoteOrderQtyMarketAllowed"];
+        symbol.allowTrailingStop = s["allowTrailingStop"];
+        symbol.cancelReplaceAllowed = s["cancelReplaceAllowed"];
+
+        for (const auto& f : s["filters"]) {
+            exchange_info_t::symbol_t::filter_t filter;
+            filter.filterType = f["filterType"];
+
+            using F = exchange_info_t::symbol_t::filter_t;
+            const std::string& type = filter.filterType;
+
+            if (type == "PRICE_FILTER") {
+                filter.filter = F::price_t{ to_double(f, "minPrice"), to_double(f, "maxPrice"), to_double(f, "tickSize") };
+            }
+            else if (type == "PERCENT_PRICE") {
+                filter.filter = F::percent_price_t{ to_double(f, "multiplierUp"), to_double(f, "multiplierDown"), to_size(f, "avgPriceMins") };
+            }
+            else if (type == "PERCENT_PRICE_BY_SIDE") {
+                filter.filter = F::percent_price_by_side_t{
+                    to_double(f, "bidMultiplierUp"), to_double(f, "bidMultiplierDown"),
+                    to_double(f, "askMultiplierUp"), to_double(f, "askMultiplierDown"),
+                    to_size(f, "avgPriceMins")
+                };
+            }
+            else if (type == "LOT_SIZE") {
+                filter.filter = F::lot_size_t{ to_double(f, "minQty"), to_double(f, "maxQty"), to_double(f, "stepSize") };
+            }
+            else if (type == "MARKET_LOT_SIZE") {
+                filter.filter = F::market_lot_size_t{ to_double(f, "minQty"), to_double(f, "maxQty"), to_double(f, "stepSize") };
+            }
+            else if (type == "MIN_NOTIONAL") {
+                filter.filter = F::min_notional_t{ to_double(f, "minNotional") };
+            }
+            else if (type == "ICEBERG_PARTS") {
+                filter.filter = F::iceberg_parts_t{ to_size(f, "limit") };
+            }
+            else if (type == "MAX_NUM_ORDERS") {
+                filter.filter = F::max_num_orders_t{ to_size(f, "maxNumOrders") };
+            }
+            else if (type == "MAX_NUM_ALGO_ORDERS") {
+                filter.filter = F::max_num_algo_orders_t{ to_size(f, "maxNumAlgoOrders") };
+            }
+            else if (type == "MAX_POSITION") {
+                filter.filter = F::max_position_t{ to_double(f, "maxPosition") };
+            }
+            else if (type == "TRAILING_DELTA") {
+                filter.filter = F::trailing_delta_t{
+                    to_size(f, "minTrailingAboveDelta"), to_size(f, "maxTrailingAboveDelta"),
+                    to_size(f, "minTrailingBelowDelta"), to_size(f, "maxTrailingBelowDelta")
+                };
+            }
+            else if (type == "NOTIONAL") {
+                filter.filter = F::notional_t{
+                    to_double(f, "minNotional"), to_bool(f, "applyMinToMarket"),
+                    to_double(f, "maxNotional"), to_bool(f, "applyMaxToMarket"),
+                    to_size(f, "avgPriceMins")
+                };
+            }
+            symbol.filters.emplace_back(filter);
+        }
+        result.symbols.emplace(std::move(symbol.symbol), std::move(symbol));
+    }
+    return result;
+}
+
 /*************************************************************************************************/
 
 std::ostream &operator<<(std::ostream &os, const depths_t::depth_t &o) {
@@ -1181,7 +1405,7 @@ std::ostream &operator<<(std::ostream &os, const order_info_t &o) {
     << "\"stopPrice\":\"" << o.stopPrice << "\","
     << "\"icebergQty\":\"" << o.icebergQty << "\","
     << "\"time\":" << o.time << ","
-    << "\"updateTime\":" << o.updateTime << ","
+    << "\"updateTime\":" << TimeUtils::ConvertEpochTickToTimeString(o.updateTime) << ","
     << "\"isWorking\":" << (o.isWorking ? "true" : "false")
     << "}";
 

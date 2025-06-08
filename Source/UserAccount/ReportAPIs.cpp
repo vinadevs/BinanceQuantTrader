@@ -238,7 +238,6 @@ void make_trades_report(
 
         trade_info_container_t mytrades = std::move(r_trades.v.trades);
 
-        // сортирую по времени.
         std::sort(mytrades.begin(), mytrades.end(), [](const auto &l ,const auto &r){ return l.time < r.time; });
 
         constexpr auto flags = dtf::flags::dd_mm_yyyy|dtf::flags::sep1|dtf::flags::secs;
@@ -247,14 +246,11 @@ void make_trades_report(
         << "first=" << dtf::timestamp_to_dt_str(mytrades.front().time*1000000ull, flags)
         << ", last=" << dtf::timestamp_to_dt_str(mytrades.back().time*1000000ull, flags) << std::endl;
 
-        // оставляем только SELL ордера
         remove_all_buy_trades(mytrades);
 
-        // получаем пары(BUY-SELL)
         auto full_cycle_trades = get_full_cycle_trades(api, mytrades, tick);
         if ( full_cycle_trades.empty() ) { continue; }
 
-        // считаем сколько купили продали на этой паре
         auto trades_info = calc_pair_trades_info(full_cycle_trades);
         buy_sell_pairs[pair] = std::move(trades_info);
     }
@@ -277,18 +273,14 @@ void make_trades_report(
 
     std::map<std::string, by_pair_profit> total_profit;
     for ( const auto &it: buy_sell_pairs ) {
-        // игнорируем те, что по нулям
+
         if ( it.second.total_buy_base == 0 ) { continue; }
 
         const auto &syminfo = exinfo.get_by_symbol(it.first);
 
-        // добавляем к магазину.
-        // т.е. если мы торговали в USDT магазине несколькими базовыми криптами -
-        // тогда профит у нас все равно в USDT, - суммируем его к USDT.
         auto &market = total_profit[syminfo.quoteAsset];
         market.total_buy += it.second.total_buy_quoted;
         market.total_sell += it.second.total_sell_quoted;
-        // считаем профит, от суммы продажи вычитаем сумму покупки
         auto diff = it.second.total_sell_quoted - it.second.total_buy_quoted;
         market.profit += diff;
         market.cycles += it.second.cycles;
@@ -296,8 +288,6 @@ void make_trades_report(
         //std::cout << syminfo.quoteAsset << " " << diff << std::endl;
         os << (boost::format("%-10s: %11s") % it.first % diff.str(8, iofmt)) << " " << syminfo.quoteAsset;
 
-        // следующий код нужен для того, чтоб в случае если у нас котируемая
-        // валюта не является USDT - отобразить профит в пересчете к USDT.
         std::string pair = syminfo.quoteAsset;
         pair += "USDT";
         bool is_valid_pair = syminfo.quoteAsset == "USDT" ? false : exinfo.is_valid_symbol(pair);
@@ -322,8 +312,6 @@ void make_trades_report(
             << "  " << it.second.profit << " " << it.first
             << " (BUY: " << it.second.total_buy << ", SELL: " << it.second.total_sell << ", TRADES: " << summ_cycles(total_profit) << ")";
 
-            // следующий код нужен для того, чтоб в случае если у нас котируемая
-            // валюта не является USDT - отобразить профит в пересчете к USDT.
             std::string pair = it.first;
             pair += "USDT";
             auto is_valid_pair = it.first == "USDT" ? false : exinfo.is_valid_symbol(pair);

@@ -49,7 +49,7 @@ namespace TradingStrategies {
 		virtual ~TestTradingStrategy();
 
 		bool OnIndividualBookTickerChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
-
+		
 		void ReportTradeResults(const std::string& symbol) override {}
 
 		void InitializeParameters(const std::string& strategyCfgPath) override {}

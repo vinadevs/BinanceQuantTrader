@@ -10,6 +10,7 @@
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/PathUtils.h"
 #include "../LibraryUtils/ProgramLogo.h"
+
 #include "../MiddlewareMQ/MessageBroker.h"
 
 #include <memory>
@@ -60,24 +61,25 @@ BINANCE_MESSAGE_HUB_SERVER
 	// SYSTEMS
 	// if the binary has been terminated by signal, exit(), ctrl + C,... then
 	// destructors will never be called, this hooker will clean up resources
+#ifdef _WIN32
 	if (!SetConsoleCtrlHandler(GeneralUtils::ConsoleCtrlHandler, TRUE))
 	{
 		logger->Error("Failed to set exit control handler.");
 		return EXIT_FAILURE;
 	}
-
+#endif
 	try
 	{
-	#ifdef _DEBUG
+#ifdef _DEBUG
 		const auto config_message_hub_server_path
 			= PathUtils::GetConfigFolderPath(PathUtils::Path_Type::MESSAGE_SERVER) + "\\MessageBrokerCfg.xml";
-	#else
+#else
 		// ARGUMENTS
 		argparse::ArgumentParser program(BINANCE_MESSAGE_HUB_SERVER_TITLE);
 		program.add_argument("--config_message_hub_server_path").help("Configuration file : MessageHubServerCfg.xml");
 		program.parse_args(argc, argv);
 		const auto config_message_hub_server_path = program.get<std::string>("--config_message_hub_server_path");
-	#endif
+#endif
 		// APPLICATION
 		auto messageHubBroker = std::make_unique<MessageBroker>(config_message_hub_server_path);
 		messageHubBroker->Run(); // this is a wait call, so should not return

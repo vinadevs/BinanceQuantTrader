@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package strategy;
+
+// Status enum for order execution
+enum OrderStatus {
+    ORDER_SUCCESS = 0;
+    ORDER_FAILED = 1;
+}
+
+// Request to place a parent order
+message StrategyParentOrderRequest {
+    string symbol = 1;    // e.g., "BTCUSDT"
+    double price = 2;     // Limit or market price
+    double quantity = 3;  // Order size
+}
+
+// Response to parent order request
+message StrategyParentOrderResponse {
+    OrderStatus status = 1;
+    string error_message = 2; // Populated only when status == ORDER_FAILED
+}
+
+// gRPC service for submitting strategy parent orders
+service StrategyOrderService {
+    rpc SubmitParentOrder(StrategyParentOrderRequest) returns (StrategyParentOrderResponse);
+}

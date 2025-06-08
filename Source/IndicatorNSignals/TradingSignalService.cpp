@@ -82,7 +82,7 @@ TradingSignalService::TradingSignalService(PortfolioInvestmentBinance* portfolio
     {
         // WE MUST START EXCHANGE SIMULATOR TO BY PASS THIS EXCEPTION IN BACK TESTING TRADE
         throw std::runtime_error(
-            "TradingSignalService: Investment portfolio asset bracket is empty."
+            "TradingSignalService: Investment portfolio asset basket is empty."
             "Could not query remote binance info or have no available asset.");
     }
     for (const auto& pairs : m_portfolio->GetBinanceTradingPairManager().GetTradingPairs())
@@ -100,11 +100,11 @@ bool TradingSignalService::IsInvestmentPortfolioAssetEmpty() const
 bool TradingSignalService::OnIndividualBookTickerChange(
     MarketDataSubject* marketData, const std::string& symbol)
 {
-    if (const auto* data = marketData->GetSynchronousMarketData(symbol))
+    if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
         if (auto* analyzer = m_signalMgr->GetTrendindAnalyzer(symbol))
         {
-            analyzer->AnalysisIndividualBookTicker(data);
+            analyzer->AnalysisIndividualBookTicker(syncedData);
             return true;
         }
     }

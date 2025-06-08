@@ -11,8 +11,11 @@
 #include "dlldefine.h"
 
 #include "../LibraryUtils/MacroUtils.h"
+#include "../LibraryUtils/Logger.h"
 
 #include <string>
+#include <vector>
+#include <memory>
 
 // In trading systems, StaticData refers to the non-transactional,
 // unchanging information that is essential for the operation of the 
@@ -26,6 +29,10 @@ namespace tinyxml2 {
 	class XMLElement;
 };
 
+namespace LibraryUtils {
+	class Logger;
+};
+
 namespace StaticData {
 	class DLL_CLASS_TRADING_STATICDATA_EXPORTS StaticDataManager
 	{
@@ -37,7 +44,17 @@ namespace StaticData {
 
 		static StaticDataManager* GetInstance();
 
+		// Get BTC from BTCUSDT
+		static std::string GetSymbolFromTradingPair(
+			const std::string& input,
+			const std::string& stableCoin) {
+			size_t pos = input.find(stableCoin); // Find "USDT" in the string
+			return (pos != std::string::npos) ? input.substr(0, pos) : input;
+		}
+
 		void LoadStaticDatabase(const tinyxml2::XMLElement* staticDataConfigXml);
+
+		std::vector<std::string> GetAllRemoteListingSymbols(const bool logDataToFile);
 
 		//USDT(Tether) is a type of stablecoin,
 		//which is a cryptocurrency designed to maintain a
@@ -50,6 +67,8 @@ namespace StaticData {
 		const std::string& GetStableCoinUSDTSymbol() const;
 	private:
 		std::string m_stablecoinUSDT;
+		std::unique_ptr<LibraryUtils::Logger> m_logger
+		{ std::make_unique<LibraryUtils::Logger>("StaticDataManager") };
 	};
 };
 // Lets shorten the code line!

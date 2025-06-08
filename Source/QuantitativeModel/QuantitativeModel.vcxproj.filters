@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Trading Rules By Pass Engine">
+      <UniqueIdentifier>{8b1c44d4-40d6-4ba2-8a9c-3653a9defda3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Order Parammeter Creator">
+      <UniqueIdentifier>{682cf977-a4c1-4566-8691-4b4633e45017}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Market Data Analyzer">
+      <UniqueIdentifier>{6a2787c1-f052-4366-b0a2-5a511d31042f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -21,6 +30,24 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TradingRulesByPassEngine.h">
+      <Filter>Trading Rules By Pass Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="dlldefine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OrderParammeterGenerator.h">
+      <Filter>Order Parammeter Creator</Filter>
+    </ClInclude>
+    <ClInclude Include="QuantOrderParammeter.h">
+      <Filter>Order Parammeter Creator</Filter>
+    </ClInclude>
+    <ClInclude Include="MarketDataAnalyzer.h">
+      <Filter>Market Data Analyzer</Filter>
+    </ClInclude>
+    <ClInclude Include="QuantMarketDataAnalyzer.h">
+      <Filter>Market Data Analyzer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -28,6 +55,18 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TradingRulesByPassEngine.cpp">
+      <Filter>Trading Rules By Pass Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="OrderParammeterGenerator.cpp">
+      <Filter>Order Parammeter Creator</Filter>
+    </ClCompile>
+    <ClCompile Include="MarketDataAnalyzer.cpp">
+      <Filter>Market Data Analyzer</Filter>
+    </ClCompile>
+    <ClCompile Include="QuantMarketDataAnalyzer.cpp">
+      <Filter>Market Data Analyzer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

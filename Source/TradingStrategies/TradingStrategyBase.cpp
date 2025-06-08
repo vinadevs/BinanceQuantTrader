@@ -8,19 +8,24 @@
 
 #include "pch.h"
 #include "TradingStrategyBase.h"
+
 #include "../MarketData/RealTimeMarketData.h"
 #include "../LibraryUtils/GeneralUtils.h"
 #include "../LibraryUtils/StringUtils.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../ComplianceNRegulatory/BinanceTradingRules.h"
+#include "../ComplianceNRegulatory/HardTradingLimits.h"
 #include "../UserAccount/BinanceTrader.h"
 
 using namespace TradingStrategies;
 using namespace UserAccount;
-using namespace MiddlewareMQ;
 using namespace MarketData;
 using namespace LibraryUtils;
 using namespace tinyxml2;
+
+#if USE_BACK_TEST_TRADING 
+using namespace MiddlewareMQ;
+#endif
 
 TradingStrategyBase::TradingStrategyBase(
 	const std::string& strategyName,
@@ -29,8 +34,7 @@ TradingStrategyBase::TradingStrategyBase(
 	MarketData::RealTimeMarketData* marketData,
 	UserAccount::BinanceTrader* trader,
 	ComplianceNRegulatory::BinanceTradingRules* tradingRules)
-	: OrdersPerTenSecondsChecker(AlarmSystem::AlarmMode::REPEAT),
-	m_strategyName(strategyName),
+	: m_strategyName(strategyName),
 	m_strategyDescription(strategyDescription),
 	m_strategyCfgPath(strategyCfgPath),
 	m_marketData(marketData),
@@ -41,12 +45,33 @@ TradingStrategyBase::TradingStrategyBase(
 	m_logger = std::make_unique<Logger>(m_strategyName);
 	m_logger->Info("Trading strategy name=" + m_strategyName);
 	m_logger->Info("Trading strategy description=" + m_strategyDescription);
-	// This is Binance compliances and rules checker
-	OrdersPerTenSecondsChecker::Start();
-	m_logger->Info("OrdersPerTenSecondsChecker started.");
+}
+
+TradingStrategyBase::TradingStrategyBase(
+	const std::string& strategyName,
+	const std::string& strategyDescription,
+	const std::string& strategyCfgPath, MarketData::RealTimeMarketData* marketData)
+	: m_strategyName(strategyName),
+	m_strategyDescription(strategyDescription),
+	m_strategyCfgPath(strategyCfgPath),
+	m_marketData(marketData)
+{
+	m_logger = std::make_unique<Logger>(m_strategyName);
+	m_logger->Info("Trading strategy name=" + m_strategyName);
+	m_logger->Info("Trading strategy description=" + m_strategyDescription);
 }
 
 TradingStrategyBase::~TradingStrategyBase() {}
+
+void TradingStrategyBase::LogTradingHardLimits()
+{
+    m_logger->Info("[Binance Hard Limitation] Orders per ten seconds limit=" 
+		+ std::to_string(m_tradingRules->GetTradingLimits()->m_maxOrdersPerTenSeconds));
+    m_logger->Info("[Binance Hard Limitation] Request weight per minute limit=" 
+		+ std::to_string(m_tradingRules->GetTradingLimits()->m_maxRequestWeightPerMinute));
+	m_logger->Info("[Binance Hard Limitation] Orders per twenty-four hours limit=" 
+		+ std::to_string(m_tradingRules->GetTradingLimits()->m_maxOrdersPerTwentyFourHours));
+}
 
 StrategyRunStatus TradingStrategyBase::GetStrategyRunStatus() const
 {
@@ -56,6 +81,27 @@ StrategyRunStatus TradingStrategyBase::GetStrategyRunStatus() const
 StrategyType TradingStrategyBase::GetStrategyType() const
 {
 	return m_strategyType;
+}
+
+void TradingStrategyBase::SetStrategyType(const StrategyType strategyType)
+{
+	m_strategyType = strategyType;
+	m_logger->Info("Strategy type=" + GetStrategyTypeStr(m_strategyType));
+}
+
+std::string TradingStrategyBase::GetStrategyTypeStr(const StrategyType strategyType)
+{
+	switch (strategyType)
+	{
+	case StrategyType::FULL_AUTO:
+		return "FULL_AUTO";
+	case StrategyType::SEMI_AUTO:
+		return "SEMI_AUTO";
+	case StrategyType::ADVISING:
+		return "ADVISING";
+	default:
+		return "UnknownStrategyType";
+	}
 }
 
 const std::string& TradingStrategyBase::GetStrategyName() const
@@ -90,43 +136,53 @@ void TradingStrategyBase::SetupStrategyLifeTime(tinyxml2::XMLDocument* strategyC
 	{
 		throw std::runtime_error("TradingStrategyBase: unsupported StrategyLifeTime config");
 	}
+	const XMLElement* enableComplianceCheckerXml = generalConfigXml->FirstChildElement("EnableComplianceChecker");
+	assert(enableComplianceCheckerXml);
+	if (enableComplianceCheckerXml->BoolAttribute("Enable"))
+	{
+		LogTradingHardLimits();
+		m_compilanceChecker = std::make_unique<CompilanceChecker>();
+		m_compilanceChecker->StartAlarmOnTradingRules(
+			m_tradingRules,
+			AlarmSystem::AlarmMode::REPEAT,
+			m_StrategyLifeTime != StrategyLifeTime::INTRA_DAY ? true : false);
+	}
 }
 
 bool TradingStrategyBase::IsNotIsNotExceededTradingRules() const
 {
 	if (m_tradingRules->IsNotExceededOrdersPerTenSeconds())
 	{
-		if (m_StrategyLifeTime == StrategyLifeTime::INTRA_DAY)
+		if (m_tradingRules->IsNotExceededRequestWeightPerMinute())
 		{
-			return true;
-		}
-		else if (m_tradingRules->IsNotExceededOrdersPerTwentyFourHours())
-		{
-			return true;
+			if (m_StrategyLifeTime == StrategyLifeTime::INTRA_DAY)
+			{
+				return true;
+			}
+			else if (m_tradingRules->IsNotExceededOrdersPerTwentyFourHours())
+			{
+				return true;
+			}
 		}
 	}
 	return false;
 }
 
-void TradingStrategyBase::IncreaseOrderCounter() 
+void TradingStrategyBase::IncreaseComplianceRestAPIRequestCounter(const size_t noOfRequests)
 {
-	m_tradingRules->IncreaseOrdersPerTenSeconds();
+	m_tradingRules->IncreaseOrdersPerTenSeconds(noOfRequests);
+	m_logger->Info("CompilanceChecker: current number of orders per ten seconds="
+		+ std::to_string(m_tradingRules->GetOrdersPerTenSecondsCounter()) + ".");
+	m_tradingRules->IncreaseRequestWeightPerMinute(noOfRequests);
+	m_logger->Info("CompilanceChecker: current number of requests per minute="
+		+ std::to_string(m_tradingRules->GetRequestWeightPerMinuteCounter()) + ".");
 	if (m_StrategyLifeTime != StrategyLifeTime::INTRA_DAY)
 	{
-		m_tradingRules->IncreaseOrdersPerTwentyFourHours();
+		m_tradingRules->IncreaseOrdersPerTwentyFourHours(noOfRequests);
 	}
 }
 
-void TradingStrategyBase::OnAlarmTriggered(const int passToDerived)
-{
-	// NOTE: PLEASE DO NOT CALL REST API UPDATES MANY TIMES/SECONDS
-	// AS BINANCE WILL BAN THE LOCAL IP FOR THAT SPAM
-	// PLEASE CHECK IN ComplianceNRegulatory CODE
-	// REMEMBER ALWAY IMPLEMENT A CHECKER BEFORE CALL REST API
-	m_tradingRules->ResetOrdersPerTenSecondsCounter();
-}
-
-#if USE_TEST_TRADING  
+#if USE_BACK_TEST_TRADING  
 void TradingStrategyBase::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& message)
 {
 	// forward order acks to trader, they know what to do with it not strategy

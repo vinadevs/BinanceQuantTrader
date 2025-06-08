@@ -15,7 +15,9 @@
 #include "MatchingEngine.h"
 #include "BqtJsonMessageServer.h"
 #include "UserAccountManager.h"
-#include "BinanceWalletServer.h"
+#include "ExchangeInfoManager.h"
+#include "UserTradeProfileManager.h"
+#include "BinanceRestAPIServer.h"
 #include "BinanceExchangeSimulator.h"
 #include "AlgosConnectivity.h"
 #include "ExchangeRuleAndCompliance.h"
@@ -35,11 +37,11 @@ BinanceExchangeSimulator::~BinanceExchangeSimulator()
 
 void BinanceExchangeSimulator::Run()
 {
-	// -This wallet server is a Google Protobuf HTTP message server
-	// We will use it to receive user account querry from the Algo Trading System
-	m_logger->Info("Starting BinanceWalletServer.");
-	m_binanceWalletServer->Start(); // no wait call
-	m_logger->Info("Started BinanceWalletServer.");
+	// -This RestAPI server is a Google Protobuf HTTP message server
+	// We will use it to receive http querry from the Algo Trading System
+	m_logger->Info("Starting BinanceRestAPIServer.");
+	m_binanceRestAPIServer->Start(); // no wait call
+	m_logger->Info("Started BinanceRestAPIServer.");
 	// -This message receiver is a BQT Json Message server
 	// We will use it to receive trading orders from the Algo Trading System
 	m_logger->Info("Starting Bqt Message Server.");
@@ -54,7 +56,7 @@ void BinanceExchangeSimulator::Shutdown()
 {
 	m_bqtJsonMessageServer->Stop();
 	m_matchingEngine->Stop();
-	m_binanceWalletServer->Stop();
+	m_binanceRestAPIServer->Stop();
 }
 
 void BinanceExchangeSimulator::PrepareExchangeServices(const tinyxml2::XMLDocument* configSimulatorXml)
@@ -75,10 +77,24 @@ void BinanceExchangeSimulator::PrepareExchangeServices(const tinyxml2::XMLDocume
 	assert(userAccountManagerCfg);
 	m_userAccountManager = std::make_unique<UserAccountManager>(userAccountManagerCfg);
 
-	m_logger->Info("Initiating BinanceWalletServer.");
-	const auto* binanceWalletServerCfg = configSimulatorXml->FirstChildElement("BinanceWalletServer");
-	assert(binanceWalletServerCfg);
-	m_binanceWalletServer = std::make_unique<BinanceWalletServer>(binanceWalletServerCfg, m_userAccountManager.get());
+	m_logger->Info("Initiating ExchangeInfoManager.");
+	const auto* exchangeInfoManagerCfg = configSimulatorXml->FirstChildElement("ExchangeInfoManager");
+	assert(exchangeInfoManagerCfg);
+	m_exchangeInfoManager = std::make_unique<ExchangeInfoManager>(exchangeInfoManagerCfg);
+
+	m_logger->Info("Initiating UserTradeProfileManager.");
+	const auto* userTradeProfileManagerCfg = configSimulatorXml->FirstChildElement("UserTradeProfileManager");
+	assert(userTradeProfileManagerCfg);
+	m_userTradeProfileManager = std::make_unique<UserTradeProfileManager>(userTradeProfileManagerCfg);
+
+	m_logger->Info("Initiating BinanceRestAPIServer.");
+	const auto* binanceRestAPIServerCfg = configSimulatorXml->FirstChildElement("BinanceRestAPIServer");
+	assert(binanceRestAPIServerCfg);
+	m_binanceRestAPIServer = std::make_unique<BinanceRestAPIServer>(
+		binanceRestAPIServerCfg,
+		m_userAccountManager.get(),
+		m_exchangeInfoManager.get(),
+		m_userTradeProfileManager.get());
 
 	m_logger->Info("Initiating Exchange Matching Engine.");
 	const auto* matchingEngineCfg = configSimulatorXml->FirstChildElement("MatchingEngine");

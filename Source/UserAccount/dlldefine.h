@@ -6,10 +6,6 @@
 # This source code can be used, distributed or modified under Apache license
 #*******************************************************************************/ 
 
-// ----------------------------------------------------------------------------
-// Developer: vinadevs
-// ----------------------------------------------------------------------------
-
 #pragma once
 
 #ifdef _MSC_VER
@@ -24,5 +20,5 @@
 #endif
 #endif  // USERACCOUNT_EXPORTS
 #else
-#define DLL_CLASS
+#define DLL_CLASS_USERACCOUNT_EXPORTS
 #endif  // _MSC_VER

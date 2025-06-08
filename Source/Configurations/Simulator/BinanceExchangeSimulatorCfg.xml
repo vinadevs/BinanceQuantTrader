@@ -9,26 +9,29 @@
 </MessageTransporter>
 
 <MatchingEngine>
-  <UsingParticipant Name="RTMarketParticipant" MaximumDownstreamOrderBookSize="10"/>
+  <UsingParticipant Name="RTMarketSpotParticipant" MaximumDownstreamOrderBookSize="10"/>
   <RealTimeMarketData>
-	  <Connection StreamBinanceCom="stream.binance.com" StreamConnectionPort="9443"/>
-	  <SubscriptionData IndividualBookTickerData="true" TradeData="true" IndividualMarketTickerData="true" AllMarketTickersData="true" IndividualMiniTickerData="true" AllMiniTickersData="true" AggregateTradeData="true" KlineCandleStickData="true" PartDepthData="true" DiffDepthData="true"/>
-	  <InterestingDataSymbols File="[ROOT_BQT_PATH]\Configurations\Common\BinanceAssets.txt"/>
+	  <UsingMarketData Name="BinanceMarketData" File="[ROOT_BQT_PATH]\Configurations\MarketData\BinanceMarketDataCfg.xml"/>
   </RealTimeMarketData>
 </MatchingEngine>
 
 <StaticData>
 </StaticData>
 
-<BinanceWalletServer>
+<BinanceRestAPIServer>
   <Connection ServerIpAddress="0.0.0.0" ServerPort="12345"/>
-</BinanceWalletServer>
+</BinanceRestAPIServer>
 
 <UserAccountManager>
   <GeneralSetting MaximumAccount="1"/>
+  <AccountInfo File="[ROOT_BQT_PATH]\Configurations\StaticData\account_info_t.json"/>
   <TestUserAccount ListUserID="{user_id,path_to_config};{user_id,path_to_config}"/>
 </UserAccountManager>
 
 <ExchangeRuleAndCompliance>
   <TradeCommissions MakerCommission="0.01" TakerCommission="0.05" BuyerCommission="0" SellerCommission="0"/>
 </ExchangeRuleAndCompliance>
+
+<ExchangeInfoManager>
+  <ExchangeInfo File="[ROOT_BQT_PATH]\Configurations\StaticData\exchange_info_t.json"/>
+</ExchangeInfoManager>

@@ -9,7 +9,7 @@
 #include "pch.h"
 #include "OrderCreator.h"
 
-#include "../RestAPI/BinanceAPI.h"
+#include "../RestAPI/BinanceSpotApiGateWay.h"
 
 #include <iostream>
 
@@ -25,9 +25,12 @@ std::unique_ptr<BinanceNewOrder> OrderCreator::CreateNewBinanceOrderFull(
     , const double amount
     , const double price
     , const double stopPrice
-    , const double icebergAmount)
+    , const double icebergAmount
+    , const BinanceNewOrderTradingType tradingType)
 {
-    return std::make_unique<BinanceNewOrder>(clientOrderId, symbol, side, type, time, amount, price, stopPrice, icebergAmount);
+    // last param is true mean this is real order
+    return std::make_unique<BinanceNewOrder>(clientOrderId, symbol, side, type, time,
+        amount, price, stopPrice, icebergAmount, tradingType, ExchangeConnectivityType::REAL);
 }
 
 std::unique_ptr<BinanceNewOrder> OrderCreator::CreateNewBinanceTestOrderFull(
@@ -39,9 +42,12 @@ std::unique_ptr<BinanceNewOrder> OrderCreator::CreateNewBinanceTestOrderFull(
     , const double amount
     , const double price
     , const double stopPrice
-    , const double icebergAmount)
+    , const double icebergAmount
+    , const BinanceNewOrderTradingType tradingType)
 {
-    return std::make_unique<BinanceNewOrder>(clientOrderId, symbol, side, type, time, amount, price, stopPrice, icebergAmount);
+    // last param is false mean this is test order
+    return std::make_unique<BinanceNewOrder>(clientOrderId, symbol, side, type, time,
+        amount, price, stopPrice, icebergAmount, tradingType, ExchangeConnectivityType::TEST);
 }
 
 std::unique_ptr<BinanceCancelOrder> OrderCreator::CreateCancelBinanceOrder(

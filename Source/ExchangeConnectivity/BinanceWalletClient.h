@@ -33,9 +33,9 @@ namespace binapi {
 
 namespace ExchangeConnectivity {
 
-	struct GrpcConnection final
+	struct UserAccountGrpcConnection final
 	{
-		std::unique_ptr<UserAccountService::Stub> m_grpcStub;
+		std::unique_ptr<account::UserAccountService::Stub> m_grpcStub;
 		std::shared_ptr<grpc::Channel> m_grpcChannel;
 		grpc::ClientContext m_context;
 		std::string m_serverIpAddress;
@@ -55,6 +55,6 @@ namespace ExchangeConnectivity {
 			std::string& errorMessage);
 	private:
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
-		GrpcConnection m_grpcConnection;
+		UserAccountGrpcConnection m_grpcConnection;
 	};
 };

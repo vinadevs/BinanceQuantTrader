@@ -27,15 +27,17 @@ namespace ExchangeSimulator {
  * This class provides the core functionality for managing binance wallet user accounts
 */
     class UserAccountManager;
-    class UserAccountHttpService final : public UserAccountService::Service {
+
+    class UserAccountHttpService final 
+        : public account::UserAccountService::Service {
     public:
         UserAccountHttpService(UserAccountManager* userAccountManager);
         ~UserAccountHttpService() override;
     private:
         grpc::Status GetUserAccountData(
             grpc::ServerContext* context,
-            const UserAccountDataRequest* request,
-            UserAccountDataResponse* response) override;
+            const account::UserAccountDataRequest* request,
+            account::UserAccountDataResponse* response) override;
 
         std::unique_ptr<LibraryUtils::Logger> m_logger;
         UserAccountManager* m_userAccountManager{ nullptr };

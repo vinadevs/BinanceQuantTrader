@@ -27,24 +27,22 @@ BinanceWalletClient::BinanceWalletClient(const tinyxml2::XMLElement* binanceWall
     m_grpcConnection.m_serverPort = std::string(connectionXml->Attribute("ServerPort"));
     m_grpcConnection.m_serverConnection = m_grpcConnection.m_serverIpAddress + ":" + m_grpcConnection.m_serverPort;
     m_grpcConnection.m_grpcChannel = grpc::CreateChannel(m_grpcConnection.m_serverConnection, grpc::InsecureChannelCredentials());
-    m_grpcConnection.m_grpcStub = UserAccountService::NewStub(m_grpcConnection.m_grpcChannel);
+    m_grpcConnection.m_grpcStub = account::UserAccountService::NewStub(m_grpcConnection.m_grpcChannel);
 }
 
-BinanceWalletClient::~BinanceWalletClient()
-{
-}
+BinanceWalletClient::~BinanceWalletClient() {}
 
 bool BinanceWalletClient::GetUserAccountDataResponse(
     const std::string& userId,
     binapi::rest::account_info_t* account,
     std::string& errorMessage)
 {
-    m_logger->Info("Sending request data for user account id=" + userId);
+    m_logger->Info("Sending request account_info_t data for user account id=" + userId);
 
-    UserAccountDataRequest request;
+    account::UserAccountDataRequest request;
     request.set_user_id(userId);
 
-    UserAccountDataResponse response; 
+    account::UserAccountDataResponse response;
     grpc::ClientContext context;
 
     const grpc::Status status = m_grpcConnection.m_grpcStub->GetUserAccountData(&context, request, &response);
@@ -61,15 +59,16 @@ bool BinanceWalletClient::GetUserAccountDataResponse(
             account->canWithdraw = response.can_withdraw();
             account->canDeposit = response.can_deposit();
             account->updateTime = response.update_time();
+#if USE_BACK_TEST_TRADING
             account->stableCoinAmount = response.stable_coin_amount();
-
+#endif
             for (const auto& balancePair : response.balances()) {
                 const auto& balance = balancePair.second;
                 binapi::rest::account_info_t::balance_t value {
                     balance.asset_symbol(),
                     balance.free_amount(),
                     balance.locked_amount() };
-                account->balances.try_emplace(balance.asset_symbol(), value);
+                account->balances.insert_or_assign(balance.asset_symbol(), value);
             }
             return true;
         }

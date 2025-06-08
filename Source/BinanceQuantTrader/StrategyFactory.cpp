@@ -10,9 +10,13 @@
 
 #include "../SettingNConfig/tinyxml2.h"
 #include "../MarketData/RealTimeMarketData.h"
+
+// list of strategy types supported
 #include "../TradingStrategies/TradingStrategyBase.h"
 #include "../TradingStrategies/FomoTradingStrategy.h"
 #include "../TradingStrategies/TestTradingStrategy.h"
+#include "../TradingStrategies/MarketMonitorStrategy.h"
+#include "../TradingStrategies/StopLossStrategy.h"
 #include "../LibraryUtils/PathUtils.h"
 #include "../LibraryUtils/StringUtils.h"
 
@@ -44,6 +48,14 @@ StrategyFactory::CreateTargetStrategy(
 		if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "FomoStrategy"))
 		{
 			return std::make_unique<FomoTradingStrategy>(strategyCfgFile, marketData, trader, tradingRules);
+		}
+		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "MarketMonitorStrategy"))
+		{
+			return std::make_unique<MarketMonitorStrategy>(strategyCfgFile, marketData);
+		}
+		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "StopLossStrategy"))
+		{
+			return std::make_unique<StopLossStrategy>(strategyCfgFile, marketData, trader, tradingRules);
 		}
 		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "TestStrategy"))
 		{

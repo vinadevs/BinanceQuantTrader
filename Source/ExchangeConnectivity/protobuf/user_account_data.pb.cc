@@ -26,6 +26,7 @@ PROTOBUF_PRAGMA_INIT_SEG
 namespace _pb = ::google::protobuf;
 namespace _pbi = ::google::protobuf::internal;
 namespace _fl = ::google::protobuf::internal::field_layout;
+namespace account {
 
 inline constexpr UserAccountDataRequest::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
@@ -137,6 +138,7 @@ struct UserAccountDataResponseDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 UserAccountDataResponseDefaultTypeInternal _UserAccountDataResponse_default_instance_;
+}  // namespace account
 static constexpr const ::_pb::EnumDescriptor**
     file_level_enum_descriptors_user_5faccount_5fdata_2eproto = nullptr;
 static constexpr const ::_pb::ServiceDescriptor**
@@ -145,95 +147,96 @@ const ::uint32_t
     TableStruct_user_5faccount_5fdata_2eproto::offsets[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
         protodesc_cold) = {
         ~0u,  // no _has_bits_
-        PROTOBUF_FIELD_OFFSET(::Balance, _internal_metadata_),
+        PROTOBUF_FIELD_OFFSET(::account::Balance, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
         ~0u,  // no _weak_field_map_
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::Balance, _impl_.asset_symbol_),
-        PROTOBUF_FIELD_OFFSET(::Balance, _impl_.free_amount_),
-        PROTOBUF_FIELD_OFFSET(::Balance, _impl_.locked_amount_),
+        PROTOBUF_FIELD_OFFSET(::account::Balance, _impl_.asset_symbol_),
+        PROTOBUF_FIELD_OFFSET(::account::Balance, _impl_.free_amount_),
+        PROTOBUF_FIELD_OFFSET(::account::Balance, _impl_.locked_amount_),
         ~0u,  // no _has_bits_
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataRequest, _internal_metadata_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataRequest, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
         ~0u,  // no _weak_field_map_
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataRequest, _impl_.user_id_),
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse_BalancesEntry_DoNotUse, _impl_._has_bits_),
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse_BalancesEntry_DoNotUse, _internal_metadata_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataRequest, _impl_.user_id_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataResponse_BalancesEntry_DoNotUse, _impl_._has_bits_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataResponse_BalancesEntry_DoNotUse, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
         ~0u,  // no _weak_field_map_
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse_BalancesEntry_DoNotUse, _impl_.key_),
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse_BalancesEntry_DoNotUse, _impl_.value_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataResponse_BalancesEntry_DoNotUse, _impl_.key_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataResponse_BalancesEntry_DoNotUse, _impl_.value_),
         0,
         1,
         ~0u,  // no _has_bits_
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _internal_metadata_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataResponse, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
         ~0u,  // no _weak_field_map_
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _impl_.user_id_),
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _impl_.maker_commission_),
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _impl_.taker_commission_),
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _impl_.buyer_commission_),
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _impl_.seller_commission_),
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _impl_.update_time_),
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _impl_.can_trade_),
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _impl_.can_withdraw_),
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _impl_.can_deposit_),
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _impl_.stable_coin_amount_),
-        PROTOBUF_FIELD_OFFSET(::UserAccountDataResponse, _impl_.balances_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataResponse, _impl_.user_id_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataResponse, _impl_.maker_commission_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataResponse, _impl_.taker_commission_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataResponse, _impl_.buyer_commission_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataResponse, _impl_.seller_commission_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataResponse, _impl_.update_time_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataResponse, _impl_.can_trade_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataResponse, _impl_.can_withdraw_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataResponse, _impl_.can_deposit_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataResponse, _impl_.stable_coin_amount_),
+        PROTOBUF_FIELD_OFFSET(::account::UserAccountDataResponse, _impl_.balances_),
 };
 
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-        {0, -1, -1, sizeof(::Balance)},
-        {11, -1, -1, sizeof(::UserAccountDataRequest)},
-        {20, 30, -1, sizeof(::UserAccountDataResponse_BalancesEntry_DoNotUse)},
-        {32, -1, -1, sizeof(::UserAccountDataResponse)},
+        {0, -1, -1, sizeof(::account::Balance)},
+        {11, -1, -1, sizeof(::account::UserAccountDataRequest)},
+        {20, 30, -1, sizeof(::account::UserAccountDataResponse_BalancesEntry_DoNotUse)},
+        {32, -1, -1, sizeof(::account::UserAccountDataResponse)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
-    &::_Balance_default_instance_._instance,
-    &::_UserAccountDataRequest_default_instance_._instance,
-    &::_UserAccountDataResponse_BalancesEntry_DoNotUse_default_instance_._instance,
-    &::_UserAccountDataResponse_default_instance_._instance,
+    &::account::_Balance_default_instance_._instance,
+    &::account::_UserAccountDataRequest_default_instance_._instance,
+    &::account::_UserAccountDataResponse_BalancesEntry_DoNotUse_default_instance_._instance,
+    &::account::_UserAccountDataResponse_default_instance_._instance,
 };
 const char descriptor_table_protodef_user_5faccount_5fdata_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
-    "\n\027user_account_data.proto\"K\n\007Balance\022\024\n\014"
-    "asset_symbol\030\001 \001(\t\022\023\n\013free_amount\030\002 \001(\001\022"
-    "\025\n\rlocked_amount\030\003 \001(\001\")\n\026UserAccountDat"
-    "aRequest\022\017\n\007user_id\030\001 \001(\t\"\367\002\n\027UserAccoun"
-    "tDataResponse\022\017\n\007user_id\030\001 \001(\t\022\030\n\020maker_"
-    "commission\030\002 \001(\r\022\030\n\020taker_commission\030\003 \001"
-    "(\r\022\030\n\020buyer_commission\030\004 \001(\r\022\031\n\021seller_c"
-    "ommission\030\005 \001(\r\022\023\n\013update_time\030\006 \001(\004\022\021\n\t"
-    "can_trade\030\007 \001(\010\022\024\n\014can_withdraw\030\010 \001(\010\022\023\n"
-    "\013can_deposit\030\t \001(\010\022\032\n\022stable_coin_amount"
-    "\030\n \001(\001\0228\n\010balances\030\013 \003(\0132&.UserAccountDa"
-    "taResponse.BalancesEntry\0329\n\rBalancesEntr"
-    "y\022\013\n\003key\030\001 \001(\t\022\027\n\005value\030\002 \001(\0132\010.Balance:"
-    "\0028\0012]\n\022UserAccountService\022G\n\022GetUserAcco"
-    "untData\022\027.UserAccountDataRequest\032\030.UserA"
-    "ccountDataResponseb\006proto3"
+    "\n\027user_account_data.proto\022\007account\"K\n\007Ba"
+    "lance\022\024\n\014asset_symbol\030\001 \001(\t\022\023\n\013free_amou"
+    "nt\030\002 \001(\001\022\025\n\rlocked_amount\030\003 \001(\001\")\n\026UserA"
+    "ccountDataRequest\022\017\n\007user_id\030\001 \001(\t\"\207\003\n\027U"
+    "serAccountDataResponse\022\017\n\007user_id\030\001 \001(\t\022"
+    "\030\n\020maker_commission\030\002 \001(\r\022\030\n\020taker_commi"
+    "ssion\030\003 \001(\r\022\030\n\020buyer_commission\030\004 \001(\r\022\031\n"
+    "\021seller_commission\030\005 \001(\r\022\023\n\013update_time\030"
+    "\006 \001(\004\022\021\n\tcan_trade\030\007 \001(\010\022\024\n\014can_withdraw"
+    "\030\010 \001(\010\022\023\n\013can_deposit\030\t \001(\010\022\032\n\022stable_co"
+    "in_amount\030\n \001(\001\022@\n\010balances\030\013 \003(\0132..acco"
+    "unt.UserAccountDataResponse.BalancesEntr"
+    "y\032A\n\rBalancesEntry\022\013\n\003key\030\001 \001(\t\022\037\n\005value"
+    "\030\002 \001(\0132\020.account.Balance:\0028\0012m\n\022UserAcco"
+    "untService\022W\n\022GetUserAccountData\022\037.accou"
+    "nt.UserAccountDataRequest\032 .account.User"
+    "AccountDataResponseb\006proto3"
 };
 static ::absl::once_flag descriptor_table_user_5faccount_5fdata_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_user_5faccount_5fdata_2eproto = {
     false,
     false,
-    626,
+    667,
     descriptor_table_protodef_user_5faccount_5fdata_2eproto,
     "user_account_data.proto",
     &descriptor_table_user_5faccount_5fdata_2eproto_once,
@@ -246,6 +249,7 @@ PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_user_5faccount
     file_level_enum_descriptors_user_5faccount_5fdata_2eproto,
     file_level_service_descriptors_user_5faccount_5fdata_2eproto,
 };
+namespace account {
 // ===================================================================
 
 class Balance::_Internal {
@@ -259,11 +263,11 @@ Balance::Balance(::google::protobuf::Arena* arena)
     : ::google::protobuf::Message(arena) {
 #endif  // PROTOBUF_CUSTOM_VTABLE
   SharedCtor(arena);
-  // @@protoc_insertion_point(arena_constructor:Balance)
+  // @@protoc_insertion_point(arena_constructor:account.Balance)
 }
 inline PROTOBUF_NDEBUG_INLINE Balance::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
-    const Impl_& from, const ::Balance& from_msg)
+    const Impl_& from, const ::account::Balance& from_msg)
       : asset_symbol_(arena, from.asset_symbol_),
         _cached_size_{0} {}
 
@@ -288,7 +292,7 @@ Balance::Balance(
                offsetof(Impl_, free_amount_) +
                sizeof(Impl_::locked_amount_));
 
-  // @@protoc_insertion_point(copy_constructor:Balance)
+  // @@protoc_insertion_point(copy_constructor:account.Balance)
 }
 inline PROTOBUF_NDEBUG_INLINE Balance::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility,
@@ -306,7 +310,7 @@ inline void Balance::SharedCtor(::_pb::Arena* arena) {
                sizeof(Impl_::locked_amount_));
 }
 Balance::~Balance() {
-  // @@protoc_insertion_point(destructor:Balance)
+  // @@protoc_insertion_point(destructor:account.Balance)
   SharedDtor(*this);
 }
 inline void Balance::SharedDtor(MessageLite& self) {
@@ -353,7 +357,7 @@ const ::google::protobuf::internal::ClassData* Balance::GetClassData() const {
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<2, 3, 0, 28, 2> Balance::_table_ = {
+const ::_pbi::TcParseTable<2, 3, 0, 36, 2> Balance::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
@@ -368,7 +372,7 @@ const ::_pbi::TcParseTable<2, 3, 0, 28, 2> Balance::_table_ = {
     nullptr,  // post_loop_handler
     ::_pbi::TcParser::GenericFallback,  // fallback
     #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-    ::_pbi::TcParser::GetTable<::Balance>(),  // to_prefetch
+    ::_pbi::TcParser::GetTable<::account::Balance>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
@@ -396,14 +400,14 @@ const ::_pbi::TcParseTable<2, 3, 0, 28, 2> Balance::_table_ = {
   }},
   // no aux_entries
   {{
-    "\7\14\0\0\0\0\0\0"
-    "Balance"
+    "\17\14\0\0\0\0\0\0"
+    "account.Balance"
     "asset_symbol"
   }},
 };
 
 PROTOBUF_NOINLINE void Balance::Clear() {
-// @@protoc_insertion_point(message_clear_start:Balance)
+// @@protoc_insertion_point(message_clear_start:account.Balance)
   ::google::protobuf::internal::TSanWrite(&_impl_);
   ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
@@ -427,7 +431,7 @@ PROTOBUF_NOINLINE void Balance::Clear() {
             ::google::protobuf::io::EpsCopyOutputStream* stream) const {
           const Balance& this_ = *this;
 #endif  // PROTOBUF_CUSTOM_VTABLE
-          // @@protoc_insertion_point(serialize_to_array_start:Balance)
+          // @@protoc_insertion_point(serialize_to_array_start:account.Balance)
           ::uint32_t cached_has_bits = 0;
           (void)cached_has_bits;
 
@@ -435,7 +439,7 @@ PROTOBUF_NOINLINE void Balance::Clear() {
           if (!this_._internal_asset_symbol().empty()) {
             const std::string& _s = this_._internal_asset_symbol();
             ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-                _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "Balance.asset_symbol");
+                _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "account.Balance.asset_symbol");
             target = stream->WriteStringMaybeAliased(1, _s, target);
           }
 
@@ -458,7 +462,7 @@ PROTOBUF_NOINLINE void Balance::Clear() {
                 ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
                     this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
           }
-          // @@protoc_insertion_point(serialize_to_array_end:Balance)
+          // @@protoc_insertion_point(serialize_to_array_end:account.Balance)
           return target;
         }
 
@@ -469,7 +473,7 @@ PROTOBUF_NOINLINE void Balance::Clear() {
         ::size_t Balance::ByteSizeLong() const {
           const Balance& this_ = *this;
 #endif  // PROTOBUF_CUSTOM_VTABLE
-          // @@protoc_insertion_point(message_byte_size_start:Balance)
+          // @@protoc_insertion_point(message_byte_size_start:account.Balance)
           ::size_t total_size = 0;
 
           ::uint32_t cached_has_bits = 0;
@@ -499,7 +503,7 @@ PROTOBUF_NOINLINE void Balance::Clear() {
 void Balance::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
   auto* const _this = static_cast<Balance*>(&to_msg);
   auto& from = static_cast<const Balance&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:Balance)
+  // @@protoc_insertion_point(class_specific_merge_from_start:account.Balance)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -517,7 +521,7 @@ void Balance::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google:
 }
 
 void Balance::CopyFrom(const Balance& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:Balance)
+// @@protoc_insertion_point(class_specific_copy_from_start:account.Balance)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -554,11 +558,11 @@ UserAccountDataRequest::UserAccountDataRequest(::google::protobuf::Arena* arena)
     : ::google::protobuf::Message(arena) {
 #endif  // PROTOBUF_CUSTOM_VTABLE
   SharedCtor(arena);
-  // @@protoc_insertion_point(arena_constructor:UserAccountDataRequest)
+  // @@protoc_insertion_point(arena_constructor:account.UserAccountDataRequest)
 }
 inline PROTOBUF_NDEBUG_INLINE UserAccountDataRequest::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
-    const Impl_& from, const ::UserAccountDataRequest& from_msg)
+    const Impl_& from, const ::account::UserAccountDataRequest& from_msg)
       : user_id_(arena, from.user_id_),
         _cached_size_{0} {}
 
@@ -576,7 +580,7 @@ UserAccountDataRequest::UserAccountDataRequest(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
 
-  // @@protoc_insertion_point(copy_constructor:UserAccountDataRequest)
+  // @@protoc_insertion_point(copy_constructor:account.UserAccountDataRequest)
 }
 inline PROTOBUF_NDEBUG_INLINE UserAccountDataRequest::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility,
@@ -588,7 +592,7 @@ inline void UserAccountDataRequest::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
 }
 UserAccountDataRequest::~UserAccountDataRequest() {
-  // @@protoc_insertion_point(destructor:UserAccountDataRequest)
+  // @@protoc_insertion_point(destructor:account.UserAccountDataRequest)
   SharedDtor(*this);
 }
 inline void UserAccountDataRequest::SharedDtor(MessageLite& self) {
@@ -635,7 +639,7 @@ const ::google::protobuf::internal::ClassData* UserAccountDataRequest::GetClassD
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<0, 1, 0, 38, 2> UserAccountDataRequest::_table_ = {
+const ::_pbi::TcParseTable<0, 1, 0, 46, 2> UserAccountDataRequest::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
@@ -650,7 +654,7 @@ const ::_pbi::TcParseTable<0, 1, 0, 38, 2> UserAccountDataRequest::_table_ = {
     nullptr,  // post_loop_handler
     ::_pbi::TcParser::GenericFallback,  // fallback
     #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-    ::_pbi::TcParser::GetTable<::UserAccountDataRequest>(),  // to_prefetch
+    ::_pbi::TcParser::GetTable<::account::UserAccountDataRequest>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
     // string user_id = 1;
@@ -665,14 +669,14 @@ const ::_pbi::TcParseTable<0, 1, 0, 38, 2> UserAccountDataRequest::_table_ = {
   }},
   // no aux_entries
   {{
-    "\26\7\0\0\0\0\0\0"
-    "UserAccountDataRequest"
+    "\36\7\0\0\0\0\0\0"
+    "account.UserAccountDataRequest"
     "user_id"
   }},
 };
 
 PROTOBUF_NOINLINE void UserAccountDataRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:UserAccountDataRequest)
+// @@protoc_insertion_point(message_clear_start:account.UserAccountDataRequest)
   ::google::protobuf::internal::TSanWrite(&_impl_);
   ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
@@ -693,7 +697,7 @@ PROTOBUF_NOINLINE void UserAccountDataRequest::Clear() {
             ::google::protobuf::io::EpsCopyOutputStream* stream) const {
           const UserAccountDataRequest& this_ = *this;
 #endif  // PROTOBUF_CUSTOM_VTABLE
-          // @@protoc_insertion_point(serialize_to_array_start:UserAccountDataRequest)
+          // @@protoc_insertion_point(serialize_to_array_start:account.UserAccountDataRequest)
           ::uint32_t cached_has_bits = 0;
           (void)cached_has_bits;
 
@@ -701,7 +705,7 @@ PROTOBUF_NOINLINE void UserAccountDataRequest::Clear() {
           if (!this_._internal_user_id().empty()) {
             const std::string& _s = this_._internal_user_id();
             ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-                _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "UserAccountDataRequest.user_id");
+                _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "account.UserAccountDataRequest.user_id");
             target = stream->WriteStringMaybeAliased(1, _s, target);
           }
 
@@ -710,7 +714,7 @@ PROTOBUF_NOINLINE void UserAccountDataRequest::Clear() {
                 ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
                     this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
           }
-          // @@protoc_insertion_point(serialize_to_array_end:UserAccountDataRequest)
+          // @@protoc_insertion_point(serialize_to_array_end:account.UserAccountDataRequest)
           return target;
         }
 
@@ -721,7 +725,7 @@ PROTOBUF_NOINLINE void UserAccountDataRequest::Clear() {
         ::size_t UserAccountDataRequest::ByteSizeLong() const {
           const UserAccountDataRequest& this_ = *this;
 #endif  // PROTOBUF_CUSTOM_VTABLE
-          // @@protoc_insertion_point(message_byte_size_start:UserAccountDataRequest)
+          // @@protoc_insertion_point(message_byte_size_start:account.UserAccountDataRequest)
           ::size_t total_size = 0;
 
           ::uint32_t cached_has_bits = 0;
@@ -742,7 +746,7 @@ PROTOBUF_NOINLINE void UserAccountDataRequest::Clear() {
 void UserAccountDataRequest::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
   auto* const _this = static_cast<UserAccountDataRequest*>(&to_msg);
   auto& from = static_cast<const UserAccountDataRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:UserAccountDataRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:account.UserAccountDataRequest)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -754,7 +758,7 @@ void UserAccountDataRequest::MergeImpl(::google::protobuf::MessageLite& to_msg, 
 }
 
 void UserAccountDataRequest::CopyFrom(const UserAccountDataRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:UserAccountDataRequest)
+// @@protoc_insertion_point(class_specific_copy_from_start:account.UserAccountDataRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -820,7 +824,7 @@ void UserAccountDataRequest::InternalSwap(UserAccountDataRequest* PROTOBUF_RESTR
                 return _class_data_.base();
               }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<1, 2, 1, 49, 2> UserAccountDataResponse_BalancesEntry_DoNotUse::_table_ = {
+const ::_pbi::TcParseTable<1, 2, 1, 57, 2> UserAccountDataResponse_BalancesEntry_DoNotUse::_table_ = {
   {
     PROTOBUF_FIELD_OFFSET(UserAccountDataResponse_BalancesEntry_DoNotUse, _impl_._has_bits_),
     0, // no _extensions_
@@ -835,10 +839,10 @@ const ::_pbi::TcParseTable<1, 2, 1, 49, 2> UserAccountDataResponse_BalancesEntry
     nullptr,  // post_loop_handler
     ::_pbi::TcParser::DiscardEverythingFallback,  // fallback
     #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-    ::_pbi::TcParser::GetTable<::UserAccountDataResponse_BalancesEntry_DoNotUse>(),  // to_prefetch
+    ::_pbi::TcParser::GetTable<::account::UserAccountDataResponse_BalancesEntry_DoNotUse>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // .Balance value = 2;
+    // .account.Balance value = 2;
     {::_pbi::TcParser::FastMtS1,
      {18, 0, 0, PROTOBUF_FIELD_OFFSET(UserAccountDataResponse_BalancesEntry_DoNotUse, _impl_.value_)}},
     // string key = 1;
@@ -850,14 +854,14 @@ const ::_pbi::TcParseTable<1, 2, 1, 49, 2> UserAccountDataResponse_BalancesEntry
     // string key = 1;
     {PROTOBUF_FIELD_OFFSET(UserAccountDataResponse_BalancesEntry_DoNotUse, _impl_.key_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // .Balance value = 2;
+    // .account.Balance value = 2;
     {PROTOBUF_FIELD_OFFSET(UserAccountDataResponse_BalancesEntry_DoNotUse, _impl_.value_), _Internal::kHasBitsOffset + 0, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
   }}, {{
-    {::_pbi::TcParser::GetTable<::Balance>()},
+    {::_pbi::TcParser::GetTable<::account::Balance>()},
   }}, {{
-    "\45\3\0\0\0\0\0\0"
-    "UserAccountDataResponse.BalancesEntry"
+    "\55\3\0\0\0\0\0\0"
+    "account.UserAccountDataResponse.BalancesEntry"
     "key"
   }},
 };
@@ -875,11 +879,11 @@ UserAccountDataResponse::UserAccountDataResponse(::google::protobuf::Arena* aren
     : ::google::protobuf::Message(arena) {
 #endif  // PROTOBUF_CUSTOM_VTABLE
   SharedCtor(arena);
-  // @@protoc_insertion_point(arena_constructor:UserAccountDataResponse)
+  // @@protoc_insertion_point(arena_constructor:account.UserAccountDataResponse)
 }
 inline PROTOBUF_NDEBUG_INLINE UserAccountDataResponse::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
-    const Impl_& from, const ::UserAccountDataResponse& from_msg)
+    const Impl_& from, const ::account::UserAccountDataResponse& from_msg)
       : balances_{visibility, arena, from.balances_},
         user_id_(arena, from.user_id_),
         _cached_size_{0} {}
@@ -905,7 +909,7 @@ UserAccountDataResponse::UserAccountDataResponse(
                offsetof(Impl_, maker_commission_) +
                sizeof(Impl_::can_deposit_));
 
-  // @@protoc_insertion_point(copy_constructor:UserAccountDataResponse)
+  // @@protoc_insertion_point(copy_constructor:account.UserAccountDataResponse)
 }
 inline PROTOBUF_NDEBUG_INLINE UserAccountDataResponse::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility,
@@ -924,7 +928,7 @@ inline void UserAccountDataResponse::SharedCtor(::_pb::Arena* arena) {
                sizeof(Impl_::can_deposit_));
 }
 UserAccountDataResponse::~UserAccountDataResponse() {
-  // @@protoc_insertion_point(destructor:UserAccountDataResponse)
+  // @@protoc_insertion_point(destructor:account.UserAccountDataResponse)
   SharedDtor(*this);
 }
 inline void UserAccountDataResponse::SharedDtor(MessageLite& self) {
@@ -987,7 +991,7 @@ const ::google::protobuf::internal::ClassData* UserAccountDataResponse::GetClass
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<4, 11, 2, 55, 2> UserAccountDataResponse::_table_ = {
+const ::_pbi::TcParseTable<4, 11, 2, 63, 2> UserAccountDataResponse::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
@@ -1002,7 +1006,7 @@ const ::_pbi::TcParseTable<4, 11, 2, 55, 2> UserAccountDataResponse::_table_ = {
     nullptr,  // post_loop_handler
     ::_pbi::TcParser::GenericFallback,  // fallback
     #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-    ::_pbi::TcParser::GetTable<::UserAccountDataResponse>(),  // to_prefetch
+    ::_pbi::TcParser::GetTable<::account::UserAccountDataResponse>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
@@ -1074,7 +1078,7 @@ const ::_pbi::TcParseTable<4, 11, 2, 55, 2> UserAccountDataResponse::_table_ = {
     // double stable_coin_amount = 10;
     {PROTOBUF_FIELD_OFFSET(UserAccountDataResponse, _impl_.stable_coin_amount_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
-    // map<string, .Balance> balances = 11;
+    // map<string, .account.Balance> balances = 11;
     {PROTOBUF_FIELD_OFFSET(UserAccountDataResponse, _impl_.balances_), 0, 0,
     (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
   }}, {{
@@ -1082,17 +1086,17 @@ const ::_pbi::TcParseTable<4, 11, 2, 55, 2> UserAccountDataResponse::_table_ = {
         decltype(UserAccountDataResponse()._impl_.balances_)>(
         1, 0, 0, 9,
         11)},
-    {::_pbi::TcParser::GetTable<::Balance>()},
+    {::_pbi::TcParser::GetTable<::account::Balance>()},
   }}, {{
-    "\27\7\0\0\0\0\0\0\0\0\0\10\0\0\0\0"
-    "UserAccountDataResponse"
+    "\37\7\0\0\0\0\0\0\0\0\0\10\0\0\0\0"
+    "account.UserAccountDataResponse"
     "user_id"
     "balances"
   }},
 };
 
 PROTOBUF_NOINLINE void UserAccountDataResponse::Clear() {
-// @@protoc_insertion_point(message_clear_start:UserAccountDataResponse)
+// @@protoc_insertion_point(message_clear_start:account.UserAccountDataResponse)
   ::google::protobuf::internal::TSanWrite(&_impl_);
   ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
@@ -1117,7 +1121,7 @@ PROTOBUF_NOINLINE void UserAccountDataResponse::Clear() {
             ::google::protobuf::io::EpsCopyOutputStream* stream) const {
           const UserAccountDataResponse& this_ = *this;
 #endif  // PROTOBUF_CUSTOM_VTABLE
-          // @@protoc_insertion_point(serialize_to_array_start:UserAccountDataResponse)
+          // @@protoc_insertion_point(serialize_to_array_start:account.UserAccountDataResponse)
           ::uint32_t cached_has_bits = 0;
           (void)cached_has_bits;
 
@@ -1125,7 +1129,7 @@ PROTOBUF_NOINLINE void UserAccountDataResponse::Clear() {
           if (!this_._internal_user_id().empty()) {
             const std::string& _s = this_._internal_user_id();
             ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-                _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "UserAccountDataResponse.user_id");
+                _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "account.UserAccountDataResponse.user_id");
             target = stream->WriteStringMaybeAliased(1, _s, target);
           }
 
@@ -1192,10 +1196,10 @@ PROTOBUF_NOINLINE void UserAccountDataResponse::Clear() {
                 10, this_._internal_stable_coin_amount(), target);
           }
 
-          // map<string, .Balance> balances = 11;
+          // map<string, .account.Balance> balances = 11;
           if (!this_._internal_balances().empty()) {
-            using MapType = ::google::protobuf::Map<std::string, ::Balance>;
-            using WireHelper = _pbi::MapEntryFuncs<std::string, ::Balance,
+            using MapType = ::google::protobuf::Map<std::string, ::account::Balance>;
+            using WireHelper = _pbi::MapEntryFuncs<std::string, ::account::Balance,
                                            _pbi::WireFormatLite::TYPE_STRING,
                                            _pbi::WireFormatLite::TYPE_MESSAGE>;
             const auto& field = this_._internal_balances();
@@ -1206,7 +1210,7 @@ PROTOBUF_NOINLINE void UserAccountDataResponse::Clear() {
                     11, entry.first, entry.second, target, stream);
                 ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
                     entry.first.data(), static_cast<int>(entry.first.length()),
- ::google::protobuf::internal::WireFormatLite::SERIALIZE, "UserAccountDataResponse.balances");
+ ::google::protobuf::internal::WireFormatLite::SERIALIZE, "account.UserAccountDataResponse.balances");
               }
             } else {
               for (const auto& entry : field) {
@@ -1214,7 +1218,7 @@ PROTOBUF_NOINLINE void UserAccountDataResponse::Clear() {
                     11, entry.first, entry.second, target, stream);
                 ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
                     entry.first.data(), static_cast<int>(entry.first.length()),
- ::google::protobuf::internal::WireFormatLite::SERIALIZE, "UserAccountDataResponse.balances");
+ ::google::protobuf::internal::WireFormatLite::SERIALIZE, "account.UserAccountDataResponse.balances");
               }
             }
           }
@@ -1224,7 +1228,7 @@ PROTOBUF_NOINLINE void UserAccountDataResponse::Clear() {
                 ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
                     this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
           }
-          // @@protoc_insertion_point(serialize_to_array_end:UserAccountDataResponse)
+          // @@protoc_insertion_point(serialize_to_array_end:account.UserAccountDataResponse)
           return target;
         }
 
@@ -1235,7 +1239,7 @@ PROTOBUF_NOINLINE void UserAccountDataResponse::Clear() {
         ::size_t UserAccountDataResponse::ByteSizeLong() const {
           const UserAccountDataResponse& this_ = *this;
 #endif  // PROTOBUF_CUSTOM_VTABLE
-          // @@protoc_insertion_point(message_byte_size_start:UserAccountDataResponse)
+          // @@protoc_insertion_point(message_byte_size_start:account.UserAccountDataResponse)
           ::size_t total_size = 0;
 
           ::uint32_t cached_has_bits = 0;
@@ -1244,12 +1248,12 @@ PROTOBUF_NOINLINE void UserAccountDataResponse::Clear() {
 
           ::_pbi::Prefetch5LinesFrom7Lines(&this_);
            {
-            // map<string, .Balance> balances = 11;
+            // map<string, .account.Balance> balances = 11;
             {
               total_size +=
                   1 * ::google::protobuf::internal::FromIntSize(this_._internal_balances_size());
               for (const auto& entry : this_._internal_balances()) {
-                total_size += _pbi::MapEntryFuncs<std::string, ::Balance,
+                total_size += _pbi::MapEntryFuncs<std::string, ::account::Balance,
                                                _pbi::WireFormatLite::TYPE_STRING,
                                                _pbi::WireFormatLite::TYPE_MESSAGE>::ByteSizeLong(entry.first, entry.second);
               }
@@ -1310,7 +1314,7 @@ PROTOBUF_NOINLINE void UserAccountDataResponse::Clear() {
 void UserAccountDataResponse::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
   auto* const _this = static_cast<UserAccountDataResponse*>(&to_msg);
   auto& from = static_cast<const UserAccountDataResponse&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:UserAccountDataResponse)
+  // @@protoc_insertion_point(class_specific_merge_from_start:account.UserAccountDataResponse)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -1350,7 +1354,7 @@ void UserAccountDataResponse::MergeImpl(::google::protobuf::MessageLite& to_msg,
 }
 
 void UserAccountDataResponse::CopyFrom(const UserAccountDataResponse& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:UserAccountDataResponse)
+// @@protoc_insertion_point(class_specific_copy_from_start:account.UserAccountDataResponse)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -1376,6 +1380,7 @@ void UserAccountDataResponse::InternalSwap(UserAccountDataResponse* PROTOBUF_RES
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)
+}  // namespace account
 namespace google {
 namespace protobuf {
 }  // namespace protobuf

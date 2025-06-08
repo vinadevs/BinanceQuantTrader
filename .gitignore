@@ -78,8 +78,11 @@ Source/SqlDatabase/x64
 Source/GrpcProtobufConnection/x64
 Source/OrderRouting/x64
 Source/MarketDataCapture/x64
+Source/CurlAPI/x64
+Source/ApplicationTest/x64
 Source/Configurations/BQT/BinanceAKCfgTest.xml
 Source/Configurations/Simulator/BinanceExchangeSimulatorCfgTest.xml
+Source/AppData
 Source/Lib64
 .vs/
 x64/

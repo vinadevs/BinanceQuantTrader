@@ -8,7 +8,11 @@
 
 #pragma once
 
+#include "../RestAPI/RestAPI.h"
+
 #include <memory>
+#include <filesystem>
+#include <fstream>
 
 namespace tinyxml2 {
 	class XMLElement;
@@ -18,33 +22,80 @@ namespace LibraryUtils {
 	class Logger;
 };
 
-namespace PortfolioManager {
-	class PortfolioInvestmentBinance;
+namespace ComplianceNRegulatory {
+	class BinanceExchangeProfileMgr;
+}
+
+namespace OrderManagement {
+	class PositionManager;
 }
 
 namespace UserAccount {
+
+	enum class ReportChannel : unsigned
+	{
+		CONSOLE, // print report to console cmd
+		EXTERNAL_FILE, // log report to file
+		GUI_APP, // send report to external Gui app
+		UNDEF,
+	};
+	
+	// The ExchangeReporter class is responsible for generating reports on trading activities.
 	class ExchangeReporter
 	{
 	public:
-		ExchangeReporter(PortfolioManager::PortfolioInvestmentBinance* portfolio)
-			: m_portfolio(portfolio) {}
+		ExchangeReporter(
+			binapi::rest::account_info_t* accountInfo,
+			ComplianceNRegulatory::BinanceExchangeProfileMgr* exchangeProfileMgr,
+			OrderManagement::PositionManager* positionManager)
+			: m_accountInfo(accountInfo),
+			m_exchangeProfileMgr(exchangeProfileMgr),
+			m_positionManager(positionManager) {}
+
 		virtual ~ExchangeReporter() {};
+
 		virtual void SetupReporter(const tinyxml2::XMLElement* reportCfg) = 0;
 		virtual void UpdateRemoteReportTrades(const std::string& symbol) = 0;
 		virtual void UpdateRemoteReportOpenOrders(const std::string& symbol) = 0;
 		virtual void UpdateRemoteReportAccountBalance(const std::string& symbol) = 0;
+		virtual void UpdateRemoteReportExchangerPriceForOrders(const std::string& symbol) = 0;
+		virtual void UpdateRemoteReportCalculateLossForOrders(const std::string& symbol) = 0;
 		virtual void DoRemoteExecutionReport(const std::string& symbol) = 0;
 		virtual void DoLocalExecutionReport(const std::string& symbol) = 0;
-		virtual void DoTradeExecutionReport() = 0;
+		virtual void DoTradeExecutionReport(const std::string& symbol) = 0;
+		virtual void UpdateRemoteData(const std::string& symbol) = 0;
+
 	protected:
 		virtual bool MergeLocalAndRemmoteReport() = 0;
 
-		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr };
+        ReportChannel FromReportChannelTextToEnum(const std::string& reportChannel)
+        {
+            if (reportChannel == "Console")
+                return ReportChannel::CONSOLE;
+            else if (reportChannel == "ExternalFile")
+                return ReportChannel::EXTERNAL_FILE;
+            else if (reportChannel == "GuiApp")
+                return ReportChannel::GUI_APP;
+            else
+                return ReportChannel::UNDEF;
+        }
+
+		ComplianceNRegulatory::BinanceExchangeProfileMgr* m_exchangeProfileMgr{ nullptr };
+		OrderManagement::PositionManager* m_positionManager{ nullptr };
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
 
-		bool m_enableTradeReporter{ false };
+		bool m_enableLastDayTradeReporter{ false };
 		bool m_enableOpenOrderReporter{ false };
 		bool m_enableBalanceReporter{ false };
+		bool m_enableExchangerPriceForOrdersReporter{ false };
+		bool m_enableCalculateLossForOrdersReporter{ false };
+
+		// restAPI data
+		binapi::rest::account_info_t* m_accountInfo;
+		// external file to store report
+		std::string m_reportToFilePath;
+		// report channel
+		ReportChannel m_reportChannel{ ReportChannel::UNDEF };
 	};
 };
 

@@ -23,6 +23,7 @@ namespace PathUtils {
         BQT,
         SIMULATOR,
         MESSAGE_SERVER,
+        MARKET_DATA_CAPTURE,
     };
 
     std::string DLL_CLASS_LIBRARYUTILS_EXPORTS GetApplicationFolderPath();

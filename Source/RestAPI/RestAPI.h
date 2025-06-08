@@ -13,6 +13,7 @@
 
 #include "../KernelTrading/types.h"
 #include "../KernelTrading/enums.h"
+
 #include <memory>
 #include <functional>
 
@@ -358,5 +359,7 @@ private:
 
 } // ns rest
 } // ns binapi
+
+#define DEREF_V(pointer) *pointer
 
 #endif // _REST_API_H_

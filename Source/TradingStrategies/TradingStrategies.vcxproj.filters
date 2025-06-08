@@ -34,14 +34,50 @@
     <Filter Include="Strategy Host">
       <UniqueIdentifier>{dfa958fa-9bc8-4a43-8061-94f462c6fa92}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Trading Component">
-      <UniqueIdentifier>{27739fa1-90fa-4dcd-ad72-19abff18dd30}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Message Server">
       <UniqueIdentifier>{b4b364c8-d6de-4f00-98a3-13be15371f58}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Smart Order Routing">
+    <Filter Include="Trading Rules">
+      <UniqueIdentifier>{27739fa1-90fa-4dcd-ad72-19abff18dd30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Auto Strategies\Stop Loss">
+      <UniqueIdentifier>{76ad005a-54c1-40a4-9d87-b5913dfb2594}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External Controller">
+      <UniqueIdentifier>{08b8d721-1ff2-4bc7-91df-efb0724262e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Advising Strategies\Market Monitor Strategy">
+      <UniqueIdentifier>{6ff854d1-8316-4dc4-987a-a3444ee4693a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External Controller\Protobuf">
+      <UniqueIdentifier>{c3f8727e-7fd6-4ee4-87b5-3f1619db96b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Semi-Auto Strategies\Benchmarking">
+      <UniqueIdentifier>{2622c986-38cd-4b73-a1c8-2bd694693be8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Semi-Auto Strategies\Benchmarking\VWAP">
+      <UniqueIdentifier>{a9161a3f-835f-4481-ae34-07c8ea717ea7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Semi-Auto Strategies\Benchmarking\TWAP">
+      <UniqueIdentifier>{b7333cf0-b35f-46cb-9512-1f3b010a2c93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Semi-Auto Strategies\Benchmarking\Implementation Shortfall">
+      <UniqueIdentifier>{adab7f75-a8a3-4c54-9210-16b7ab9e67c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Semi-Auto Strategies\Benchmarking\Percentage On Volume">
+      <UniqueIdentifier>{8bf9f1c2-825b-4cd8-8937-2d3b9a507ec6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Semi-Auto Strategies\Benchmarking\Child Order">
+      <UniqueIdentifier>{d3c488e0-c684-41d7-9c33-a43462e2861f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Semi-Auto Strategies\Smart Order Routing">
       <UniqueIdentifier>{77e1f31c-92c0-4994-a11b-5e97c5c6d2dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Derivatives Arbitrage">
+      <UniqueIdentifier>{5e143c08-10ef-4b4b-9cb0-bf5049eb8689}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Smart Long Short">
+      <UniqueIdentifier>{d3ad3f24-60cd-481f-9178-8cde15b34cb4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -75,14 +111,53 @@
     <ClInclude Include="MutilpleStrategiesHost.h">
       <Filter>Strategy Host</Filter>
     </ClInclude>
-    <ClInclude Include="TradingComponent.h">
-      <Filter>Trading Component</Filter>
-    </ClInclude>
     <ClInclude Include="CompilanceChecker.h">
-      <Filter>Trading Component</Filter>
+      <Filter>Trading Rules</Filter>
     </ClInclude>
     <ClInclude Include="StrategyMessageServer.h">
       <Filter>Message Server</Filter>
+    </ClInclude>
+    <ClInclude Include="StopLossStrategy.h">
+      <Filter>Auto Strategies\Stop Loss</Filter>
+    </ClInclude>
+    <ClInclude Include="MarketMonitorStrategy.h">
+      <Filter>Advising Strategies\Market Monitor Strategy</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\strategy_control_request.grpc.pb.h">
+      <Filter>External Controller\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\strategy_control_request.pb.h">
+      <Filter>External Controller\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\strategy_parent_order.grpc.pb.h">
+      <Filter>External Controller\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\strategy_parent_order.pb.h">
+      <Filter>External Controller\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="StrategyParentOrderHttpService.h">
+      <Filter>External Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="StrategyRequestHttpService.h">
+      <Filter>External Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternalController.h">
+      <Filter>External Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="VWAPStrategy.h">
+      <Filter>Semi-Auto Strategies\Benchmarking\VWAP</Filter>
+    </ClInclude>
+    <ClInclude Include="TWAPStrategy.h">
+      <Filter>Semi-Auto Strategies\Benchmarking\TWAP</Filter>
+    </ClInclude>
+    <ClInclude Include="ISStrategy.h">
+      <Filter>Semi-Auto Strategies\Benchmarking\Implementation Shortfall</Filter>
+    </ClInclude>
+    <ClInclude Include="POVStrategy.h">
+      <Filter>Semi-Auto Strategies\Benchmarking\Percentage On Volume</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildOrder.h">
+      <Filter>Semi-Auto Strategies\Benchmarking\Child Order</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -116,5 +191,53 @@
     <ClCompile Include="StrategyMessageServer.cpp">
       <Filter>Message Server</Filter>
     </ClCompile>
+    <ClCompile Include="CompilanceChecker.cpp">
+      <Filter>Trading Rules</Filter>
+    </ClCompile>
+    <ClCompile Include="StopLossStrategy.cpp">
+      <Filter>Auto Strategies\Stop Loss</Filter>
+    </ClCompile>
+    <ClCompile Include="MarketMonitorStrategy.cpp">
+      <Filter>Advising Strategies\Market Monitor Strategy</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\strategy_control_request.grpc.pb.cc">
+      <Filter>External Controller\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\strategy_control_request.pb.cc">
+      <Filter>External Controller\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\strategy_parent_order.grpc.pb.cc">
+      <Filter>External Controller\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\strategy_parent_order.pb.cc">
+      <Filter>External Controller\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="StrategyParentOrderHttpService.cpp">
+      <Filter>External Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="StrategyRequestHttpService.cpp">
+      <Filter>External Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="ExternalController.cpp">
+      <Filter>External Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="VWAPStrategy.cpp">
+      <Filter>Semi-Auto Strategies\Benchmarking\VWAP</Filter>
+    </ClCompile>
+    <ClCompile Include="TWAPStrategy.cpp">
+      <Filter>Semi-Auto Strategies\Benchmarking\TWAP</Filter>
+    </ClCompile>
+    <ClCompile Include="ISStrategy.cpp">
+      <Filter>Semi-Auto Strategies\Benchmarking\Implementation Shortfall</Filter>
+    </ClCompile>
+    <ClCompile Include="POVStrategy.cpp">
+      <Filter>Semi-Auto Strategies\Benchmarking\Percentage On Volume</Filter>
+    </ClCompile>
+    <ClCompile Include="ChildOrder.cpp">
+      <Filter>Semi-Auto Strategies\Benchmarking\Child Order</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

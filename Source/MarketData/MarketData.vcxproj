@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ArrayMarketDtaFeed.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="FeedIdentification.h" />
     <ClInclude Include="framework.h" />
@@ -167,6 +168,7 @@
     <ClInclude Include="MarketDataSubject.h" />
     <ClInclude Include="SynchronousMarketDataFeed.h" />
     <ClInclude Include="SynchronousMarketData.h" />
+    <ClInclude Include="TableMarketDataFeed.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />

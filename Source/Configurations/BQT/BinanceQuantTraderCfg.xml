@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
+<GlobalSettings>
+  <ApplicationDataPath Folder="[ROOT_BQT_PATH]\AppData"/>
+</GlobalSettings>
+
 <RealTimeMarketData>
-  <Connection StreamBinanceCom="stream.binance.com" StreamConnectionPort="9443"/>
-  <SubscriptionData IndividualBookTickerData="true" TradeData="true" IndividualMarketTickerData="true" AllMarketTickersData="true" IndividualMiniTickerData="true" AllMiniTickersData="true" AggregateTradeData="true" KlineCandleStickData="true" PartDepthData="true" DiffDepthData="true"/>
-  <InterestingDataSymbols File="[ROOT_BQT_PATH]\Configurations\Common\BinanceAssets.txt"/>
+  <UsingMarketData Name="BinanceMarketData" File="[ROOT_BQT_PATH]\Configurations\MarketData\BinanceMarketDataCfg.xml"/>
 </RealTimeMarketData>
 
 <StaticData>
@@ -11,29 +13,34 @@
 <HistoricalData>
 </HistoricalData>
 
-<BinanceAPI>
-  <Connection ApiBinanceCom="api.binance.com" ApiBinancePort="443" ConnectionTimeoutMs="10000"/>
-</BinanceAPI>
+<BinanceSpotApiGateWay>
+  <Connection Enable="true" SpotApiBinanceUrl="api.binance.com" ApiBinancePort="443" ConnectionTimeoutMs="10000"/>
+</BinanceSpotApiGateWay>
+
+<BinanceFutureApiGateWay>
+  <Connection Enable="false" FutureApiBinanceUrl="fapi.binance.com" ApiBinancePort="443" ConnectionTimeoutMs="10000"/>
+</BinanceFutureApiGateWay>
 
 <TradingStrategy>
   <UsingStrategy Name="FomoStrategy" File="[ROOT_BQT_PATH]\Configurations\Strategy\Auto\FomoStrategy.xml"/>
 </TradingStrategy>
 
 <PortfolioInvestment>
-  <InvestmentManagement File="[ROOT_BQT_PATH]\Configurations\Common\BinanceAssets.txt"/>
 </PortfolioInvestment>
 
 <TradingModel>
-  <Field Setting1="xxx" Setting2="yyy"/>
+  <MultipleThreads Enable="true"/>
+  <ExternalControlling Enable="true"/>
 </TradingModel>
 
 <TraderInfo>
   <UsingTrader Type="BinanceTrader"/>
-  <Report TradeReport="true" OrderReport="true" BalanceReport="true"/>
+  <Report TradeReport="true" OrderReport="true" BalanceReport="true" ExchangerPriceForOrdersReport="true" CalculateLossForOrdersReport="true" ReportToFilePath="[ROOT_BQT_PATH]\AppData\trade_results.txt" ReportChannel="ExternalFile"/>
 </TraderInfo>
 
 <ComplianceNRegulatory>
-  <TradingLimits RequestWeightPerMinute="6000" OrdersPerTenSeconds="50" OrdersPerTwentyFourHours="1000"/>
+  <TradingLimits MaxRequestWeightPerMinute="6000" MaxOrdersPerTenSeconds="100" MaxOrdersPerTwentyFourHours="200000"/>
+  <StaticExchangeProfile File="[ROOT_BQT_PATH]\Configurations\Common\BinanceStaticExchangeProfile.txt"/>
 </ComplianceNRegulatory>
 
 <RiskManagement>
@@ -51,3 +58,15 @@
 <BinanceWalletClient>
   <Connection ServerIpAddress="localhost" ServerPort="50051"/>
 </BinanceWalletClient>
+
+<BinanceExchangeClient>
+  <Connection ServerIpAddress="localhost" ServerPort="50051"/>
+</BinanceExchangeClient>
+
+<BinanceTradeProfile>
+  <Connection ServerIpAddress="localhost" ServerPort="50051"/>
+</BinanceTradeProfile>
+
+<ExternalController>
+  <Connection ServerIpAddress="0.0.0.0" ServerPort="12346"/>
+</ExternalController>

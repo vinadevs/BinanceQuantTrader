@@ -38,7 +38,7 @@ bool UpstreamOrderQueueMgr::ReplaceOrder(const std::string& clientOrderId, const
 	return m_upstreamOrderQueue.ReplaceOrderWithClientOrderId(clientOrderId, order);
 }
 
-const UpstreamOrder& UpstreamOrderQueueMgr::LookupOrder(const std::string& clientOrderId) const
+UpstreamOrder UpstreamOrderQueueMgr::LookupOrder(const std::string& clientOrderId) const
 {
 	auto result = m_upstreamOrderQueue.LookupOrderWithClientOrderId(clientOrderId);
 	if (result)

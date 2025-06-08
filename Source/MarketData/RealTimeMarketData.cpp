@@ -24,20 +24,39 @@ RealTimeMarketData::RealTimeMarketData(
 
 RealTimeMarketData::~RealTimeMarketData() {}
 
-void RealTimeMarketData::RegisterDataStream(MarketDataObserver* observer)
+void RealTimeMarketData::RegisterDataListener(MarketDataObserver* observer)
 {
 	m_feedHandler->RegisterObserver(observer);
 }
 
-void RealTimeMarketData::UnregisterDataStream(MarketDataObserver* observer)
+void RealTimeMarketData::UnRegisterDataListener(MarketDataObserver* observer)
 {
 	m_feedHandler->UnregisterObserver(observer);
 }
 
 void RealTimeMarketData::StartStreamingData()
 {
-	m_dataEvents->StartSubscriptionEvents();
 	m_dataEvents->Wait();
+}
+
+void RealTimeMarketData::StartIOContext()
+{
+	m_dataEvents->StartIOContext();
+}
+
+bool RealTimeMarketData::SubscribeSymbol(const std::string& symbol)
+{
+	return m_dataEvents->Subscribe(symbol);
+}
+
+bool RealTimeMarketData::UnsubscribeSymbol(const std::string& symbol)
+{
+	return m_dataEvents->Unsubscribe(symbol);
+}
+
+bool RealTimeMarketData::IsSubscribedSymbol(const std::string& symbol)
+{
+	return m_dataEvents->IsSubscribed(symbol);
 }
 
 const std::unordered_set<std::string>& RealTimeMarketData::GetSubscribingSymbols() const

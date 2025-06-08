@@ -12,16 +12,16 @@
 #include "../KernelTrading/errors.h"
 #include "../KernelTrading/types.h"
 #include "../RestAPI/RestAPI.h"
-#include "../RestAPI/BinanceAPI.h"
+#include "../RestAPI/BinanceSpotApiGateWay.h"
 #include "../RestAPI/ApiKeyInfoManager.h"
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/SourceBuildFlags.h"
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 #include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
 #endif
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 using namespace ExchangeConnectivity;
 #else
 using namespace RestAPI;
@@ -31,7 +31,7 @@ bool BinanceAccountUtils::QueryBinanceAccount(
     binapi::rest::account_info_t* account,
     LibraryUtils::Logger* logger)
 {
-#if USE_TEST_TRADING // use simulator protobuf message
+#if USE_BACK_TEST_TRADING // use simulator protobuf message
     std::string errorMessage;
     if (ExchangeSimulatorGateWay->GetUserAccountInfo(
         ApiKeyInfoMgr->GetApiKeyInfo().m_userID, account, errorMessage))
@@ -45,9 +45,9 @@ bool BinanceAccountUtils::QueryBinanceAccount(
         return false;
     }
 #else // use Binance HTTP API
-    if (BinanceApiGateWay)
+    if (BinanceSpotApiGateWayMgr)
     {
-        const auto accountInfoResult = BinanceApiGateWay->account_info();
+        const auto accountInfoResult = BinanceSpotApiGateWayMgr->account_info();
         if (!binapi::rest::e_error_equal(accountInfoResult.ec, binapi::rest::e_error::OK))
         {
             // If you are seeing the error:
@@ -65,7 +65,7 @@ bool BinanceAccountUtils::QueryBinanceAccount(
                 return false;
             }
             //LOG_DEBUG_STREAM(logger, "AccountInfo=" << accountInfoResult.v);
-            *account = accountInfoResult.v;
+            DEREF_V(account) = accountInfoResult.v;
             return true;
         }
     }

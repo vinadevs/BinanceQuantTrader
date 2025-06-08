@@ -23,6 +23,7 @@
 
 namespace tinyxml2 {
     class XMLElement;
+	class XMLDocument;
 };
 
 namespace LibraryUtils {
@@ -70,7 +71,9 @@ namespace ExchangeSimulator {
         USING_TCPIP_MQ, // get auto acks via tcpip connection from macthing engine
     };
 
-    class Participant; // fake traders
+    class Participant; // simulative traders
+	class RTMarketSpotParticipant; // simulative spot traders
+	class RTMarketFutureParticipant; // simulative future traders
     class UserAccountManager; // user wallet info 
     class UpstreamOrderQueueMgr; // lisst pre-orders matching process
     class UpstreamOrderMatchedMgr; // list post-orders matching process
@@ -89,16 +92,18 @@ namespace ExchangeSimulator {
 
         void OnHandlingReceivedSimulatorMessage(const MiddlewareMQ::BqtJsonMessage& message) override;
     private:
+        void SubscribeTargetSymbols(const tinyxml2::XMLDocument* matchingEngineXmlCfg);
         void ProcessIncommingOrders();
+
         bool VerifyUpstreamBinanceNewOrder(const OrderManagement::BinanceNewOrder& order);
         bool VerifyUpstreamBinanceCancelOrder(const OrderManagement::BinanceCancelOrder& order);
         bool VerifyUpstreamBinanceReplaceOrder(const OrderManagement::BinanceReplaceOrder& order);
         bool VerifyUpstreamBinanceQueryOrder(const OrderManagement::BinanceQueryOrder& order);
        
         void PostProcessingMatchedNewOrder(OrderManagement::BinanceNewOrder& order);
-        /*bool PostProcessingMatchedCancelOrder(const OrderManagement::BinanceCancelOrder& order);
-        bool PostProcessingMatchedReplaceOrder(const OrderManagement::BinanceReplaceOrder& order);
-        bool PostProcessingMatchedQueryOrder(const OrderManagement::BinanceQueryOrder& order);*/
+        void PostProcessingMatchedCancelOrder(OrderManagement::BinanceCancelOrder& order);
+        void PostProcessingMatchedReplaceOrder(OrderManagement::BinanceReplaceOrder& order);
+        void PostProcessingMatchedQueryOrder(OrderManagement::BinanceQueryOrder& order);
 
         OrderManagement::BinanceNewOrder ConstructUpstreamNewOrder(
             const MiddlewareMQ::BqtJsonMessage& message);
@@ -119,7 +124,10 @@ namespace ExchangeSimulator {
         std::unique_ptr<UpstreamOrderMatchedMgr> m_upstreamOrderMatchedMgr;
         UserAccountManager* m_userAccountManager{ nullptr };
         std::unique_ptr<Participant> m_participant;
+        RTMarketSpotParticipant* m_rtMarketSpotParticipant{ nullptr };
+        RTMarketFutureParticipant* m_rtMarketFutureParticipant{ nullptr };
         std::unique_ptr<MarketData::RealTimeMarketData> m_marketData;
+        std::unique_ptr<tinyxml2::XMLDocument> m_binanceMarketDataConfig;
         DownstreamAckBehaviour m_downstreamAckBehaviour{ DownstreamAckBehaviour::USING_HTTP_REQUEST };
     };
 };
