@@ -14,9 +14,9 @@
 #include "../SettingNConfig/tinyxml2.h"
 #include "../ComplianceNRegulatory/BinanceTradingRules.h"
 #include "../ComplianceNRegulatory/BinanceExchangeProfile.h"
-#include "../LibraryUtils/StringUtils.h"
 #include "../PortfolioManager/PortfolioInvestmentBinance.h"
 #include "../QuantitativeModel/OrderParammeterGenerator.h"
+#include "../LibraryUtils/StringUtils.h"
 
 using namespace TradingStrategies;
 using namespace QuantitativeModel;
@@ -91,6 +91,10 @@ void FomoTradingStrategy::SubscribeTargetSymbols()
 	const XMLElement* symbolsXml = targetSymbolXml->FirstChildElement("Symbols");
 	assert(symbolsXml);
 	m_targetTradeSymbols = StringUtils::SplitAndTrimString(symbolsXml->Attribute("List"), ',');
+	if (m_targetTradeSymbols.empty())
+	{
+		throw std::runtime_error("No target symbols to subscribe market data.");
+	}
 	// register TradingSignalService class with market data to receive real time data
 	m_marketData->RegisterDataListener(m_tradingSignalService.get());
 	// subscibe all target symbols

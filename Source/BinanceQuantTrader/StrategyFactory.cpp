@@ -17,6 +17,8 @@
 #include "../TradingStrategies/TestTradingStrategy.h"
 #include "../TradingStrategies/MarketMonitorStrategy.h"
 #include "../TradingStrategies/StopLossStrategy.h"
+#include "../TradingStrategies/SmartLongShortStrategy.h"
+
 #include "../LibraryUtils/PathUtils.h"
 #include "../LibraryUtils/StringUtils.h"
 
@@ -56,6 +58,10 @@ StrategyFactory::CreateTargetStrategy(
 		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "StopLossStrategy"))
 		{
 			return std::make_unique<StopLossStrategy>(strategyCfgFile, marketData, trader, tradingRules);
+		}
+		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "SmartLongShortStrategy"))
+		{
+			return std::make_unique<SmartLongShortStrategy>(strategyCfgFile, marketData, trader, tradingRules);
 		}
 		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "TestStrategy"))
 		{

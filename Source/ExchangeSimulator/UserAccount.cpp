@@ -112,7 +112,7 @@ AssetBalance& UserAccount::LookupAssetBalance(const AssetSymbol& symbol)
         StaticDataMgr->GetStableCoinUSDTSymbol())); // Throws std::out_of_range if symbol not found
 }
 
-FutureAssetBalance& UserAccount::LookupFutureAssetBalance(const AssetSymbol& symbol)
+FutureAssetBalance& UserAccount::LookupFutureAssetInfo(const AssetSymbol& symbol)
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
 	return m_futureAssetBalances.at(StaticData::StaticDataManager::GetSymbolFromTradingPair(symbol,

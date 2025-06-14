@@ -165,6 +165,7 @@
     <ClInclude Include="ExchangeRuleAndCompliance.h" />
     <ClInclude Include="protobuf\user_trade_profile.grpc.pb.h" />
     <ClInclude Include="protobuf\user_trade_profile.pb.h" />
+    <ClInclude Include="UserAccountFuture.h" />
     <ClInclude Include="UserTradeProfileManager.h" />
     <ClInclude Include="protobuf\exchange_info_data.grpc.pb.h" />
     <ClInclude Include="protobuf\exchange_info_data.pb.h" />
@@ -205,6 +206,7 @@
     <ClCompile Include="ExchangeRuleAndCompliance.cpp" />
     <ClCompile Include="protobuf\user_trade_profile.grpc.pb.cc" />
     <ClCompile Include="protobuf\user_trade_profile.pb.cc" />
+    <ClCompile Include="UserAccountFuture.cpp" />
     <ClCompile Include="UserTradeProfileManager.cpp" />
     <ClCompile Include="HistoricalParticipant.cpp" />
     <ClCompile Include="MatchingEngine.cpp" />

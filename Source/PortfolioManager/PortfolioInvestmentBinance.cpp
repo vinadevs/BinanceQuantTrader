@@ -105,6 +105,9 @@ void PortfolioInvestmentBinance::UpdateBinanceAccountInfo()
         // This maybe because your API-key has been expired
         // Please try to renew your API-key at https://www.binance.com/en-JP/my/settings/api-management 
         // OR: Way too much request weight used; IP banned until specific time
+
+		// OR if you are using simulator then you need to check if the simulator is running
+		// to retrieve the simulation account information
         throw std::runtime_error("PortfolioInvestmentBinance: failed to update Binance account information.");
     }
 }

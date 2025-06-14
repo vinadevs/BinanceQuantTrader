@@ -9,6 +9,7 @@
 #pragma once
 
 #include "UserAccount.h"
+#include "UserAccountFuture.h"
 
 #include <memory>
 #include <mutex>
@@ -59,7 +60,10 @@ namespace ExchangeSimulator {
 	 * - Support secure and efficient account operations.
 	 */
 
+	 // Spot user accounts are stored in UserAccount
     using Accounts = std::map<std::string, std::unique_ptr<UserAccount>>;
+	// Future user accounts are stored in UserAccountFuture
+	using FutureAccounts = std::map<std::string, std::unique_ptr<UserAccountFuture>>;
 
     class UserAccountManager
     {
@@ -67,23 +71,37 @@ namespace ExchangeSimulator {
         UserAccountManager(const tinyxml2::XMLElement* userAccountManagerCfg);
         ~UserAccountManager();
 
-        void AddNewUserAccount(
+        void AddNewSpotUserAccount(
             const std::string& userId,
             const std::string& userConfigPath,
             const std::string& accountInfoJsonFile);
 
-        void RemoveUserAccount(const std::string& userId);
+		void AddNewFutureUserAccount(
+			const std::string& userId,
+			const std::string& userConfigPath,
+			const std::string& accountInfoJsonFile);
 
-        UserAccount* LookupUserAccount(const std::string& userId);
+        void RemoveSpotUserAccount(const std::string& userId);
 
-        UserAccount* OpenEditSessionForUserAccount(const std::string& userId);
+		void RemoveFutureUserAccount(const std::string& userId);
+
+        UserAccount* LookupSpotUserAccount(const std::string& userId);
+
+		UserAccountFuture* LookupFutureUserAccount(const std::string& userId);
+
+        UserAccount* OpenEditSessionForSpotUserAccount(const std::string& userId);
+
+		UserAccountFuture* OpenEditSessionForFutureUserAccount(const std::string& userId);
 
         void ClearAll();
 
-        const Accounts& GetUserAccounts();
+        const Accounts& GetUserSpotAccounts();
+
+		const FutureAccounts& GetUserFutureAccounts();
     protected:
         std::unique_ptr<LibraryUtils::Logger> m_logger;
         Accounts m_accounts;
+		FutureAccounts m_futureAccounts;
         std::mutex m_mutex;
         std::size_t m_maxAccount{ 0 };
     };

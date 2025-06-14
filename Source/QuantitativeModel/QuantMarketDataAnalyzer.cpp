@@ -74,7 +74,6 @@ void QuantMarketDataAnalyzer::AnalysisIndividualBookTicker(const MarketData::Ind
 		m_periodDownCounter = 0; // reset counter
 		m_logger->Info("Symbol[" + m_symbol + "] reported DOWN_PERIOD, last best bid price: " + m_lastBestBidPrice.str() + ",SMA: " + m_smaPrice.str());
 	}
-
 }
 
 void QuantMarketDataAnalyzer::AnalysisTrade(const MarketData::TradeData& data)

@@ -32,14 +32,26 @@ namespace ComplianceNRegulatory {
 
 namespace BinanceQuantTrader {
 
+	// StrategyFactory is responsible for creating instances of trading strategies based on XML configuration.
+	// It encapsulates the logic for constructing the appropriate TradingStrategyBase-derived object
+	// using provided market data, trader, and trading rules dependencies.
 	class StrategyFactory final
 	{
 	public:
-	static std::unique_ptr<TradingStrategies::TradingStrategyBase>
-		CreateTargetStrategy(
-			const tinyxml2::XMLElement* strategyXmlCfg,
-			MarketData::RealTimeMarketData* marketData,
-			UserAccount::BinanceTrader* trader,
-			ComplianceNRegulatory::BinanceTradingRules* tradingRules);
+		// Deleted default constructor to prevent instantiation without parameters.
+		StrategyFactory() = delete;
+		// Deleted copy constructor and assignment operator to prevent copying.
+		StrategyFactory(const StrategyFactory&) = delete;
+		StrategyFactory& operator=(const StrategyFactory&) = delete;
+		// Deleted move constructor and assignment operator to prevent moving.
+		StrategyFactory(StrategyFactory&&) = delete;
+		StrategyFactory& operator=(StrategyFactory&&) = delete;
+		// Factory method to create a trading strategy based on the provided XML configuration.
+		static std::unique_ptr<TradingStrategies::TradingStrategyBase>
+			CreateTargetStrategy(
+				const tinyxml2::XMLElement* strategyXmlCfg,
+				MarketData::RealTimeMarketData* marketData,
+				UserAccount::BinanceTrader* trader,
+				ComplianceNRegulatory::BinanceTradingRules* tradingRules);
 	};
 };

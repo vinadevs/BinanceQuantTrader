@@ -107,6 +107,10 @@ void MatchingEngine::SubscribeTargetSymbols(const tinyxml2::XMLDocument* realTim
 	const tinyxml2::XMLElement* symbolsXml = targetSymbolXml->FirstChildElement("MatchingForSymbols");
 	assert(symbolsXml);
 	auto targetTradeSymbols = StringUtils::SplitAndTrimString(symbolsXml->Attribute("List"), ',');
+	if (targetTradeSymbols.empty())
+	{
+		throw std::runtime_error("No target symbols to subscribe market data.");
+	}
 	for (const auto& symbol : targetTradeSymbols)
 	{
 		m_marketData->SubscribeSymbol(symbol);
@@ -251,7 +255,7 @@ void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& me
 			auto newOrder = ConstructUpstreamNewOrder(message);
 		
 			// User account check:
-			const bool isAccountEligibleToTrade = m_userAccountManager->LookupUserAccount(
+			const bool isAccountEligibleToTrade = m_userAccountManager->LookupSpotUserAccount(
 				newOrder.GetUserAccountID())->IsAccountEligibleToTrade();
 
 			if (!isAccountEligibleToTrade)
@@ -260,7 +264,7 @@ void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& me
 				m_logger->Error(errMsg);
 				const auto ack = AckUtils::CreateErrorRejectOrderAck(newOrder.GetSymbol(), newOrder.GetClientOrderId(), errMsg);
 				UpstreamGateWay->SendDownstreamOrderAck(ack);
-				return;
+				return; // dont process if user account is not eligible to trade
 			}
 
 			if (VerifyUpstreamBinanceNewOrder(newOrder))
@@ -268,7 +272,7 @@ void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& me
 				newOrder.SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
 				m_upstreamOrderQueueMgr->PushOrderToQueue(newOrder.GetClientOrderId(), newOrder);
 			}
-			else return;
+			else return; // dont process if order is invalid
 		}
 		else if (messageType == Binance_Order_Type::Cancel_Order)
 		{
@@ -278,7 +282,7 @@ void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& me
 				cancelOrder.SetOrderStatus(BinanceCancelOrderStatus::WAITING_FOR_CANCEL);
 				m_upstreamOrderQueueMgr->PushOrderToQueue(cancelOrder.GetClientOrderId(), cancelOrder);
 			}
-			else return;
+			else return; // dont process if order is invalid
 		}
 		else if (messageType == Binance_Order_Type::Replace_Order)
 		{
@@ -288,7 +292,7 @@ void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& me
 				replaceOrder.SetOrderStatus(BinanceReplaceOrderStatus::WAITING_FOR_REPLACE);
 				m_upstreamOrderQueueMgr->PushOrderToQueue(replaceOrder.GetClientOrderId(), replaceOrder);
 			}
-			else return;
+			else return; // dont process if order is invalid
 		}
 		else if (messageType == Binance_Order_Type::Query_Order)
 		{
@@ -298,7 +302,7 @@ void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& me
 				queryOrder.SetOrderStatus(BinanceQueryOrderStatus::WAITING_FOR_QUERY);
 				m_upstreamOrderQueueMgr->PushOrderToQueue(queryOrder.GetClientOrderId(), queryOrder);
 			}
-			else return;
+			else return; // dont process if order is invalid	
 		}
 		else
 		{

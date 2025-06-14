@@ -47,6 +47,7 @@ namespace QuantitativeModel {
            double m_price{ 0 };
            double m_stopPrice{ 0 };
 		   double m_icebergAmount{ 0 };
+		   double m_leverageRatio{ 1.0 }; // Default leverage ratio is 1.0 (no leverage)
            OrderManagement::BinanceNewOrderTradingType m_tradeType{ OrderManagement::BinanceNewOrderTradingType::UNDEF };
 
            QuantOrderParammeter() = default;
@@ -62,7 +63,10 @@ namespace QuantitativeModel {
                    << "Time: " << OrderManagement::TypeToStringUtils::ToString(m_time) << ", "
                    << "Amount: " << m_amount << ", "
                    << "Price: " << m_price << ", "
-                   << "StopPrice: " << m_stopPrice
+				   << "StopPrice: " << m_stopPrice << ", "
+				   << "IcebergAmount: " << m_icebergAmount << ", "
+				   << "LeverageRatio: " << m_leverageRatio << ", "
+				   << "TradeType: " << OrderManagement::TypeToStringUtils::ToString(m_tradeType)
                    << " }";
                return oss.str();
             }

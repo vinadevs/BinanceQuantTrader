@@ -159,6 +159,9 @@
     <ClInclude Include="ChildOrder.h">
       <Filter>Semi-Auto Strategies\Benchmarking\Child Order</Filter>
     </ClInclude>
+    <ClInclude Include="SmartLongShortStrategy.h">
+      <Filter>Smart Long Short</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -235,6 +238,9 @@
     </ClCompile>
     <ClCompile Include="ChildOrder.cpp">
       <Filter>Semi-Auto Strategies\Benchmarking\Child Order</Filter>
+    </ClCompile>
+    <ClCompile Include="SmartLongShortStrategy.cpp">
+      <Filter>Smart Long Short</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -29,9 +29,12 @@
 </UserAccountManager>
 
 <ExchangeRuleAndCompliance>
-  <TradeCommissions MakerCommission="0.01" TakerCommission="0.05" BuyerCommission="0" SellerCommission="0"/>
+  <TradeCommissions MakerCommission="0.01" TakerCommission="0.05" BuyerCommission="0" SellerCommission="0"  FutureMakerCommission="0.0002" FutureTakerCommission="0.0004"/>
 </ExchangeRuleAndCompliance>
 
 <ExchangeInfoManager>
   <ExchangeInfo File="[ROOT_BQT_PATH]\Configurations\StaticData\exchange_info_t.json"/>
 </ExchangeInfoManager>
+
+<UserTradeProfileManager>
+</UserTradeProfileManager>

@@ -29,7 +29,7 @@ grpc::Status UserAccountHttpService::GetUserAccountData(
 {
     m_logger->Info("Received account_info_t request for User ID=" + request->user_id());
    
-    const auto* userAccount = m_userAccountManager->LookupUserAccount(request->user_id());
+    const auto* userAccount = m_userAccountManager->LookupSpotUserAccount(request->user_id());
 
     // Populate response
     response->set_user_id(request->user_id());

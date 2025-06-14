@@ -34,5 +34,8 @@ int main()
 		"BTCUSDT",
 		"testOrderId");
 
+	// Get leverage bracket for a symbol
+	auto leverageBracket = BinanceFutureApiGateway::GetInstance().GetLeverageBracket("BTCUSDT");
+	std::cout << "Leverage Bracket for BTCUSDT:\n" << leverageBracket << std::endl;
     return EXIT_SUCCESS;
 }

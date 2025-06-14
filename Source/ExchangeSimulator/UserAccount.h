@@ -183,7 +183,7 @@ namespace ExchangeSimulator {
             const double requiredMarginCash);
 
         AssetBalance& LookupAssetBalance(const AssetSymbol& symbol);
-		FutureAssetBalance& LookupFutureAssetBalance(const AssetSymbol& symbol);
+		FutureAssetBalance& LookupFutureAssetInfo(const AssetSymbol& symbol);
 
 		const binapi::rest::account_info_t& GetAccountInfo() const { 
             return m_accountInfo;

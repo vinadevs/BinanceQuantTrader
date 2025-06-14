@@ -283,6 +283,10 @@ void MarketMonitorStrategy::PrepareTargetMonitorSymbols()
 
 void MarketMonitorStrategy::SubscribeTargetSymbols()
 {
+	if (m_targetMonitorSymbols.empty())
+	{
+		throw std::runtime_error("No target symbols to subscribe market data.");
+	}
 	// register this class with market data to receive real time data
 	m_marketData->RegisterDataListener(this);
 	// subscibe all target symbols

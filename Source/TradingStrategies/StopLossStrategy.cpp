@@ -92,6 +92,10 @@ void StopLossStrategy::SubscribeTargetSymbols()
 	const XMLElement* symbolsXml = targetSymbolXml->FirstChildElement("Symbols");
 	assert(symbolsXml);
 	m_targetTradeSymbols = StringUtils::SplitAndTrimString(symbolsXml->Attribute("List"), ',');
+	if (m_targetTradeSymbols.empty())
+	{
+		throw std::runtime_error("No target symbols to subscribe market data.");
+	}
 	for (const auto& symbol : m_targetTradeSymbols)
 	{
 		m_marketData->SubscribeSymbol(symbol);

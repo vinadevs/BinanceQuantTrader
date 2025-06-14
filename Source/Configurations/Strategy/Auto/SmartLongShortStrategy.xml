@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<GeneralConfig>
+  <LifeTime LifeTimeForStrategy="IntraDay"/>
+  <EnableComplianceChecker Enable="false"/>
+</GeneralConfig>
+
+<TargetSymbol>
+  <AllSymbols UseRemoteExchangeList="true" LocalListingFile="[ROOT_BQT_PATH]\Configurations\Common\BinanceListings.txt"/>
+  <TradeSymbols List="BTCUSDT, ETHUSDT, BNBUSDT"/>
+</TargetSymbol>
+  
