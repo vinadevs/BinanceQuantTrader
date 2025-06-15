@@ -14,7 +14,7 @@ namespace tinyxml2 {
 	class XMLElement;
 };
 
-namespace UserSpotAccount {
+namespace UserAccount {
 	class BinanceTrader;
 };
 
@@ -47,7 +47,7 @@ namespace BinanceQuantTrader {
 		TraderFactory(TraderFactory&&) = delete;
 		TraderFactory& operator=(TraderFactory&&) = delete;
 		// Factory method to create a BinanceTrader based on the provided XML configuration.
-		static std::unique_ptr<UserSpotAccount::BinanceTrader>
+		static std::unique_ptr<UserAccount::BinanceTrader>
 			CreateSmartTrader(PortfolioManager::PortfolioInvestmentBinance* portfolio,
 							  ComplianceNRegulatory::BinanceTradingRules* tradingRules,
 							  RiskManagement::RiskManager* riskManager,

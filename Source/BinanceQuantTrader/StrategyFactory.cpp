@@ -12,9 +12,9 @@
 #include "../MarketData/RealTimeMarketData.h"
 
 // list of strategy types supported
+#include "../TradingStrategies/TestTradingStrategy.h"
 #include "../TradingStrategies/TradingStrategyBase.h"
 #include "../TradingStrategies/FomoTradingStrategy.h"
-#include "../TradingStrategies/TestTradingStrategy.h"
 #include "../TradingStrategies/MarketMonitorStrategy.h"
 #include "../TradingStrategies/StopLossStrategy.h"
 #include "../TradingStrategies/SmartLongShortStrategy.h"
@@ -28,7 +28,7 @@
 using namespace BinanceQuantTrader;
 using namespace TradingStrategies;
 using namespace MarketData;
-using namespace UserSpotAccount;
+using namespace UserAccount;
 using namespace ComplianceNRegulatory;
 using namespace RiskManagement;
 using namespace tinyxml2;

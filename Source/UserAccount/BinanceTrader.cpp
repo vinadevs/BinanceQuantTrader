@@ -34,7 +34,7 @@
 
 #include <exception>
 
-using namespace UserSpotAccount;
+using namespace UserAccount;
 using namespace PortfolioManager;
 using namespace ComplianceNRegulatory;
 using namespace RiskManagement;

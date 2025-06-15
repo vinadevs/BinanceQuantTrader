@@ -24,7 +24,7 @@
 
 #include <filesystem>
 
-using namespace UserSpotAccount;
+using namespace UserAccount;
 using namespace OrderManagement;
 using namespace RestAPI;
 

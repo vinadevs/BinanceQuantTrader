@@ -46,7 +46,7 @@ using namespace RiskManagement;
 using namespace MarketData;
 using namespace StaticData;
 using namespace HistoricalData;
-using namespace UserSpotAccount;
+using namespace UserAccount;
 using namespace tinyxml2;
 using namespace LibraryUtils;
 using namespace SettingNConfig;
@@ -95,7 +95,7 @@ void TradingModel::PrepareTradingComponents(
 	BqtGlobalSettingsMgr->InitGlobalSetting(globalSettingsCfg);
 
 	// User account and API key (Strictly confidential information, be careful !!!!)
-	const auto* userAccountXml = configAccessKeyXml->FirstChildElement("UserSpotAccount");
+	const auto* userAccountXml = configAccessKeyXml->FirstChildElement("UserAccount");
 	assert(userAccountXml);
 	const auto* keyXml = userAccountXml->FirstChildElement("Key");
 	assert(keyXml);

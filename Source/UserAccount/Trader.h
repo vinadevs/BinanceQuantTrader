@@ -19,7 +19,7 @@ namespace tinyxml2 {
 	class XMLElement;
 };
 
-namespace UserSpotAccount {
+namespace UserAccount {
 
 	// -In the context of financial markets, a trader is an individual 
 	// or entity that buys and sells financial instruments,

@@ -30,7 +30,7 @@ namespace OrderManagement {
 	class PositionManager;
 }
 
-namespace UserSpotAccount {
+namespace UserAccount {
 
 	enum class ReportChannel : unsigned
 	{

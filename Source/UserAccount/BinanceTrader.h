@@ -39,7 +39,7 @@ namespace tinyxml2 {
 	class XMLElement;
 };
 
-namespace UserSpotAccount {
+namespace UserAccount {
 
 	class DLL_CLASS_USERACCOUNT_EXPORTS
 		BinanceTrader : public Trader

@@ -20,7 +20,7 @@ namespace MarketData {
 	class MarketDataSubject;
 }
 
-namespace UserSpotAccount {
+namespace UserAccount {
 	class BinanceTrader;
 }
 
@@ -43,7 +43,7 @@ namespace TradingStrategies {
 		TestTradingStrategy(
 			const std::string& strategyCfgPath,
 			MarketData::RealTimeMarketData* marketData,
-			UserSpotAccount::BinanceTrader* trader,
+			UserAccount::BinanceTrader* trader,
 			ComplianceNRegulatory::BinanceTradingRules* tradingRules);
 
 		virtual ~TestTradingStrategy();

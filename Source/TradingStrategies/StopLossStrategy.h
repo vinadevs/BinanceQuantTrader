@@ -28,7 +28,7 @@ namespace MarketData {
 	class RealTimeMarketData;
 }
 
-namespace UserSpotAccount {
+namespace UserAccount {
 	class BinanceTrader;
 }
 
@@ -64,7 +64,7 @@ namespace TradingStrategies {
 	public:
 		StopLossStrategy(const std::string& strategyCfgPath,
 			MarketData::RealTimeMarketData* marketData,
-			UserSpotAccount::BinanceTrader* trader,
+			UserAccount::BinanceTrader* trader,
 			ComplianceNRegulatory::BinanceTradingRules* tradingRules);
 
 		virtual ~StopLossStrategy();
