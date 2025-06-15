@@ -73,7 +73,7 @@ namespace ExchangeSimulator {
 
     // Holds detailed info about a user's balance in a specific asset (e.g. USDT, BUSD)
     struct AssetInfo {
-        std::string asset;               // Asset name (e.g. "USDT")
+        std::string asset;                    // Asset name (e.g. "USDT")
         double walletBalance{0.0};            // Total wallet balance
         double unrealizedProfit{0.0};         // Unrealized profit/loss
         double marginBalance{0.0};            // Wallet + unrealized profit
@@ -86,12 +86,12 @@ namespace ExchangeSimulator {
         double availableBalance{0.0};         // Free balance available to trade
         double maxWithdrawAmount{0.0};        // Max amount allowed to withdraw
         bool marginAvailable{0.0};            // Whether margin is available
-        int64_t updateTime{0};              // Last update time in milliseconds
+        int64_t updateTime{0};                // Last update time in milliseconds
     };
 
     // Represents the user's position for a trading symbol (e.g. BTCUSDT)
     struct PositionInfo {
-        std::string symbol;              // Trading pair symbol
+        std::string symbol;                   // Trading pair symbol
         double initialMargin{0.0};            // Initial margin for this position
         double maintMargin{0.0};              // Maintenance margin for this position
         double unrealizedProfit{0.0};         // Unrealized profit/loss
@@ -101,20 +101,20 @@ namespace ExchangeSimulator {
         bool isolated{0.0};                   // Whether this is isolated margin
         double entryPrice{0.0};               // Average entry price
         double maxNotional{0.0};              // Max notional value allowed
-        std::string positionSide;        // LONG, SHORT or BOTH
+        std::string positionSide;             // LONG, SHORT or BOTH
         double positionAmt{0.0};              // Position quantity
         double notional{0.0};                 // Position value in quote asset
         double isolatedWallet{0.0};           // Balance used for isolated margin
-        int64_t updateTime{0};              // Last update time in milliseconds
+        int64_t updateTime{0};                // Last update time in milliseconds
     };
 
     // Root class to represent the entire user account futures response from Binance
-    class UserAccountFuture {
+    class UserFutureAccount final {
     public:
 		// Default constructor
-		UserAccountFuture() = default;
+		UserFutureAccount() = default;
 		// Constructor that initializes from a user ID and JSON object
-		UserAccountFuture(const std::string& userID, const nlohmann::json& j) {
+		UserFutureAccount(const std::string& userID, const nlohmann::json& j) {
 			FromJson(j);
 		}
 

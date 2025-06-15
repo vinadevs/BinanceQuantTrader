@@ -24,7 +24,8 @@
 
 <UserAccountManager>
   <GeneralSetting MaximumAccount="1"/>
-  <AccountInfo File="[ROOT_BQT_PATH]\Configurations\StaticData\account_info_t.json"/>
+  <SpotAccountInfo File="[ROOT_BQT_PATH]\Configurations\StaticData\spot_account_info_t.json"/>
+  <FutureAccountInfo File="[ROOT_BQT_PATH]\Configurations\StaticData\future_account_info_t.json"/>
   <TestUserAccount ListUserID="{user_id,path_to_config};{user_id,path_to_config}"/>
 </UserAccountManager>
 

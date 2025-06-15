@@ -28,7 +28,7 @@
 using namespace BinanceQuantTrader;
 using namespace TradingStrategies;
 using namespace MarketData;
-using namespace UserAccount;
+using namespace UserSpotAccount;
 using namespace ComplianceNRegulatory;
 using namespace RiskManagement;
 using namespace tinyxml2;

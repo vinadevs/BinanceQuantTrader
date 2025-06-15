@@ -28,7 +28,7 @@ namespace MarketData {
 	class RealTimeMarketData;
 }
 
-namespace UserAccount {
+namespace UserSpotAccount {
 	class BinanceTrader;
 }
 
@@ -96,7 +96,7 @@ namespace TradingStrategies {
 			const std::string& strategyDescription,
 			const std::string& strategyCfgPath,
 			MarketData::RealTimeMarketData* marketData,
-			UserAccount::BinanceTrader* trader,
+			UserSpotAccount::BinanceTrader* trader,
 			ComplianceNRegulatory::BinanceTradingRules* tradingRules);
 		
 		// This constructor is used for strategies that only need to receive market data
@@ -160,7 +160,7 @@ protected:
 		const std::string m_strategyID; // must be unique ID, we may use it for routing orders
 		const std::string& m_strategyCfgPath; // strategy config paramters file
 		MarketData::RealTimeMarketData* m_marketData {nullptr}; // real time market data
-		UserAccount::BinanceTrader* m_trader{ nullptr }; // user account and trade actions
+		UserSpotAccount::BinanceTrader* m_trader{ nullptr }; // user account and trade actions
 		ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr }; // exchange compliance and regulatory
 		std::unique_ptr<CompilanceChecker> m_compilanceChecker; // reset trading hard limits from exchange
 		std::unique_ptr<LibraryUtils::Logger> m_logger; // log message

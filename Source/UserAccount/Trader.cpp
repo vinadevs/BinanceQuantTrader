@@ -9,4 +9,4 @@
 #include "pch.h"
 #include "Trader.h"
 
-UserAccount::Trader::~Trader() {}
+UserSpotAccount::Trader::~Trader() {}

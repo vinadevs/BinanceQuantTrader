@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "UserAccount.h"
-#include "UserAccountFuture.h"
+#include "UserSpotAccount.h"
+#include "UserFutureAccount.h"
 
 #include <memory>
 #include <mutex>
@@ -23,23 +23,6 @@ namespace LibraryUtils {
 namespace tinyxml2 {
     class XMLElement;
 };
-
-/**
- * @class UserAccountManager
- * @brief Manages user accounts in the trading system.
- *
- * This class is responsible for handling user login information, managing cash balances,
- * tracking cryptocurrency quantities, and providing methods to interact with user account data.
- * It ensures secure access to account information and performs necessary validations for
- * account-related operations within the trading system.
- *
- * Key Responsibilities:
- * - Authenticate users during login.
- * - Store and manage user cash balances.
- * - Maintain records of cryptocurrency holdings per user.
- * - Provide methods to deposit, withdraw, or update account balances and crypto quantities.
- * - Support secure and efficient account operations.
- */
 
 namespace ExchangeSimulator {
 
@@ -60,12 +43,12 @@ namespace ExchangeSimulator {
 	 * - Support secure and efficient account operations.
 	 */
 
-	 // Spot user accounts are stored in UserAccount
-    using Accounts = std::map<std::string, std::unique_ptr<UserAccount>>;
-	// Future user accounts are stored in UserAccountFuture
-	using FutureAccounts = std::map<std::string, std::unique_ptr<UserAccountFuture>>;
+	 // Spot user accounts are stored in UserSpotAccount
+    using SpotAccounts = std::map<std::string, std::unique_ptr<UserSpotAccount>>;
+	// Future user accounts are stored in UserFutureAccount
+	using FutureAccounts = std::map<std::string, std::unique_ptr<UserFutureAccount>>;
 
-    class UserAccountManager
+    class UserAccountManager final
     {
     public:
         UserAccountManager(const tinyxml2::XMLElement* userAccountManagerCfg);
@@ -85,22 +68,22 @@ namespace ExchangeSimulator {
 
 		void RemoveFutureUserAccount(const std::string& userId);
 
-        UserAccount* LookupSpotUserAccount(const std::string& userId);
+        UserSpotAccount* LookupSpotUserAccount(const std::string& userId);
 
-		UserAccountFuture* LookupFutureUserAccount(const std::string& userId);
+		UserFutureAccount* LookupFutureUserAccount(const std::string& userId);
 
-        UserAccount* OpenEditSessionForSpotUserAccount(const std::string& userId);
+        UserSpotAccount* OpenEditSessionForSpotUserAccount(const std::string& userId);
 
-		UserAccountFuture* OpenEditSessionForFutureUserAccount(const std::string& userId);
+		UserFutureAccount* OpenEditSessionForFutureUserAccount(const std::string& userId);
 
         void ClearAll();
 
-        const Accounts& GetUserSpotAccounts();
+        const SpotAccounts& GetUserSpotAccounts();
 
 		const FutureAccounts& GetUserFutureAccounts();
     protected:
         std::unique_ptr<LibraryUtils::Logger> m_logger;
-        Accounts m_accounts;
+		SpotAccounts m_spotAccounts;
 		FutureAccounts m_futureAccounts;
         std::mutex m_mutex;
         std::size_t m_maxAccount{ 0 };

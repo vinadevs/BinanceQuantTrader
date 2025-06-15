@@ -1,0 +1,55 @@
+{
+  "feeTier": 0,
+  "canTrade": true,
+  "canDeposit": true,
+  "canWithdraw": true,
+  "updateTime": 1653471234567,
+  "totalInitialMargin": "0.00000000",
+  "totalMaintMargin": "0.00000000",
+  "totalWalletBalance": "1000.00000000",
+  "totalUnrealizedProfit": "5.00000000",
+  "totalMarginBalance": "1005.00000000",
+  "totalPositionInitialMargin": "10.00000000",
+  "totalOpenOrderInitialMargin": "0.00000000",
+  "totalCrossWalletBalance": "995.00000000",
+  "totalCrossUnPnl": "0.00000000",
+  "availableBalance": "990.00000000",
+  "maxWithdrawAmount": "990.00000000",
+  "assets": [
+    {
+      "asset": "USDT",
+      "walletBalance": "1000.00000000",
+      "unrealizedProfit": "5.00000000",
+      "marginBalance": "1005.00000000",
+      "maintMargin": "0.00000000",
+      "initialMargin": "10.00000000",
+      "positionInitialMargin": "10.00000000",
+      "openOrderInitialMargin": "0.00000000",
+      "crossWalletBalance": "995.00000000",
+      "crossUnPnl": "0.00000000",
+      "availableBalance": "990.00000000",
+      "maxWithdrawAmount": "990.00000000",
+      "marginAvailable": true,
+      "updateTime": 1653471234567
+    }
+  ],
+  "positions": [
+    {
+      "symbol": "BTCUSDT",
+      "initialMargin": "10.00000000",
+      "maintMargin": "0.50000000",
+      "unrealizedProfit": "2.00000000",
+      "positionInitialMargin": "10.00000000",
+      "openOrderInitialMargin": "0.00000000",
+      "leverage": "10",
+      "isolated": false,
+      "entryPrice": "25000.00000",
+      "maxNotional": "250000.00000000",
+      "positionSide": "BOTH",
+      "positionAmt": "0.00400000",
+      "notional": "100.00000000",
+      "isolatedWallet": "0.00000000",
+      "updateTime": 1653471234567
+    }
+  ]
+}

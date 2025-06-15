@@ -8,7 +8,7 @@
 
 #include "pch.h"
 
-#include "UserAccountFuture.h"
+#include "UserFutureAccount.h"
 
 using namespace ExchangeSimulator;
 
@@ -17,7 +17,7 @@ static double ParseDouble(const nlohmann::json& j, const std::string& key) {
     return j.contains(key) ? std::stod(j.value(key, "0")) : 0.0;
 }
 
-void UserAccountFuture::FromJson(const nlohmann::json& j) {
+void UserFutureAccount::FromJson(const nlohmann::json& j) {
     // Top-level fields
     m_feeTier = j.value("feeTier", 0);
     m_canTrade = j.value("canTrade", false);
@@ -86,7 +86,7 @@ void UserAccountFuture::FromJson(const nlohmann::json& j) {
     }
 }
 
-const AssetInfo* UserAccountFuture::LookupFutureAssetInfo(const std::string& currency) const {
+const AssetInfo* UserFutureAccount::LookupFutureAssetInfo(const std::string& currency) const {
     for (const auto& asset : m_assets) {
         if (asset.asset == currency) {
             return &asset;
@@ -95,7 +95,7 @@ const AssetInfo* UserAccountFuture::LookupFutureAssetInfo(const std::string& cur
     return nullptr; // Not found
 }
 
-bool UserAccountFuture::IsAccountHavingSufficientCashBalance(
+bool UserFutureAccount::IsAccountHavingSufficientCashBalance(
     const std::string& currency,
     const double requiredMarginCash) const
 {
@@ -106,7 +106,7 @@ bool UserAccountFuture::IsAccountHavingSufficientCashBalance(
 	return false; // Asset not found
 }
 
-void UserAccountFuture::UpdateBalanceCash(const std::string& currency, const double pnl, const BalanceChangeEvent event)
+void UserFutureAccount::UpdateBalanceCash(const std::string& currency, const double pnl, const BalanceChangeEvent event)
 {
 	auto* assetInfo = const_cast<AssetInfo*>(LookupFutureAssetInfo(currency));
 	if (assetInfo) {

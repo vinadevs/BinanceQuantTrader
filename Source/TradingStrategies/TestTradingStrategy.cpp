@@ -20,7 +20,7 @@ using namespace RiskManagement;
 TestTradingStrategy::TestTradingStrategy(
 	const std::string& strategyCfgPath,
 	MarketData::RealTimeMarketData* marketData,
-	UserAccount::BinanceTrader* trader,
+	UserSpotAccount::BinanceTrader* trader,
 	BinanceTradingRules* tradingRules)
 	: TradingStrategyBase("TestTradingStrategy", "test market data feed only...",
 		strategyCfgPath, marketData, trader, tradingRules)

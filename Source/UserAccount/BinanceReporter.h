@@ -24,7 +24,7 @@ namespace OrderManagement {
 	class PositionManager;
 }
 
-namespace UserAccount {
+namespace UserSpotAccount {
     /**
      * @class BinanceReporter
      * @brief A final class derived from ExchangeReporter to handle reporting for Binance exchange.

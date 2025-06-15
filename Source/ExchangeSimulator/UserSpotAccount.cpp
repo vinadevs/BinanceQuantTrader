@@ -15,7 +15,7 @@
 #include "../KernelTrading/flatjson.h"
 #include "../StaticData/StaticDataManager.h"
 
-#include "UserAccount.h"
+#include "UserSpotAccount.h"
 
 #include <algorithm>
 #include <cassert>
@@ -23,7 +23,7 @@
 using namespace ExchangeSimulator;
 using namespace tinyxml2;
 
-UserAccount::UserAccount(
+UserSpotAccount::UserSpotAccount(
     const std::string& userConfigPath,
     const std::string& accountInfoJsonFile)
 {
@@ -31,7 +31,7 @@ UserAccount::UserAccount(
     const auto errorLoadFileXml = userAccountCfgPathXml->LoadFile(userConfigPath.c_str());
     if (errorLoadFileXml != XML_SUCCESS)
     {
-        throw std::runtime_error("UserAccount: Load file Xml error="
+        throw std::runtime_error("UserSpotAccount: Load file Xml error="
             + std::string(XMLDocument::ErrorIDToName(errorLoadFileXml)) + ", error path:" + userConfigPath);
     }
     const auto* stableCoinUSDTBalanceXml = userAccountCfgPathXml->FirstChildElement("StableCoinUSDTBalance");
@@ -58,41 +58,41 @@ UserAccount::UserAccount(
     m_accountInfo = binapi::rest::account_info_t::construct(accountInfoJson);
 }
 
-std::size_t UserAccount::GetUpdateTime() const
+std::size_t UserSpotAccount::GetUpdateTime() const
 {
     return TimeUtils::GetEpochTimeTickNow();
 }
 
-bool UserAccount::IsAccountEligibleToWithdraw() const
+bool UserSpotAccount::IsAccountEligibleToWithdraw() const
 {
     return m_canWithdraw;
 }
 
-bool UserAccount::IsAccountEligibleToDeposit() const
+bool UserSpotAccount::IsAccountEligibleToDeposit() const
 {
     return m_canDeposit;
 }
 
-bool UserAccount::IsAccountEligibleToTrade() const
+bool UserSpotAccount::IsAccountEligibleToTrade() const
 {
     return m_canTrade;
 }
 
-bool UserAccount::IsAccountHavingAssets()
+bool UserSpotAccount::IsAccountHavingAssets()
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     return std::any_of(m_assetBalances.begin(), m_assetBalances.end(),
         [](const auto& asset) { return asset.second.m_free > 0; });
 }
 
-bool UserAccount::IsAccountHavingFutureAssets()
+bool UserSpotAccount::IsAccountHavingFutureAssets()
 {
     std::lock_guard<std::mutex> lock(m_mutex);
 	return std::any_of(m_futureAssetBalances.begin(), m_futureAssetBalances.end(),
 		[](const auto& asset) { return asset.second.m_free > 0; });
 }
 
-bool UserAccount::IsAccountHavingSufficientFutureMargin(const std::string& symbol, const double requiredMarginCash)
+bool UserSpotAccount::IsAccountHavingSufficientFutureMargin(const std::string& symbol, const double requiredMarginCash)
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
 	const auto it = m_futureAssetBalances.find(
@@ -105,27 +105,27 @@ bool UserAccount::IsAccountHavingSufficientFutureMargin(const std::string& symbo
 	return false;
 }
 
-AssetBalance& UserAccount::LookupAssetBalance(const AssetSymbol& symbol)
+AssetBalance& UserSpotAccount::LookupAssetBalance(const AssetSymbol& symbol)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     return m_assetBalances.at(StaticData::StaticDataManager::GetSymbolFromTradingPair(symbol,
         StaticDataMgr->GetStableCoinUSDTSymbol())); // Throws std::out_of_range if symbol not found
 }
 
-FutureAssetBalance& UserAccount::LookupFutureAssetInfo(const AssetSymbol& symbol)
+FutureAssetBalance& UserSpotAccount::LookupFutureAssetInfo(const AssetSymbol& symbol)
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
 	return m_futureAssetBalances.at(StaticData::StaticDataManager::GetSymbolFromTradingPair(symbol,
 		StaticDataMgr->GetStableCoinUSDTSymbol())); // Throws std::out_of_range if symbol not found
 }
 
-void UserAccount::EnableUserAccountControls()
+void UserSpotAccount::EnableUserAccountControls()
 {
     m_updateTime = TimeUtils::GetEpochTimeTickNow();
     m_canTrade = m_canDeposit = m_canWithdraw = true;
 }
 
-void UserAccount::DisableUserAccountControls()
+void UserSpotAccount::DisableUserAccountControls()
 {
     m_updateTime = TimeUtils::GetEpochTimeTickNow();
     m_canTrade = m_canDeposit = m_canWithdraw = false;

@@ -24,7 +24,7 @@
 using namespace TradingStrategies;
 using namespace QuantitativeModel;
 using namespace MarketData;
-using namespace UserAccount;
+using namespace UserSpotAccount;
 using namespace ComplianceNRegulatory;
 using namespace LibraryUtils;
 using namespace tinyxml2;

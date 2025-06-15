@@ -24,7 +24,7 @@ namespace OrderManagement {
     class PositionManager;
 }
 
-namespace UserAccount {
+namespace UserSpotAccount {
     /**
     * @class BackTestReporter
     * @brief A final class that extends ExchangeReporter to provide backtesting reporting functionalities.

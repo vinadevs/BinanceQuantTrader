@@ -18,7 +18,7 @@ namespace MarketData {
 	class RealTimeMarketData;
 };
 
-namespace UserAccount {
+namespace UserSpotAccount {
 	class BinanceTrader;
 };
 
@@ -51,7 +51,7 @@ namespace BinanceQuantTrader {
 			CreateTargetStrategy(
 				const tinyxml2::XMLElement* strategyXmlCfg,
 				MarketData::RealTimeMarketData* marketData,
-				UserAccount::BinanceTrader* trader,
+				UserSpotAccount::BinanceTrader* trader,
 				ComplianceNRegulatory::BinanceTradingRules* tradingRules);
 	};
 };

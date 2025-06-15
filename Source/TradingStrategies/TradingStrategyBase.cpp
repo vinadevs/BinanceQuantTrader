@@ -18,7 +18,7 @@
 #include "../UserAccount/BinanceTrader.h"
 
 using namespace TradingStrategies;
-using namespace UserAccount;
+using namespace UserSpotAccount;
 using namespace MarketData;
 using namespace LibraryUtils;
 using namespace tinyxml2;
@@ -32,7 +32,7 @@ TradingStrategyBase::TradingStrategyBase(
 	const std::string& strategyDescription,
 	const std::string& strategyCfgPath,
 	MarketData::RealTimeMarketData* marketData,
-	UserAccount::BinanceTrader* trader,
+	UserSpotAccount::BinanceTrader* trader,
 	ComplianceNRegulatory::BinanceTradingRules* tradingRules)
 	: m_strategyName(strategyName),
 	m_strategyDescription(strategyDescription),

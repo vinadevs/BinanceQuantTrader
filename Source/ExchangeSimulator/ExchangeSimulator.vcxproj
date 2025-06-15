@@ -165,7 +165,7 @@
     <ClInclude Include="ExchangeRuleAndCompliance.h" />
     <ClInclude Include="protobuf\user_trade_profile.grpc.pb.h" />
     <ClInclude Include="protobuf\user_trade_profile.pb.h" />
-    <ClInclude Include="UserAccountFuture.h" />
+    <ClInclude Include="UserFutureAccount.h" />
     <ClInclude Include="UserTradeProfileManager.h" />
     <ClInclude Include="protobuf\exchange_info_data.grpc.pb.h" />
     <ClInclude Include="protobuf\exchange_info_data.pb.h" />
@@ -188,7 +188,7 @@
     <ClInclude Include="SimulatorParticipant.h" />
     <ClInclude Include="UpstreamOrder.h" />
     <ClInclude Include="DownstreamOrderAck.h" />
-    <ClInclude Include="UserAccount.h" />
+    <ClInclude Include="UserSpotAccount.h" />
     <ClInclude Include="UserAccountHttpService.h" />
     <ClInclude Include="UserAccountManager.h" />
     <ClInclude Include="UserTradeProfile.h" />
@@ -206,7 +206,7 @@
     <ClCompile Include="ExchangeRuleAndCompliance.cpp" />
     <ClCompile Include="protobuf\user_trade_profile.grpc.pb.cc" />
     <ClCompile Include="protobuf\user_trade_profile.pb.cc" />
-    <ClCompile Include="UserAccountFuture.cpp" />
+    <ClCompile Include="UserFutureAccount.cpp" />
     <ClCompile Include="UserTradeProfileManager.cpp" />
     <ClCompile Include="HistoricalParticipant.cpp" />
     <ClCompile Include="MatchingEngine.cpp" />
@@ -230,7 +230,7 @@
     <ClCompile Include="RTMarketSpotParticipant.cpp" />
     <ClCompile Include="SimulatorParticipant.cpp" />
     <ClCompile Include="DownstreamOrderAck.cpp" />
-    <ClCompile Include="UserAccount.cpp" />
+    <ClCompile Include="UserSpotAccount.cpp" />
     <ClCompile Include="UserAccountHttpService.cpp" />
     <ClCompile Include="UserAccountManager.cpp" />
     <ClCompile Include="UserTradeProfile.cpp" />

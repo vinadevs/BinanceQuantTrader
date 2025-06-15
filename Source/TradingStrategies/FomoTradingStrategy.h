@@ -28,7 +28,7 @@ namespace MarketData {
 	class RealTimeMarketData;
 }
 
-namespace UserAccount {
+namespace UserSpotAccount {
 	class BinanceTrader;
 }
 
@@ -59,7 +59,7 @@ namespace TradingStrategies {
 	public: 
 		FomoTradingStrategy(const std::string& strategyCfgPath,
 							MarketData::RealTimeMarketData* marketData,
-							UserAccount::BinanceTrader* trader,
+							UserSpotAccount::BinanceTrader* trader,
 							ComplianceNRegulatory::BinanceTradingRules* tradingRules);
 
 		virtual ~FomoTradingStrategy();
