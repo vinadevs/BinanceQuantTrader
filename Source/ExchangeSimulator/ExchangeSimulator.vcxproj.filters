@@ -172,7 +172,7 @@
       <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
     </ClInclude>
     <ClInclude Include="UserSpotAccount.h">
-      <Filter>Header Files</Filter>
+      <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -279,7 +279,7 @@
       <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
     </ClCompile>
     <ClCompile Include="UserSpotAccount.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

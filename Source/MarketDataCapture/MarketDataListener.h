@@ -46,14 +46,22 @@ namespace MarketDataCapture {
         bool OnIndividualBookTickerChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
         // last trade for downstream orders
         bool OnTradeChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+		// market ticker for downstream orders
         bool OnIndividualMarketTickerChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+		// mini ticker for downstream orders
         bool OnMiniTickerChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+		// aggregate trade for downstream orders
         bool OnAggregateTradeChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+		// kline candle stick for downstream orders
 		bool OnKlineCandleStickChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+		// all market tickers for downstream orders
         bool OnAllMarketTickersChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+		// all mini tickers for downstream orders
         bool OnAllMiniTickersChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
-        bool OnAllMarketDepthChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
-        bool OnAllMarketDepthDiffChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+		// all part depth for downstream orders
+        bool OnAllPartDepthChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+		// all diff depth for downstream orders
+        bool OnAllDiffDepthChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
     private:
         std::unique_ptr<LibraryUtils::Logger> m_logger;
     };

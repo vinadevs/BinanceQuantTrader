@@ -44,8 +44,8 @@ public:
 	virtual bool OnKlineCandleStickChange(MarketDataSubject* marketData, const std::string& symbol);
 	virtual bool OnAllMarketTickersChange(MarketDataSubject* marketData, const std::string& symbol);
 	virtual bool OnAllMiniTickersChange(MarketDataSubject* marketData, const std::string& symbol);
-	virtual bool OnAllMarketDepthChange(MarketDataSubject* marketData, const std::string& symbol);
-	virtual bool OnAllMarketDepthDiffChange(MarketDataSubject* marketData, const std::string& symbol);
+	virtual bool OnAllPartDepthChange(MarketDataSubject* marketData, const std::string& symbol);
+	virtual bool OnAllDiffDepthChange(MarketDataSubject* marketData, const std::string& symbol);
 };
 
 };

@@ -52,8 +52,8 @@ namespace TradingStrategies {
 		bool OnKlineCandleStickChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
 		bool OnAllMarketTickersChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
 		bool OnAllMiniTickersChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
-		bool OnAllMarketDepthChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
-		bool OnAllMarketDepthDiffChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+		bool OnAllPartDepthChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+		bool OnAllDiffDepthChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
 
 		// This strategy is not for trading, so we don't need to implement these methods
 		void ReportTradeResults(const std::string& symbol) override {}

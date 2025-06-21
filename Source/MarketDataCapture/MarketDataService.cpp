@@ -46,6 +46,7 @@ void MarketDataService::SubscribeTargetSymbols()
 	{
 		m_marketData->SubscribeSymbol(symbol);
 	}
+	m_marketData->StartIOContext();
 }
 
 MarketDataService::~MarketDataService()

@@ -76,6 +76,7 @@ namespace OrderManagement {
         double GetCumulativeQuoteQuantity() const { return m_cumulativeQuoteQuantity; }
         std::string GetRemainingAmountStr() const { return std::to_string(m_remainingAmount); }
         double GetRemainingAmount() const { return m_remainingAmount; }
+		double GetFutureLeverageRatio() const { return m_futureOrderLeverageRatio; }
 
         // Setters
         void SetSide(binapi::e_side side) { m_side = side; }
@@ -90,6 +91,7 @@ namespace OrderManagement {
         void SetOrigQuoteOrderQuantity(const double origQuoteOrderQuantity) { m_origQuoteOrderQuantity = origQuoteOrderQuantity; }
         void SetCumulativeQuoteQuantity(const double cumulativeQuoteQuantity) { m_cumulativeQuoteQuantity = cumulativeQuoteQuantity; }
         void SetRemainingAmount(const double remainingAmount) { m_remainingAmount = remainingAmount; }
+        void SetFutureLeverageRatio(const double leverageRatio) { m_futureOrderLeverageRatio = leverageRatio; }
 
         // Execution
         BinanceNewOrderStatus GetOrderStatus() const;
@@ -143,7 +145,10 @@ namespace OrderManagement {
         /* m_stopPrice acts as a trigger : When the market price reaches m_stopPrice, the order converts into a market
         order(for stop orders) or a limit order(for stop - limit orders).*/
         double m_stopPrice{ 0 };
+		// m_icebergAmount is used for iceberg orders, which allows traders to hide the true size of their orders.
         double m_icebergAmount{ 0 };
+		// leverage ratio for the future order
+		double m_futureOrderLeverageRatio{ 0.0 };
         // If we trade with a basket of orders
         std::unordered_set<std::string> m_clientOrderIdList;
         BinanceNewOrderStatus m_orderStatus{ BinanceNewOrderStatus::NEW };

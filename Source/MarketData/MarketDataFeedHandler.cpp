@@ -78,7 +78,7 @@ bool MarketDataFeedHandler::HandleTradeData(const char* fl, int ec, std::string 
     return false;
 }
 
-bool MarketData::MarketDataFeedHandler::HandleIndividualMarketTickerData(const char* fl, int ec, std::string emsg, binapi::ws::market_ticker_t market)
+bool MarketDataFeedHandler::HandleIndividualMarketTickerData(const char* fl, int ec, std::string emsg, binapi::ws::market_ticker_t market)
 {
 	if (ec)
 	{
@@ -100,7 +100,7 @@ bool MarketData::MarketDataFeedHandler::HandleIndividualMarketTickerData(const c
     return false;
 }
 
-bool MarketData::MarketDataFeedHandler::HandleMiniTickerData(const char* fl, int ec, std::string emsg, binapi::ws::mini_ticker_t mini)
+bool MarketDataFeedHandler::HandleMiniTickerData(const char* fl, int ec, std::string emsg, binapi::ws::mini_ticker_t mini)
 {
 	if (ec)
 	{
@@ -122,7 +122,7 @@ bool MarketData::MarketDataFeedHandler::HandleMiniTickerData(const char* fl, int
     return false;
 }
 
-bool MarketData::MarketDataFeedHandler::HandleAggregateTradeData(const char* fl, int ec, std::string emsg, binapi::ws::agg_trade_t aggregate)
+bool MarketDataFeedHandler::HandleAggregateTradeData(const char* fl, int ec, std::string emsg, binapi::ws::agg_trade_t aggregate)
 {
 	if (ec)
 	{
@@ -144,7 +144,7 @@ bool MarketData::MarketDataFeedHandler::HandleAggregateTradeData(const char* fl,
     return false;
 }
 
-bool MarketData::MarketDataFeedHandler::HandleKlineCandleStickData(const char* fl, int ec, std::string emsg, binapi::ws::kline_t kline)
+bool MarketDataFeedHandler::HandleKlineCandleStickData(const char* fl, int ec, std::string emsg, binapi::ws::kline_t kline)
 {
     if (ec)
     {
@@ -164,7 +164,71 @@ bool MarketData::MarketDataFeedHandler::HandleKlineCandleStickData(const char* f
     return false;
 }
 
-bool MarketData::MarketDataFeedHandler::HandleAllDiffDepthData(const char* fl, int ec, std::string emsg, binapi::ws::diff_depths_t depth)
+bool MarketDataFeedHandler::HandleAllMiniTickerData(const char* fl, int ec, std::string emsg, binapi::ws::mini_tickers_t mini)
+{
+	if (ec)
+	{
+		std::cerr << "subscribe all mini tickers error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		return false;
+	}
+	for (const auto& ticker : mini.tickers)
+	{
+		if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(ticker.first))
+		{
+			feed->UpdateMiniTickerData(ticker.second);
+			MarketDataSubject::NotifyMiniTickerChange(ticker.first);
+		}
+		else
+		{
+			throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + ticker.first);
+		}
+	}
+	return false;
+}
+
+bool MarketDataFeedHandler::HandleAllMarketTickersData(const char* fl, int ec, std::string emsg, binapi::ws::markets_tickers_t market)
+{
+	if (ec)
+	{
+		std::cerr << "subscribe all market tickers error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		return false;
+	}
+	for (const auto& ticker : market.tickers)
+	{
+		if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(ticker.first))
+		{
+			feed->UpdateIndividualMarketTickerData(ticker.second);
+			MarketDataSubject::NotifyIndividualMarketTickerChange(ticker.first);
+		}
+		else
+		{
+			throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + ticker.first);
+		}
+	}
+	return false;
+}
+
+bool MarketDataFeedHandler::HandlePartDepthData(const char* fl, int ec, std::string emsg, binapi::ws::part_depths_t depth)
+{
+	if (ec)
+	{
+		std::cerr << "subscribe part depth error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		return false;
+	}
+	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(m_partDiffSymbol))
+	{
+		feed->UpdateAllPartDepthData(depth);
+		MarketDataSubject::NotifyAllPartDepthChange(m_partDiffSymbol);
+		return true;
+	}
+	else
+	{
+		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + m_partDiffSymbol);
+	}
+	return false;
+}
+
+bool MarketDataFeedHandler::HandleDiffDepthData(const char* fl, int ec, std::string emsg, binapi::ws::diff_depths_t depth)
 {
 	if (ec)
 	{
@@ -183,7 +247,7 @@ bool MarketData::MarketDataFeedHandler::HandleAllDiffDepthData(const char* fl, i
 		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + depth.s);
 	}
 
-    return false;
+	return false;
 }
 
 

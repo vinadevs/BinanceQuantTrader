@@ -93,15 +93,12 @@ namespace MarketData {
 	std::ostream& operator<<(std::ostream& os, const IndividualBookTickerData& o)
 	{
 		os
-			<< "{\n"
-			<< "\"updateId\": \"" << *o.m_updateId << "\",\n"
-			<< "\"bestBidPrice\": \"" << *o.m_bestBidPrice << "\",\n"
-			<< "\"bestBidQty\": \"" << *o.m_bestBidQty << "\",\n"
-			<< "\"bestAskPrice\": \"" << *o.m_bestAskPrice << "\",\n"
-			<< "\"bestAskQty\": \"" << *o.m_bestAskQty << "\",\n"
-			<< "\"eventTimeMs\": \"" << *o.m_eventTimeMs << "\"\n"
-			<< "}";
-
+			<< "UPDATE_ID=" << *o.m_updateId << "|"
+			<< "BEST_BID_PRICE=" << *o.m_bestBidPrice << "|"
+			<< "BEST_BID_QTY=" << *o.m_bestBidQty << "|"
+			<< "BEST_ASK_PRICE=" << *o.m_bestAskPrice << "|"
+			<< "BEST_ASK_QTY=" << *o.m_bestAskQty << "|"
+			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
 		return os;
 	}
 
@@ -155,16 +152,14 @@ namespace MarketData {
 	std::ostream& operator<<(std::ostream& os, const TradeData& o)
 	{
 		os
-			<< "{\n"
-			<< "\"tradeId\": \"" << *o.m_tradeId << "\",\n"
-			<< "\"price\": \"" << *o.m_price << "\",\n"
-			<< "\"quantity\": \"" << *o.m_quantity << "\",\n"
-			<< "\"buyerOrderID\": \"" << *o.m_buyerOrderID << "\",\n"
-			<< "\"sellerOrderID\": \"" << *o.m_sellerOrderID << "\",\n"
-			<< "\"tradeTime\": \"" << *o.m_tradeTime << "\",\n"
-			<< "\"isBuyerTheMarketMaker\": \"" << *o.m_isBuyerTheMarketMaker << "\",\n"
-			<< "\"eventTimeMs\": \"" << *o.m_eventTimeMs << "\"\n"
-			<< "}";
+			<< "TRADE_ID=" << *o.m_tradeId << "|"
+			<< "PRICE=" << *o.m_price << "|"
+			<< "QUANTITY=" << *o.m_quantity << "|"
+			<< "BUYER_ORDER_ID=" << *o.m_buyerOrderID << "|"
+			<< "SELLER_ORDER_ID=" << *o.m_sellerOrderID << "|"
+			<< "TRADE_TIME=" << *o.m_tradeTime << "|"
+			<< "IS_BUYER_MARKET_MAKER=" << *o.m_isBuyerTheMarketMaker << "|"
+			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
 		return os;
 	}
 
@@ -256,30 +251,27 @@ namespace MarketData {
 	std::ostream& operator<<(std::ostream& os, const IndividualMarketTickerData& o)
 	{
 		os
-			<< "{\n"
-			<< "\"priceChange\": \"" << *o.m_priceChange << "\",\n"
-			<< "\"priceChangePercent\": \"" << *o.m_priceChangePercent << "\",\n"
-			<< "\"weightedAvgPrice\": \"" << *o.m_weightedAvgPrice << "\",\n"
-			<< "\"firstTradePrice\": \"" << *o.m_firstTradePrice << "\",\n"
-			<< "\"lastPrice\": \"" << *o.m_lastPrice << "\",\n"
-			<< "\"lastQuantity\": \"" << *o.m_lastQuantity << "\",\n"
-			<< "\"bestBidPrice\": \"" << *o.m_bestBidPrice << "\",\n"
-			<< "\"bestBidQty\": \"" << *o.m_bestBidQty << "\",\n"
-			<< "\"bestAskPrice\": \"" << *o.m_bestAskPrice << "\",\n"
-			<< "\"bestAskQty\": \"" << *o.m_bestAskQty << "\",\n"
-			<< "\"openPrice\": \"" << *o.m_openPrice << "\",\n"
-			<< "\"highPrice\": \"" << *o.m_highPrice << "\",\n"
-			<< "\"lowPrice\": \"" << *o.m_lowPrice << "\",\n"
-			<< "\"totalTradedBaseAssetVolume\": \"" << *o.m_totalTradedBaseAssetVolume << "\",\n"
-			<< "\"totalTradedQuoteAssetVolume\": \"" << *o.m_totalTradedQuoteAssetVolume << "\",\n"
-			<< "\"statisticsOpenTimeMs\": \"" << *o.m_statisticsOpenTimeMs << "\",\n"
-			<< "\"statisticsCloseTimeMs\": \"" << *o.m_statisticsCloseTimeMs << "\",\n"
-			<< "\"firstTradeId\": \"" << *o.m_firstTradeId << "\",\n"
-			<< "\"lastTradeId\": \"" << *o.m_lastTradeId << "\",\n"
-			<< "\"totalNumberOfTrades\": \"" << *o.m_totalNumberOfTrades << "\",\n"
-			<< "\"eventTimeMs\": \"" << *o.m_eventTimeMs << "\"\n"
-			<< "}";
-
+			<< "PRICE_CHANGE=" << *o.m_priceChange << "|"
+			<< "PRICE_CHANGE_PERCENT=" << *o.m_priceChangePercent << "|"
+			<< "WEIGHTED_AVERAGE_PRICE=" << *o.m_weightedAvgPrice << "|"
+			<< "FIRST_TRADE_PRICE=" << *o.m_firstTradePrice << "|"
+			<< "LAST_PRICE=" << *o.m_lastPrice << "|"
+			<< "LAST_QUANTITY=" << *o.m_lastQuantity << "|"
+			<< "BEST_BID_PRICE=" << *o.m_bestBidPrice << "|"
+			<< "BEST_BID_QTY=" << *o.m_bestBidQty << "|"
+			<< "BEST_ASK_PRICE=" << *o.m_bestAskPrice << "|"
+			<< "BEST_ASK_QTY=" << *o.m_bestAskQty << "|"
+			<< "OPEN_PRICE=" << *o.m_openPrice << "|"
+			<< "HIGH_PRICE=" << *o.m_highPrice << "|"
+			<< "LOW_PRICE=" << *o.m_lowPrice << "|"
+			<< "TOTAL_TRADED_BASE_ASSET_VOLUME=" << *o.m_totalTradedBaseAssetVolume << "|"
+			<< "TOTAL_TRADED_QUOTE_ASSET_VOLUME=" << *o.m_totalTradedQuoteAssetVolume << "|"
+			<< "STATISTICS_OPEN_TIME=" << *o.m_statisticsOpenTimeMs << "|"
+			<< "STATISTICS_CLOSE_TIME=" << *o.m_statisticsCloseTimeMs << "|"
+			<< "FIRST_TRADE_ID=" << *o.m_firstTradeId << "|"
+			<< "LAST_TRADE_ID=" << *o.m_lastTradeId << "|"
+			<< "TOTAL_NUMBER_OF_TRADES=" << *o.m_totalNumberOfTrades << "|"
+			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
 		return os;
 	}
 
@@ -373,15 +365,13 @@ namespace MarketData {
 	std::ostream& operator<<(std::ostream& os, const IndividualMiniTickerData& o)
 	{
 		os
-			<< "{\n"
-			<< "\"closePrice\": \"" << *o.m_closePrice << "\",\n"
-			<< "\"openPrice\": \"" << *o.m_openPrice << "\",\n"
-			<< "\"highPrice\": \"" << *o.m_highPrice << "\",\n"
-			<< "\"lowPrice\": \"" << *o.m_lowPrice << "\",\n"
-			<< "\"totalTradedBaseAssetVolume\": \"" << *o.m_totalTradedBaseAssetVolume << "\",\n"
-			<< "\"totalTradedQuoteAssetVolume\": \"" << *o.m_totalTradedQuoteAssetVolume << "\",\n"
-			<< "\"eventTimeMs\": \"" << *o.m_eventTimeMs << "\"\n"
-			<< "}";
+			<< "CLOSE_PRICE=" << *o.m_closePrice << "|"
+			<< "OPEN_PRICE=" << *o.m_openPrice << "|"
+			<< "HIGH_PRICE=" << *o.m_highPrice << "|"
+			<< "LOW_PRICE=" << *o.m_lowPrice << "|"
+			<< "TOTAL_TRADED_BASE_ASSET_VOLUME=" << *o.m_totalTradedBaseAssetVolume << "|"
+			<< "TOTAL_TRADED_QUOTE_ASSET_VOLUME=" << *o.m_totalTradedQuoteAssetVolume << "|"
+			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
 		return os;
 	}
 
@@ -476,17 +466,15 @@ namespace MarketData {
 	std::ostream& operator<<(std::ostream& os, const AggregateTradeData& o)
 	{
 		os
-			<< "{\n"
-			<< "\"aggregateTradeId\": \"" << *o.m_aggregateTradeId << "\",\n"
-			<< "\"price\": \"" << *o.m_price << "\",\n"
-			<< "\"quantity\": \"" << *o.m_quantity << "\",\n"
-			<< "\"firstTradeId\": \"" << *o.m_firstTradeId << "\",\n"
-			<< "\"lastTradeId\": \"" << *o.m_lastTradeId << "\",\n"
-			<< "\"totalNumberOfTrades\": \"" << *o.m_totalNumberOfTrades << "\",\n"
-			<< "\"tradeTimeMs\": \"" << *o.m_tradeTimeMs << "\",\n"
-			<< "\"isBuyerMarketMaker\": \"" << *o.m_isBuyerMarketMaker << "\",\n"
-			<< "\"eventTimeMs\": \"" << *o.m_eventTimeMs << "\"\n"
-			<< "}";
+			<< "AGGREGATE_TRADE_ID=" << *o.m_aggregateTradeId << "|"
+			<< "PRICE=" << *o.m_price << "|"
+			<< "QUANTITY=" << *o.m_quantity << "|"
+			<< "FIRST_TRADE_ID=" << *o.m_firstTradeId << "|"
+			<< "LAST_TRADE_ID=" << *o.m_lastTradeId << "|"
+			<< "TOTAL_NUMBER_OF_TRADES=" << *o.m_totalNumberOfTrades << "|"
+			<< "TRADE_TIME_MS=" << *o.m_tradeTimeMs << "|"
+			<< "IS_BUYER_MARKET_MAKER=" << *o.m_isBuyerMarketMaker << "|"
+			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
 		return os;
 	}
 
@@ -562,24 +550,22 @@ namespace MarketData {
 	std::ostream& operator<<(std::ostream& os, const KlineCandleStickData& o)
 	{
 		os
-			<< "{\n"
-			<< "\"klineStartTime\": \"" << *o.m_klineStartTime << "\",\n"
-			<< "\"klineCloseTime\": \"" << *o.m_klineCloseTime << "\",\n"
-			<< "\"interval\": \"" << *o.m_interval << "\",\n"
-			<< "\"firstTradeId\": \"" << *o.m_firstTradeId << "\",\n"
-			<< "\"lastTradeId\": \"" << *o.m_lastTradeId << "\",\n"
-			<< "\"openPrice\": \"" << *o.m_openPrice << "\",\n"
-			<< "\"closePrice\": \"" << *o.m_closePrice << "\",\n"
-			<< "\"highPrice\": \"" << *o.m_highPrice << "\",\n"
-			<< "\"lowPrice\": \"" << *o.m_lowPrice << "\",\n"
-			<< "\"baseAssetVolume\": \"" << *o.m_baseAssetVolume << "\",\n"
-			<< "\"numberOfTrades\": \"" << *o.m_numberOfTrades << "\",\n"
-			<< "\"isThisKlineClosed\": \"" << *o.m_isThisKlineClosed << "\",\n"
-			<< "\"quoteAssetVolume\": \"" << *o.m_quoteAssetVolume << "\",\n"
-			<< "\"takerBuyBaseAssetVolume\": \"" << *o.m_takerBuyBaseAssetVolume << "\",\n"
-			<< "\"takerBuyQuoteAssetVolume\": \"" << *o.m_takerBuyQuoteAssetVolume << "\",\n"
-			<< "\"eventTimeMs\": \"" << *o.m_eventTimeMs << "\"\n"
-			<< "}";
+			<< "KLINE_START_TIME=" << *o.m_klineStartTime << "|"
+			<< "KLINE_CLOSE_TIME=" << *o.m_klineCloseTime << "|"
+			<< "INTERVAL=" << *o.m_interval << "|"
+			<< "FIRST_TRADE_ID=" << *o.m_firstTradeId << "|"
+			<< "LAST_TRADE_ID=" << *o.m_lastTradeId << "|"
+			<< "OPEN_PRICE=" << *o.m_openPrice << "|"
+			<< "CLOSE_PRICE=" << *o.m_closePrice << "|"
+			<< "HIGH_PRICE=" << *o.m_highPrice << "|"
+			<< "LOW_PRICE=" << *o.m_lowPrice << "|"
+			<< "BASE_ASSET_VOLUME=" << *o.m_baseAssetVolume << "|"
+			<< "NUMBER_OF_TRADES=" << *o.m_numberOfTrades << "|"
+			<< "IS_THIS_KLINE_CLOSED=" << *o.m_isThisKlineClosed << "|"
+			<< "QUOTE_ASSET_VOLUME=" << *o.m_quoteAssetVolume << "|"
+			<< "TAKER_BUY_BASE_ASSET_VOLUME=" << *o.m_takerBuyBaseAssetVolume << "|"
+			<< "TAKER_BUY_QUOTE_ASSET_VOLUME=" << *o.m_takerBuyQuoteAssetVolume << "|"
+			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
 		return os;
 	}
 
@@ -617,11 +603,9 @@ namespace MarketData {
 	std::ostream& operator<<(std::ostream& os, const DepthData& o)
 	{
 		os
-			<< "{\n"
-			<< "\"price\": \"" << *o.m_price << "\",\n"
-			<< "\"amount\": \"" << *o.m_amount << "\",\n"
-			<< "\"eventTimeMs\": \"" << *o.m_eventTimeMs << "\"\n"
-			<< "}";
+			<< "PRICE=" << *o.m_price << "|"
+			<< "AMOUNT=" << *o.m_amount << "|"
+			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
 
 		return os;
 	}

@@ -50,6 +50,8 @@ namespace MarketData {
 
 		void StartIOContext();
 		bool Subscribe(const std::string& symbol);
+		// Special case for subscribing part depth data
+		bool SubscribePartDepth(const std::string& symbol);
 		bool Unsubscribe(const std::string& symbol);
 		bool IsSubscribed(const std::string& symbol);
 		// NOTE: we must always subscribe symbols before calling this function!
@@ -65,7 +67,7 @@ namespace MarketData {
 		void SubscibeIndividualMiniTicker(const std::string& symbol);
 		void SubscibeAllMiniTickers(const std::string& symbol);
 		void SubscibeAggregateTrade(const std::string& symbol);
-		void SubscibeKlineCandleStick(const std::string& symbol);
+		void SubscibeKlineCandleStick(const std::string& symbol, const std::string& interval);
 		void SubscibePartDepth(const std::string& symbol);
 		void SubscibeDiffDepth(const std::string& symbol);
 		void SubscibeUserData(const std::string& symbol);

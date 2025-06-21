@@ -41,6 +41,8 @@ namespace tinyxml2 {
 
 namespace UserAccount {
 
+	// This class will manage binance trade activities like buy/sell/report...
+	// It will also manage the portfolio, trading rules, and risk management.
 	class DLL_CLASS_USERACCOUNT_EXPORTS
 		BinanceTrader : public Trader
 	{
