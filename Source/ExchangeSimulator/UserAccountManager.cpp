@@ -100,7 +100,7 @@ void UserAccountManager::AddNewFutureUserAccount(const std::string& userId, cons
 	std::unique_lock<std::mutex> lock(m_mutex);
 	if (m_futureAccounts.size() <= m_maxAccount)
 	{
-		const auto result = m_futureAccounts.try_emplace(userId, std::make_unique<UserFutureAccount>(userConfigPath, accountInfoJsonFile));
+		const auto result = m_futureAccounts.try_emplace(userId, std::make_unique<KernelTrading::UserFutureAccount>(userConfigPath, accountInfoJsonFile));
 		if (!result.second)
 		{
 			LOG_WARNING_STREAM(m_logger, "UserFutureAccount with userId '" << userId << "' already exists.");
@@ -153,7 +153,7 @@ UserSpotAccount* UserAccountManager::LookupSpotUserAccount(const std::string& us
     throw std::runtime_error("No UserSpotAccount found with userId '" + userId + "'.");
 }
 
-UserFutureAccount* UserAccountManager::LookupFutureUserAccount(const std::string& userId)
+KernelTrading::UserFutureAccount* UserAccountManager::LookupFutureUserAccount(const std::string& userId)
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
 	auto it = m_futureAccounts.find(userId);
@@ -175,7 +175,7 @@ UserSpotAccount* UserAccountManager::OpenEditSessionForSpotUserAccount(const std
     throw std::runtime_error("No UserSpotAccount found with userId '" + userId + "'.");
 }
 
-UserFutureAccount* UserAccountManager::OpenEditSessionForFutureUserAccount(const std::string& userId)
+KernelTrading::UserFutureAccount* UserAccountManager::OpenEditSessionForFutureUserAccount(const std::string& userId)
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
 	auto it = m_futureAccounts.find(userId);

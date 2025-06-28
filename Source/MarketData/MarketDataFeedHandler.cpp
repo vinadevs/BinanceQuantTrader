@@ -53,7 +53,7 @@ bool MarketDataFeedHandler::HandleIndividualBookTickerData(const char* fl,
     }
     else
     {
-        throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + book.s);
+        throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + book.s);
     }
     return false;
 }
@@ -73,7 +73,7 @@ bool MarketDataFeedHandler::HandleTradeData(const char* fl, int ec, std::string 
     }
     else
     {
-        throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + trade.s);
+        throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + trade.s);
     }
     return false;
 }
@@ -94,7 +94,7 @@ bool MarketDataFeedHandler::HandleIndividualMarketTickerData(const char* fl, int
 	}
     else
     {
-		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + market.s);
+		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + market.s);
     }
 
     return false;
@@ -116,7 +116,7 @@ bool MarketDataFeedHandler::HandleMiniTickerData(const char* fl, int ec, std::st
 	}
 	else
 	{
-		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + mini.s);
+		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + mini.s);
 	}
 
     return false;
@@ -138,7 +138,7 @@ bool MarketDataFeedHandler::HandleAggregateTradeData(const char* fl, int ec, std
 	}
 	else
 	{
-		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + aggregate.s);
+		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + aggregate.s);
 	}
 
     return false;
@@ -159,7 +159,7 @@ bool MarketDataFeedHandler::HandleKlineCandleStickData(const char* fl, int ec, s
 	}
 	else
 	{
-		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + kline.s);
+		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + kline.s);
 	}
     return false;
 }
@@ -180,7 +180,7 @@ bool MarketDataFeedHandler::HandleAllMiniTickerData(const char* fl, int ec, std:
 		}
 		else
 		{
-			throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + ticker.first);
+			throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + ticker.first);
 		}
 	}
 	return false;
@@ -202,7 +202,7 @@ bool MarketDataFeedHandler::HandleAllMarketTickersData(const char* fl, int ec, s
 		}
 		else
 		{
-			throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + ticker.first);
+			throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + ticker.first);
 		}
 	}
 	return false;
@@ -223,7 +223,7 @@ bool MarketDataFeedHandler::HandlePartDepthData(const char* fl, int ec, std::str
 	}
 	else
 	{
-		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + m_partDiffSymbol);
+		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + m_partDiffSymbol);
 	}
 	return false;
 }
@@ -244,7 +244,7 @@ bool MarketDataFeedHandler::HandleDiffDepthData(const char* fl, int ec, std::str
 	}
 	else
 	{
-		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed does not exit with symbol=" + depth.s);
+		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + depth.s);
 	}
 
 	return false;

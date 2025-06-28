@@ -158,6 +158,7 @@
     <ClInclude Include="BinanceTrader.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="FutureTrader.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ReportAPIs.h" />
     <ClInclude Include="ExchangeReporter.h" />
@@ -175,6 +176,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ReportAPIs.cpp" />
+    <ClCompile Include="FutureTrader.cpp" />
     <ClCompile Include="Trader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

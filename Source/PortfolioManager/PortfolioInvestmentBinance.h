@@ -87,7 +87,7 @@ namespace PortfolioManager {
 		bool HasCryptoAssetBalance(const BinanceBalance& balance);
 		bool IsCryptoAssetHasMarketData(const std::string& asset);
 
-		binapi::rest::account_info_t* m_binanceAccountInfo {nullptr};
+		binapi::rest::account_info_t* m_binanceSpotAccountInfo {nullptr};
 		BinanceTradingPairManager m_binanceTradingPairMgr;
 		MarketData::RealTimeMarketData* m_marketData{nullptr};
 	};

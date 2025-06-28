@@ -81,7 +81,7 @@ PortfolioInvestmentBinance::~PortfolioInvestmentBinance() {}
 void PortfolioInvestmentBinance::SetUserAccountInfo(binapi::rest::account_info_t* account)
 {
     assert(account);
-    m_binanceAccountInfo = account;
+    m_binanceSpotAccountInfo = account;
 }
 
 bool PortfolioInvestmentBinance::IsCryptoAssetHasMarketData(const std::string& asset)
@@ -93,7 +93,7 @@ bool PortfolioInvestmentBinance::IsCryptoAssetHasMarketData(const std::string& a
 
 void PortfolioInvestmentBinance::UpdateBinanceAccountInfo()
 {
-    if (BinanceAccountUtils::QueryBinanceAccount(m_binanceAccountInfo, m_logger.get()))
+    if (BinanceAccountUtils::QueryBinanceSpotAccount(m_binanceSpotAccountInfo, m_logger.get()))
     {
         m_logger->Info("updated Binance account information to portfolio manager.");
         UpdateBinanceTradingPairs();
@@ -114,7 +114,7 @@ void PortfolioInvestmentBinance::UpdateBinanceAccountInfo()
 
 void PortfolioInvestmentBinance::UpdateBinanceTradingPairs()
 {
-    for (const auto& balance : m_binanceAccountInfo->balances)
+    for (const auto& balance : m_binanceSpotAccountInfo->balances)
     {
         const auto binanceSymbol = CreateTradingPairSymbol(balance.first);
         if (IsCryptoAssetAbleToTrade(balance.second))
@@ -152,7 +152,7 @@ void PortfolioInvestmentBinance::AddNewAssetToManage(const std::string& asset)
 
 const binapi::rest::account_info_t* PortfolioInvestmentBinance::GetBinanceAccountInfo() const
 {
-    return m_binanceAccountInfo;
+    return m_binanceSpotAccountInfo;
 }
 
 BinanceTradingPairManager& PortfolioInvestmentBinance::GetBinanceTradingPairManager(
@@ -193,7 +193,7 @@ const BinanceBalances& PortfolioInvestmentBinance::GetAllBinanceBalances(bool up
     {
         UpdateBinanceAccountInfo();
     }
-    return m_binanceAccountInfo->balances;
+    return m_binanceSpotAccountInfo->balances;
 }
 
 BinanceBalances PortfolioInvestmentBinance::GetTradableBinanceBalances(bool updateNewData /*= false*/)
@@ -203,7 +203,7 @@ BinanceBalances PortfolioInvestmentBinance::GetTradableBinanceBalances(bool upda
         UpdateBinanceAccountInfo();
     }
     BinanceBalances tradableBalances;
-    for (const auto& balance : m_binanceAccountInfo->balances)
+    for (const auto& balance : m_binanceSpotAccountInfo->balances)
     {
         if (IsCryptoAssetAbleToTrade(balance.second))
         {
@@ -224,7 +224,7 @@ const BinanceBalance& PortfolioInvestmentBinance::GetBinanceBalance(const std::s
     {
         UpdateBinanceAccountInfo();
     }
-    for (const auto& balance : m_binanceAccountInfo->balances)
+    for (const auto& balance : m_binanceSpotAccountInfo->balances)
     {
         if (balance.first == asset)
         {

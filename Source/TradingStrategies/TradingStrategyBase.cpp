@@ -16,6 +16,7 @@
 #include "../ComplianceNRegulatory/BinanceTradingRules.h"
 #include "../ComplianceNRegulatory/HardTradingLimits.h"
 #include "../UserAccount/BinanceTrader.h"
+#include "../UserAccount/FutureTrader.h"
 
 using namespace TradingStrategies;
 using namespace UserAccount;
@@ -32,7 +33,7 @@ TradingStrategyBase::TradingStrategyBase(
 	const std::string& strategyDescription,
 	const std::string& strategyCfgPath,
 	MarketData::RealTimeMarketData* marketData,
-	UserAccount::BinanceTrader* trader,
+	UserAccount::Trader* trader,
 	ComplianceNRegulatory::BinanceTradingRules* tradingRules)
 	: m_strategyName(strategyName),
 	m_strategyDescription(strategyDescription),
@@ -50,7 +51,8 @@ TradingStrategyBase::TradingStrategyBase(
 TradingStrategyBase::TradingStrategyBase(
 	const std::string& strategyName,
 	const std::string& strategyDescription,
-	const std::string& strategyCfgPath, MarketData::RealTimeMarketData* marketData)
+	const std::string& strategyCfgPath,
+	MarketData::RealTimeMarketData* marketData)
 	: m_strategyName(strategyName),
 	m_strategyDescription(strategyDescription),
 	m_strategyCfgPath(strategyCfgPath),
@@ -59,6 +61,7 @@ TradingStrategyBase::TradingStrategyBase(
 	m_logger = std::make_unique<Logger>(m_strategyName);
 	m_logger->Info("Trading strategy name=" + m_strategyName);
 	m_logger->Info("Trading strategy description=" + m_strategyDescription);
+	InitQuantStrategist();
 }
 
 TradingStrategyBase::~TradingStrategyBase() {}
@@ -71,6 +74,29 @@ void TradingStrategyBase::LogTradingHardLimits()
 		+ std::to_string(m_tradingRules->GetTradingLimits()->m_maxRequestWeightPerMinute));
 	m_logger->Info("[Binance Hard Limitation] Orders per twenty-four hours limit=" 
 		+ std::to_string(m_tradingRules->GetTradingLimits()->m_maxOrdersPerTwentyFourHours));
+}
+
+void TradingStrategyBase::InitQuantStrategist()
+{
+	if (m_trader)
+	{
+		if (m_spotTrader = dynamic_cast<UserAccount::BinanceTrader*>(m_trader))
+		{
+			m_logger->Info("SpotTrader is set up successfully.");
+		}
+		else if (m_futureTrader = dynamic_cast<UserAccount::FutureTrader*>(m_trader))
+		{
+			m_logger->Info("FutureTrader is set up successfully.");
+		}
+		else
+		{
+			throw std::runtime_error("TradingStrategyBase: Trader must be spot or future.");
+		}
+	}
+	else
+	{
+		throw std::runtime_error("TradingStrategyBase: Trader is null.");
+	}
 }
 
 StrategyRunStatus TradingStrategyBase::GetStrategyRunStatus() const

@@ -134,7 +134,7 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
             const double profitAndLost = spread * (positionValue / orderEntryPrice) * numberOfContracts;
 			// Update the user's future asset balance with profit
 			auto* userEditSession = m_userAccountManager->OpenEditSessionForFutureUserAccount(userAccount->GetUserAccountId());
-			userEditSession->UpdateBalanceCash("USDT", profitAndLost, BalanceChangeEvent::PROFIT); // Update the margin with profit
+			userEditSession->UpdateBalanceCash("USDT", profitAndLost, KernelTrading::BalanceChangeEvent::PROFIT); // Update the margin with profit
         }
         else if (currentMarketPrice < orderEntryPrice)
         {
@@ -144,13 +144,13 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
             const double profitAndLost = spread * (positionValue / orderEntryPrice) * numberOfContracts;
 			// Update the user's future asset balance with loss
 			auto* userEditSession = m_userAccountManager->OpenEditSessionForFutureUserAccount(userAccount->GetUserAccountId());
-            userEditSession->UpdateBalanceCash("USDT", profitAndLost, BalanceChangeEvent::LOSS); // Update the margin with loss
+            userEditSession->UpdateBalanceCash("USDT", profitAndLost, KernelTrading::BalanceChangeEvent::LOSS); // Update the margin with loss
             // Liquidity price check
             if (currentMarketPrice <= liquidityPrice)
             {
                 m_logger->Warning("Liquidity price reached for order: " + newUpstreamOrder.ToStringOrder());
                 // Handle liquidation logic here, e.g., close position, notify user, etc.
-                userEditSession->UpdateBalanceCash("USDT", requiredMarginCash, BalanceChangeEvent::LOSS); // Liquidate the position
+                userEditSession->UpdateBalanceCash("USDT", requiredMarginCash, KernelTrading::BalanceChangeEvent::LOSS); // Liquidate the position
             }
             // Check call margin condition
             else if (userFutureAssetInfo->initialMargin < maintenanceMargin)
@@ -177,7 +177,7 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
             const double profitAndLost = spread * (positionValue / orderEntryPrice) * numberOfContracts;
 			// Update the user's future asset balance with profit
 			auto* userEditSession = m_userAccountManager->OpenEditSessionForFutureUserAccount(userAccount->GetUserAccountId());
-			userEditSession->UpdateBalanceCash("USDT", profitAndLost, BalanceChangeEvent::PROFIT); // Update the margin with profit
+			userEditSession->UpdateBalanceCash("USDT", profitAndLost, KernelTrading::BalanceChangeEvent::PROFIT); // Update the margin with profit
         }
         else if (currentMarketPrice > orderEntryPrice)
         {
@@ -187,13 +187,13 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
             const double profitAndLost = spread * (positionValue / orderEntryPrice) * numberOfContracts;
 			// Update the user's future asset balance with loss
 			auto* userEditSession = m_userAccountManager->OpenEditSessionForFutureUserAccount(userAccount->GetUserAccountId());
-			userEditSession->UpdateBalanceCash("USDT", profitAndLost, BalanceChangeEvent::LOSS); // Update the margin with loss
+			userEditSession->UpdateBalanceCash("USDT", profitAndLost, KernelTrading::BalanceChangeEvent::LOSS); // Update the margin with loss
             // Liquidity price check
             if (currentMarketPrice >= liquidityPrice)
             {
                 m_logger->Warning("Liquidity price reached for order: " + newUpstreamOrder.ToStringOrder());
                 // Handle liquidation logic here, e.g., close position, notify user, etc.
-				userEditSession->UpdateBalanceCash("USDT", requiredMarginCash, BalanceChangeEvent::LOSS); // Liquidate the position
+				userEditSession->UpdateBalanceCash("USDT", requiredMarginCash, KernelTrading::BalanceChangeEvent::LOSS); // Liquidate the position
             }
             // Check call margin condition
             else if (userFutureAssetInfo->initialMargin < maintenanceMargin)

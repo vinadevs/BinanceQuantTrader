@@ -25,8 +25,16 @@
 #pragma warning(disable : 4715)
 
 namespace MarketData {
+
+	// Class base for Binance Synchronous Market Data
+	class BinanceMarketData
+	{
+	protected:
+		std::string m_dataName;
+	};
+
 	// Level 2 market data: Bid Ask price, quantity
-	class DLL_CLASS_MARKETDATA_EXPORTS IndividualBookTickerData
+	class DLL_CLASS_MARKETDATA_EXPORTS IndividualBookTickerData : public BinanceMarketData
 	{
 	public:
 		// Rule of 5, for class containing unique pointers
@@ -48,7 +56,7 @@ namespace MarketData {
 	};
 
 	// Level 1 market data: other trading data: Kline, VWAP, Volume,...
-	class DLL_CLASS_MARKETDATA_EXPORTS TradeData // trade_t
+	class DLL_CLASS_MARKETDATA_EXPORTS TradeData : public BinanceMarketData // trade_t
 	{
 	public:
 		// Rule of 5, for class containing unique pointers
@@ -71,7 +79,7 @@ namespace MarketData {
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const TradeData& o);
 	};
 
-	class DLL_CLASS_MARKETDATA_EXPORTS IndividualMarketTickerData // market_ticker_t
+	class DLL_CLASS_MARKETDATA_EXPORTS IndividualMarketTickerData : public BinanceMarketData // market_ticker_t
 	{
 	public:
 		// Rule of 5, for class containing unique pointers
@@ -107,7 +115,7 @@ namespace MarketData {
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const IndividualMarketTickerData& o);
 	};
 
-	class DLL_CLASS_MARKETDATA_EXPORTS AllMarketTickerData
+	class DLL_CLASS_MARKETDATA_EXPORTS AllMarketTickerData : public BinanceMarketData // market_ticker_all_t
 	{
 	public:
 		// Rule of 0
@@ -124,7 +132,7 @@ namespace MarketData {
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const AllMarketTickerData& o);
 	};
 
-	class IndividualMiniTickerData
+	class IndividualMiniTickerData : public BinanceMarketData // mini_ticker_t
 	{
 	public:
 		// Rule of 5, for class containing unique pointers
@@ -146,7 +154,7 @@ namespace MarketData {
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const IndividualMiniTickerData& o);
 	};
 
-	class DLL_CLASS_MARKETDATA_EXPORTS AllMiniTickerData
+	class DLL_CLASS_MARKETDATA_EXPORTS AllMiniTickerData : public BinanceMarketData // mini_ticker_all_t
 	{
 	public:
 		// Rule of 5, for class containing unique pointers
@@ -163,7 +171,7 @@ namespace MarketData {
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const AllMiniTickerData& o);
 	};
 
-	class DLL_CLASS_MARKETDATA_EXPORTS AggregateTradeData
+	class DLL_CLASS_MARKETDATA_EXPORTS AggregateTradeData : public BinanceMarketData // aggregate_trade_t
 	{
 	public:
 		// Rule of 5, for class containing unique pointers
@@ -187,7 +195,7 @@ namespace MarketData {
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const AggregateTradeData& o);
 	};
 
-	class DLL_CLASS_MARKETDATA_EXPORTS KlineCandleStickData
+	class DLL_CLASS_MARKETDATA_EXPORTS KlineCandleStickData : public BinanceMarketData // kline_candlestick_t
 	{
 	public:
 		// Rule of 5, for class containing unique pointers
@@ -218,7 +226,7 @@ namespace MarketData {
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const KlineCandleStickData& o);
 	};
 
-	class DLL_CLASS_MARKETDATA_EXPORTS DepthData
+	class DLL_CLASS_MARKETDATA_EXPORTS DepthData : public BinanceMarketData // depth_t
 	{
 	public:
 		// Rule of 5, for class containing unique pointers
@@ -236,7 +244,7 @@ namespace MarketData {
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const DepthData& o);
 	};
 
-	class DLL_CLASS_MARKETDATA_EXPORTS AllPartDepthData
+	class DLL_CLASS_MARKETDATA_EXPORTS AllPartDepthData : public BinanceMarketData // depth_all_t
 	{
 	public:
 		// Rule of 5, for class containing unique pointers
@@ -254,7 +262,7 @@ namespace MarketData {
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const AllPartDepthData& o);
 	};
 
-	class DLL_CLASS_MARKETDATA_EXPORTS AllDiffDepthData
+	class DLL_CLASS_MARKETDATA_EXPORTS AllDiffDepthData : public BinanceMarketData // diff_depth_t
 	{
 	public:
 		// Rule of 5, for class containing unique pointers
@@ -270,29 +278,13 @@ namespace MarketData {
 		std::unique_ptr <ArrayMarketDataFeed<DepthData>> m_bids;
 		std::unique_ptr <ArrayMarketDataFeed<DepthData>> m_asks;
 		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
+
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const AllDiffDepthData& o);
 	};
 
 	///////////////////////////////////////////////////////////////
-
-	class LevelOneMarketData
-	{
-
-	};
-
-	class LevelTwoMarketData
-	{
-
-	};
-
-	class LevelThreeMarketData
-	{
-
-	};
-
-	///////////////////////////////////////////////////////////////
 	// This class contains all of single feed data is available from the exchange
-	class DLL_CLASS_MARKETDATA_EXPORTS SynchronousMarketData
+	class DLL_CLASS_MARKETDATA_EXPORTS SynchronousMarketData final
 	{
 	public:
 		SynchronousMarketData(const std::string& symbol);

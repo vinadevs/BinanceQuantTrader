@@ -4,7 +4,7 @@
 # This is a part of Binance Quant Trader Project
 # Copyright(C) - vinadevs
 # This source code can be used, distributed or modified under Apache license
-#*******************************************************************************/ 
+#*******************************************************************************/
 
 #pragma once
 
@@ -41,16 +41,16 @@ namespace tinyxml2 {
 
 namespace UserAccount {
 
-	// This class will manage binance spot trade activities like buy/sell/report...
+	// This class will manage binance future trade activities like buy/sell/report...
 	// It will also manage the portfolio, trading rules, and risk management.
 	class DLL_CLASS_USERACCOUNT_EXPORTS
-		BinanceTrader : public Trader
+		FutureTrader : public Trader
 	{
 	public:
-		BinanceTrader(const tinyxml2::XMLElement* reportCfg, 
-			          PortfolioManager::PortfolioInvestmentBinance* portfolio,
-					  ComplianceNRegulatory::BinanceTradingRules* tradingRules,
-					  RiskManagement::RiskManager* riskManager);
+		FutureTrader(const tinyxml2::XMLElement* reportCfg,
+			PortfolioManager::PortfolioInvestmentBinance* portfolio,
+			ComplianceNRegulatory::BinanceTradingRules* tradingRules,
+			RiskManagement::RiskManager* riskManager);
 
 		////////////// UPSTREAM PROCESSING /////////////////////////////
 
@@ -65,7 +65,7 @@ namespace UserAccount {
 		void CreatePortfolioManagement(const std::vector<std::string>& targetTradeSymbols);
 
 		PortfolioManager::PortfolioInvestmentBinance* GetPortfolio() const { return m_portfolio; }
-		
+
 		OrderManagement::PositionManager* GetPositionManager() const { return m_positionManager.get(); }
 
 		ComplianceNRegulatory::BinanceTradingRules* GetTradingRules() const { return m_tradingRules; }

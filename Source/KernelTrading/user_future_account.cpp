@@ -8,9 +8,9 @@
 
 #include "pch.h"
 
-#include "UserFutureAccount.h"
+#include "user_future_account.h"
 
-using namespace ExchangeSimulator;
+using namespace KernelTrading;
 
 // Helper to safely parse a double from JSON string fields
 static double ParseDouble(const nlohmann::json& j, const std::string& key) {

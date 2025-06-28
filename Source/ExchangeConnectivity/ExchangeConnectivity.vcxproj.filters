@@ -75,6 +75,12 @@
     <ClInclude Include="BinanceTradeProfile.h">
       <Filter>Backtest Simulator</Filter>
     </ClInclude>
+    <ClInclude Include="protobuf\user_future_account_data.grpc.pb.h">
+      <Filter>Backtest Simulator\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\user_future_account_data.pb.h">
+      <Filter>Backtest Simulator\Protobuf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -121,6 +127,12 @@
     </ClCompile>
     <ClCompile Include="BinanceTradeProfile.cpp">
       <Filter>Backtest Simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\user_future_account_data.grpc.pb.cc">
+      <Filter>Backtest Simulator\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\user_future_account_data.pb.cc">
+      <Filter>Backtest Simulator\Protobuf</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

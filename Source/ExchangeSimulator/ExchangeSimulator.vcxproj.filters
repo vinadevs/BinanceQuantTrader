@@ -168,10 +168,16 @@
     <ClInclude Include="protobuf\user_trade_profile.pb.h">
       <Filter>Binance Exchange Simulator\Protobuf</Filter>
     </ClInclude>
-    <ClInclude Include="UserFutureAccount.h">
+    <ClInclude Include="UserSpotAccount.h">
       <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
     </ClInclude>
-    <ClInclude Include="UserSpotAccount.h">
+    <ClInclude Include="protobuf\user_future_account_data.grpc.pb.h">
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\user_future_account_data.pb.h">
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="UserFutureAccountService.h">
       <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
     </ClInclude>
   </ItemGroup>
@@ -275,10 +281,16 @@
     <ClCompile Include="protobuf\user_trade_profile.pb.cc">
       <Filter>Binance Exchange Simulator\Protobuf</Filter>
     </ClCompile>
-    <ClCompile Include="UserFutureAccount.cpp">
+    <ClCompile Include="UserSpotAccount.cpp">
       <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
     </ClCompile>
-    <ClCompile Include="UserSpotAccount.cpp">
+    <ClCompile Include="protobuf\user_future_account_data.grpc.pb.cc">
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="protobuf\user_future_account_data.pb.cc">
+      <Filter>Binance Exchange Simulator\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="UserFutureAccountService.cpp">
       <Filter>Binance Exchange Simulator\User Account Wallet</Filter>
     </ClCompile>
   </ItemGroup>

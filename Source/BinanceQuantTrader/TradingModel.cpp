@@ -13,6 +13,7 @@
 #include "../HistoricalData/HistoricalDataManager.h"
 #include "../PortfolioManager/PortfolioInvestmentBinance.h"
 #include "../UserAccount/BinanceTrader.h"
+#include "../UserAccount/FutureTrader.h"
 #include "../ComplianceNRegulatory/BinanceTradingRules.h"
 #include "../RiskManagement/RiskManager.h"
 #include "../TradingStrategies/TradingStrategyBase.h"

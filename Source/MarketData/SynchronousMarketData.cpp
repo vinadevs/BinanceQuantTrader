@@ -63,6 +63,7 @@ namespace MarketData {
 		m_bestAskQty{std::make_unique<SingleMarketDataFeed>()},
 		m_eventTimeMs{std::make_unique<SingleMarketDataFeed>()}
 	{
+		m_dataName = "IndividualBookTickerData";
 	}
 
 	IndividualBookTickerData::IndividualBookTickerData(const IndividualBookTickerData& other)
@@ -93,6 +94,7 @@ namespace MarketData {
 	std::ostream& operator<<(std::ostream& os, const IndividualBookTickerData& o)
 	{
 		os
+			<< "DATA_NAME=" << o.m_dataName << "|"
 			<< "UPDATE_ID=" << *o.m_updateId << "|"
 			<< "BEST_BID_PRICE=" << *o.m_bestBidPrice << "|"
 			<< "BEST_BID_QTY=" << *o.m_bestBidQty << "|"
@@ -118,6 +120,7 @@ namespace MarketData {
 		m_isBuyerTheMarketMaker{std::make_unique<SingleMarketDataFeed>()},
 		m_eventTimeMs{std::make_unique<SingleMarketDataFeed>()}
 	{
+		m_dataName = "TradeData";
 	}
 
 	TradeData::TradeData(const TradeData& other)
@@ -152,6 +155,7 @@ namespace MarketData {
 	std::ostream& operator<<(std::ostream& os, const TradeData& o)
 	{
 		os
+			<< "DATA_NAME=" << o.m_dataName << "|"
 			<< "TRADE_ID=" << *o.m_tradeId << "|"
 			<< "PRICE=" << *o.m_price << "|"
 			<< "QUANTITY=" << *o.m_quantity << "|"
@@ -191,6 +195,7 @@ namespace MarketData {
 		m_totalNumberOfTrades{std::make_unique<SingleMarketDataFeed>()},
 		m_eventTimeMs{std::make_unique<SingleMarketDataFeed>()}
 	{
+		m_dataName = "IndividualMarketTickerData";
 	}
 		
 	IndividualMarketTickerData::IndividualMarketTickerData(const IndividualMarketTickerData& other)
@@ -251,6 +256,7 @@ namespace MarketData {
 	std::ostream& operator<<(std::ostream& os, const IndividualMarketTickerData& o)
 	{
 		os
+			<< "DATA_NAME=" << o.m_dataName << "|"
 			<< "PRICE_CHANGE=" << *o.m_priceChange << "|"
 			<< "PRICE_CHANGE_PERCENT=" << *o.m_priceChangePercent << "|"
 			<< "WEIGHTED_AVERAGE_PRICE=" << *o.m_weightedAvgPrice << "|"
@@ -282,6 +288,7 @@ namespace MarketData {
 		: m_allIndividualMarketTicker{ std::make_unique<TableMarketDataFeed<IndividualMarketTickerData>>() },
 		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>() }
 	{
+		m_dataName = "AllMarketTickerData";
 	}
 
 	AllMarketTickerData::AllMarketTickerData(const AllMarketTickerData& other)
@@ -303,6 +310,7 @@ namespace MarketData {
 
 	std::ostream& operator<<(std::ostream& os, const AllMarketTickerData& o)
 	{
+		os << "DATA_NAME=" << o.m_dataName << "\n";
 		os << "{\n";
 		os << "[\n";
 
@@ -334,6 +342,7 @@ namespace MarketData {
 		m_totalTradedQuoteAssetVolume{ std::make_unique<SingleMarketDataFeed>() },
 		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>() }
 	{
+		m_dataName = "IndividualMiniTickerData";
 	}
 
 	IndividualMiniTickerData::IndividualMiniTickerData(const IndividualMiniTickerData& other)
@@ -365,6 +374,7 @@ namespace MarketData {
 	std::ostream& operator<<(std::ostream& os, const IndividualMiniTickerData& o)
 	{
 		os
+			<< "DATA_NAME=" << o.m_dataName << "|"
 			<< "CLOSE_PRICE=" << *o.m_closePrice << "|"
 			<< "OPEN_PRICE=" << *o.m_openPrice << "|"
 			<< "HIGH_PRICE=" << *o.m_highPrice << "|"
@@ -382,6 +392,7 @@ namespace MarketData {
 		: m_tableMarketTicker{ std::make_unique<TableMarketDataFeed<IndividualMiniTickerData>>() },
 		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>() }
 	{
+		m_dataName = "AllMiniTickerData";
 	}
 
 	AllMiniTickerData::AllMiniTickerData(const AllMiniTickerData& other)
@@ -402,6 +413,7 @@ namespace MarketData {
 
 	std::ostream& operator<<(std::ostream& os, const AllMiniTickerData& o)
 	{
+		os << "DATA_NAME=" << o.m_dataName << "\n";
 		os << "{\n";
 		os << "[\n";
 		auto data = o.m_tableMarketTicker->GetData();
@@ -431,6 +443,7 @@ namespace MarketData {
 		m_isBuyerMarketMaker{ std::make_unique<SingleMarketDataFeed>() },
 		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>() }
 	{
+		m_dataName = "AggregateTradeData";
 	}
 
 	AggregateTradeData::AggregateTradeData(const AggregateTradeData& other)
@@ -466,6 +479,7 @@ namespace MarketData {
 	std::ostream& operator<<(std::ostream& os, const AggregateTradeData& o)
 	{
 		os
+			<< "DATA_NAME=" << o.m_dataName << "|"
 			<< "AGGREGATE_TRADE_ID=" << *o.m_aggregateTradeId << "|"
 			<< "PRICE=" << *o.m_price << "|"
 			<< "QUANTITY=" << *o.m_quantity << "|"
@@ -501,6 +515,7 @@ namespace MarketData {
 		m_takerBuyQuoteAssetVolume{ std::make_unique<SingleMarketDataFeed>() },
 		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>() }
 	{
+		m_dataName = "KlineCandleStickData";
 	}
 
 	KlineCandleStickData::KlineCandleStickData(const KlineCandleStickData& other)
@@ -550,6 +565,7 @@ namespace MarketData {
 	std::ostream& operator<<(std::ostream& os, const KlineCandleStickData& o)
 	{
 		os
+			<< "DATA_NAME=" << o.m_dataName << "|"
 			<< "KLINE_START_TIME=" << *o.m_klineStartTime << "|"
 			<< "KLINE_CLOSE_TIME=" << *o.m_klineCloseTime << "|"
 			<< "INTERVAL=" << *o.m_interval << "|"
@@ -579,6 +595,7 @@ namespace MarketData {
 		m_amount{ std::make_unique<SingleMarketDataFeed>() },
 		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>() }
 	{
+		m_dataName = "DepthData";
 	}
 
 	DepthData::DepthData(const DepthData& other)
@@ -620,6 +637,7 @@ namespace MarketData {
 		m_asks{ std::make_unique<ArrayMarketDataFeed<DepthData>>() },
 		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>() }
 	{
+		m_dataName = "AllPartDepthData";
 	}
 
 	AllPartDepthData::AllPartDepthData(const AllPartDepthData& other)
@@ -643,6 +661,7 @@ namespace MarketData {
 
 	std::ostream& operator<<(std::ostream& os, const AllPartDepthData& o)
 	{
+		os << "DATA_NAME=" << o.m_dataName << "|\n";
 		os << "{\n";
 
 		// bids
@@ -672,6 +691,7 @@ namespace MarketData {
 		m_asks{ std::make_unique<ArrayMarketDataFeed<DepthData>>() },
 		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>() }
 	{
+		m_dataName = "AllDiffDepthData";
 	}
 
 	AllDiffDepthData::AllDiffDepthData(const AllDiffDepthData& other)
@@ -699,6 +719,7 @@ namespace MarketData {
 
 	std::ostream& operator<<(std::ostream& os, const AllDiffDepthData& o)
 	{
+		os << "DATA_NAME=" << o.m_dataName << "|\n";
 		os << "{\n";
 
 		os << "\"firstUpdateID\": \"" << *o.m_firstUpdateID << "\",\n";

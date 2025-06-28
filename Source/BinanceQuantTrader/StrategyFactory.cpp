@@ -37,7 +37,7 @@ std::unique_ptr<TradingStrategyBase>
 StrategyFactory::CreateTargetStrategy(
 	const XMLElement* strategyXmlCfg,
 	RealTimeMarketData* marketData,
-	BinanceTrader* trader,
+	Trader* trader,
 	BinanceTradingRules* tradingRules)
 {
 	assert(strategyXmlCfg);

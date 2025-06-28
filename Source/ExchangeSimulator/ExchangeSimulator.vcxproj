@@ -163,9 +163,11 @@
     <ClInclude Include="ExchangeInfoManager.h" />
     <ClInclude Include="ExchangeInfoHttpService.h" />
     <ClInclude Include="ExchangeRuleAndCompliance.h" />
+    <ClInclude Include="protobuf\user_future_account_data.grpc.pb.h" />
+    <ClInclude Include="protobuf\user_future_account_data.pb.h" />
     <ClInclude Include="protobuf\user_trade_profile.grpc.pb.h" />
     <ClInclude Include="protobuf\user_trade_profile.pb.h" />
-    <ClInclude Include="UserFutureAccount.h" />
+    <ClInclude Include="UserFutureAccountService.h" />
     <ClInclude Include="UserTradeProfileManager.h" />
     <ClInclude Include="protobuf\exchange_info_data.grpc.pb.h" />
     <ClInclude Include="protobuf\exchange_info_data.pb.h" />
@@ -204,9 +206,11 @@
     <ClCompile Include="ExchangeInfoManager.cpp" />
     <ClCompile Include="ExchangeInfoHttpService.cpp" />
     <ClCompile Include="ExchangeRuleAndCompliance.cpp" />
+    <ClCompile Include="protobuf\user_future_account_data.grpc.pb.cc" />
+    <ClCompile Include="protobuf\user_future_account_data.pb.cc" />
     <ClCompile Include="protobuf\user_trade_profile.grpc.pb.cc" />
     <ClCompile Include="protobuf\user_trade_profile.pb.cc" />
-    <ClCompile Include="UserFutureAccount.cpp" />
+    <ClCompile Include="UserFutureAccountService.cpp" />
     <ClCompile Include="UserTradeProfileManager.cpp" />
     <ClCompile Include="HistoricalParticipant.cpp" />
     <ClCompile Include="MatchingEngine.cpp" />

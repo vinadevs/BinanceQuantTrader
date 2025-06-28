@@ -13,11 +13,14 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Trader">
-      <UniqueIdentifier>{020f22ac-1f1e-46df-8f56-eb51c96132b8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Report">
       <UniqueIdentifier>{a71f3ea3-bb12-4832-aab6-595df018b640}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Spot Trader">
+      <UniqueIdentifier>{020f22ac-1f1e-46df-8f56-eb51c96132b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Future Trader">
+      <UniqueIdentifier>{57e59420-69e8-4709-ba13-935fb44f65c0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,19 +37,22 @@
       <Filter>Report</Filter>
     </ClInclude>
     <ClInclude Include="BinanceTrader.h">
-      <Filter>Trader</Filter>
+      <Filter>Spot Trader</Filter>
     </ClInclude>
     <ClInclude Include="ReportAPIs.h">
       <Filter>Report</Filter>
-    </ClInclude>
-    <ClInclude Include="Trader.h">
-      <Filter>Trader</Filter>
     </ClInclude>
     <ClInclude Include="ExchangeReporter.h">
       <Filter>Report</Filter>
     </ClInclude>
     <ClInclude Include="BackTestReporter.h">
       <Filter>Report</Filter>
+    </ClInclude>
+    <ClInclude Include="Trader.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FutureTrader.h">
+      <Filter>Future Trader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -57,7 +63,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BinanceTrader.cpp">
-      <Filter>Trader</Filter>
+      <Filter>Spot Trader</Filter>
     </ClCompile>
     <ClCompile Include="BinanceReporter.cpp">
       <Filter>Report</Filter>
@@ -65,11 +71,14 @@
     <ClCompile Include="ReportAPIs.cpp">
       <Filter>Report</Filter>
     </ClCompile>
-    <ClCompile Include="Trader.cpp">
-      <Filter>Trader</Filter>
-    </ClCompile>
     <ClCompile Include="BackTestReporter.cpp">
       <Filter>Report</Filter>
+    </ClCompile>
+    <ClCompile Include="Trader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FutureTrader.cpp">
+      <Filter>Future Trader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

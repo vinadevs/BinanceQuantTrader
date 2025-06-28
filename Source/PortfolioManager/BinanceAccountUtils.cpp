@@ -27,7 +27,7 @@ using namespace ExchangeConnectivity;
 using namespace RestAPI;
 #endif
 
-bool BinanceAccountUtils::QueryBinanceAccount(
+bool BinanceAccountUtils::QueryBinanceSpotAccount(
     binapi::rest::account_info_t* account,
     LibraryUtils::Logger* logger)
 {
@@ -70,5 +70,27 @@ bool BinanceAccountUtils::QueryBinanceAccount(
         }
     }
     return false;
+#endif
+}
+
+bool BinanceAccountUtils::QueryBinanceFutureAccount(
+    KernelTrading::UserFutureAccount* account,
+    LibraryUtils::Logger* logger)
+{
+#if USE_BACK_TEST_TRADING // use simulator protobuf message
+	std::string errorMessage;
+	if (ExchangeSimulatorGateWay->GetUserFutureAccountInfo(
+		ApiKeyInfoMgr->GetApiKeyInfo().m_userID, account, errorMessage))
+	{
+		//LOG_DEBUG_STREAM(logger, "FutureAccountInfo=" << accountInfo);
+		return true;
+	}
+	else
+	{
+		logger->Error("FutureAccountError:" + errorMessage);
+		return false;
+	}
+#else // use Binance HTTP API
+	return false;
 #endif
 }

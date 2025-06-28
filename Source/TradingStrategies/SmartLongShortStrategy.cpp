@@ -14,7 +14,7 @@
 #include "../MarketData/RealTimeMarketData.h"
 #include "../MarketData/SynchronousMarketData.h"
 #include "../StaticData/StaticDataManager.h"
-#include "../UserAccount/BinanceTrader.h"
+#include "../UserAccount/FutureTrader.h"
 #include "../ComplianceNRegulatory/BinanceTradingRules.h"
 #include "../ComplianceNRegulatory/BinanceExchangeProfile.h"
 #include "../QuantitativeModel/QuantOrderParammeter.h"
@@ -32,7 +32,7 @@ using namespace tinyxml2;
 SmartLongShortStrategy::SmartLongShortStrategy(
 	const std::string& strategyCfgPath,
 	RealTimeMarketData* marketData,
-	BinanceTrader* trader,
+	Trader* trader,
 	BinanceTradingRules* tradingRules)
 	: TradingStrategyBase("SmartLongShortStrategy", "Create future smart orders...",
 		strategyCfgPath, marketData, trader, tradingRules)
@@ -62,7 +62,7 @@ bool SmartLongShortStrategy::OnIndividualBookTickerChange(MarketDataSubject* mar
 		futureOrder.m_tradeType = OrderManagement::BinanceNewOrderTradingType::FUTURE; // set to future trading type
 		// Set leverage ratio
 		futureOrder.m_leverageRatio = 10; // default leverage ratio is x10
-		if (m_trader->CreateNewPosition(futureOrder))
+		if (m_futureTrader->CreateNewPosition(futureOrder))
 		{
 			if (futureOrder.m_side == binapi::e_side::buy)
 			{
@@ -134,7 +134,7 @@ void SmartLongShortStrategy::CreateBinanceExchangeProfile()
 
 void SmartLongShortStrategy::CreatePortfolioManagement()
 {
-	m_trader->CreatePortfolioManagement(m_targetFutureTradeSymbols);
+	m_futureTrader->CreatePortfolioManagement(m_targetFutureTradeSymbols);
 	IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
 }
 

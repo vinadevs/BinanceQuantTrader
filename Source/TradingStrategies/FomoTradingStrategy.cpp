@@ -32,7 +32,7 @@ using namespace tinyxml2;
 FomoTradingStrategy::FomoTradingStrategy(
 	const std::string& strategyCfgPath,
 	RealTimeMarketData* marketData,
-	BinanceTrader* trader,
+	Trader* trader,
 	BinanceTradingRules* tradingRules)
 	: TradingStrategyBase("FomoTradingStrategy", "The fear of missing out...",
 		strategyCfgPath, marketData, trader, tradingRules)
@@ -80,7 +80,7 @@ void FomoTradingStrategy::CreateTradingSignalServices()
 {
 	const auto* signalXml = m_strategyCfgXml->FirstChildElement("IndicatorAndSignals");
 	assert(signalXml);
-	m_tradingSignalService = std::make_unique<TradingSignalService>(m_trader->GetPortfolio(), signalXml);
+	m_tradingSignalService = std::make_unique<TradingSignalService>(m_spotTrader->GetPortfolio(), signalXml);
 	m_tradingSignalService->RegisterTradingHintsListener(this);
 }
 
@@ -115,17 +115,17 @@ void FomoTradingStrategy::UnsubscribeTargetSymbols()
 
 void FomoTradingStrategy::CreatePortfolioManagement()
 {
-	m_trader->CreatePortfolioManagement(m_targetTradeSymbols);
+	m_spotTrader->CreatePortfolioManagement(m_targetTradeSymbols);
 	IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
 }
 
 void FomoTradingStrategy::CreateOrderParameterGenerator()
 {
 	m_orderParammeterGenerator = std::make_unique<OrderParammeterGenerator>(
-		m_trader->GetTradingRules(),
-		m_trader->GetPortfolio(),
-		m_trader->GetRiskManager(),
-		m_trader->GetPositionManager(),
+		m_spotTrader->GetTradingRules(),
+		m_spotTrader->GetPortfolio(),
+		m_spotTrader->GetRiskManager(),
+		m_spotTrader->GetPositionManager(),
 		m_logger.get());
 }
 
@@ -150,7 +150,7 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 				const auto orderList = m_orderParammeterGenerator->GenerateFomoOrders(hints);
 				for (const auto& order : orderList)
 				{
-					if (m_trader->CreateNewPosition(order))
+					if (m_spotTrader->CreateNewPosition(order))
 					{
 						if (order.m_side == binapi::e_side::buy)
 						{
@@ -191,7 +191,7 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 
 void FomoTradingStrategy::ReportTradeResults(const std::string& symbol)
 {
-	m_trader->ReportTradeResults(symbol);
+	m_spotTrader->ReportTradeResults(symbol);
 }
 
 void FomoTradingStrategy::StartLive()

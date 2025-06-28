@@ -136,6 +136,14 @@ bool ExchangeSimulatorConnectivity::GetUserAccountInfo(
     return m_binanceWalletClient->GetUserAccountDataResponse(userId, account, errorMessage);
 }
 
+bool ExchangeSimulatorConnectivity::GetUserFutureAccountInfo(
+    const std::string& userId,
+    KernelTrading::UserFutureAccount* userFutureAccount,
+    std::string& errorMessage)
+{
+	return m_binanceWalletClient->GetUserFutureAccountDataResponse(userId, userFutureAccount, errorMessage);
+}
+
 bool ExchangeSimulatorConnectivity::GetExchangeInfo(
     const std::string& symbol,
     binapi::rest::exchange_info_t* exchangeInfo,

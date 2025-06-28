@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "dlldefine.h"
+
 #include <string>
 #include <vector>
 #include <cstdint>
@@ -70,7 +72,7 @@
 //        ]
 //}
 
-namespace ExchangeSimulator {
+namespace KernelTrading {
 
 	// Enum class to represent different types of balance change events
 	enum class BalanceChangeEvent : unsigned {
@@ -81,7 +83,7 @@ namespace ExchangeSimulator {
 	};
 
     // Holds detailed info about a user's balance in a specific asset (e.g. USDT, BUSD)
-    struct AssetInfo {
+    struct DLL_CLASS AssetInfo {
         std::string asset;                    // Asset name (e.g. "USDT")
         double walletBalance{0.0};            // Total wallet balance
         double unrealizedProfit{0.0};         // Unrealized profit/loss
@@ -99,7 +101,7 @@ namespace ExchangeSimulator {
     };
 
     // Represents the user's position for a trading symbol (e.g. BTCUSDT)
-    struct PositionInfo {
+    struct DLL_CLASS PositionInfo {
         std::string symbol;                   // Trading pair symbol
         double initialMargin{0.0};            // Initial margin for this position
         double maintMargin{0.0};              // Maintenance margin for this position
@@ -118,7 +120,7 @@ namespace ExchangeSimulator {
     };
 
     // Root class to represent the entire user account futures response from Binance
-    class UserFutureAccount final {
+    class DLL_CLASS UserFutureAccount final {
     public:
 		// Default constructor
 		UserFutureAccount() = default;
@@ -161,10 +163,10 @@ namespace ExchangeSimulator {
 		const std::string& GetUserAccountId() const { return m_userAccountId; }
 		void SetUserAccountId(const std::string& userAccountId) { m_userAccountId = userAccountId; }
 
-    private:
         // Parses the Binance JSON response into this class
         void FromJson(const nlohmann::json& j);
 
+    private:
         // Account-level basic flags and tier
         int m_feeTier{0};                // Binance fee tier level
         bool m_canTrade{false};          // Whether trading is allowed

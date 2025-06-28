@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package futureaccount;
+
+// --- Asset Info ---
+message AssetInfo {
+  string asset = 1;
+  double walletBalance = 2;
+  double unrealizedProfit = 3;
+  double marginBalance = 4;
+  double maintMargin = 5;
+  double initialMargin = 6;
+  double positionInitialMargin = 7;
+  double openOrderInitialMargin = 8;
+  double crossWalletBalance = 9;
+  double crossUnPnl = 10;
+  double availableBalance = 11;
+  double maxWithdrawAmount = 12;
+  bool marginAvailable = 13;
+  int64 updateTime = 14;
+}
+
+// --- Position Info ---
+message PositionInfo {
+  string symbol = 1;
+  double initialMargin = 2;
+  double maintMargin = 3;
+  double unrealizedProfit = 4;
+  double positionInitialMargin = 5;
+  double openOrderInitialMargin = 6;
+  double leverage = 7;
+  bool isolated = 8;
+  double entryPrice = 9;
+  double maxNotional = 10;
+  string positionSide = 11;
+  double positionAmt = 12;
+  double notional = 13;
+  double isolatedWallet = 14;
+  int64 updateTime = 15;
+}
+
+// --- Core User Account Message ---
+message UserFutureAccount {
+  int32 feeTier = 1;
+  bool canTrade = 2;
+  bool canDeposit = 3;
+  bool canWithdraw = 4;
+  int64 updateTime = 5;
+
+  double totalInitialMargin = 6;
+  double totalMaintMargin = 7;
+  double totalWalletBalance = 8;
+  double totalUnrealizedProfit = 9;
+  double totalMarginBalance = 10;
+  double totalPositionInitialMargin = 11;
+  double totalOpenOrderInitialMargin = 12;
+  double totalCrossWalletBalance = 13;
+  double totalCrossUnPnl = 14;
+  double availableBalance = 15;
+  double maxWithdrawAmount = 16;
+
+  repeated AssetInfo assets = 17;
+  repeated PositionInfo positions = 18;
+
+  string userAccountId = 19;
+}
+
+// --- Request to Get Account Info ---
+message GetUserFutureAccountRequest {
+  string userAccountId = 1; // Required input
+}
+
+// --- Response with Account Info ---
+message GetUserFutureAccountResponse {
+  UserFutureAccount account = 1;
+}
+
+service UserAccountService {
+  rpc GetUserFutureAccount(GetUserFutureAccountRequest) returns (GetUserFutureAccountResponse);
+}

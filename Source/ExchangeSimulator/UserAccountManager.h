@@ -9,7 +9,7 @@
 #pragma once
 
 #include "UserSpotAccount.h"
-#include "UserFutureAccount.h"
+#include "../KernelTrading/user_future_account.h"
 
 #include <memory>
 #include <mutex>
@@ -46,7 +46,7 @@ namespace ExchangeSimulator {
 	 // Spot user accounts are stored in UserSpotAccount
     using SpotAccounts = std::map<std::string, std::unique_ptr<UserSpotAccount>>;
 	// Future user accounts are stored in UserFutureAccount
-	using FutureAccounts = std::map<std::string, std::unique_ptr<UserFutureAccount>>;
+	using FutureAccounts = std::map<std::string, std::unique_ptr<KernelTrading::UserFutureAccount>>;
 
     class UserAccountManager final
     {
@@ -70,11 +70,11 @@ namespace ExchangeSimulator {
 
         UserSpotAccount* LookupSpotUserAccount(const std::string& userId);
 
-		UserFutureAccount* LookupFutureUserAccount(const std::string& userId);
+		KernelTrading::UserFutureAccount* LookupFutureUserAccount(const std::string& userId);
 
         UserSpotAccount* OpenEditSessionForSpotUserAccount(const std::string& userId);
 
-		UserFutureAccount* OpenEditSessionForFutureUserAccount(const std::string& userId);
+		KernelTrading::UserFutureAccount* OpenEditSessionForFutureUserAccount(const std::string& userId);
 
         void ClearAll();
 
