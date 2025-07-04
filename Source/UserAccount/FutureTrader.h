@@ -12,11 +12,7 @@
 
 #include "../OrderManagement/PositionManager.h"
 
-#if USE_BACK_TEST_TRADING
-#include "../MiddlewareMQ/BqtJsonMessage.h"
-#endif
-
-#include "ExchangeReporter.h"
+#include "FutureTradeReporter.h"
 #include "Trader.h"
 
 #include <string>
@@ -62,7 +58,7 @@ namespace UserAccount {
 
 		void ReportTradeResults(const std::string& symbol);
 
-		void CreatePortfolioManagement(const std::vector<std::string>& targetTradeSymbols);
+		void CreatePortfolioManagement(const std::vector<std::string>& targetTradeSymbols) override;
 
 		PortfolioManager::PortfolioInvestmentBinance* GetPortfolio() const { return m_portfolio; }
 
@@ -72,11 +68,11 @@ namespace UserAccount {
 
 		RiskManagement::RiskManager* GetRiskManager() const { return m_riskManager; }
 
-		binapi::rest::account_info_t* GetBinanceAccountInfo() const { return m_binanceAccountInfo.get(); }
+		KernelTrading::UserFutureAccount* GetBinanceAccountInfo() const { return m_binanceAccountInfo.get(); }
 
 		////////////// DOWNSTREAM PROCESSING /////////////////////////////
 #if USE_BACK_TEST_TRADING  
-		void HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage& message);
+		void HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage& message) override;
 #endif
 	private:
 		double CalculateTradeValue(
@@ -86,8 +82,8 @@ namespace UserAccount {
 		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr }; // list of assets to trade
 		ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr }; // exchange compliance and regulatory
 		RiskManagement::RiskManager* m_riskManager{ nullptr };  // stop loss
-		std::unique_ptr<binapi::rest::account_info_t> m_binanceAccountInfo;
+		std::unique_ptr<KernelTrading::UserFutureAccount> m_binanceAccountInfo; // future account info
 		std::unique_ptr<OrderManagement::PositionManager> m_positionManager;
-		std::unique_ptr<ExchangeReporter> m_exchangeReporter;
+		std::unique_ptr<FutureTradeReporter> m_exchangeReporter;
 	};
 };

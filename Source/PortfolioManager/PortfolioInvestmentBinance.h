@@ -12,6 +12,7 @@
 
 #include "../KernelTrading/double_type.h"
 #include "../KernelTrading/types.h"
+#include "../KernelTrading/user_future_account.h"
 
 #include "PortfolioInvestment.h"
 #include "BinanceTradingPair.h"
@@ -65,17 +66,20 @@ namespace PortfolioManager {
 								   MarketData::RealTimeMarketData* marketData);
 		~PortfolioInvestmentBinance() override;
 		
-		void SetUserAccountInfo(binapi::rest::account_info_t* account);
+		void SetUserSpotAccountInfo(binapi::rest::account_info_t* account);
+		void SetUserFutureAccountInfo(KernelTrading::UserFutureAccount* account);
 
 		// NOTE: PLEASE DO NOT CALL UPDATES MANY TIMES/SECONDS
 		// AS BINANCE WILL BAN THE LOCAL IP FOR THAT SPAM
 		// PLEASE CHECK IN ComplianceNRegulatory CODE
 		void UpdateBinanceAccountInfo();
+		void UpdateBinanceFutureAccountInfo();
 		void UpdateBinanceTradingPairs();
 		void AddNewAssetToManage(const std::string& asset);
 		const binapi::rest::account_info_t* GetBinanceAccountInfo() const;
 		BinanceTradingPairManager& GetBinanceTradingPairManager(bool updateNewData = false);
 		BinanceTradingPair* GetBinanceTradingPair(const std::string& asset, bool updateNewData = false);
+		const KernelTrading::PositionInfo& GetBinanceFuturePositionInfo(const std::string& asset, bool updateNewData = false);
 	private:
 		static std::string CreateTradingPairSymbol(const std::string& tartgetSymbol);
 
@@ -88,6 +92,7 @@ namespace PortfolioManager {
 		bool IsCryptoAssetHasMarketData(const std::string& asset);
 
 		binapi::rest::account_info_t* m_binanceSpotAccountInfo {nullptr};
+		KernelTrading::UserFutureAccount* m_binanceFutureAccountInfo{ nullptr };
 		BinanceTradingPairManager m_binanceTradingPairMgr;
 		MarketData::RealTimeMarketData* m_marketData{nullptr};
 	};

@@ -116,7 +116,7 @@ bool BinanceTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParamme
 		}
 		else
 		{
-			m_logger->Warning("User account has no stable coin available, could not create long (buy) position for=" + param.m_symbol);
+			m_logger->Warning("User spot account has no stable coin available, could not create long (buy) position for=" + param.m_symbol);
 			return false;
 		}
 	}
@@ -148,7 +148,7 @@ bool BinanceTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParamme
 		}
 		else
 		{
-			m_logger->Warning("User account has no asset available, could not create short (sell) position for=" + param.m_symbol);
+			m_logger->Warning("User spot account has no asset available, could not create short (sell) position for=" + param.m_symbol);
 			return false;
 		}
 	}
@@ -207,9 +207,9 @@ void BinanceTrader::CreatePortfolioManagement(const std::vector<std::string>& ta
 	{
 		m_portfolio->AddNewAssetToManage(symbol);
 	}
-	m_logger->Info("querying Binance remote account info...");
+	m_logger->Info("querying Binance remote spot account info...");
 	// Query all assets from remote Binance account and manage them locally for our trading
-	m_portfolio->SetUserAccountInfo(m_binanceAccountInfo.get());
+	m_portfolio->SetUserSpotAccountInfo(m_binanceAccountInfo.get());
 	m_portfolio->UpdateBinanceAccountInfo();
 	m_logger->Info("querying account info finished.");
 }

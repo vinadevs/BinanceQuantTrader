@@ -26,6 +26,7 @@ using namespace LibraryUtils;
 using namespace tinyxml2;
 using namespace MarketData;
 using namespace StaticData;
+using namespace KernelTrading;
 
 static constexpr double ZERO_DOUBLE_VALUE = 0;
 
@@ -78,10 +79,16 @@ PortfolioInvestmentBinance::PortfolioInvestmentBinance(
 
 PortfolioInvestmentBinance::~PortfolioInvestmentBinance() {}
 
-void PortfolioInvestmentBinance::SetUserAccountInfo(binapi::rest::account_info_t* account)
+void PortfolioInvestmentBinance::SetUserSpotAccountInfo(binapi::rest::account_info_t* account)
 {
     assert(account);
     m_binanceSpotAccountInfo = account;
+}
+
+void PortfolioInvestmentBinance::SetUserFutureAccountInfo(KernelTrading::UserFutureAccount* account)
+{
+	assert(account);
+	m_binanceFutureAccountInfo = account;
 }
 
 bool PortfolioInvestmentBinance::IsCryptoAssetHasMarketData(const std::string& asset)
@@ -95,7 +102,7 @@ void PortfolioInvestmentBinance::UpdateBinanceAccountInfo()
 {
     if (BinanceAccountUtils::QueryBinanceSpotAccount(m_binanceSpotAccountInfo, m_logger.get()))
     {
-        m_logger->Info("updated Binance account information to portfolio manager.");
+        m_logger->Info("updated Binance spot account information to portfolio manager.");
         UpdateBinanceTradingPairs();
     }
     else
@@ -109,6 +116,27 @@ void PortfolioInvestmentBinance::UpdateBinanceAccountInfo()
 		// OR if you are using simulator then you need to check if the simulator is running
 		// to retrieve the simulation account information
         throw std::runtime_error("PortfolioInvestmentBinance: failed to update Binance account information.");
+    }
+}
+
+void PortfolioInvestmentBinance::UpdateBinanceFutureAccountInfo()
+{
+    if (BinanceAccountUtils::QueryBinanceFutureAccount(m_binanceFutureAccountInfo, m_logger.get()))
+    {
+        m_logger->Info("updated Binance future account information to portfolio manager.");
+        UpdateBinanceTradingPairs();
+    }
+    else
+    {
+        // If you are seeing the error:
+        // APIError(code=-2015): Invalid API-key, IP, or permissions for action from the python-binance module
+        // This maybe because your API-key has been expired
+        // Please try to renew your API-key at https://www.binance.com/en-JP/my/settings/api-management 
+        // OR: Way too much request weight used; IP banned until specific time
+
+        // OR if you are using simulator then you need to check if the simulator is running
+        // to retrieve the simulation account information
+        throw std::runtime_error("PortfolioInvestmentBinance: failed to update Binance future account information.");
     }
 }
 
@@ -166,13 +194,36 @@ BinanceTradingPairManager& PortfolioInvestmentBinance::GetBinanceTradingPairMana
 }
 
 BinanceTradingPair* PortfolioInvestmentBinance::GetBinanceTradingPair(
-    const std::string& asset, bool updateNewData /*= false*/)
+    const std::string& asset,
+    bool updateNewData /*= false*/)
 {
     if (updateNewData)
     {
         UpdateBinanceAccountInfo();
     }
     return m_binanceTradingPairMgr.GetTradingPair(asset);
+}
+
+const PositionInfo& PortfolioInvestmentBinance::GetBinanceFuturePositionInfo(
+    const std::string& asset,
+    bool updateNewData  /*= false*/)
+{
+	if (updateNewData)
+	{
+		UpdateBinanceFutureAccountInfo();
+	}
+	if (m_binanceFutureAccountInfo)
+	{
+		const auto& positions = m_binanceFutureAccountInfo->GetPositions();
+		for (const auto& position : positions)
+		{
+			if (position.symbol == asset)
+			{
+				return position;
+			}
+		}
+	}
+	throw std::runtime_error("PortfolioInvestmentBinance: we are not holding this asset/symbol=" + asset);
 }
 
 bool PortfolioInvestmentBinance::IsCryptoAssetAbleToTrade(const BinanceBalance& balance)

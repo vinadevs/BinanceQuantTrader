@@ -54,6 +54,9 @@
     <ClInclude Include="FutureTrader.h">
       <Filter>Future Trader</Filter>
     </ClInclude>
+    <ClInclude Include="FutureTradeReporter.h">
+      <Filter>Report</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

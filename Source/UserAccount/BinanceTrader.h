@@ -12,10 +12,6 @@
 
 #include "../OrderManagement/PositionManager.h"
 
-#if USE_BACK_TEST_TRADING
-#include "../MiddlewareMQ/BqtJsonMessage.h"
-#endif
-
 #include "ExchangeReporter.h"
 #include "Trader.h"
 
@@ -62,7 +58,7 @@ namespace UserAccount {
 
 		void ReportTradeResults(const std::string& symbol);
 
-		void CreatePortfolioManagement(const std::vector<std::string>& targetTradeSymbols);
+		void CreatePortfolioManagement(const std::vector<std::string>& targetTradeSymbols) override;
 
 		PortfolioManager::PortfolioInvestmentBinance* GetPortfolio() const { return m_portfolio; }
 		
@@ -76,7 +72,7 @@ namespace UserAccount {
 
 		////////////// DOWNSTREAM PROCESSING /////////////////////////////
 #if USE_BACK_TEST_TRADING  
-		void HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage& message);
+		void HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage& message) override;
 #endif
 	private:
 		double CalculateTradeValue(

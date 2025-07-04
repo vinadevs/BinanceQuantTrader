@@ -14,6 +14,11 @@
 
 #include <string>
 #include <memory>
+#include <vector>
+
+#if USE_BACK_TEST_TRADING
+#include "../MiddlewareMQ/BqtJsonMessage.h"
+#endif
 
 namespace tinyxml2 {
 	class XMLElement;
@@ -33,11 +38,22 @@ namespace UserAccount {
 		Trader() {};
 		virtual ~Trader();
 
+		// Create new position based on the provided quantitative parameters.
 		virtual bool CreateNewPosition(
 			const QuantitativeModel::QuantOrderParammeter& param) = 0;
 
+		// Cancel all open positions for the given symbol.
 		virtual bool CancelAllOpenPositions(
 			const std::string& symbol) = 0;
+
+		// Update account information, such as balances and positions.
+		virtual void CreatePortfolioManagement(
+			const std::vector<std::string>& targetTradeSymbols) = 0;
+#if USE_BACK_TEST_TRADING  
+		// Handle downstream acknowledgment messages from the simulator.
+		virtual void HandleDownstreamAckMessage(
+			const MiddlewareMQ::BqtJsonMessage& message) = 0;
+#endif
 	protected:
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
 	};

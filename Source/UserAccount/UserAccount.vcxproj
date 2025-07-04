@@ -159,6 +159,7 @@
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="FutureTrader.h" />
+    <ClInclude Include="FutureTradeReporter.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ReportAPIs.h" />
     <ClInclude Include="ExchangeReporter.h" />

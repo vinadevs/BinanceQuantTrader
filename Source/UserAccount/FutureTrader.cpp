@@ -21,6 +21,7 @@
 #include "../ComplianceNRegulatory/BinanceTradingRules.h"
 #include "../LibraryUtils/SourceBuildFlags.h"
 #include "../LibraryUtils/StringUtils.h"
+#include "../KernelTrading/user_future_account.h"
 #if USE_BACK_TEST_TRADING
 #include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
 #include "../ExchangeSimulator/DownstreamOrderAck.h"
@@ -58,15 +59,15 @@ FutureTrader::FutureTrader(
 {
 	m_logger = std::make_unique<LibraryUtils::Logger>("FutureTrader");
 	m_logger->Info("using FutureTrader.");
-	m_binanceAccountInfo = std::make_unique<binapi::rest::account_info_t>();
+	m_binanceAccountInfo = std::make_unique<KernelTrading::UserFutureAccount>();
 	m_positionManager = std::make_unique<PositionManager>();
-#if USE_BACK_TEST_TRADING
-	m_exchangeReporter = std::make_unique<BackTestReporter>(
-		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_positionManager.get());
-#else
-	m_exchangeReporter = std::make_unique<BinanceReporter>(
-		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_positionManager.get());
-#endif
+//#if USE_BACK_TEST_TRADING
+//	m_exchangeReporter = std::make_unique<BackTestReporter>(
+//		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_positionManager.get());
+//#else
+//	m_exchangeReporter = std::make_unique<BinanceReporter>(
+//		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_positionManager.get());
+//#endif
 }
 
 ////////////// UPSTREAM PROCESSING /////////////////////////////
@@ -80,24 +81,16 @@ double FutureTrader::CalculateTradeValue(
 
 bool FutureTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammeter& param)
 {
+#if USE_BACK_TEST_TRADING
 	if (param.m_side == binapi::e_side::buy)
 	{
-#if USE_BACK_TEST_TRADING
-		if (m_binanceAccountInfo->stableCoinAmount.convert_to<double>()
+		if (m_binanceAccountInfo->CanTrade() &&
+			m_binanceAccountInfo->GetTotalWalletBalance()
 			> CalculateTradeValue(param.m_amount, param.m_price))
 		{
-#else
-		if (m_portfolio->GetBinanceTradingPair(param.m_symbol))
-		{
-#endif
 			auto newSingleLongOrder = m_positionManager->OpenNewPositionUpstreamOrder(param);
-#if USE_BACK_TEST_TRADING
 			const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleLongOrder.get());
-#elif USE_BINANCE_TEST_TRADING
-			const auto result = BinanceExchangeGateWay->SendNewBinanceTestOrderFull(newSingleLongOrder.get());
-#else
-			const auto result = BinanceExchangeGateWay->SendNewBinanceOrderFull(newSingleLongOrder.get());
-#endif
+
 			newSingleLongOrder->SetSendingOrderResult(result);
 			const auto isSendingOrderSucceeded = static_cast<bool>(result);
 			const auto clientOrderId = newSingleLongOrder->GetClientOrderId();
@@ -114,22 +107,17 @@ bool FutureTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammet
 		}
 		else
 		{
-			m_logger->Warning("User account has no stable coin available, could not create long (buy) position for=" + param.m_symbol);
+			m_logger->Warning("User future account has no stable coin available, could not create long (buy) position for=" + param.m_symbol);
 			return false;
 		}
-		}
+	}
 	else if (param.m_side == binapi::e_side::sell)
 	{
-		if (m_portfolio->GetBinanceTradingPair(param.m_symbol)->GetQuantity() > ZERO_DOUBLE_VALUE)
+		if (m_portfolio->GetBinanceFuturePositionInfo(param.m_symbol).positionAmt > ZERO_DOUBLE_VALUE)
 		{
 			auto newSingleShortOrder = m_positionManager->OpenNewPositionUpstreamOrder(param);
-#if USE_BACK_TEST_TRADING
 			const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleShortOrder.get());
-#elif USE_BINANCE_TEST_TRADING
-			const auto result = BinanceExchangeGateWay->SendNewBinanceTestOrderFull(newSingleShortOrder.get());
-#else
-			const auto result = BinanceExchangeGateWay->SendNewBinanceOrderFull(newSingleShortOrder.get());
-#endif
+
 			newSingleShortOrder->SetSendingOrderResult(result);
 			const auto isSendingOrderSucceeded = static_cast<bool>(result);
 			const auto clientOrderId = newSingleShortOrder->GetClientOrderId();
@@ -146,12 +134,13 @@ bool FutureTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammet
 		}
 		else
 		{
-			m_logger->Warning("User account has no asset available, could not create short (sell) position for=" + param.m_symbol);
+			m_logger->Warning("User future has no asset available, could not create short (sell) position for=" + param.m_symbol);
 			return false;
 		}
 	}
+#endif
 	return false;
-	}
+}
 
 bool FutureTrader::CancelAllOpenPositions(const std::string& symbol)
 {
@@ -191,23 +180,19 @@ bool FutureTrader::CancelAllOpenPositions(const std::string& symbol)
 
 void FutureTrader::UpdateAccountInfo()
 {
-	m_portfolio->UpdateBinanceAccountInfo();
+	m_portfolio->UpdateBinanceFutureAccountInfo();
 }
 
 void FutureTrader::ReportTradeResults(const std::string& symbol)
 {
-	m_exchangeReporter->DoTradeExecutionReport(symbol);
+	//m_exchangeReporter->DoTradeExecutionReport(symbol);
 }
 
 void FutureTrader::CreatePortfolioManagement(const std::vector<std::string>&targetTradeSymbols)
 {
-	for (const auto& symbol : targetTradeSymbols)
-	{
-		m_portfolio->AddNewAssetToManage(symbol);
-	}
-	m_logger->Info("querying Binance remote account info...");
+	m_logger->Info("querying Binance remote future account info...");
 	// Query all assets from remote Binance account and manage them locally for our trading
-	m_portfolio->SetUserAccountInfo(m_binanceAccountInfo.get());
+	m_portfolio->SetUserFutureAccountInfo(m_binanceAccountInfo.get());
 	m_portfolio->UpdateBinanceAccountInfo();
 	m_logger->Info("querying account info finished.");
 }
