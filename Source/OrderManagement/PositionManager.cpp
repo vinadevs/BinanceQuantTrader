@@ -62,6 +62,23 @@ std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewTestPositionUpstreamOrd
         , param.m_tradeType);
 }
 
+std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewFuturePositionUpstreamOrder(const QuantitativeModel::QuantOrderParammeter& param)
+{
+    const auto clientOrderId = GeneralUtils::GenerateUniqueID(StringDefinitions::BQTNewLongOrder);
+    return m_orderCreator->CreateNewBinanceFutureOrderFull(
+        clientOrderId
+        , param.m_symbol
+        , param.m_side
+        , param.m_type
+        , param.m_time
+        , param.m_amount
+        , param.m_price
+        , param.m_stopPrice
+        , param.m_icebergAmount
+		, param.m_leverageRatio
+        , param.m_tradeType);
+}
+
 std::unique_ptr<BinanceCancelOrder> PositionManager::CancelPositionUpstreamOrder(
     const BinanceNewOrder* originalOrder)
 {

@@ -39,6 +39,31 @@ BinanceNewOrder::BinanceNewOrder(
     m_icebergAmount(icebergAmount),
     m_orderTradingType(tradingType) {}
 
+BinanceNewOrder::BinanceNewOrder(
+    const std::string& clientOrderId,
+    const std::string& symbol,
+    const binapi::e_side side,
+    const binapi::e_type type, 
+    const binapi::e_time time, 
+    const double amount, const double price,
+    const double stopPrice, const double icebergAmount, 
+    const double lerverageRatio, 
+    const BinanceNewOrderTradingType tradingType,
+    const ExchangeConnectivityType exchangeConnectivityType)
+	: Order(
+		symbol,
+		clientOrderId,
+		exchangeConnectivityType == ExchangeConnectivityType::TEST ? MessageType::TEST : MessageType::NEW),
+	m_side(side),
+	m_type(type),
+	m_timeInForce(time),
+	m_amount(amount),
+	m_price(price),
+	m_stopPrice(stopPrice),
+	m_icebergAmount(icebergAmount),
+    m_futureOrderLeverageRatio(lerverageRatio),
+	m_orderTradingType(tradingType) {}
+
 BinanceNewOrder::~BinanceNewOrder() {}
 
 std::string BinanceNewOrder::ToStringOrder() const

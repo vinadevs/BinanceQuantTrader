@@ -34,7 +34,7 @@
 </TradingModel>
 
 <TraderInfo>
-  <UsingTrader Type="BinanceTrader"/>
+  <UsingTrader Type="FutureTrader"/>
   <Report TradeReport="true" OrderReport="true" BalanceReport="true" ExchangerPriceForOrdersReport="true" CalculateLossForOrdersReport="true" ReportToFilePath="[ROOT_BQT_PATH]\AppData\trade_results.txt" ReportChannel="ExternalFile"/>
 </TraderInfo>
 

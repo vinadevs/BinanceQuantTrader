@@ -84,6 +84,39 @@ namespace KernelTrading {
 
     // Holds detailed info about a user's balance in a specific asset (e.g. USDT, BUSD)
     struct DLL_CLASS AssetInfo {
+        AssetInfo() = default; // Default constructor
+        AssetInfo(
+            const std::string& asset_,
+            double walletBalance_,
+            double unrealizedProfit_,
+            double marginBalance_,
+            double maintMargin_,
+            double initialMargin_,
+            double positionInitialMargin_,
+            double openOrderInitialMargin_,
+            double crossWalletBalance_,
+            double crossUnPnl_,
+            double availableBalance_,
+            double maxWithdrawAmount_,
+            bool marginAvailable_,
+            int64_t updateTime_
+        )
+            : asset(asset_),
+              walletBalance(walletBalance_),
+              unrealizedProfit(unrealizedProfit_),
+              marginBalance(marginBalance_),
+              maintMargin(maintMargin_),
+              initialMargin(initialMargin_),
+              positionInitialMargin(positionInitialMargin_),
+              openOrderInitialMargin(openOrderInitialMargin_),
+              crossWalletBalance(crossWalletBalance_),
+              crossUnPnl(crossUnPnl_),
+              availableBalance(availableBalance_),
+              maxWithdrawAmount(maxWithdrawAmount_),
+              marginAvailable(marginAvailable_),
+              updateTime(updateTime_)
+        {}
+
         std::string asset;                    // Asset name (e.g. "USDT")
         double walletBalance{0.0};            // Total wallet balance
         double unrealizedProfit{0.0};         // Unrealized profit/loss
@@ -102,6 +135,41 @@ namespace KernelTrading {
 
     // Represents the user's position for a trading symbol (e.g. BTCUSDT)
     struct DLL_CLASS PositionInfo {
+        PositionInfo() = default; // Default constructor
+        PositionInfo(
+            const std::string& symbol_,
+            double initialMargin_,
+            double maintMargin_,
+            double unrealizedProfit_,
+            double positionInitialMargin_,
+            double openOrderInitialMargin_,
+            double leverage_,
+            bool isolated_,
+            double entryPrice_,
+            double maxNotional_,
+            const std::string& positionSide_,
+            double positionAmt_,
+            double notional_,
+            double isolatedWallet_,
+            int64_t updateTime_
+        )
+            : symbol(symbol_),
+              initialMargin(initialMargin_),
+              maintMargin(maintMargin_),
+              unrealizedProfit(unrealizedProfit_),
+              positionInitialMargin(positionInitialMargin_),
+              openOrderInitialMargin(openOrderInitialMargin_),
+              leverage(leverage_),
+              isolated(isolated_),
+              entryPrice(entryPrice_),
+              maxNotional(maxNotional_),
+              positionSide(positionSide_),
+              positionAmt(positionAmt_),
+              notional(notional_),
+              isolatedWallet(isolatedWallet_),
+              updateTime(updateTime_)
+        {}
+
         std::string symbol;                   // Trading pair symbol
         double initialMargin{0.0};            // Initial margin for this position
         double maintMargin{0.0};              // Maintenance margin for this position
@@ -125,7 +193,9 @@ namespace KernelTrading {
 		// Default constructor
 		UserFutureAccount() = default;
 		// Constructor that initializes from a user ID and JSON object
-		UserFutureAccount(const std::string& userID, const nlohmann::json& j) {
+		UserFutureAccount(const std::string& userID, const std::string& userConfigPath, const nlohmann::json& j)
+        : m_userAccountId(userID) {
+            ReadUserConfig(userConfigPath);
 			FromJson(j);
 		}
 
@@ -134,6 +204,32 @@ namespace KernelTrading {
 		bool IsAccountHavingSufficientCashBalance(const std::string& currency, const double requiredMarginCash) const;
 
 		void UpdateBalanceCash(const std::string& currency, const double pnl, const BalanceChangeEvent event);
+
+        // Setters for account-level basic flags and tier
+        void SetFeeTier(int feeTier) { m_feeTier = feeTier; }
+        void SetCanTrade(bool canTrade) { m_canTrade = canTrade; }
+        void SetCanDeposit(bool canDeposit) { m_canDeposit = canDeposit; }
+        void SetCanWithdraw(bool canWithdraw) { m_canWithdraw = canWithdraw; }
+        void SetUpdateTime(int64_t updateTime) { m_updateTime = updateTime; }
+
+        // Setters for aggregated margin and wallet info
+        void SetTotalInitialMargin(double value) { m_totalInitialMargin = value; }
+        void SetTotalMaintMargin(double value) { m_totalMaintMargin = value; }
+        void SetTotalWalletBalance(double value) { m_totalWalletBalance = value; }
+        void SetTotalUnrealizedProfit(double value) { m_totalUnrealizedProfit = value; }
+        void SetTotalMarginBalance(double value) { m_totalMarginBalance = value; }
+        void SetTotalPositionInitialMargin(double value) { m_totalPositionInitialMargin = value; }
+        void SetTotalOpenOrderInitialMargin(double value) { m_totalOpenOrderInitialMargin = value; }
+        void SetTotalCrossWalletBalance(double value) { m_totalCrossWalletBalance = value; }
+        void SetTotalCrossUnPnl(double value) { m_totalCrossUnPnl = value; }
+        void SetAvailableBalance(double value) { m_availableBalance = value; }
+        void SetMaxWithdrawAmount(double value) { m_maxWithdrawAmount = value; }
+
+        // Setters for detailed lists
+        void SetAssets(const std::vector<AssetInfo>& assets) { m_assets = assets; }
+        void SetPositions(const std::vector<PositionInfo>& positions) { m_positions = positions; }
+		void ClearAssets() { m_assets.clear(); }
+		void ClearPositions() { m_positions.clear(); }
 
         // Accessor functions for main account info
         int GetFeeTier() const { return m_feeTier; }
@@ -167,6 +263,9 @@ namespace KernelTrading {
         void FromJson(const nlohmann::json& j);
 
     private:
+		// Reads user configuration from a file
+        void ReadUserConfig(const std::string& userConfigPath) {}
+
         // Account-level basic flags and tier
         int m_feeTier{0};                // Binance fee tier level
         bool m_canTrade{false};          // Whether trading is allowed

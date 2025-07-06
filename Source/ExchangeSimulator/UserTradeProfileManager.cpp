@@ -26,7 +26,7 @@ UserTradeProfileManager::~UserTradeProfileManager()
 
 bool UserTradeProfileManager::AddUserTradeProfile(const UserTradeProfile& userTradeProfile)
 {
-	return m_userTradeProfiles.try_emplace(userTradeProfile.GetUserAccountId(), userTradeProfile).second;
+	return m_userTradeProfiles.try_emplace("307109623", UserTradeProfile("307109623")).second;
 }
 
 UserTradeProfile& UserTradeProfileManager::LookupUserTradeProfile(const std::string& userAccountId)

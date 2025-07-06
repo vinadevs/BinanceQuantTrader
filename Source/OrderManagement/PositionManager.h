@@ -50,6 +50,10 @@ namespace OrderManagement {
 		std::unique_ptr<BinanceNewOrder> OpenNewTestPositionUpstreamOrder(
 			const QuantitativeModel::QuantOrderParammeter& param);
 
+		// Create new future position upstream order
+		std::unique_ptr<BinanceNewOrder> OpenNewFuturePositionUpstreamOrder(
+			const QuantitativeModel::QuantOrderParammeter& param);
+
 		std::unique_ptr<BinanceCancelOrder> CancelPositionUpstreamOrder(
 			const BinanceNewOrder* originalOrder);
 

@@ -144,7 +144,9 @@ namespace ExchangeSimulator {
     {
         UserSpotAccount() = default;
 
-        UserSpotAccount(const std::string& userConfigPath, const std::string& accountInfoJsonFile);
+        UserSpotAccount(
+            const std::string& userConfigPath,
+            const std::string& accountInfoJsonFile);
 
         // balances
         AssetBalances m_assetBalances;

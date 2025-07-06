@@ -101,15 +101,15 @@ void SmartLongShortStrategy::StartLive()
 {
 	// Change Strategy state to live
 	m_strategyRunStatus = StrategyRunStatus::LIVE;
+	// Prepare target symbols list
+	m_logger->Info("Prepare target symbols list.");
+	PrepareTargetMonitorSymbols();
 	// Create exchange filter profile
 	m_logger->Info("Create binance exchange profile.");
 	CreateBinanceExchangeProfile();
 	// Create portfolio management
 	m_logger->Info("Create portfolio management.");
 	CreatePortfolioManagement();
-	// Prepare target symbols list
-	m_logger->Info("Prepare target symbols list.");
-	PrepareTargetMonitorSymbols();
 	// Subscribe target symbols to receive real time market data
 	m_logger->Info("Subscribe target symbols.");
 	SubscribeTargetSymbols();

@@ -12,6 +12,7 @@
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/StringUtils.h"
 #include "../LibraryUtils/PathUtils.h"
+#include "../LibraryUtils/FileUtils.h"
 
 #include "UserAccountManager.h"
 
@@ -83,7 +84,8 @@ void UserAccountManager::AddNewSpotUserAccount(
     std::unique_lock<std::mutex> lock(m_mutex);
     if (m_spotAccounts.size() <= m_maxAccount)
     {
-        const auto result = m_spotAccounts.try_emplace(userId, std::make_unique<UserSpotAccount>(userConfigPath, accountInfoJsonFile));
+        const auto result = m_spotAccounts.try_emplace(
+            userId, std::make_unique<UserSpotAccount>(userConfigPath, accountInfoJsonFile));
         if (!result.second)
         {
             LOG_WARNING_STREAM(m_logger, "UserSpotAccount with userId '" << userId << "' already exists.");
@@ -95,12 +97,17 @@ void UserAccountManager::AddNewSpotUserAccount(
     }
 }
 
-void UserAccountManager::AddNewFutureUserAccount(const std::string& userId, const std::string& userConfigPath, const std::string& accountInfoJsonFile)
+void UserAccountManager::AddNewFutureUserAccount(
+    const std::string& userId,
+    const std::string& userConfigPath,
+    const std::string& accountInfoJsonFile)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	if (m_futureAccounts.size() <= m_maxAccount)
 	{
-		const auto result = m_futureAccounts.try_emplace(userId, std::make_unique<KernelTrading::UserFutureAccount>(userConfigPath, accountInfoJsonFile));
+		const nlohmann::json jsonData = nlohmann::json::parse(FileUtils::ReadFileContent(accountInfoJsonFile));
+		const auto result = m_futureAccounts.try_emplace(
+            userId, std::make_unique<KernelTrading::UserFutureAccount>(userId, userConfigPath, jsonData));
 		if (!result.second)
 		{
 			LOG_WARNING_STREAM(m_logger, "UserFutureAccount with userId '" << userId << "' already exists.");

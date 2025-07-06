@@ -38,6 +38,20 @@ namespace OrderManagement {
 			, const double icebergAmount
 			, const BinanceNewOrderTradingType tradingType);
 
+		// Create new future order with full parameters
+		std::unique_ptr<BinanceNewOrder> CreateNewBinanceFutureOrderFull(
+			const std::string& clientOrderId
+			, const std::string& symbol
+			, const binapi::e_side side
+			, const binapi::e_type type
+			, const binapi::e_time time
+			, const double amount
+			, const double price
+			, const double stopPrice
+			, const double icebergAmount
+			, const double leverage
+			, const BinanceNewOrderTradingType tradingType);
+
 		std::unique_ptr<BinanceNewOrder> CreateNewBinanceTestOrderFull(
 			  const std::string& clientOrderId
 			, const std::string& symbol

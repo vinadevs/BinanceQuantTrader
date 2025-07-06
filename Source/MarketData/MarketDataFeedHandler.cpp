@@ -51,7 +51,7 @@ bool MarketDataFeedHandler::HandleIndividualBookTickerData(const char* fl,
         MarketDataSubject::NotifyIndividualBookTickerChange(book.s);
         return true;
     }
-    else
+	else
     {
         throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + book.s);
     }
@@ -92,7 +92,7 @@ bool MarketDataFeedHandler::HandleIndividualMarketTickerData(const char* fl, int
 		MarketDataSubject::NotifyIndividualMarketTickerChange(market.s);
 		return true;
 	}
-    else
+	else
     {
 		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + market.s);
     }
@@ -180,8 +180,24 @@ bool MarketDataFeedHandler::HandleAllMiniTickerData(const char* fl, int ec, std:
 		}
 		else
 		{
-			throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + ticker.first);
+			if (m_synchronousFeedMgr->CreateNewSynchronousFeed(ticker.first))
+			{
+				if (auto* newFeed = m_synchronousFeedMgr->GetSynchronousFeed(ticker.first))
+				{
+					newFeed->UpdateMiniTickerData(ticker.second);
+					MarketDataSubject::NotifyMiniTickerChange(ticker.first);
+				}
+				else
+				{
+					throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + ticker.first);
+				}
+			}
+			else
+			{
+				std::cerr << "Failed to create new synchronous feed for symbol: " << ticker.first << std::endl;
+			}
 		}
+		
 	}
 	return false;
 }
@@ -202,7 +218,22 @@ bool MarketDataFeedHandler::HandleAllMarketTickersData(const char* fl, int ec, s
 		}
 		else
 		{
-			throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + ticker.first);
+			if (m_synchronousFeedMgr->CreateNewSynchronousFeed(ticker.first))
+			{
+				if (auto* newFeed = m_synchronousFeedMgr->GetSynchronousFeed(ticker.first))
+				{
+					newFeed->UpdateIndividualMarketTickerData(ticker.second);
+					MarketDataSubject::NotifyIndividualMarketTickerChange(ticker.first);
+				}
+				else
+				{
+					throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + ticker.first);
+				}
+			}
+			else
+			{
+				std::cerr << "Failed to create new synchronous feed for symbol: " << ticker.first << std::endl;
+			}
 		}
 	}
 	return false;

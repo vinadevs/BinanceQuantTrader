@@ -46,6 +46,7 @@ TradingStrategyBase::TradingStrategyBase(
 	m_logger = std::make_unique<Logger>(m_strategyName);
 	m_logger->Info("Trading strategy name=" + m_strategyName);
 	m_logger->Info("Trading strategy description=" + m_strategyDescription);
+	InitQuantStrategist();
 }
 
 TradingStrategyBase::TradingStrategyBase(

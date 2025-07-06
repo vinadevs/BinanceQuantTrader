@@ -124,7 +124,6 @@ void PortfolioInvestmentBinance::UpdateBinanceFutureAccountInfo()
     if (BinanceAccountUtils::QueryBinanceFutureAccount(m_binanceFutureAccountInfo, m_logger.get()))
     {
         m_logger->Info("updated Binance future account information to portfolio manager.");
-        UpdateBinanceTradingPairs();
     }
     else
     {

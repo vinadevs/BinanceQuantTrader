@@ -52,6 +52,20 @@ namespace OrderManagement {
 			const BinanceNewOrderTradingType tradingType,
             const ExchangeConnectivityType exchangeConnectivityType);
 
+        BinanceNewOrder(
+            const std::string& clientOrderId,
+            const std::string& symbol,
+            const binapi::e_side side,
+            const binapi::e_type type,
+            const binapi::e_time time,
+            const double amount,
+            const double price,
+            const double stopPrice,
+            const double icebergAmount,
+			const double lerverageRatio,
+            const BinanceNewOrderTradingType tradingType,
+            const ExchangeConnectivityType exchangeConnectivityType);
+
         ~BinanceNewOrder() override;
 
         // Getters

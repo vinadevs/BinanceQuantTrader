@@ -33,6 +33,13 @@ std::unique_ptr<BinanceNewOrder> OrderCreator::CreateNewBinanceOrderFull(
         amount, price, stopPrice, icebergAmount, tradingType, ExchangeConnectivityType::REAL);
 }
 
+std::unique_ptr<BinanceNewOrder> OrderCreator::CreateNewBinanceFutureOrderFull(const std::string& clientOrderId, const std::string& symbol, const binapi::e_side side, const binapi::e_type type, const binapi::e_time time, const double amount, const double price, const double stopPrice, const double icebergAmount, const double leverage, const BinanceNewOrderTradingType tradingType)
+{
+	// last param is true mean this is real order
+	return std::make_unique<BinanceNewOrder>(clientOrderId, symbol, side, type, time,
+		amount, price, stopPrice, icebergAmount, leverage, tradingType, ExchangeConnectivityType::REAL);
+}
+
 std::unique_ptr<BinanceNewOrder> OrderCreator::CreateNewBinanceTestOrderFull(
       const std::string& clientOrderId
     , const std::string& symbol

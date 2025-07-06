@@ -88,20 +88,34 @@ bool FutureTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammet
 			m_binanceAccountInfo->GetTotalWalletBalance()
 			> CalculateTradeValue(param.m_amount, param.m_price))
 		{
-			auto newSingleLongOrder = m_positionManager->OpenNewPositionUpstreamOrder(param);
-			const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleLongOrder.get());
+			auto newSingleFutureLongOrder = m_positionManager->OpenNewFuturePositionUpstreamOrder(param);
+			
+			// Update User Trade Profile with the new order
+			std::string resultMessage;
+			if (!ExchangeSimulatorGateWay->UpdateUserTradeProfileData(
+				newSingleFutureLongOrder->GetUserAccountID(),
+				newSingleFutureLongOrder->GetFutureLeverageRatio(),
+				resultMessage
+				))
+			{
+				m_logger->Error("Failed to update user trade profile for symbol=" 
+					+ newSingleFutureLongOrder->GetSymbol() + ", error=" + resultMessage);
+				return false;
+			}
 
-			newSingleLongOrder->SetSendingOrderResult(result);
+			const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleFutureLongOrder.get());
+
+			newSingleFutureLongOrder->SetSendingOrderResult(result);
 			const auto isSendingOrderSucceeded = static_cast<bool>(result);
-			const auto clientOrderId = newSingleLongOrder->GetClientOrderId();
+			const auto clientOrderId = newSingleFutureLongOrder->GetClientOrderId();
 			if (isSendingOrderSucceeded)
 			{
-				newSingleLongOrder->SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
-				m_positionManager->AddNewWorkedOrder(clientOrderId, std::move(newSingleLongOrder));
+				newSingleFutureLongOrder->SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
+				m_positionManager->AddNewWorkedOrder(clientOrderId, std::move(newSingleFutureLongOrder));
 			}
 			else
 			{
-				m_positionManager->AddUnworkedOrder(clientOrderId, std::move(newSingleLongOrder));
+				m_positionManager->AddUnworkedOrder(clientOrderId, std::move(newSingleFutureLongOrder));
 			}
 			return isSendingOrderSucceeded;
 		}
@@ -115,20 +129,34 @@ bool FutureTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammet
 	{
 		if (m_portfolio->GetBinanceFuturePositionInfo(param.m_symbol).positionAmt > ZERO_DOUBLE_VALUE)
 		{
-			auto newSingleShortOrder = m_positionManager->OpenNewPositionUpstreamOrder(param);
-			const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleShortOrder.get());
+			auto newSingleFutureShortOrder = m_positionManager->OpenNewFuturePositionUpstreamOrder(param);
 
-			newSingleShortOrder->SetSendingOrderResult(result);
+			// Update User Trade Profile with the new order
+			std::string resultMessage;
+			if (!ExchangeSimulatorGateWay->UpdateUserTradeProfileData(
+				newSingleFutureShortOrder->GetUserAccountID(),
+				newSingleFutureShortOrder->GetFutureLeverageRatio(),
+				resultMessage
+			))
+			{
+				m_logger->Error("Failed to update user trade profile for symbol="
+					+ newSingleFutureShortOrder->GetSymbol() + ", error=" + resultMessage);
+				return false;
+			}
+
+			const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleFutureShortOrder.get());
+
+			newSingleFutureShortOrder->SetSendingOrderResult(result);
 			const auto isSendingOrderSucceeded = static_cast<bool>(result);
-			const auto clientOrderId = newSingleShortOrder->GetClientOrderId();
+			const auto clientOrderId = newSingleFutureShortOrder->GetClientOrderId();
 			if (isSendingOrderSucceeded)
 			{
-				newSingleShortOrder->SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
-				m_positionManager->AddNewWorkedOrder(clientOrderId, std::move(newSingleShortOrder));
+				newSingleFutureShortOrder->SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
+				m_positionManager->AddNewWorkedOrder(clientOrderId, std::move(newSingleFutureShortOrder));
 			}
 			else
 			{
-				m_positionManager->AddUnworkedOrder(clientOrderId, std::move(newSingleShortOrder));
+				m_positionManager->AddUnworkedOrder(clientOrderId, std::move(newSingleFutureShortOrder));
 			}
 			return isSendingOrderSucceeded;
 		}
@@ -144,17 +172,15 @@ bool FutureTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammet
 
 bool FutureTrader::CancelAllOpenPositions(const std::string& symbol)
 {
+#if USE_BACK_TEST_TRADING
 	const auto workedOrderManager = m_positionManager->GetWorkedOrderManager();
 	if (workedOrderManager)
 	{
 		for (const auto* order : workedOrderManager->GetOrdersOfSymbol(symbol))
 		{
 			auto newCancelOrder = m_positionManager->CancelPositionUpstreamOrder(order);
-#if USE_BACK_TEST_TRADING
+
 			const auto result = ExchangeSimulatorGateWay->SendCancelSimulatorOrder(newCancelOrder.get());
-#else
-			const auto result = BinanceExchangeGateWay->SendCancelBinanceOrder(newCancelOrder.get());
-#endif
 			newCancelOrder->SetSendingOrderResult(result);
 			const auto isSendingOrderSucceeded = static_cast<bool>(result);
 			const auto clientOrderId = newCancelOrder->GetClientOrderId();
@@ -169,13 +195,15 @@ bool FutureTrader::CancelAllOpenPositions(const std::string& symbol)
 				m_positionManager->AddUnworkedCancelOrder(clientOrderId, std::move(newCancelOrder));
 			}
 		}
+		return true;
 	}
 	else
 	{
 		m_logger->Warning("No open positions available to cancel.");
 		return false;
 	}
-	return true;
+#endif
+	return false;
 }
 
 void FutureTrader::UpdateAccountInfo()
@@ -193,7 +221,7 @@ void FutureTrader::CreatePortfolioManagement(const std::vector<std::string>&targ
 	m_logger->Info("querying Binance remote future account info...");
 	// Query all assets from remote Binance account and manage them locally for our trading
 	m_portfolio->SetUserFutureAccountInfo(m_binanceAccountInfo.get());
-	m_portfolio->UpdateBinanceAccountInfo();
+	m_portfolio->UpdateBinanceFutureAccountInfo();
 	m_logger->Info("querying account info finished.");
 }
 
