@@ -91,6 +91,7 @@ namespace OrderManagement {
         std::string GetRemainingAmountStr() const { return std::to_string(m_remainingAmount); }
         double GetRemainingAmount() const { return m_remainingAmount; }
 		double GetFutureLeverageRatio() const { return m_futureOrderLeverageRatio; }
+		std::string GetFutureLeverageRatioStr() const { return std::to_string(m_futureOrderLeverageRatio); }
 
         // Setters
         void SetSide(binapi::e_side side) { m_side = side; }

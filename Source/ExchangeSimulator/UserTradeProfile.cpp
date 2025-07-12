@@ -12,6 +12,7 @@
 using namespace ExchangeSimulator;
 
 ExchangeSimulator::UserTradeProfile::UserTradeProfile(const std::string& userAccountId)
+	: m_userAccountId(userAccountId)
 {
 }
 

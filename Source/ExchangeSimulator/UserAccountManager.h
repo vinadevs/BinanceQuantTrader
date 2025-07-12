@@ -15,6 +15,7 @@
 #include <mutex>
 #include <map>
 #include <string>
+#include <vector>
 
 namespace LibraryUtils {
     class Logger;
@@ -81,12 +82,16 @@ namespace ExchangeSimulator {
         const SpotAccounts& GetUserSpotAccounts();
 
 		const FutureAccounts& GetUserFutureAccounts();
+
+		const std::vector<std::pair<std::string, std::string>>& GetUserAccountIds()
+			const { return m_userAccountIds; }
     protected:
         std::unique_ptr<LibraryUtils::Logger> m_logger;
 		SpotAccounts m_spotAccounts;
 		FutureAccounts m_futureAccounts;
         std::mutex m_mutex;
         std::size_t m_maxAccount{ 0 };
+		std::vector<std::pair<std::string, std::string>> m_userAccountIds;
     };
 };
 

@@ -27,9 +27,9 @@ using namespace MarketData;
 static constexpr double ZERO_DOUBLE_VALUE = 0;
 
 RTMarketFutureParticipant::RTMarketFutureParticipant(
-    const size_t maxDownstreamOrderBookSize,
-    UserAccountManager* userAccountManager)
-    : Participant(ParticipantType::REAL_TIME_FUTURE_MARKET_DATA, userAccountManager)
+    UserAccountManager* userAccountManager,
+    UserTradeProfileManager* userTradeProfileManager)
+    : Participant(ParticipantType::REAL_TIME_FUTURE_MARKET_DATA, userAccountManager, userTradeProfileManager)
 {
 }
 

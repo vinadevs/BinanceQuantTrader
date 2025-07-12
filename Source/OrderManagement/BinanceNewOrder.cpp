@@ -82,6 +82,7 @@ std::string BinanceNewOrder::ToStringOrder() const
         ", OrderStatus: " + GetOrderStatusStr() +
 		", TradingType: " + GetOrderTradingTypeStr() +
         ", UpdateTime: " + GetUpdateTimeStr() +
+		", FutureLeverageRatio: " + GetFutureLeverageRatioStr() +
         ")";
 }
 
@@ -100,6 +101,7 @@ std::string BinanceNewOrder::ToStringAck() const
         ", IcebergAmount: " + GetIcebergAmountStr() +
         ", OrderStatus: " + GetOrderStatusStr() +
         ", TradingType: " + GetOrderTradingTypeStr() +
+		", FutureLeverageRatio: " + GetFutureLeverageRatioStr() +
         ", FilledAmount: " + GetFilledAmountStr() +
         ", FilledPrice: " + GetFilledPriceStr() +
         ", RemainingAmount: " + GetOrigQuoteOrderQuantityStr() +
@@ -125,6 +127,7 @@ BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrder() const
     message.AddPair(FieldLabels::IcebergAmount, GetIcebergAmountStr());
     message.AddPair(FieldLabels::OrderStatus, GetOrderStatusStr());
     message.AddPair(FieldLabels::TradingType, GetOrderTradingTypeStr());
+	message.AddPair(FieldLabels::LeverageRatio, GetFutureLeverageRatioStr());
     message.AddPair(FieldLabels::UpdateTime, GetUpdateTimeStr());
     return message;
 }
@@ -145,6 +148,7 @@ BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrderAck() const
     message.AddPair(FieldLabels::IcebergAmount, GetIcebergAmountStr());
     message.AddPair(FieldLabels::OrderStatus, GetOrderStatusStr());
 	message.AddPair(FieldLabels::TradingType, GetOrderTradingTypeStr());
+	message.AddPair(FieldLabels::LeverageRatio, GetFutureLeverageRatioStr());
     message.AddPair(FieldLabels::FilledAmount, GetFilledAmountStr());
     message.AddPair(FieldLabels::FilledPrice, GetFilledPriceStr());
     message.AddPair(FieldLabels::RemainingAmount, GetRemainingAmountStr());

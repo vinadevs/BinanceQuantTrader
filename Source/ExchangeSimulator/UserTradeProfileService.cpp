@@ -29,24 +29,35 @@ grpc::Status UserTradeProfileService::UpdateUserTradeProfile(
 	const usertradeprofile::UpdateUserTradeProfileRequest* request,
 	usertradeprofile::UpdateUserTradeProfileResponse* response)
 {
-	const std::string& userId = request->user_account_id();
-	m_logger->Info("Received UpdateUserTradeProfile request for User ID=" + userId);
+	try
+	{
+		const std::string& userId = request->user_account_id();
+		m_logger->Info("Received UpdateUserTradeProfile request for User ID=" + userId);
 
-	auto& userTradeProfile = m_userTradeProfileManager->LookupUserTradeProfile(userId);
-	const double leverage = request->leverage();
+		auto& userTradeProfile = m_userTradeProfileManager->LookupUserTradeProfile(userId);
+		const double leverage = request->leverage();
 
-	if (leverage <= 0.0 || leverage > 100.0) {
+		if (leverage <= 0.0 || leverage > 100.0) {
+			response->set_success(false);
+			response->set_message("Invalid leverage rate.");
+			return grpc::Status::OK;
+		}
+
+		// Update the leverage for the user trade profile
+		userTradeProfile.SetLeverageRate(leverage);
+
+		// Success (stubbed logic)
+		response->set_success(true);
+		response->set_message("Leverage updated successfully for user " + userId);
+		return grpc::Status::OK;
+	}
+	catch (const std::exception& e)
+	{
 		response->set_success(false);
-		response->set_message("Invalid leverage rate.");
+		response->set_message("Leverage updating failed for user ID=" 
+			+ request->user_account_id() + ", error=" + e.what());
 		return grpc::Status::OK;
 	}
 
-	// Update the leverage for the user trade profile
-	userTradeProfile.SetLeverageRate(leverage);
-
-	// Success (stubbed logic)
-	response->set_success(true);
-	response->set_message("Leverage updated successfully for user " + userId);
-    return grpc::Status::OK;
 }
 

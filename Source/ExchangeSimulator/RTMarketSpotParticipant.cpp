@@ -27,7 +27,7 @@ static constexpr double ZERO_DOUBLE_VALUE = 0;
 RTMarketSpotParticipant::RTMarketSpotParticipant(
     const size_t maxDownstreamOrderBookSize,
     UserAccountManager* userAccountManager)
-    : Participant(ParticipantType::REAL_TIME_SPOT_MARKET_DATA, userAccountManager),
+    : Participant(ParticipantType::REAL_TIME_SPOT_MARKET_DATA, userAccountManager, nullptr),
     m_maxDownstreamOrderBookSize(maxDownstreamOrderBookSize)
 {
     m_bidDownstreamOrderBooks = std::make_unique<DownstreamOrderBook>();

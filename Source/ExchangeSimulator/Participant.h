@@ -45,10 +45,14 @@ namespace ExchangeSimulator {
     };
 
     class UserAccountManager;
+	class UserTradeProfileManager;
+
     class Participant
     {
     public:
-        Participant(const ParticipantType& mode, UserAccountManager* userAccountManager);
+        Participant(const ParticipantType& mode,
+            UserAccountManager* userAccountManager,
+            UserTradeProfileManager* userTradeProfileManager);
         virtual ~Participant();
         virtual bool TryToMatchOrder(OrderManagement::BinanceNewOrder& ack) = 0;
 
@@ -57,6 +61,7 @@ namespace ExchangeSimulator {
         std::unique_ptr<LibraryUtils::Logger> m_logger;
         std::unique_ptr<DownstreamOrderBook> m_downstreamOrderBook;
         UserAccountManager* m_userAccountManager{ nullptr };
+        UserTradeProfileManager* m_userTradeProfileManager{ nullptr };
         std::mutex m_mutex;
         ParticipantType m_tradeMode{ ParticipantType::UNDEF };
     };

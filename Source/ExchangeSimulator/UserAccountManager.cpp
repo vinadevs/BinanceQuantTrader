@@ -32,14 +32,14 @@ UserAccountManager::UserAccountManager(const tinyxml2::XMLElement* userAccountMa
     const auto* testUserAccountXml = userAccountManagerCfg->FirstChildElement("TestUserAccount");
     assert(testUserAccountXml);
     const auto* listUserIDStr = testUserAccountXml->Attribute("ListUserID");
-    auto listUserID = StringUtils::ParseStringPairs(listUserIDStr);
+    m_userAccountIds = StringUtils::ParseStringPairs(listUserIDStr);
 
     const auto* spotAccountInfoXml = userAccountManagerCfg->FirstChildElement("SpotAccountInfo");
     assert(spotAccountInfoXml);
     std::string spotAccountInfoJsonFile(spotAccountInfoXml->Attribute("File"));
     PathUtils::ReplaceSubString(spotAccountInfoJsonFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
 
-    for (auto& userPair : listUserID) 
+    for (auto& userPair : m_userAccountIds)
     {
         PathUtils::ReplaceSubString(userPair.second, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
         if (std::filesystem::exists(userPair.second))
@@ -52,12 +52,12 @@ UserAccountManager::UserAccountManager(const tinyxml2::XMLElement* userAccountMa
         }
     }
 
-	const auto* futureAccountInfoXml = userAccountManagerCfg->FirstChildElement("FutureAccountInfo");
-	assert(futureAccountInfoXml);
-	std::string futureAccountInfoJsonFile(futureAccountInfoXml->Attribute("File"));
-	PathUtils::ReplaceSubString(futureAccountInfoJsonFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
-	
-	for (auto& userPair : listUserID)
+    const auto* futureAccountInfoXml = userAccountManagerCfg->FirstChildElement("FutureAccountInfo");
+    assert(futureAccountInfoXml);
+    std::string futureAccountInfoJsonFile(futureAccountInfoXml->Attribute("File"));
+    PathUtils::ReplaceSubString(futureAccountInfoJsonFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
+
+    for (auto& userPair : m_userAccountIds)
 	{
 		PathUtils::ReplaceSubString(userPair.second, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
 		if (std::filesystem::exists(userPair.second))

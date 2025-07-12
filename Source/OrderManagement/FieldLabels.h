@@ -58,6 +58,7 @@ namespace OrderManagement {
 		const std::string OrigQuoteOrderQuantity = "OrigQuoteOrderQuantity";
 		const std::string CummulativeQuoteQty = "CummulativeQuoteQty";
 		const std::string UpdateTime = "UpdateTime";
+		const std::string LeverageRatio = "LeverageRatio"; // For futures trading
 
 		// Simulator Ack
 		namespace SimulatorAck {

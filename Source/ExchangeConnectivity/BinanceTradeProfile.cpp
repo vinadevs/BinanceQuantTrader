@@ -41,20 +41,12 @@ bool BinanceTradeProfile::UpdateUserTradeProfileData(
 
     usertradeprofile::UpdateUserTradeProfileRequest request;
     request.set_user_account_id(userId);
+	request.set_leverage(leverageRate);
 
     usertradeprofile::UpdateUserTradeProfileResponse response;
     grpc::ClientContext context;
 
     const grpc::Status status = m_grpcConnection.m_grpcStub->UpdateUserTradeProfile(&context, request, &response);
-
-    if (status.ok() && response.success())
-    {
-        return true;
-        resultMessage = "User trade profile updated successfully.";
-    }
-    else
-    {
-        resultMessage = status.error_message();
-        return false;
-    }
+    resultMessage = response.message();
+    return (status.ok() && response.success());
 }

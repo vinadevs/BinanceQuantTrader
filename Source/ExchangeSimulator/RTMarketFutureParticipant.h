@@ -59,7 +59,9 @@ namespace ExchangeSimulator {
         public MarketData::MarketDataObserver
     {
     public:
-        RTMarketFutureParticipant(const size_t maxDownstreamOrderBookSize, UserAccountManager* userAccountManager);
+        RTMarketFutureParticipant(
+            UserAccountManager* userAccountManager,
+            UserTradeProfileManager* userTradeProfileManager);
         ~RTMarketFutureParticipant() override;
 
         // order matching for upstream orders
@@ -72,6 +74,5 @@ namespace ExchangeSimulator {
         void UpdateCurrentMarketPrice(const std::string& symbol, const double price);
 
 		std::unordered_map<std::string, std::unique_ptr<DownstreamFuturePriceManager>> m_downstreamFuturePriceManagers;
-		std::unique_ptr<UserTradeProfileManager> m_userTradeProfileManager;
     };
 };

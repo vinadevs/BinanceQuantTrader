@@ -75,6 +75,7 @@ namespace ExchangeSimulator {
 	class RTMarketSpotParticipant; // simulative spot traders
 	class RTMarketFutureParticipant; // simulative future traders
     class UserAccountManager; // user wallet info 
+	class UserTradeProfileManager; // user trade profile info
     class UpstreamOrderQueueMgr; // lisst pre-orders matching process
     class UpstreamOrderMatchedMgr; // list post-orders matching process
 
@@ -84,7 +85,8 @@ namespace ExchangeSimulator {
     {
     public:
         MatchingEngine(const tinyxml2::XMLElement* matchingEngineXmlCfg,
-                       UserAccountManager* userAccountManager);
+                       UserAccountManager* userAccountManager,
+                       UserTradeProfileManager* userTradeProfileManager);
         ~MatchingEngine();
 
         void Start() override;

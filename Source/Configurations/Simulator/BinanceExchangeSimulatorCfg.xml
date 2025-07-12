@@ -31,6 +31,7 @@
 
 <ExchangeRuleAndCompliance>
   <TradeCommissions MakerCommission="0.01" TakerCommission="0.05" BuyerCommission="0" SellerCommission="0"  FutureMakerCommission="0.0002" FutureTakerCommission="0.0004"/>
+  <FutureMarginRateInfo File="[ROOT_BQT_PATH]\Configurations\StaticData\future_trading_margin_t.json"/>
 </ExchangeRuleAndCompliance>
 
 <ExchangeInfoManager>
@@ -38,4 +39,5 @@
 </ExchangeInfoManager>
 
 <UserTradeProfileManager>
+	<FutureTradeSettings LeverageRate="1"/>
 </UserTradeProfileManager>

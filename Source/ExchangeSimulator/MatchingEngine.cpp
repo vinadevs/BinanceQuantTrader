@@ -41,7 +41,8 @@ using namespace binapi::rest;
 
 MatchingEngine::MatchingEngine(
 	const tinyxml2::XMLElement* matchingEngineXmlCfg,
-	UserAccountManager* userAccountManager)
+	UserAccountManager* userAccountManager,
+	UserTradeProfileManager* userTradeProfileManager)
 	: m_logger{ std::make_unique<LibraryUtils::Logger>("MatchingEngine") },
 	  m_upstreamOrderQueueMgr{ std::make_unique<UpstreamOrderQueueMgr>() },
 	  m_upstreamOrderMatchedMgr{ std::make_unique<UpstreamOrderMatchedMgr>() },
@@ -69,8 +70,7 @@ MatchingEngine::MatchingEngine(
 	else if (StringUtils::IsConfigAttributeMatched(usingParticipantXml->Attribute("Name"), "RTMarketFutureParticipant"))
 	{
 		m_logger->Info("Initiating RTMarketFutureParticipant.");
-		const auto maxDownstreamOrderBookSize = usingParticipantXml->UnsignedAttribute("MaximumDownstreamOrderBookSize");
-		m_participant = std::make_unique<RTMarketFutureParticipant>(maxDownstreamOrderBookSize, userAccountManager);
+		m_participant = std::make_unique<RTMarketFutureParticipant>(userAccountManager, userTradeProfileManager);
 		m_logger->Info("Initiating Real Time Market Data.");
 		const auto* realTimeMarketDataCfg = matchingEngineXmlCfg->FirstChildElement("RealTimeMarketData");
 		m_binanceMarketDataConfig = SettingNConfig::BqtXmlUtils::GetBinanceMarketDataConfig(realTimeMarketDataCfg);
@@ -517,22 +517,46 @@ BinanceNewOrder MatchingEngine::ConstructUpstreamNewOrder(
 	const double icebergAmount = message.GetDoubleValueByTag(FieldLabels::IcebergAmount);
 	const BinanceNewOrderTradingType tradingType = message.GetStringValueByTag(FieldLabels::TradingType) == "SPOT" ?
 		BinanceNewOrderTradingType::SPOT : BinanceNewOrderTradingType::FUTURE;
-	BinanceNewOrder order(
-		clientOrderId,
-		symbol,
-		side,
-		type,
-		time,
-		amount,
-		price,
-		stopPrice,
-		icebergAmount,
-		tradingType,
-		ExchangeConnectivityType::TEST);
-
-	order.SetUserAccountID(message.GetStringValueByTag(FieldLabels::UserAccountID));
-
-	return order;
+	if (tradingType == BinanceNewOrderTradingType::SPOT)
+	{
+		BinanceNewOrder order(
+			clientOrderId,
+			symbol,
+			side,
+			type,
+			time,
+			amount,
+			price,
+			stopPrice,
+			icebergAmount,
+			tradingType,
+			ExchangeConnectivityType::TEST);
+		order.SetUserAccountID(message.GetStringValueByTag(FieldLabels::UserAccountID));
+		return order;
+	}
+	else if (tradingType == BinanceNewOrderTradingType::FUTURE)
+	{
+		const double leverageRatio = message.GetDoubleValueByTag(FieldLabels::LeverageRatio);
+		BinanceNewOrder order(
+			clientOrderId,
+			symbol,
+			side,
+			type,
+			time,
+			amount,
+			price,
+			stopPrice,
+			icebergAmount,
+			leverageRatio,
+			tradingType,
+			ExchangeConnectivityType::TEST);
+		order.SetUserAccountID(message.GetStringValueByTag(FieldLabels::UserAccountID));
+		return order;
+	}
+	else
+	{
+		throw std::runtime_error("MatchingEngine: unsupported BinanceNewOrder trading type");
+	}
 }
 
 BinanceCancelOrder MatchingEngine::ConstructUpstreamCancelOrder(
