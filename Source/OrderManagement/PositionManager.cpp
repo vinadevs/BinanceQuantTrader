@@ -42,6 +42,7 @@ std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewPositionUpstreamOrder(
         , param.m_price
         , param.m_stopPrice
         , param.m_icebergAmount
+		, param.m_stableCurrency
         , param.m_tradeType);
 }
 
@@ -59,6 +60,7 @@ std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewTestPositionUpstreamOrd
         , param.m_price
         , param.m_stopPrice
         , param.m_icebergAmount
+		, param.m_stableCurrency
         , param.m_tradeType);
 }
 
@@ -76,6 +78,7 @@ std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewFuturePositionUpstreamO
         , param.m_stopPrice
         , param.m_icebergAmount
 		, param.m_leverageRatio
+		, param.m_stableCurrency
         , param.m_tradeType);
 }
 
@@ -120,7 +123,7 @@ bool PositionManager::CloseAllOpenedPositions()
     return m_workedOrderManager->RemoveAllNewOrders();
 }
 
-void PositionManager::UpdateNewOrderExecutionStatus(
+BinanceNewOrder* PositionManager::UpdateNewOrderExecutionStatus(
     const std::string& clientOrderId,
     const std::string& symbol, 
     const double filledAmount, 
@@ -129,17 +132,17 @@ void PositionManager::UpdateNewOrderExecutionStatus(
     const std::size_t updateTime,
     const BinanceNewOrderStatus orderStatus)
 {
-    m_workedOrderManager->UpdateNewOrderExecutionStatus(
+    return m_workedOrderManager->UpdateNewOrderExecutionStatus(
         clientOrderId, symbol, filledAmount, filledPrice, remainingAmount, updateTime, orderStatus);
 }
 
-void PositionManager::UpdateOrderCancellingStatus(
+BinanceCancelOrder* PositionManager::UpdateOrderCancellingStatus(
     const std::string& clientOrderId,
     const std::string& symbol, 
     const std::size_t updateTime, 
     const BinanceCancelOrderStatus orderStatus)
 {
-    m_workedOrderManager->UpdateOrderCancellingStatus(
+    return m_workedOrderManager->UpdateOrderCancellingStatus(
         clientOrderId, symbol, updateTime, orderStatus);
 }
 

@@ -11,6 +11,7 @@
 #include "UserTradeProfileManager.h"
 #include "UserTradeProfileService.h"
 #include "UserTradeProfile.h"
+#include "TradeUtils.h"
 
 #include "../LibraryUtils/Logger.h"
 
@@ -37,9 +38,9 @@ grpc::Status UserTradeProfileService::UpdateUserTradeProfile(
 		auto& userTradeProfile = m_userTradeProfileManager->LookupUserTradeProfile(userId);
 		const double leverage = request->leverage();
 
-		if (leverage <= 0.0 || leverage > 100.0) {
+		if (!Finance::IsLeverageRatioValid(leverage)) {
 			response->set_success(false);
-			response->set_message("Invalid leverage rate.");
+			response->set_message("Invalid leverage rate, Binance max leverage is 125x and min > 0");
 			return grpc::Status::OK;
 		}
 

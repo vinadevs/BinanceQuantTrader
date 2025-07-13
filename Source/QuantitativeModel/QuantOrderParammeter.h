@@ -48,6 +48,7 @@ namespace QuantitativeModel {
            double m_stopPrice{ 0 };
 		   double m_icebergAmount{ 0 };
 		   double m_leverageRatio{ 1.0 }; // Default leverage ratio is 1.0 (no leverage)
+		   std::string m_stableCurrency; // Stable currency for trading, e.g., USDT, BUSD
            OrderManagement::BinanceNewOrderTradingType m_tradeType{ OrderManagement::BinanceNewOrderTradingType::UNDEF };
 
            QuantOrderParammeter() = default;
@@ -66,6 +67,7 @@ namespace QuantitativeModel {
 				   << "StopPrice: " << m_stopPrice << ", "
 				   << "IcebergAmount: " << m_icebergAmount << ", "
 				   << "LeverageRatio: " << m_leverageRatio << ", "
+				   << "StableCurrency: " << m_stableCurrency << ", "
 				   << "TradeType: " << OrderManagement::TypeToStringUtils::ToString(m_tradeType)
                    << " }";
                return oss.str();
@@ -81,6 +83,7 @@ namespace QuantitativeModel {
                const double price,
 			   const double stopPrice,
 			   const double icebergAmount,
+			   const std::string& stableCurrency,
 			   const OrderManagement::BinanceNewOrderTradingType tradeType)
                : m_symbol(symbol),
                  m_side(side),
@@ -90,6 +93,7 @@ namespace QuantitativeModel {
                  m_price(price),
                  m_stopPrice(stopPrice),
 			     m_icebergAmount(icebergAmount),
+			     m_stableCurrency(stableCurrency),
 			     m_tradeType(tradeType) {}
        };
 };

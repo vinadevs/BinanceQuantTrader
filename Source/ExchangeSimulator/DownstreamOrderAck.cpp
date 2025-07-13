@@ -28,6 +28,7 @@ DownstreamOrderAck AckUtils::CreateErrorRejectOrderAck(
 	ack.AddPair(FieldLabels::ClientOrderId, clientOrderId);
 	ack.AddPair(FieldLabels::SimulatorAck::ExchangeText, errorMsg);
 	ack.AddPair(FieldLabels::SimulatorAck::ErrorCode, ErrorOrderCodeStr);
+	ack.AddPair(FieldLabels::OrderStatus, "REJECTED");
 	return ack;
 }
 

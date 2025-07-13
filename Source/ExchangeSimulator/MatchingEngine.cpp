@@ -458,6 +458,27 @@ void MatchingEngine::PostProcessingMatchedNewOrder(BinanceNewOrder& order)
 			UpstreamGateWay->SendDownstreamOrderAck(ack);
 		}
 	}
+	else if (order.GetOrderStatus() == BinanceNewOrderStatus::REJECTED)
+	{
+		m_logger->Info("Rejected upstream order: " + order.ToStringOrder());
+		// Notify the involved parties of the trade execution.
+		const auto ack = AckUtils::CreateErrorRejectOrderAck(order.GetSymbol(), clientOrderId, "Rejected order");
+		UpstreamGateWay->SendDownstreamOrderAck(ack);
+	}
+	else if (order.GetOrderStatus() == BinanceNewOrderStatus::LIQUIDATED)
+	{
+		m_logger->Info("Liquidated upstream order: " + order.ToStringOrder());
+		// Notify the involved parties of the trade execution.
+		const auto ack = AckUtils::CreateNewOrderAck(order, "Future order liquidated");
+		UpstreamGateWay->SendDownstreamOrderAck(ack);
+	}
+	else if (order.GetOrderStatus() == BinanceNewOrderStatus::MARGIN_CALL)
+	{
+		m_logger->Info("Margin call upstream order: " + order.ToStringOrder());
+		// Notify the involved parties of the trade execution.
+		const auto ack = AckUtils::CreateNewOrderAck(order, "Future order margin call");
+		UpstreamGateWay->SendDownstreamOrderAck(ack);
+	}
 	else
 	{
 		m_logger->Info("Unknown upstream order status: " + order.ToStringOrder());
@@ -515,6 +536,7 @@ BinanceNewOrder MatchingEngine::ConstructUpstreamNewOrder(
 	const double price = message.GetDoubleValueByTag(FieldLabels::LimitPrice);
 	const double stopPrice = message.GetDoubleValueByTag(FieldLabels::StopPrice);
 	const double icebergAmount = message.GetDoubleValueByTag(FieldLabels::IcebergAmount);
+	const std::string stableCurrency = message.GetStringValueByTag(FieldLabels::StableCurrency);
 	const BinanceNewOrderTradingType tradingType = message.GetStringValueByTag(FieldLabels::TradingType) == "SPOT" ?
 		BinanceNewOrderTradingType::SPOT : BinanceNewOrderTradingType::FUTURE;
 	if (tradingType == BinanceNewOrderTradingType::SPOT)
@@ -529,6 +551,7 @@ BinanceNewOrder MatchingEngine::ConstructUpstreamNewOrder(
 			price,
 			stopPrice,
 			icebergAmount,
+			stableCurrency,
 			tradingType,
 			ExchangeConnectivityType::TEST);
 		order.SetUserAccountID(message.GetStringValueByTag(FieldLabels::UserAccountID));
@@ -536,7 +559,7 @@ BinanceNewOrder MatchingEngine::ConstructUpstreamNewOrder(
 	}
 	else if (tradingType == BinanceNewOrderTradingType::FUTURE)
 	{
-		const double leverageRatio = message.GetDoubleValueByTag(FieldLabels::LeverageRatio);
+		const double futureLeverageRatio = message.GetDoubleValueByTag(FieldLabels::FutureLeverageRatio);
 		BinanceNewOrder order(
 			clientOrderId,
 			symbol,
@@ -547,7 +570,8 @@ BinanceNewOrder MatchingEngine::ConstructUpstreamNewOrder(
 			price,
 			stopPrice,
 			icebergAmount,
-			leverageRatio,
+			futureLeverageRatio,
+			stableCurrency,
 			tradingType,
 			ExchangeConnectivityType::TEST);
 		order.SetUserAccountID(message.GetStringValueByTag(FieldLabels::UserAccountID));

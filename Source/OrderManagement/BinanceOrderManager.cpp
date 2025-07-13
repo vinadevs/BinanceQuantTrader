@@ -314,7 +314,7 @@ binapi::double_type BinanceOrderManager::GetWeightedAveragePrice(
 	return INVALID_PRICE;
 }
 
-void BinanceOrderManager::UpdateNewOrderExecutionStatus(
+BinanceNewOrder* BinanceOrderManager::UpdateNewOrderExecutionStatus(
     const std::string& clientOrderId, 
     const std::string& symbol, 
     const double filledAmount, 
@@ -344,15 +344,17 @@ void BinanceOrderManager::UpdateNewOrderExecutionStatus(
             LOG_WARNING_STREAM(m_logger, "Symbol mismatch for order with clientOrderId '" 
                 << ", symbol '" << symbol << clientOrderId << "'. Update skipped.");
         }
+        return it->second.get();
     } 
     else 
     {
         LOG_WARNING_STREAM(m_logger, "No new order found with clientOrderId '" 
             << clientOrderId << "'. Update failed.");
     }
+	return nullptr;
 }
 
-void OrderManagement::BinanceOrderManager::UpdateOrderCancellingStatus(
+BinanceCancelOrder* OrderManagement::BinanceOrderManager::UpdateOrderCancellingStatus(
     const std::string& clientOrderId, 
     const std::string& symbol,
     const std::size_t updateTime,
@@ -376,10 +378,12 @@ void OrderManagement::BinanceOrderManager::UpdateOrderCancellingStatus(
             LOG_WARNING_STREAM(m_logger, "Symbol mismatch for cancel order with clientOrderId '"
                 << clientOrderId << "', symbol '" << symbol << "'. Update skipped.");
         }
+        return it->second.get();
     } 
     else 
     {
         LOG_WARNING_STREAM(m_logger, "No cancel order found with clientOrderId '"
             << clientOrderId << "'. Update failed.");
     }
+	return nullptr;
 }

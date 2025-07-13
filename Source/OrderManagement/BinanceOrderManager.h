@@ -140,7 +140,7 @@ namespace OrderManagement {
 			const std::string& symbol,
 			const binapi::e_side side);
  
-        void UpdateNewOrderExecutionStatus(
+        BinanceNewOrder* UpdateNewOrderExecutionStatus(
            const std::string& clientOrderId,
            const std::string& symbol,
            const double filledAmount,
@@ -149,7 +149,7 @@ namespace OrderManagement {
            const std::size_t updateTime,
            const BinanceNewOrderStatus orderStatus);
 
-        void UpdateOrderCancellingStatus(
+        BinanceCancelOrder* UpdateOrderCancellingStatus(
            const std::string& clientOrderId,
            const std::string& symbol,
            const std::size_t updateTime,

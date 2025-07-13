@@ -49,6 +49,7 @@ namespace OrderManagement {
             const double price,
             const double stopPrice,
             const double icebergAmount,
+            const std::string& stableCurrency,
 			const BinanceNewOrderTradingType tradingType,
             const ExchangeConnectivityType exchangeConnectivityType);
 
@@ -63,6 +64,7 @@ namespace OrderManagement {
             const double stopPrice,
             const double icebergAmount,
 			const double lerverageRatio,
+            const std::string& stableCurrency,
             const BinanceNewOrderTradingType tradingType,
             const ExchangeConnectivityType exchangeConnectivityType);
 
@@ -92,6 +94,13 @@ namespace OrderManagement {
         double GetRemainingAmount() const { return m_remainingAmount; }
 		double GetFutureLeverageRatio() const { return m_futureOrderLeverageRatio; }
 		std::string GetFutureLeverageRatioStr() const { return std::to_string(m_futureOrderLeverageRatio); }
+		const std::string& GetStableCurrency() const { return m_stableCurrency; }
+		double GetFutureInitialMarginPrice() const { return m_futureInitialMarginPrice; }
+		double GetFutureMaintainingMarginPrice() const { return m_futureMaintainingMarginPrice; }
+		double GetFutureLiquidationPrice() const { return m_futureLiquidationPrice; }
+		std::string GetFutureInitialMarginPriceStr() const { return std::to_string(m_futureInitialMarginPrice); }
+		std::string GetFutureMaintainingMarginPriceStr() const { return std::to_string(m_futureMaintainingMarginPrice); }
+		std::string GetFutureLiquidationPriceStr() const { return std::to_string(m_futureLiquidationPrice); }
 
         // Setters
         void SetSide(binapi::e_side side) { m_side = side; }
@@ -107,6 +116,10 @@ namespace OrderManagement {
         void SetCumulativeQuoteQuantity(const double cumulativeQuoteQuantity) { m_cumulativeQuoteQuantity = cumulativeQuoteQuantity; }
         void SetRemainingAmount(const double remainingAmount) { m_remainingAmount = remainingAmount; }
         void SetFutureLeverageRatio(const double leverageRatio) { m_futureOrderLeverageRatio = leverageRatio; }
+		void SetStableCurrency(const std::string& stableCurrency) { m_stableCurrency = stableCurrency; }
+		void SetFutureInitialMarginPrice(const double initialMarginPrice) { m_futureInitialMarginPrice = initialMarginPrice; }
+		void SetFutureMaintainingMarginPrice(const double maintainingMarginPrice) { m_futureMaintainingMarginPrice = maintainingMarginPrice; }
+		void SetFutureLiquidationPrice(const double liquidationPrice) { m_futureLiquidationPrice = liquidationPrice; }
 
         // Execution
         BinanceNewOrderStatus GetOrderStatus() const;
@@ -164,11 +177,18 @@ namespace OrderManagement {
         double m_icebergAmount{ 0 };
 		// leverage ratio for the future order
 		double m_futureOrderLeverageRatio{ 0.0 };
+		// initial margin price for the future order
+		double m_futureInitialMarginPrice{ 0.0 };
+		// maintaining margin price for the future order
+		double m_futureMaintainingMarginPrice{ 0.0 };
+		// liquidation price for the future order
+		double m_futureLiquidationPrice{ 0.0 };
         // If we trade with a basket of orders
         std::unordered_set<std::string> m_clientOrderIdList;
         BinanceNewOrderStatus m_orderStatus{ BinanceNewOrderStatus::NEW };
 		BinanceNewOrderTradingType m_orderTradingType{ BinanceNewOrderTradingType::UNDEF };
         binapi::rest::api::result<binapi::rest::new_order_resp_type> m_sendingBinananceOrderResult;
         binapi::e_type m_orderType{ binapi::e_type::limit };
+		std::string m_stableCurrency{ "USDT" }; // default currency for Binance Exchange
     };
 };

@@ -36,6 +36,7 @@ namespace OrderManagement {
 			, const double price
 			, const double stopPrice
 			, const double icebergAmount
+			, const std::string& stableCurrency
 			, const BinanceNewOrderTradingType tradingType);
 
 		// Create new future order with full parameters
@@ -50,6 +51,7 @@ namespace OrderManagement {
 			, const double stopPrice
 			, const double icebergAmount
 			, const double leverage
+			, const std::string& stableCurrency
 			, const BinanceNewOrderTradingType tradingType);
 
 		std::unique_ptr<BinanceNewOrder> CreateNewBinanceTestOrderFull(
@@ -62,6 +64,7 @@ namespace OrderManagement {
 			, const double price
 			, const double stopPrice
 			, const double icebergAmount
+			, const std::string& stableCurrency
 			, const BinanceNewOrderTradingType tradingType);
 
 		std::unique_ptr<BinanceCancelOrder> CreateCancelBinanceOrder(

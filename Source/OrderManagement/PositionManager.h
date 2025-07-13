@@ -91,7 +91,7 @@ namespace OrderManagement {
 		}
 
 		// Execution of all new worked orders
-		void UpdateNewOrderExecutionStatus(
+		BinanceNewOrder* UpdateNewOrderExecutionStatus(
 			const std::string& clientOrderId,
 			const std::string& symbol,
 			const double filledAmount,
@@ -101,7 +101,7 @@ namespace OrderManagement {
 			const BinanceNewOrderStatus orderStatus);
 
 		// Execution of all cancel orders
-		void UpdateOrderCancellingStatus(
+		BinanceCancelOrder* UpdateOrderCancellingStatus(
 			const std::string& clientOrderId,
 			const std::string& symbol,
 			const std::size_t updateTime,

@@ -35,180 +35,150 @@ RTMarketFutureParticipant::RTMarketFutureParticipant(
 
 RTMarketFutureParticipant::~RTMarketFutureParticipant() {}
 
-bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& newUpstreamOrder)
+// ────────────────────────────────────────────────────────────────────────────────
+//  RTMarketFutureParticipant::TryToMatchOrder
+//  – validates the order
+//  – checks position / margin limits
+//  – books PnL, margin‑call, or liquidation
+//  – returns true  ⇒ order accepted / kept in book
+//            false ⇒ rejected up‑front
+// ────────────────────────────────────────────────────────────────────────────────
+bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& order)
 {
-    // at here, the order matching logic happened...
+    std::unique_lock<std::mutex> lock(m_mutex);               // critical section
 
-    /* Order Matching Algorithms: First-in, first-out (FIFO).
-    Also known as "first-come, first-serve" (FCFS),
-    FIFO represents the classic algorithm that prioritizes orders based
-    on their priceand creation time.When multiple orders are created at the same price,
-    the order that arrived first gets matched first, ensuring fairness in execution.*/
+    //---------------------------------------------------------------------------
+    // 1. Sanity checks & fast failures
+    //---------------------------------------------------------------------------
+    auto* userAccount = m_userAccountManager->LookupFutureUserAccount(order.GetUserAccountID());
+    if (!userAccount)
+    {
+		return HandleRejectedOrder("User account not found for order: ", order);
+    }
 
-    /* When Does an Order Get Filled ?
-    Market Order :
-        Executes immediately at the best available price.
-        You “take liquidity” from the order book.
-        You’ll get filled instantly, possibly at multiple prices if your order is large.
-    Limit Order :
-        Executes only if the market reaches your specified price.
-        You “provide liquidity”.
-        Order sits in the book until matched by a market or opposing limit order.
-    Stop Orders(e.g., Stop - Limit) :
-        Becomes active when a trigger price is reached.
-        Then acts as a regular market or limit order. */
+    const auto* priceMgr = m_downstreamFuturePriceManagers[order.GetSymbol()].get();
+    if (!priceMgr)
+    {
+		return HandleRejectedOrder("Price manager not found for order: ", order);
+    }
 
-    /* 1. Formula for PNL(no fees) For One - Way Mode and no partial fills :
-    Long Position : PNL = (Exit Price − Entry Price) × Quantity
-    Short Position : PNL = (Entry Price − Exit Price) × Quantity*/
-    
-    /* Fee = Entry Price×Quantity×Fee Rate + Exit Price×Quantity×Fee Rate
-    
-    Typical fee rate(for USDT - M futures) :
-        Maker: 0.02 % = 0.0002
-        Taker : 0.04 % = 0.0004
+    const auto* assetInfo = userAccount->LookupFutureAssetInfo(order.GetStableCurrency());
+    if (!assetInfo)
+    {
+		return HandleRejectedOrder("Asset info not found for order: ", order);
+    }
 
-    Final PNL formula(with fees) : Net PNL = Gross PNL − Total Fee */ 
+    //---------------------------------------------------------------------------
+    // 2. Pull immutable parameters
+    //---------------------------------------------------------------------------
+    const double entryPrice = order.GetPrice();
+    const double marketPrice = priceMgr->GetCurrentMarketPrice();
+    const double contracts = order.GetAmount();
 
-    std::unique_lock<std::mutex> lock(m_mutex);
-	// Get the user account and related information
-    auto* userAccount = m_userAccountManager->LookupFutureUserAccount(newUpstreamOrder.GetUserAccountID());
-	// Get the order entry price, current market price, and number of contracts
-    const auto orderEntryPrice = newUpstreamOrder.GetPrice();
-    const auto currentMarketPrice = m_downstreamFuturePriceManagers[newUpstreamOrder.GetSymbol()]->GetCurrentMarketPrice();
-    const auto numberOfContracts = newUpstreamOrder.GetAmount();
-    // Calculate the required margin
-    const auto* userFutureAssetInfo = userAccount->LookupFutureAssetInfo("USDT");
-	// Lookup the user trade profile to get leverage rate and margin
-    const auto& userTradeProfile = m_userTradeProfileManager->LookupUserTradeProfile(newUpstreamOrder.GetUserAccountID());
-	// Get the leverage rate for the user
-    const auto userLeverageRate = userTradeProfile.GetLeverageRate();
-	// Get the user initial margin from the user's future asset balance
-    const auto userInitialMargin = userFutureAssetInfo->initialMargin;
-	// Calculate position value = orderEntryPrice * numberOfContracts
-	const double positionValue = orderEntryPrice * numberOfContracts;
+    const auto& tradeProfile = m_userTradeProfileManager->LookupUserTradeProfile(order.GetUserAccountID());
+    const double leverage = tradeProfile.GetLeverageRate();
+
+    if (!Finance::IsLeverageRatioValid(leverage)) // defensive: avoid div‑by‑zero
+    {
+		return HandleRejectedOrder("Invalid leverage ratio for order: ", order);
+    }
+
+    //---------------------------------------------------------------------------
+    // 3. Risk constants
+    //---------------------------------------------------------------------------
+    const double notional = entryPrice * contracts;          // position value
     // Calculate Exit Fee = Position Value × Free Rate
-	const double exitFee = positionValue * (ExchangeRuleMgr->GetFutureMakerCommission() + ExchangeRuleMgr->GetFutureTakerCommission());
-	// Calculate Entry Fee = Position Value × Free Rate
-	const double entryFee = positionValue * (ExchangeRuleMgr->GetFutureMakerCommission() + ExchangeRuleMgr->GetFutureTakerCommission());
-	// Calculate total fee = Entry Fee + Exit Fee
-	const double totalFee = entryFee + exitFee;
-    // Calculate the maximum position value = userSymbolMargin * userLeverageRate
-    const double maximumPostitionValue = userInitialMargin * userLeverageRate;
-    // Required margin = quantity × price / leverage
-    const auto requiredMarginCash = positionValue / userLeverageRate;
-	// Get future margin rate for the symbol from ExchangeRuleMgr
-	const auto& symbolLeverageBracketInfo = ExchangeRuleMgr->GetFutureLeverageBracketByNotional(newUpstreamOrder.GetSymbol(), positionValue);
-    // Calculate Maintenance Margin = Maintenance Margin Rate × Quantity × Entry Price
-    const double maintenanceMarginRate = symbolLeverageBracketInfo.m_MaintMarginRate;
-    const double maintenanceMargin = maintenanceMarginRate * positionValue;
-    // Calculate liquidity price = Entry Price × [1 - (Initial Margin - Maintenance Margin - Total Fee) / Position Value]
-    const double liquidityPrice = orderEntryPrice * (1 - (requiredMarginCash - maintenanceMargin - totalFee) / positionValue);
-	// Check if user position size is within the maximum position size
-	if (positionValue > maximumPostitionValue)
-	{
-		m_logger->Error("User position size exceeds maximum position size for order: " + newUpstreamOrder.ToStringOrder());
-		return false; // Position size exceeds maximum allowed, cannot proceed with the order
-	}
-    // Check if the user account has sufficient margin cash
-    bool hasSufficientMarginCash = userAccount->IsAccountHavingSufficientCashBalance("USDT", requiredMarginCash);
-	if (!hasSufficientMarginCash)
-	{
-		m_logger->Warning("User account does not have sufficient margin cash for order: " + newUpstreamOrder.ToStringOrder());
-		return false; // Insufficient margin, cannot proceed with the order
-	}
+    const double exitFee = notional * (ExchangeRuleMgr->GetFutureMakerCommission() + ExchangeRuleMgr->GetFutureTakerCommission());
+    // Calculate Entry Fee = Position Value × Free Rate
+    const double entryFee = notional * (ExchangeRuleMgr->GetFutureMakerCommission() + ExchangeRuleMgr->GetFutureTakerCommission());
+    // Calculate total fee = Entry Fee + Exit Fee
+    const double totalFee = entryFee + exitFee;
 
-    //Check the Order Book:
-    //  Compare the upstream incoming order against the existing orders in the order book of the target symbol.
-    bool hasLiquidity{ false };
-    if (newUpstreamOrder.GetSide() == binapi::e_side::buy) // long positions
+    const auto& bracket = ExchangeRuleMgr
+        ->GetFutureLeverageBracketByNotional(order.GetSymbol(), notional);
+    const double maintMargin = bracket.m_MaintMarginRate * notional;
+    const double positionInitMargin = notional / leverage;
+    const double requiredMargin = notional / leverage;
+
+	order.SetFutureInitialMarginPrice(positionInitMargin);
+	order.SetFutureMaintainingMarginPrice(maintMargin);
+
+    //---------------------------------------------------------------------------
+    // 4. Pre‑trade checks (size & cash)
+    //---------------------------------------------------------------------------
+    if (notional > positionInitMargin * leverage)
     {
-        // For a Buy Side:
-        // Check if the current market price is greater than the order entry price
-        // Long positions get profit when the market price increases
-        if (currentMarketPrice > orderEntryPrice)
-        {
-            // Calculate spread between current market price and order entry price
-            const double spread = currentMarketPrice - orderEntryPrice;
-            // Calculate profit based on the spread, position value, and number of contracts
-            const double profitAndLost = spread * (positionValue / orderEntryPrice) * numberOfContracts;
-			// Update the user's future asset balance with profit
-			auto* userEditSession = m_userAccountManager->OpenEditSessionForFutureUserAccount(userAccount->GetUserAccountId());
-			userEditSession->UpdateBalanceCash("USDT", profitAndLost, KernelTrading::BalanceChangeEvent::PROFIT); // Update the margin with profit
-        }
-        else if (currentMarketPrice < orderEntryPrice)
-        {
-            // Calculate spread between order entry price and current market price
-            const double spread = orderEntryPrice - currentMarketPrice;
-            // Calculate loss based on the spread, position value, and number of contracts
-            const double profitAndLost = spread * (positionValue / orderEntryPrice) * numberOfContracts;
-			// Update the user's future asset balance with loss
-			auto* userEditSession = m_userAccountManager->OpenEditSessionForFutureUserAccount(userAccount->GetUserAccountId());
-            userEditSession->UpdateBalanceCash("USDT", profitAndLost, KernelTrading::BalanceChangeEvent::LOSS); // Update the margin with loss
-            // Liquidity price check
-            if (currentMarketPrice <= liquidityPrice)
-            {
-                m_logger->Warning("Liquidity price reached for order: " + newUpstreamOrder.ToStringOrder());
-                // Handle liquidation logic here, e.g., close position, notify user, etc.
-                userEditSession->UpdateBalanceCash("USDT", requiredMarginCash, KernelTrading::BalanceChangeEvent::LOSS); // Liquidate the position
-            }
-            // Check call margin condition
-            else if (userFutureAssetInfo->initialMargin < maintenanceMargin)
-            {
-                m_logger->Warning("Margin call condition reached for order: " + newUpstreamOrder.ToStringOrder());
-                // Handle margin call logic here, e.g., notify user, close position, etc.
-            }
-        }
-        else
-        {
-            newUpstreamOrder.SetRemainingAmount(numberOfContracts);
-        }
+		return HandleRejectedOrder("Notional value exceeds user initial margin * leverage for order: ", order);
     }
-    else if (newUpstreamOrder.GetSide() == binapi::e_side::sell) // short positions
+
+    if (!userAccount->IsAccountHavingSufficientCashBalance(order.GetStableCurrency(), requiredMargin))
     {
-        // For a Sell Side:
-        // Check if the current market price is less than the order entry price
-        // Short positions get profit when the market price decreases
-        if (currentMarketPrice < orderEntryPrice)
-        {
-            // Calculate spread between order entry price and current market price
-            const double spread = orderEntryPrice - currentMarketPrice;
-            // Calculate profit based on the spread, position value, and number of contracts
-            const double profitAndLost = spread * (positionValue / orderEntryPrice) * numberOfContracts;
-			// Update the user's future asset balance with profit
-			auto* userEditSession = m_userAccountManager->OpenEditSessionForFutureUserAccount(userAccount->GetUserAccountId());
-			userEditSession->UpdateBalanceCash("USDT", profitAndLost, KernelTrading::BalanceChangeEvent::PROFIT); // Update the margin with profit
-        }
-        else if (currentMarketPrice > orderEntryPrice)
-        {
-            // Calculate spread between current market price and order entry price
-            const double spread = currentMarketPrice - orderEntryPrice;
-            // Calculate loss based on the spread, position value, and number of contracts
-            const double profitAndLost = spread * (positionValue / orderEntryPrice) * numberOfContracts;
-			// Update the user's future asset balance with loss
-			auto* userEditSession = m_userAccountManager->OpenEditSessionForFutureUserAccount(userAccount->GetUserAccountId());
-			userEditSession->UpdateBalanceCash("USDT", profitAndLost, KernelTrading::BalanceChangeEvent::LOSS); // Update the margin with loss
-            // Liquidity price check
-            if (currentMarketPrice >= liquidityPrice)
-            {
-                m_logger->Warning("Liquidity price reached for order: " + newUpstreamOrder.ToStringOrder());
-                // Handle liquidation logic here, e.g., close position, notify user, etc.
-				userEditSession->UpdateBalanceCash("USDT", requiredMarginCash, KernelTrading::BalanceChangeEvent::LOSS); // Liquidate the position
-            }
-            // Check call margin condition
-            else if (userFutureAssetInfo->initialMargin < maintenanceMargin)
-            {
-                m_logger->Warning("Margin call condition reached for order: " + newUpstreamOrder.ToStringOrder());
-                // Handle margin call logic here, e.g., notify user, close position, etc.
-            }
-        }
-        else
-        {
-            newUpstreamOrder.SetRemainingAmount(numberOfContracts);
-        }
+		return HandleRejectedOrder("User account does not have sufficient cash balance for required margin for order: ", order);
     }
-    newUpstreamOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
-    return hasLiquidity;
+
+    //---------------------------------------------------------------------------
+    // 5. Liquidation price (sign‑aware)
+    //---------------------------------------------------------------------------
+    const bool   isLong = (order.GetSide() == binapi::e_side::buy);
+    const double bracketTerm = (positionInitMargin - maintMargin - totalFee) / notional;
+    const double liqPrice = isLong
+        ? entryPrice * (1.0 - bracketTerm)
+        : entryPrice * (1.0 + bracketTerm);
+
+    //---------------------------------------------------------------------------
+    // 6. PnL booking (mock matching)
+    //---------------------------------------------------------------------------
+    const double priceDiff = marketPrice - entryPrice;
+    const double pnl = isLong ? priceDiff * contracts
+        : -priceDiff * contracts;
+
+	if (pnl != 0.0) // Only update balance if there is a PnL change
+    {
+        auto* session = m_userAccountManager->OpenEditSessionForFutureUserAccount(
+            userAccount->GetUserAccountId());
+
+        const auto evt = (pnl > 0.0)
+            ? KernelTrading::BalanceChangeEvent::PROFIT
+            : KernelTrading::BalanceChangeEvent::LOSS;
+
+        session->UpdateBalanceCash(order.GetStableCurrency(), std::fabs(pnl), evt);
+    }
+
+    //---------------------------------------------------------------------------
+    // 7. Margin‑call / liquidation checks
+    //---------------------------------------------------------------------------
+    if ((isLong && marketPrice <= liqPrice) ||
+        (!isLong && marketPrice >= liqPrice))
+    {
+        auto* session = m_userAccountManager->OpenEditSessionForFutureUserAccount(
+            userAccount->GetUserAccountId());
+
+        session->UpdateBalanceCash(order.GetStableCurrency(), requiredMargin,
+            KernelTrading::BalanceChangeEvent::LOSS);
+
+        m_logger->Warning("Liquidation triggered for order: " + order.ToStringOrder());
+		// Update filled ack to upstream
+        order.SetRemainingAmount(0.0);
+        order.SetFilledAmount(contracts);
+		order.SetFutureLiquidationPrice(liqPrice);
+		order.SetOrderStatus(BinanceNewOrderStatus::LIQUIDATED);
+    }
+    else if (positionInitMargin < maintMargin)
+    {
+        m_logger->Warning("Margin call threshold reached for order: " + order.ToStringOrder());
+		order.SetOrderStatus(BinanceNewOrderStatus::MARGIN_CALL);
+        order.SetRemainingAmount(contracts);
+        order.SetFilledAmount(0.0);
+    }
+    else
+    {
+        // No fill in this tick – keep the order on the book
+        order.SetRemainingAmount(contracts);
+		order.SetFilledAmount(0.0);
+    }
+
+    order.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
+    return true; // Order accepted
 }
 
 bool RTMarketFutureParticipant::OnTradeChange(MarketData::MarketDataSubject* marketData, const std::string& symbol)
@@ -252,4 +222,13 @@ void RTMarketFutureParticipant::UpdateCurrentMarketPrice(const std::string& symb
     {
         m_logger->Warning("Could not found downstream future price manager for symbol=" + symbol);
     }
+}
+
+bool RTMarketFutureParticipant::HandleRejectedOrder(const std::string& message, OrderManagement::BinanceNewOrder& order)
+{
+    m_logger->Error(message + order.ToStringOrder());
+    order.SetRemainingAmount(order.GetAmount());
+    order.SetFilledAmount(0.0);
+    order.SetOrderStatus(BinanceNewOrderStatus::REJECTED);
+    return false; // Order rejected
 }

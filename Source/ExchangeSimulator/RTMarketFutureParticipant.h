@@ -40,7 +40,7 @@ namespace ExchangeSimulator {
 		void SetNewMarketPrice(const double price) { m_currentMarketPrice = price; }
 	private:
 		std::string m_symbol;
-		double m_currentMarketPrice{ 0 };
+		double m_currentMarketPrice{ 0 }; // Current market price from exchange for the symbol
     };
 
     /**
@@ -66,12 +66,15 @@ namespace ExchangeSimulator {
 
         // order matching for upstream orders
         bool TryToMatchOrder(OrderManagement::BinanceNewOrder& newUpstreamOrder) override;
-		// future market price from exchange
+		// event future market price update from exchange
         bool OnTradeChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
 
         void CreateDownstreamFuturePriceManagers(const std::unordered_set<std::string>& subcribedSymbols);
     private:
+		// update new market price for the symbol
         void UpdateCurrentMarketPrice(const std::string& symbol, const double price);
+
+        bool HandleRejectedOrder(const std::string& message, OrderManagement::BinanceNewOrder& order);
 
 		std::unordered_map<std::string, std::unique_ptr<DownstreamFuturePriceManager>> m_downstreamFuturePriceManagers;
     };

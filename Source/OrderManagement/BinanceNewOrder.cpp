@@ -24,6 +24,7 @@ BinanceNewOrder::BinanceNewOrder(
     const double price,
     const double stopPrice,
     const double icebergAmount,
+    const std::string& stableCurrency,
     const BinanceNewOrderTradingType tradingType,
     const ExchangeConnectivityType exchangeConnectivityType)
     : Order(
@@ -37,6 +38,7 @@ BinanceNewOrder::BinanceNewOrder(
     m_price(price),
     m_stopPrice(stopPrice),
     m_icebergAmount(icebergAmount),
+	m_stableCurrency(stableCurrency),
     m_orderTradingType(tradingType) {}
 
 BinanceNewOrder::BinanceNewOrder(
@@ -48,6 +50,7 @@ BinanceNewOrder::BinanceNewOrder(
     const double amount, const double price,
     const double stopPrice, const double icebergAmount, 
     const double lerverageRatio, 
+    const std::string& stableCurrency,
     const BinanceNewOrderTradingType tradingType,
     const ExchangeConnectivityType exchangeConnectivityType)
 	: Order(
@@ -62,53 +65,116 @@ BinanceNewOrder::BinanceNewOrder(
 	m_stopPrice(stopPrice),
 	m_icebergAmount(icebergAmount),
     m_futureOrderLeverageRatio(lerverageRatio),
+	m_stableCurrency(stableCurrency),
 	m_orderTradingType(tradingType) {}
 
 BinanceNewOrder::~BinanceNewOrder() {}
 
 std::string BinanceNewOrder::ToStringOrder() const
 {
-    return "BinanceNewOrder("
-        "Symbol: " + m_symbol +
-        ", UserAccountID: " + m_userAccountID +
-        ", Side: " + TypeToStringUtils::ToString(m_side) +
-        ", Type: " + TypeToStringUtils::ToString(m_type) +
-        ", TimeInForce: " + TypeToStringUtils::ToString(m_timeInForce) +
-        ", Amount: " + GetAmountStr() +
-        ", LimitPrice: " + GetPriceStr() +
-        ", ClientOrderId: " + m_clientOrderId +
-        ", StopPrice: " + GetStopPriceStr() +
-        ", IcebergAmount: " + GetIcebergAmountStr() +
-        ", OrderStatus: " + GetOrderStatusStr() +
-		", TradingType: " + GetOrderTradingTypeStr() +
-        ", UpdateTime: " + GetUpdateTimeStr() +
-		", FutureLeverageRatio: " + GetFutureLeverageRatioStr() +
-        ")";
+    if (m_orderTradingType == BinanceNewOrderTradingType::SPOT)
+    {
+        return "BinanceNewOrder("
+            "Symbol: " + m_symbol +
+            ", UserAccountID: " + m_userAccountID +
+            ", Side: " + TypeToStringUtils::ToString(m_side) +
+            ", Type: " + TypeToStringUtils::ToString(m_type) +
+            ", TimeInForce: " + TypeToStringUtils::ToString(m_timeInForce) +
+            ", Amount: " + GetAmountStr() +
+            ", LimitPrice: " + GetPriceStr() +
+            ", ClientOrderId: " + m_clientOrderId +
+            ", StopPrice: " + GetStopPriceStr() +
+            ", IcebergAmount: " + GetIcebergAmountStr() +
+            ", OrderStatus: " + GetOrderStatusStr() +
+            ", TradingType: " + GetOrderTradingTypeStr() +
+            ", UpdateTime: " + GetUpdateTimeStr() +
+            ", StableCurrency: " + m_stableCurrency +
+            ")";
+    }
+	else if (m_orderTradingType == BinanceNewOrderTradingType::FUTURE)
+    {
+        return "BinanceNewOrder("
+            "Symbol: " + m_symbol +
+            ", UserAccountID: " + m_userAccountID +
+            ", Side: " + TypeToStringUtils::ToString(m_side) +
+            ", Type: " + TypeToStringUtils::ToString(m_type) +
+            ", TimeInForce: " + TypeToStringUtils::ToString(m_timeInForce) +
+            ", Amount: " + GetAmountStr() +
+            ", LimitPrice: " + GetPriceStr() +
+            ", ClientOrderId: " + m_clientOrderId +
+            ", StopPrice: " + GetStopPriceStr() +
+            ", IcebergAmount: " + GetIcebergAmountStr() +
+            ", OrderStatus: " + GetOrderStatusStr() +
+            ", TradingType: " + GetOrderTradingTypeStr() +
+            ", UpdateTime: " + GetUpdateTimeStr() +
+            ", FutureLeverageRatio: " + GetFutureLeverageRatioStr() +
+            ", StableCurrency: " + m_stableCurrency +
+            ")";
+    }
+    else
+    {
+        return "BinanceNewOrder(UNDEF)";
+    }
 }
 
 std::string BinanceNewOrder::ToStringAck() const
 {
-    return "BinanceNewOrderAck("
-        "Symbol: " + m_symbol +
-        ", UserAccountID: " + m_userAccountID +
-        ", Side: " + TypeToStringUtils::ToString(m_side) +
-        ", Type: " + TypeToStringUtils::ToString(m_type) +
-        ", TimeInForce: " + TypeToStringUtils::ToString(m_timeInForce) +
-        ", Amount: " + GetAmountStr() +
-        ", LimitPrice: " + GetPriceStr() +
-        ", ClientOrderId: " + m_clientOrderId +
-        ", StopPrice: " + GetStopPriceStr() +
-        ", IcebergAmount: " + GetIcebergAmountStr() +
-        ", OrderStatus: " + GetOrderStatusStr() +
-        ", TradingType: " + GetOrderTradingTypeStr() +
-		", FutureLeverageRatio: " + GetFutureLeverageRatioStr() +
-        ", FilledAmount: " + GetFilledAmountStr() +
-        ", FilledPrice: " + GetFilledPriceStr() +
-        ", RemainingAmount: " + GetOrigQuoteOrderQuantityStr() +
-        ", OrigQuoteOrderQuantity: " + GetOrigQuoteOrderQuantityStr() +
-        ", CummulativeQuoteQty: " + GetCumulativeQuoteQuantityStr() +
-        ", UpdateTime: " + GetUpdateTimeStr() +
-        ")";
+    if (m_orderTradingType == BinanceNewOrderTradingType::SPOT)
+    {
+        return "BinanceNewOrderAck("
+            "Symbol: " + m_symbol +
+            ", UserAccountID: " + m_userAccountID +
+            ", Side: " + TypeToStringUtils::ToString(m_side) +
+            ", Type: " + TypeToStringUtils::ToString(m_type) +
+            ", TimeInForce: " + TypeToStringUtils::ToString(m_timeInForce) +
+            ", Amount: " + GetAmountStr() +
+            ", LimitPrice: " + GetPriceStr() +
+            ", ClientOrderId: " + m_clientOrderId +
+            ", StopPrice: " + GetStopPriceStr() +
+            ", IcebergAmount: " + GetIcebergAmountStr() +
+            ", OrderStatus: " + GetOrderStatusStr() +
+            ", TradingType: " + GetOrderTradingTypeStr() +
+            ", FilledAmount: " + GetFilledAmountStr() +
+            ", FilledPrice: " + GetFilledPriceStr() +
+            ", RemainingAmount: " + GetOrigQuoteOrderQuantityStr() +
+            ", OrigQuoteOrderQuantity: " + GetOrigQuoteOrderQuantityStr() +
+            ", CummulativeQuoteQty: " + GetCumulativeQuoteQuantityStr() +
+            ", StableCurrency: " + m_stableCurrency +
+            ", UpdateTime: " + GetUpdateTimeStr() +
+            ")";
+    }
+    else if (m_orderTradingType == BinanceNewOrderTradingType::FUTURE)
+    {
+        return "BinanceNewOrderAck("
+            "Symbol: " + m_symbol +
+            ", UserAccountID: " + m_userAccountID +
+            ", Side: " + TypeToStringUtils::ToString(m_side) +
+            ", Type: " + TypeToStringUtils::ToString(m_type) +
+            ", TimeInForce: " + TypeToStringUtils::ToString(m_timeInForce) +
+            ", Amount: " + GetAmountStr() +
+            ", LimitPrice: " + GetPriceStr() +
+            ", ClientOrderId: " + m_clientOrderId +
+            ", StopPrice: " + GetStopPriceStr() +
+            ", IcebergAmount: " + GetIcebergAmountStr() +
+            ", OrderStatus: " + GetOrderStatusStr() +
+            ", TradingType: " + GetOrderTradingTypeStr() +
+            ", FutureLeverageRatio: " + GetFutureLeverageRatioStr() +
+            ", FilledAmount: " + GetFilledAmountStr() +
+            ", FilledPrice: " + GetFilledPriceStr() +
+            ", RemainingAmount: " + GetOrigQuoteOrderQuantityStr() +
+            ", OrigQuoteOrderQuantity: " + GetOrigQuoteOrderQuantityStr() +
+            ", CummulativeQuoteQty: " + GetCumulativeQuoteQuantityStr() +
+            ", StableCurrency: " + m_stableCurrency +
+            ", FutureInitialMarginPrice: " + GetFutureInitialMarginPriceStr() +
+            ", FutureMaintainingMarginPrice: " + GetFutureMaintainingMarginPriceStr() +
+            ", FutureLiquidationPrice: " + GetFutureLiquidationPriceStr() +
+            ", UpdateTime: " + GetUpdateTimeStr() +
+            ")";
+    }
+    else
+    {
+        return "BinanceNewOrderAck(UNDEF)";
+    }
 }
 
 BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrder() const
@@ -127,8 +193,12 @@ BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrder() const
     message.AddPair(FieldLabels::IcebergAmount, GetIcebergAmountStr());
     message.AddPair(FieldLabels::OrderStatus, GetOrderStatusStr());
     message.AddPair(FieldLabels::TradingType, GetOrderTradingTypeStr());
-	message.AddPair(FieldLabels::LeverageRatio, GetFutureLeverageRatioStr());
+	message.AddPair(FieldLabels::StableCurrency, m_stableCurrency);
     message.AddPair(FieldLabels::UpdateTime, GetUpdateTimeStr());
+    if (m_orderTradingType == BinanceNewOrderTradingType::FUTURE)
+    {
+        message.AddPair(FieldLabels::FutureLeverageRatio, GetFutureLeverageRatioStr());
+    }
     return message;
 }
 
@@ -148,13 +218,20 @@ BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrderAck() const
     message.AddPair(FieldLabels::IcebergAmount, GetIcebergAmountStr());
     message.AddPair(FieldLabels::OrderStatus, GetOrderStatusStr());
 	message.AddPair(FieldLabels::TradingType, GetOrderTradingTypeStr());
-	message.AddPair(FieldLabels::LeverageRatio, GetFutureLeverageRatioStr());
     message.AddPair(FieldLabels::FilledAmount, GetFilledAmountStr());
     message.AddPair(FieldLabels::FilledPrice, GetFilledPriceStr());
     message.AddPair(FieldLabels::RemainingAmount, GetRemainingAmountStr());
     message.AddPair(FieldLabels::OrigQuoteOrderQuantity, GetOrigQuoteOrderQuantityStr());
     message.AddPair(FieldLabels::CummulativeQuoteQty, GetCumulativeQuoteQuantityStr());
+	message.AddPair(FieldLabels::StableCurrency, m_stableCurrency);
     message.AddPair(FieldLabels::UpdateTime, GetUpdateTimeStr());
+	if (m_orderTradingType == BinanceNewOrderTradingType::FUTURE)
+	{
+		message.AddPair(FieldLabels::FutureLeverageRatio, GetFutureLeverageRatioStr());
+		message.AddPair(FieldLabels::FutureInitialMarginPrice, GetFutureInitialMarginPriceStr());
+		message.AddPair(FieldLabels::FutureMaintainingMarginPrice, GetFutureMaintainingMarginPriceStr());
+		message.AddPair(FieldLabels::FutureLiquidationPrice, GetFutureLiquidationPriceStr());
+	}
     return message;
 }
 

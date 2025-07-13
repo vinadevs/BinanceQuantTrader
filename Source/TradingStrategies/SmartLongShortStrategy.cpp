@@ -58,10 +58,15 @@ bool SmartLongShortStrategy::OnIndividualBookTickerChange(MarketDataSubject* mar
 		futureOrder.m_type = binapi::e_type::market; // default to market order
 		futureOrder.m_time = binapi::e_time::GTC;// default to GTC
 		futureOrder.m_amount = 0.01; // default to 0.01 BTC
-		futureOrder.m_price = syncedData->m_individualBookTickerData.m_bestAskPrice->GetDoubleData(); // use best ask price as market price
+		futureOrder.m_price = syncedData->m_individualBookTickerData.m_bestBidPrice->GetDoubleData(); // use best ask price as market price
 		futureOrder.m_tradeType = OrderManagement::BinanceNewOrderTradingType::FUTURE; // set to future trading type
+		futureOrder.m_stableCurrency = "USDT"; // default stable currency is USDT
+
 		// Set leverage ratio
 		futureOrder.m_leverageRatio = 10; // default leverage ratio is x10
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // simulate some delay
+
 		if (m_futureTrader->CreateNewPosition(futureOrder))
 		{
 			if (futureOrder.m_side == binapi::e_side::buy)

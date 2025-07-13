@@ -244,10 +244,22 @@ void FutureTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage
 		const auto updateTime = message.GetIntValueByTag(FieldLabels::UpdateTime);
 		const auto orderStatus = BinanceNewOrder::GetOrderStatusEnum(
 			message.GetStringValueByTag(FieldLabels::OrderStatus));
-		m_positionManager->UpdateNewOrderExecutionStatus(
+		auto* ackOrder = m_positionManager->UpdateNewOrderExecutionStatus(
 			clientOrderId, symbol, filledAmount, filledPrice, remainingAmount, updateTime, orderStatus);
-		// Updates the portfolio manager’s account information.
-		m_portfolio->UpdateBinanceAccountInfo();
+		if (ackOrder->GetOrderStatus() == BinanceNewOrderStatus::LIQUIDATED)
+		{
+			m_logger->Info("Received liquidated order ack for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+		}
+		else if (ackOrder->GetOrderStatus() == BinanceNewOrderStatus::MARGIN_CALL)
+		{
+			m_logger->Info("Received margin call order ack for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+		}
+		else if (ackOrder->GetOrderStatus() == BinanceNewOrderStatus::REJECTED)
+		{
+			m_logger->Info("Received rejected order ack for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+		}
+		// Updates the portfolio manager’s future account information.
+		m_portfolio->UpdateBinanceFutureAccountInfo();
 	}
 	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::CancelOrderAck ||
 		simulatorAckType == FieldLabels::DownstreamAckTypes::CancelledOrderAck)
