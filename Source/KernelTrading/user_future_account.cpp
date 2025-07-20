@@ -60,30 +60,6 @@ void UserFutureAccount::FromJson(const nlohmann::json& j) {
             m_assets.push_back(asset);
         }
     }
-
-    // Parse position details
-    m_positions.clear();
-    if (j.contains("positions")) {
-        for (const auto& p : j["positions"]) {
-            PositionInfo pos;
-            pos.symbol = p.value("symbol", "");
-            pos.initialMargin = ParseDouble(p, "initialMargin");
-            pos.maintMargin = ParseDouble(p, "maintMargin");
-            pos.unrealizedProfit = ParseDouble(p, "unrealizedProfit");
-            pos.positionInitialMargin = ParseDouble(p, "positionInitialMargin");
-            pos.openOrderInitialMargin = ParseDouble(p, "openOrderInitialMargin");
-            pos.leverage = ParseDouble(p, "leverage");
-            pos.isolated = p.value("isolated", false);
-            pos.entryPrice = ParseDouble(p, "entryPrice");
-            pos.maxNotional = ParseDouble(p, "maxNotional");
-            pos.positionSide = p.value("positionSide", "");
-            pos.positionAmt = ParseDouble(p, "positionAmt");
-            pos.notional = ParseDouble(p, "notional");
-            pos.isolatedWallet = ParseDouble(p, "isolatedWallet");
-            pos.updateTime = p.value("updateTime", 0);
-            m_positions.push_back(pos);
-        }
-    }
 }
 
 const AssetInfo* UserFutureAccount::LookupFutureAssetInfo(const std::string& currency) const {
@@ -93,6 +69,16 @@ const AssetInfo* UserFutureAccount::LookupFutureAssetInfo(const std::string& cur
         }
     }
     return nullptr; // Not found
+}
+
+const PositionInfo* UserFutureAccount::LookupFuturePositionInfo(const std::string& symbol) const
+{
+	for (const auto& position : m_positions) {
+		if (position.symbol == symbol) {
+			return &position;
+		}
+	}
+	return nullptr; // Not found
 }
 
 bool UserFutureAccount::IsAccountHavingSufficientCashBalance(
@@ -106,17 +92,11 @@ bool UserFutureAccount::IsAccountHavingSufficientCashBalance(
 	return false; // Asset not found
 }
 
-void UserFutureAccount::UpdateBalanceCash(const std::string& currency, const double pnl, const BalanceChangeEvent event)
+void UserFutureAccount::UpdateAssetBalanceCash(const std::string& currency, const double pnl, const BalanceChangeEvent event)
 {
 	auto* assetInfo = const_cast<AssetInfo*>(LookupFutureAssetInfo(currency));
 	if (assetInfo) {
 		switch (event) {
-		case BalanceChangeEvent::PROFIT:
-			assetInfo->availableBalance += pnl;
-			break;
-		case BalanceChangeEvent::LOSS:
-			assetInfo->availableBalance -= pnl;
-			break;
 		case BalanceChangeEvent::DEPOSIT:
 			assetInfo->availableBalance += pnl; // pnl is the deposit amount
 			break;
@@ -125,4 +105,71 @@ void UserFutureAccount::UpdateBalanceCash(const std::string& currency, const dou
 			break;
 		}
 	}
+}
+
+void UserFutureAccount::UpdatePositionCash(
+    const std::string& symbol, const double pnl, const BalanceChangeEvent event)
+{
+	auto it = std::find_if(m_positions.begin(), m_positions.end(),
+		[&symbol](const PositionInfo& p) { return p.symbol == symbol; });
+	if (it != m_positions.end()) {
+		switch (event) {
+        case BalanceChangeEvent::PROFIT: {
+            it->unrealizedProfit += pnl;
+        }
+			break;
+		case BalanceChangeEvent::LOSS:
+			it->unrealizedProfit -= pnl;
+			it->initialMargin -= pnl; // Adjust initial margin if needed
+			break;
+		}
+	}
+}
+
+void UserFutureAccount::RealizedPNLPositions(const std::string& currency)
+{
+    auto* assetInfo = const_cast<AssetInfo*>(LookupFutureAssetInfo(currency));
+    if (assetInfo) {
+		for (auto& position : m_positions) {
+			// Realize the profit/loss for each position
+			if (position.unrealizedProfit > 0.0) {
+				assetInfo->availableBalance += position.unrealizedProfit; // Update available balance
+			}
+		}
+    }
+}
+
+void UserFutureAccount::RealizedPNLPosition(const std::string& currency, const std::string& symbol)
+{
+	const auto it = std::find_if(m_positions.begin(), m_positions.end(),
+		[&symbol](const PositionInfo& p) { return p.symbol == symbol; });
+	if (it != m_positions.end()) {
+		auto* assetInfo = const_cast<AssetInfo*>(LookupFutureAssetInfo(currency));
+		if (assetInfo) {
+			// Realize the profit/loss for the specific position
+			if (it->unrealizedProfit > 0.0) {
+				assetInfo->availableBalance += it->unrealizedProfit; // Update available balance
+			}
+		}
+	}
+}
+
+bool UserFutureAccount::RemoteAsset(const std::string& asset) {
+	const auto it = std::remove_if(m_assets.begin(), m_assets.end(),
+		[&asset](const AssetInfo& a) { return a.asset == asset; });
+	if (it != m_assets.end()) {
+		m_assets.erase(it, m_assets.end());
+		return true; // Successfully removed
+	}
+	return false; // Asset not found
+}
+
+bool UserFutureAccount::RemotePosition(const std::string& symbol) {
+    const auto it = std::remove_if(m_positions.begin(), m_positions.end(),
+		[&symbol](const PositionInfo& p) { return p.symbol == symbol; });
+	if (it != m_positions.end()) {
+		m_positions.erase(it, m_positions.end());
+		return true; // Successfully removed
+	}
+	return false; // Position not found
 }

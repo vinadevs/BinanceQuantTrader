@@ -65,7 +65,7 @@ bool SmartLongShortStrategy::OnIndividualBookTickerChange(MarketDataSubject* mar
 		// Set leverage ratio
 		futureOrder.m_leverageRatio = 10; // default leverage ratio is x10
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // simulate some delay
+		std::this_thread::sleep_for(std::chrono::milliseconds(5000)); // simulate some delay
 
 		if (m_futureTrader->CreateNewPosition(futureOrder))
 		{

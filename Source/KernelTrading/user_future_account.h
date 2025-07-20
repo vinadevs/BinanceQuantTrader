@@ -200,10 +200,14 @@ namespace KernelTrading {
 		}
 
         const AssetInfo* LookupFutureAssetInfo(const std::string& currency) const;
+		const PositionInfo* LookupFuturePositionInfo(const std::string& symbol) const;
 
 		bool IsAccountHavingSufficientCashBalance(const std::string& currency, const double requiredMarginCash) const;
 
-		void UpdateBalanceCash(const std::string& currency, const double pnl, const BalanceChangeEvent event);
+		void UpdateAssetBalanceCash(const std::string& currency, const double pnl, const BalanceChangeEvent event);
+		void UpdatePositionCash(const std::string& symbol, const double pnl, const BalanceChangeEvent event);
+		void RealizedPNLPositions(const std::string& currency);
+        void RealizedPNLPosition(const std::string& currency, const std::string& symbol);
 
         // Setters for account-level basic flags and tier
         void SetFeeTier(int feeTier) { m_feeTier = feeTier; }
@@ -228,8 +232,12 @@ namespace KernelTrading {
         // Setters for detailed lists
         void SetAssets(const std::vector<AssetInfo>& assets) { m_assets = assets; }
         void SetPositions(const std::vector<PositionInfo>& positions) { m_positions = positions; }
-		void ClearAssets() { m_assets.clear(); }
+		void AddAsset(const AssetInfo& asset) { m_assets.emplace_back(asset); }
+		void AddPosition(const PositionInfo& position) { m_positions.emplace_back(position); }
+        void ClearAssets() { m_assets.clear(); }
 		void ClearPositions() { m_positions.clear(); }
+        bool RemoteAsset(const std::string& asset);
+		bool RemotePosition(const std::string& symbol);
 
         // Accessor functions for main account info
         int GetFeeTier() const { return m_feeTier; }

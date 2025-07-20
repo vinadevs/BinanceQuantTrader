@@ -69,9 +69,9 @@ namespace ExchangeSimulator {
 
 		void RemoveFutureUserAccount(const std::string& userId);
 
-        UserSpotAccount* LookupSpotUserAccount(const std::string& userId);
+        const UserSpotAccount* LookupSpotUserAccount(const std::string& userId);
 
-		KernelTrading::UserFutureAccount* LookupFutureUserAccount(const std::string& userId);
+		const KernelTrading::UserFutureAccount* LookupFutureUserAccount(const std::string& userId);
 
         UserSpotAccount* OpenEditSessionForSpotUserAccount(const std::string& userId);
 

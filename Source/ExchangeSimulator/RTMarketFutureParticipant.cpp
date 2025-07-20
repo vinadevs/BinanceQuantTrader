@@ -50,7 +50,7 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
     //---------------------------------------------------------------------------
     // 1. Sanity checks & fast failures
     //---------------------------------------------------------------------------
-    auto* userAccount = m_userAccountManager->LookupFutureUserAccount(order.GetUserAccountID());
+    const auto* userAccount = m_userAccountManager->LookupFutureUserAccount(order.GetUserAccountID());
     if (!userAccount)
     {
 		return HandleRejectedOrder("User account not found for order: ", order);
@@ -72,7 +72,6 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
     // 2. Pull immutable parameters
     //---------------------------------------------------------------------------
     const double entryPrice = order.GetPrice();
-    const double marketPrice = priceMgr->GetCurrentMarketPrice();
     const double contracts = order.GetAmount();
 
     const auto& tradeProfile = m_userTradeProfileManager->LookupUserTradeProfile(order.GetUserAccountID());
@@ -80,50 +79,83 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
 
     if (!Finance::IsLeverageRatioValid(leverage)) // defensive: avoid div‑by‑zero
     {
-		return HandleRejectedOrder("Invalid leverage ratio for order: ", order);
+        return HandleRejectedOrder("Invalid leverage ratio for order: ", order);
     }
 
-    //---------------------------------------------------------------------------
-    // 3. Risk constants
-    //---------------------------------------------------------------------------
-    const double notional = entryPrice * contracts;          // position value
-    // Calculate Exit Fee = Position Value × Free Rate
-    const double exitFee = notional * (ExchangeRuleMgr->GetFutureMakerCommission() + ExchangeRuleMgr->GetFutureTakerCommission());
-    // Calculate Entry Fee = Position Value × Free Rate
-    const double entryFee = notional * (ExchangeRuleMgr->GetFutureMakerCommission() + ExchangeRuleMgr->GetFutureTakerCommission());
-    // Calculate total fee = Entry Fee + Exit Fee
-    const double totalFee = entryFee + exitFee;
+	const auto* existedPosition = userAccount->LookupFuturePositionInfo(order.GetSymbol());
 
-    const auto& bracket = ExchangeRuleMgr
-        ->GetFutureLeverageBracketByNotional(order.GetSymbol(), notional);
-    const double maintMargin = bracket.m_MaintMarginRate * notional;
-    const double positionInitMargin = notional / leverage;
-    const double requiredMargin = notional / leverage;
+    double maintMargin = 0.0;
+	double positionMargin = 0.0;
 
-	order.SetFutureInitialMarginPrice(positionInitMargin);
-	order.SetFutureMaintainingMarginPrice(maintMargin);
-
-    //---------------------------------------------------------------------------
-    // 4. Pre‑trade checks (size & cash)
-    //---------------------------------------------------------------------------
-    if (notional > positionInitMargin * leverage)
+	// if there is no existing position, we will create a new one
+    if (!existedPosition)
     {
-		return HandleRejectedOrder("Notional value exceeds user initial margin * leverage for order: ", order);
+        //---------------------------------------------------------------------------
+        // 3. Risk constants
+        //---------------------------------------------------------------------------
+        const double notional = entryPrice * contracts;          // position value
+        // Calculate Exit Fee = Position Value × Free Rate
+        const double exitFee = notional * (ExchangeRuleMgr->GetFutureMakerCommission() + ExchangeRuleMgr->GetFutureTakerCommission());
+        // Calculate Entry Fee = Position Value × Free Rate
+        const double entryFee = notional * (ExchangeRuleMgr->GetFutureMakerCommission() + ExchangeRuleMgr->GetFutureTakerCommission());
+        // Calculate total fee = Entry Fee + Exit Fee
+        const double totalFee = entryFee + exitFee;
+
+        const auto& bracket = ExchangeRuleMgr
+            ->GetFutureLeverageBracketByNotional(order.GetSymbol(), notional);
+        // Calculate maintained margin, which is the minimum margin required to keep the position open
+        const double initialMaintMargin = bracket.m_InitialMarginRate * notional;
+        // Calculate required margin, which is the total margin required to open the position
+        const double positionInitMargin = notional / leverage;
+        // Calculate maximum position size based on the user's leverage and initial margin
+        const double maxPositionValue = positionInitMargin * leverage;
+
+        order.SetFutureInitialMarginPrice(positionInitMargin);
+        order.SetFutureMaintainingMarginPrice(initialMaintMargin);
+
+        //---------------------------------------------------------------------------
+        // 4. Pre‑trade checks (size & cash)
+        //---------------------------------------------------------------------------
+        if (!userAccount->IsAccountHavingSufficientCashBalance(order.GetStableCurrency(), positionInitMargin))
+        {
+            return HandleRejectedOrder("User account does not have sufficient cash balance for required margin for order: ", order);
+        }
+        else
+        {
+            auto* session = m_userAccountManager->OpenEditSessionForFutureUserAccount(
+                userAccount->GetUserAccountId());
+
+            // create new future position with the initial margin and other details
+            KernelTrading::PositionInfo newFuturePosition{ order.GetSymbol(), positionInitMargin, initialMaintMargin,
+                0.0, positionInitMargin, 0.0, leverage, order.GetIsolatedMargin(), entryPrice, notional, order.GetSideStr(),
+                contracts, maxPositionValue, 0.0, static_cast<int64_t>(TimeUtils::GetEpochTimeTickNow()) };
+            session->AddPosition(newFuturePosition);
+
+            // update asset balance cash after create new future position
+            session->UpdateAssetBalanceCash(order.GetStableCurrency(), positionInitMargin,
+                KernelTrading::BalanceChangeEvent::WITHDRAWAL);
+        }
+
+		maintMargin = initialMaintMargin; // Set maintenance margin for new position
+		positionMargin = positionInitMargin; // Set initial margin for new position
+    }
+    else // if the position already exists, we will use the existing position's margin values
+    {
+		maintMargin = existedPosition->maintMargin; // Use existing position's maintenance margin
+		positionMargin = existedPosition->positionInitialMargin; // Use existing position's initial margin
     }
 
-    if (!userAccount->IsAccountHavingSufficientCashBalance(order.GetStableCurrency(), requiredMargin))
-    {
-		return HandleRejectedOrder("User account does not have sufficient cash balance for required margin for order: ", order);
-    }
+    const double marketPrice = priceMgr->GetCurrentMarketPrice();
+	// we always use the current market price to fill the future order
+    order.SetFilledPrice(marketPrice);
 
     //---------------------------------------------------------------------------
     // 5. Liquidation price (sign‑aware)
     //---------------------------------------------------------------------------
     const bool   isLong = (order.GetSide() == binapi::e_side::buy);
-    const double bracketTerm = (positionInitMargin - maintMargin - totalFee) / notional;
     const double liqPrice = isLong
-        ? entryPrice * (1.0 - bracketTerm)
-        : entryPrice * (1.0 + bracketTerm);
+        ? entryPrice * (1.0 - 1.0 / leverage)
+        : entryPrice * (1.0 + 1.0 / leverage);
 
     //---------------------------------------------------------------------------
     // 6. PnL booking (mock matching)
@@ -141,20 +173,19 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
             ? KernelTrading::BalanceChangeEvent::PROFIT
             : KernelTrading::BalanceChangeEvent::LOSS;
 
-        session->UpdateBalanceCash(order.GetStableCurrency(), std::fabs(pnl), evt);
+        session->UpdatePositionCash(order.GetSymbol(), std::fabs(pnl), evt);
     }
 
     //---------------------------------------------------------------------------
     // 7. Margin‑call / liquidation checks
     //---------------------------------------------------------------------------
-    if ((isLong && marketPrice <= liqPrice) ||
-        (!isLong && marketPrice >= liqPrice))
+    if ((isLong && marketPrice <= (liqPrice + maintMargin)) ||
+        (!isLong && marketPrice >= (liqPrice - maintMargin)))
     {
         auto* session = m_userAccountManager->OpenEditSessionForFutureUserAccount(
             userAccount->GetUserAccountId());
 
-        session->UpdateBalanceCash(order.GetStableCurrency(), requiredMargin,
-            KernelTrading::BalanceChangeEvent::LOSS);
+		session->RemotePosition(order.GetSymbol()); // Remove liquidated position
 
         m_logger->Warning("Liquidation triggered for order: " + order.ToStringOrder());
 		// Update filled ack to upstream
@@ -163,7 +194,7 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
 		order.SetFutureLiquidationPrice(liqPrice);
 		order.SetOrderStatus(BinanceNewOrderStatus::LIQUIDATED);
     }
-    else if (positionInitMargin < maintMargin)
+    else if (positionMargin <= (maintMargin + maintMargin * 0.1))
     {
         m_logger->Warning("Margin call threshold reached for order: " + order.ToStringOrder());
 		order.SetOrderStatus(BinanceNewOrderStatus::MARGIN_CALL);
@@ -173,8 +204,9 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
     else
     {
         // No fill in this tick – keep the order on the book
+		order.SetOrderStatus(BinanceNewOrderStatus::PARTIAL_FILLED);
         order.SetRemainingAmount(contracts);
-		order.SetFilledAmount(0.0);
+		order.SetFilledAmount(contracts);
     }
 
     order.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());

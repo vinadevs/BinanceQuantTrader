@@ -108,6 +108,7 @@ std::string BinanceNewOrder::ToStringOrder() const
             ", TradingType: " + GetOrderTradingTypeStr() +
             ", UpdateTime: " + GetUpdateTimeStr() +
             ", FutureLeverageRatio: " + GetFutureLeverageRatioStr() +
+			", FutureIsolatedMargin: " + GetIsolatedMarginStr() +
             ", StableCurrency: " + m_stableCurrency +
             ")";
     }
@@ -168,6 +169,7 @@ std::string BinanceNewOrder::ToStringAck() const
             ", FutureInitialMarginPrice: " + GetFutureInitialMarginPriceStr() +
             ", FutureMaintainingMarginPrice: " + GetFutureMaintainingMarginPriceStr() +
             ", FutureLiquidationPrice: " + GetFutureLiquidationPriceStr() +
+			", FutureIsolatedMargin: " + GetIsolatedMarginStr() +
             ", UpdateTime: " + GetUpdateTimeStr() +
             ")";
     }
@@ -198,6 +200,7 @@ BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrder() const
     if (m_orderTradingType == BinanceNewOrderTradingType::FUTURE)
     {
         message.AddPair(FieldLabels::FutureLeverageRatio, GetFutureLeverageRatioStr());
+		message.AddPair(FieldLabels::FutureIsolatedMargin, GetIsolatedMarginStr());
     }
     return message;
 }
@@ -231,6 +234,7 @@ BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrderAck() const
 		message.AddPair(FieldLabels::FutureInitialMarginPrice, GetFutureInitialMarginPriceStr());
 		message.AddPair(FieldLabels::FutureMaintainingMarginPrice, GetFutureMaintainingMarginPriceStr());
 		message.AddPair(FieldLabels::FutureLiquidationPrice, GetFutureLiquidationPriceStr());
+		message.AddPair(FieldLabels::FutureIsolatedMargin, GetIsolatedMarginStr());
 	}
     return message;
 }
@@ -248,8 +252,8 @@ std::string BinanceNewOrder::GetOrderStatusStr() const
         return "NEW";
     case BinanceNewOrderStatus::WAITING_FOR_FILL:
         return "WAITING_FOR_FILL";
-    case BinanceNewOrderStatus::PRTIAL_FILLED:
-        return "PRTIAL_FILLED";
+    case BinanceNewOrderStatus::PARTIAL_FILLED:
+        return "PARTIAL_FILLED";
     case BinanceNewOrderStatus::FULL_FILLED:
         return "FULL_FILLED";
     default:
@@ -261,7 +265,7 @@ BinanceNewOrderStatus BinanceNewOrder::GetOrderStatusEnum(const std::string stat
 {
     if (status == "NEW") return BinanceNewOrderStatus::NEW;
     else if (status == "WAITING_FOR_FILL") return BinanceNewOrderStatus::WAITING_FOR_FILL;
-    else if (status == "PRTIAL_FILLED") return BinanceNewOrderStatus::PRTIAL_FILLED;
+    else if (status == "PARTIAL_FILLED") return BinanceNewOrderStatus::PARTIAL_FILLED;
     else if (status == "FULL_FILLED") return BinanceNewOrderStatus::FULL_FILLED;
     return BinanceNewOrderStatus::UNDEF;
 }

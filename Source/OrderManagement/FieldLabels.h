@@ -63,6 +63,7 @@ namespace OrderManagement {
 		const std::string FutureInitialMarginPrice = "FutureInitialMarginPrice"; // For futures trading
 		const std::string FutureMaintainingMarginPrice = "FutureMaintainingMarginPrice"; // For futures trading
 		const std::string FutureLiquidationPrice = "FutureLiquidationPrice"; // For futures trading
+		const std::string FutureIsolatedMargin = "FutureIsolatedMargin"; // For futures trading
 
 		// Simulator Ack
 		namespace SimulatorAck {

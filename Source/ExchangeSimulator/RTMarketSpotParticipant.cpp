@@ -142,7 +142,7 @@ bool RTMarketSpotParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& 
                     // 3. update filled ack
                     newUpstreamOrder.SetFilledAmount(bestExchangeBidOrder.m_quantity);
                     newUpstreamOrder.SetRemainingAmount(newUpstreamOrder.GetAmount() - bestExchangeBidOrder.m_quantity);
-                    newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::PRTIAL_FILLED);
+                    newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::PARTIAL_FILLED);
                 }
             }
             else // process for unfilled order
@@ -228,7 +228,7 @@ bool RTMarketSpotParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& 
                                 * ExchangeRuleMgr->GetMakerCommission() * ExchangeRuleMgr->GetTakerCommission()));
                     newUpstreamOrder.SetFilledAmount(bestExchangeAskOrder.m_quantity);
                     newUpstreamOrder.SetRemainingAmount(newUpstreamOrder.GetAmount() - bestExchangeAskOrder.m_quantity);
-                    newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::PRTIAL_FILLED);
+                    newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::PARTIAL_FILLED);
                 }
             }
             else // process for unfilled order

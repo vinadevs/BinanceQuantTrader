@@ -121,6 +121,19 @@ const CurlAPI::LeverageBracket& ExchangeRuleAndCompliance::GetFutureLeverageBrac
 	throw std::runtime_error("No leverage bracket found for symbol: " + symbol + " with notional: " + std::to_string(postitionNotional));
 }
 
+const CurlAPI::LeverageBracket& ExchangeRuleAndCompliance::GetFutureLeverageBracketByTier(
+    const std::string& symbol,
+    const double tier)
+{
+	const auto& marginRateInfo = GetFutureMarginRateInfo(symbol);
+	for (const auto& bracket : marginRateInfo.m_Brackets) {
+		if (bracket.m_Tier == tier) {
+			return bracket;
+		}
+	}
+	throw std::runtime_error("No leverage bracket found for symbol: " + symbol + " with tier: " + std::to_string(tier));
+}
+
 void ExchangeRuleAndCompliance::LoadLeverageBracketsFromFile(const std::string& filename)
 {
     std::ifstream file(filename);

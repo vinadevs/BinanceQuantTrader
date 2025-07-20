@@ -178,6 +178,9 @@ void MatchingEngine::ProcessIncommingOrders()
 		{
 			while (!m_upstreamOrderQueueMgr->HasNoOrders())
 			{
+				// delay to test the order processing, TODO: set it from config
+				std::this_thread::sleep_for(std::chrono::milliseconds(5000)); // simulate some delay
+
 				// -Dequeue order from waiting list, so the order is not in the queue anymore
 				// -We have to push it back to the end of the queue if it can not be filled by the matching engine
 				auto order = m_upstreamOrderQueueMgr->GetNextOrder();
@@ -428,7 +431,7 @@ void MatchingEngine::PostProcessingMatchedNewOrder(BinanceNewOrder& order)
 		UpstreamGateWay->SendDownstreamOrderAck(ack);
 	}
 	// If the order is not fully matched, insert the order into back of the order book to continue fill it later.
-	else if (order.GetOrderStatus() == BinanceNewOrderStatus::PRTIAL_FILLED)
+	else if (order.GetOrderStatus() == BinanceNewOrderStatus::PARTIAL_FILLED)
 	{
 		m_logger->Info("Partial filled order info: " + order.ToStringAck());
 		m_upstreamOrderQueueMgr->PushOrderToQueue(clientOrderId, order); // move to back of the queue

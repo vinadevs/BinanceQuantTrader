@@ -85,7 +85,7 @@ bool FutureTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammet
 	if (param.m_side == binapi::e_side::buy)
 	{
 		if (m_binanceAccountInfo->CanTrade() &&
-			m_binanceAccountInfo->GetTotalWalletBalance()
+			m_binanceAccountInfo->LookupFutureAssetInfo(param.m_stableCurrency)->availableBalance
 			> CalculateTradeValue(param.m_amount, param.m_price))
 		{
 			auto newSingleFutureLongOrder = m_positionManager->OpenNewFuturePositionUpstreamOrder(param);

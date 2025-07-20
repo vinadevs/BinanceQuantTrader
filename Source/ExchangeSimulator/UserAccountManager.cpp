@@ -149,7 +149,7 @@ void UserAccountManager::RemoveFutureUserAccount(const std::string& userId)
 	}
 }
 
-UserSpotAccount* UserAccountManager::LookupSpotUserAccount(const std::string& userId)
+const UserSpotAccount* UserAccountManager::LookupSpotUserAccount(const std::string& userId)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     const auto it = m_spotAccounts.find(userId);
@@ -160,7 +160,7 @@ UserSpotAccount* UserAccountManager::LookupSpotUserAccount(const std::string& us
     throw std::runtime_error("No UserSpotAccount found with userId '" + userId + "'.");
 }
 
-KernelTrading::UserFutureAccount* UserAccountManager::LookupFutureUserAccount(const std::string& userId)
+const KernelTrading::UserFutureAccount* UserAccountManager::LookupFutureUserAccount(const std::string& userId)
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
 	auto it = m_futureAccounts.find(userId);
