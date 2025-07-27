@@ -19,7 +19,8 @@ namespace ExchangeSimulator {
     public:
         HistoricalParticipant(UserAccountManager* userAccountManager);
         ~HistoricalParticipant() override;
-        bool TryToMatchOrder(OrderManagement::BinanceNewOrder& ack) override { return false; }
+        bool TryToMatchOrder(OrderManagement::BinanceNewOrder& order) override { return false; }
+        void HandleUserBalanceAfterCancelOrder(const OrderManagement::BinanceNewOrder& order) override {}
     private:
 
     };

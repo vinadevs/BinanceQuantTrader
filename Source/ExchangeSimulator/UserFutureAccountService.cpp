@@ -13,6 +13,7 @@
 #include "ExchangeRuleAndCompliance.h"
 
 #include "../LibraryUtils/Logger.h"
+#include "../LibraryUtils/TimeUtils.h"
 
 using namespace ExchangeSimulator;
 
@@ -39,7 +40,7 @@ grpc::Status UserFutureAccountService::GetUserFutureAccount(
     account->set_cantrade(userFutureAccount->CanTrade());
     account->set_candeposit(userFutureAccount->CanDeposit());
     account->set_canwithdraw(userFutureAccount->CanWithdraw());
-    account->set_updatetime(userFutureAccount->GetUpdateTime());
+    account->set_updatetime(static_cast<int64_t>(TimeUtils::GetEpochTimeTickNow()));
 
     account->set_totalinitialmargin(userFutureAccount->GetTotalInitialMargin());
     account->set_totalmaintmargin(userFutureAccount->GetTotalMaintMargin());

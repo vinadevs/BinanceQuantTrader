@@ -274,4 +274,5 @@ void TradingModel::RunModel()
 		// Start receive real time market data and analyze to find trading opportunity signals
 		m_marketData->StartStreamingData();  // this is a child thread
 	}
+	// Should not reach here, because the model is running in a trading loop
 }

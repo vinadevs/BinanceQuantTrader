@@ -57,17 +57,18 @@ bool SmartLongShortStrategy::OnIndividualBookTickerChange(MarketDataSubject* mar
 		futureOrder.m_side = binapi::e_side::buy; // default to buy/long
 		futureOrder.m_type = binapi::e_type::market; // default to market order
 		futureOrder.m_time = binapi::e_time::GTC;// default to GTC
-		futureOrder.m_amount = 0.01; // default to 0.01 BTC
+		futureOrder.m_amount = 1; // default to 1 coin
 		futureOrder.m_price = syncedData->m_individualBookTickerData.m_bestBidPrice->GetDoubleData(); // use best ask price as market price
 		futureOrder.m_tradeType = OrderManagement::BinanceNewOrderTradingType::FUTURE; // set to future trading type
 		futureOrder.m_stableCurrency = "USDT"; // default stable currency is USDT
 
 		// Set leverage ratio
-		futureOrder.m_leverageRatio = 10; // default leverage ratio is x10
+		futureOrder.m_leverageRatio = 50; // default leverage ratio is x50
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(5000)); // simulate some delay
+		//std::this_thread::sleep_for(std::chrono::milliseconds(5000)); // simulate some delay
 
-		if (m_futureTrader->CreateNewPosition(futureOrder))
+		const auto newFutureOrder = m_futureTrader->CreateNewPosition(futureOrder);
+		if (newFutureOrder.first)
 		{
 			if (futureOrder.m_side == binapi::e_side::buy)
 			{
@@ -80,6 +81,18 @@ bool SmartLongShortStrategy::OnIndividualBookTickerChange(MarketDataSubject* mar
 			IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
 			ReportTradeResults(symbol);
 			IncreaseComplianceRestAPIRequestCounter(2); // register a sent http request to ComplianceNRegulatory
+
+			// test cancel order
+			//const auto newFutureCancelOrder = m_futureTrader->CancelOpenPosition(newFutureOrder.second);
+			//if (newFutureCancelOrder.first)
+			//{
+			//	m_logger->Info("Canceled the open position for symbol=" + symbol);
+			//}
+			//else
+			//{
+			//	m_logger->Error("Failed to cancel the open position for symbol=" + symbol);
+			//}
+			//IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
 		}
 		return true;
 	}
@@ -88,6 +101,11 @@ bool SmartLongShortStrategy::OnIndividualBookTickerChange(MarketDataSubject* mar
 		m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
 	}
 	return false;
+}
+
+void SmartLongShortStrategy::ReportTradeResults(const std::string& symbol)
+{
+	m_futureTrader->ReportTradeResults(symbol);
 }
 
 void SmartLongShortStrategy::InitializeParameters(const std::string& strategyCfgPath)

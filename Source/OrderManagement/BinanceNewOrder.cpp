@@ -182,8 +182,8 @@ std::string BinanceNewOrder::ToStringAck() const
 BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrder() const
 {
     BqtJsonMessage message;
-    message.AddPair(FieldLabels::UserAccountID, m_userAccountID);
     message.AddPair(FieldLabels::MessageType, "BinanceNewOrder");
+    message.AddPair(FieldLabels::UserAccountID, m_userAccountID);
     message.AddPair(FieldLabels::Symbol, m_symbol);
     message.AddPair(FieldLabels::Side, TypeToStringUtils::ToString(m_side));
     message.AddPair(FieldLabels::Type, TypeToStringUtils::ToString(m_type));
@@ -208,8 +208,8 @@ BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrder() const
 BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrderAck() const
 {
     BqtJsonMessage message;
-    message.AddPair(FieldLabels::UserAccountID, m_userAccountID);
     message.AddPair(FieldLabels::MessageType, "BinanceNewOrderAck");
+    message.AddPair(FieldLabels::UserAccountID, m_userAccountID);
     message.AddPair(FieldLabels::Symbol, m_symbol);
     message.AddPair(FieldLabels::Side, TypeToStringUtils::ToString(m_side));
     message.AddPair(FieldLabels::Type, TypeToStringUtils::ToString(m_type));
@@ -230,11 +230,11 @@ BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrderAck() const
     message.AddPair(FieldLabels::UpdateTime, GetUpdateTimeStr());
 	if (m_orderTradingType == BinanceNewOrderTradingType::FUTURE)
 	{
-		message.AddPair(FieldLabels::FutureLeverageRatio, GetFutureLeverageRatioStr());
+	/*	message.AddPair(FieldLabels::FutureLeverageRatio, GetFutureLeverageRatioStr());
 		message.AddPair(FieldLabels::FutureInitialMarginPrice, GetFutureInitialMarginPriceStr());
 		message.AddPair(FieldLabels::FutureMaintainingMarginPrice, GetFutureMaintainingMarginPriceStr());
 		message.AddPair(FieldLabels::FutureLiquidationPrice, GetFutureLiquidationPriceStr());
-		message.AddPair(FieldLabels::FutureIsolatedMargin, GetIsolatedMarginStr());
+		message.AddPair(FieldLabels::FutureIsolatedMargin, GetIsolatedMarginStr());*/
 	}
     return message;
 }

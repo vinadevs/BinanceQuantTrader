@@ -106,7 +106,7 @@ namespace ExchangeSimulator {
         void PostProcessingMatchedCancelOrder(OrderManagement::BinanceCancelOrder& order);
         void PostProcessingMatchedReplaceOrder(OrderManagement::BinanceReplaceOrder& order);
         void PostProcessingMatchedQueryOrder(OrderManagement::BinanceQueryOrder& order);
-
+        
         OrderManagement::BinanceNewOrder ConstructUpstreamNewOrder(
             const MiddlewareMQ::BqtJsonMessage& message);
         OrderManagement::BinanceCancelOrder ConstructUpstreamCancelOrder(

@@ -150,7 +150,7 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 				const auto orderList = m_orderParammeterGenerator->GenerateFomoOrders(hints);
 				for (const auto& order : orderList)
 				{
-					if (m_spotTrader->CreateNewPosition(order))
+					if (m_spotTrader->CreateNewPosition(order).first)
 					{
 						if (order.m_side == binapi::e_side::buy)
 						{

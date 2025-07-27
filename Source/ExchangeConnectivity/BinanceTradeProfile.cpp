@@ -37,7 +37,7 @@ bool BinanceTradeProfile::UpdateUserTradeProfileData(
     const double leverageRate,
     std::string& resultMessage)
 {
-    m_logger->Info("Sending request account_info_t data for user account id=" + userId);
+    m_logger->Info("Sending request UserTradeProfile data for user account id=" + userId);
 
     usertradeprofile::UpdateUserTradeProfileRequest request;
     request.set_user_account_id(userId);

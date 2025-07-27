@@ -80,7 +80,7 @@ double BinanceTrader::CalculateTradeValue(
 	return quality * refPrice;
 }
 
-bool BinanceTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammeter& param)
+WorkedOrderIdentification BinanceTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammeter& param)
 {
 	if (param.m_side == binapi::e_side::buy)
 	{
@@ -112,12 +112,12 @@ bool BinanceTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParamme
 			{
 				m_positionManager->AddUnworkedOrder(clientOrderId, std::move(newSingleLongOrder));
 			}
-			return isSendingOrderSucceeded;
+			return { isSendingOrderSucceeded, clientOrderId };
 		}
 		else
 		{
 			m_logger->Warning("User spot account has no stable coin available, could not create long (buy) position for=" + param.m_symbol);
-			return false;
+			return { false , "" };
 		}
 	}
 	else if (param.m_side == binapi::e_side::sell)
@@ -144,15 +144,15 @@ bool BinanceTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParamme
 			{
 				m_positionManager->AddUnworkedOrder(clientOrderId, std::move(newSingleShortOrder));
 			}
-			return isSendingOrderSucceeded;
+			return { isSendingOrderSucceeded, clientOrderId };
 		}
 		else
 		{
 			m_logger->Warning("User spot account has no asset available, could not create short (sell) position for=" + param.m_symbol);
-			return false;
+			return { false , "" };
 		}
 	}
-	return false;
+	return { false , "" };
 }
 
 bool BinanceTrader::CancelAllOpenPositions(const std::string& symbol)
@@ -189,6 +189,48 @@ bool BinanceTrader::CancelAllOpenPositions(const std::string& symbol)
 		return false;
 	}
 	return true;
+}
+
+WorkedOrderIdentification BinanceTrader::CancelOpenPosition(const std::string& clientOrderId)
+{
+	const auto workedOrderManager = m_positionManager->GetWorkedOrderManager();
+	if (workedOrderManager)
+	{
+		auto* order = workedOrderManager->LookupOrder(clientOrderId);
+		if (order)
+		{
+			auto newCancelOrder = m_positionManager->CancelPositionUpstreamOrder(order);
+#if USE_BACK_TEST_TRADING
+			const auto result = ExchangeSimulatorGateWay->SendCancelSimulatorOrder(newCancelOrder.get());
+#else
+			const auto result = BinanceExchangeGateWay->SendCancelBinanceOrder(newCancelOrder.get());
+#endif
+			newCancelOrder->SetSendingOrderResult(result);
+			const auto isSendingOrderSucceeded = static_cast<bool>(result);
+			const auto cancelClientOrderId = newCancelOrder->GetClientOrderId();
+			if (isSendingOrderSucceeded)
+			{
+				newCancelOrder->SetOrderStatus(BinanceCancelOrderStatus::WAITING_FOR_CANCEL);
+				m_positionManager->AddNewCancelOrder(cancelClientOrderId, std::move(newCancelOrder));
+				m_positionManager->CloseOpenedPositionUpstreamOrder(cancelClientOrderId);
+			}
+			else
+			{
+				m_positionManager->AddUnworkedCancelOrder(cancelClientOrderId, std::move(newCancelOrder));
+			}
+			return { isSendingOrderSucceeded, cancelClientOrderId };
+		}
+		else
+		{
+			m_logger->Warning("No open position found for client order ID: " + clientOrderId);
+			return { false , "" };
+		}
+	}
+	else
+	{
+		m_logger->Warning("No open positions available to cancel.");
+		return { false , "" };
+	}
 }
 
 void BinanceTrader::UpdateAccountInfo()

@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <fstream>
+
 #include <nlohmann/json.hpp>
 
 // SAMPLING OF FUTURE ACCOUNT INFO RESPONSE FROM BINANCE API
@@ -270,6 +272,7 @@ namespace KernelTrading {
         // Parses the Binance JSON response into this class
         void FromJson(const nlohmann::json& j);
 
+        static void write_account_info_to_file(std::ofstream& fileStream, const UserFutureAccount& o);
     private:
 		// Reads user configuration from a file
         void ReadUserConfig(const std::string& userConfigPath) {}

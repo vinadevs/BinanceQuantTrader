@@ -50,9 +50,11 @@ namespace UserAccount {
 
 		////////////// UPSTREAM PROCESSING /////////////////////////////
 
-		bool CreateNewPosition(const QuantitativeModel::QuantOrderParammeter& param) override;
+		WorkedOrderIdentification CreateNewPosition(const QuantitativeModel::QuantOrderParammeter& param) override;
 
 		bool CancelAllOpenPositions(const std::string& symbol) override;
+
+		WorkedOrderIdentification CancelOpenPosition(const std::string& clientOrderId) override;
 
 		void UpdateAccountInfo();
 
@@ -84,6 +86,6 @@ namespace UserAccount {
 		RiskManagement::RiskManager* m_riskManager{ nullptr };  // stop loss
 		std::unique_ptr<KernelTrading::UserFutureAccount> m_binanceAccountInfo; // future account info
 		std::unique_ptr<OrderManagement::PositionManager> m_positionManager;
-		std::unique_ptr<FutureTradeReporter> m_exchangeReporter;
+		std::unique_ptr<FutureTradeReporter> m_futureExchangeReporter;
 	};
 };

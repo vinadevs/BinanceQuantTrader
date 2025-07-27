@@ -10,6 +10,8 @@
 
 #include "user_future_account.h"
 
+#include "../LibraryUtils/TimeUtils.h"
+
 using namespace KernelTrading;
 
 // Helper to safely parse a double from JSON string fields
@@ -62,6 +64,76 @@ void UserFutureAccount::FromJson(const nlohmann::json& j) {
     }
 }
 
+void UserFutureAccount::write_account_info_to_file(std::ofstream& fileStream, const UserFutureAccount& o)
+{
+	if (!fileStream.is_open()) {
+		throw std::runtime_error("File stream is not open for writing account info.");
+	}
+	// Write basic account info
+	fileStream << "UserAccountId: " << o.GetUserAccountId() << "\n";
+	fileStream << "FeeTier: " << o.GetFeeTier() << "\n";
+	fileStream << "CanTrade: " << (o.CanTrade() ? "true" : "false") << "\n";
+	fileStream << "CanDeposit: " << (o.CanDeposit() ? "true" : "false") << "\n";
+	fileStream << "CanWithdraw: " << (o.CanWithdraw() ? "true" : "false") << "\n";
+	fileStream << "UpdateTime: " << TimeUtils::ConvertEpochTickToTimeString(static_cast<std::size_t>(o.GetUpdateTime())) << "\n";
+	fileStream << "---------------------------------------\n";
+	// Write asset info
+	for (const auto& asset : o.GetAssets()) {
+		fileStream << "Asset: " << asset.asset
+			<< ", WalletBalance: " << asset.walletBalance
+			<< ", UnrealizedProfit: " << asset.unrealizedProfit
+			<< ", MarginBalance: " << asset.marginBalance
+			<< ", MaintMargin: " << asset.maintMargin
+			<< ", InitialMargin: " << asset.initialMargin
+			<< ", PositionInitialMargin: " << asset.positionInitialMargin
+			<< ", OpenOrderInitialMargin: " << asset.openOrderInitialMargin
+			<< ", CrossWalletBalance: " << asset.crossWalletBalance
+			<< ", CrossUnPnl: " << asset.crossUnPnl
+			<< ", AvailableBalance: " << asset.availableBalance
+			<< ", MaxWithdrawAmount: " << asset.maxWithdrawAmount
+			<< ", MarginAvailable: "
+			<< (asset.marginAvailable ? "true" : "false")
+			<< ", UpdateTime: "
+			<< TimeUtils::ConvertEpochTickToTimeString(static_cast<std::size_t>(asset.updateTime))
+			<< "\n";
+	}
+	fileStream << "---------------------------------------\n";
+	// Write position info
+	for (const auto& position : o.GetPositions()) {
+		fileStream << "PositionSymbol: "
+			<< position.symbol
+			<< ", InitialMargin: "
+			<< position.initialMargin
+			<< ", MaintMargin: "
+			<< position.maintMargin
+			<< ", UnrealizedProfit: "
+			<< position.unrealizedProfit
+			<< ", PositionInitialMargin: "
+			<< position.positionInitialMargin
+			<< ", OpenOrderInitialMargin: "
+			<< position.openOrderInitialMargin
+			<< ", Leverage: "
+			<< position.leverage
+			<< ", Isolated: "
+			<< (position.isolated ? "true" : "false")
+			<< ", EntryPrice: "
+			<< position.entryPrice
+			<< ", MaxNotional: "
+			<< position.maxNotional
+			<< ", PositionSide: "
+			<< position.positionSide
+			<< ", PositionAmt: "
+			<< position.positionAmt
+			<< ", Notional: "
+			<< position.notional
+			<< ", IsolatedWallet: "
+			<< position.isolatedWallet
+			<< ", UpdateTime: "
+			<< TimeUtils::ConvertEpochTickToTimeString(static_cast<std::size_t>(position.updateTime))
+			<< "\n";
+	}
+}
+
 const AssetInfo* UserFutureAccount::LookupFutureAssetInfo(const std::string& currency) const {
     for (const auto& asset : m_assets) {
         if (asset.asset == currency) {
@@ -104,6 +176,8 @@ void UserFutureAccount::UpdateAssetBalanceCash(const std::string& currency, cons
 			assetInfo->availableBalance -= pnl; // pnl is the withdrawal amount
 			break;
 		}
+		assetInfo->updateTime = static_cast<std::size_t>(
+			std::chrono::system_clock::now().time_since_epoch().count());
 	}
 }
 
@@ -120,9 +194,11 @@ void UserFutureAccount::UpdatePositionCash(
 			break;
 		case BalanceChangeEvent::LOSS:
 			it->unrealizedProfit -= pnl;
-			it->initialMargin -= pnl; // Adjust initial margin if needed
+			it->positionInitialMargin -= pnl; // Adjust initial margin if needed
 			break;
 		}
+		it->updateTime = static_cast<std::size_t>(
+			std::chrono::system_clock::now().time_since_epoch().count());
 	}
 }
 
@@ -134,6 +210,8 @@ void UserFutureAccount::RealizedPNLPositions(const std::string& currency)
 			// Realize the profit/loss for each position
 			if (position.unrealizedProfit > 0.0) {
 				assetInfo->availableBalance += position.unrealizedProfit; // Update available balance
+				assetInfo->updateTime = static_cast<std::size_t>(
+					std::chrono::system_clock::now().time_since_epoch().count());
 			}
 		}
     }
@@ -149,6 +227,8 @@ void UserFutureAccount::RealizedPNLPosition(const std::string& currency, const s
 			// Realize the profit/loss for the specific position
 			if (it->unrealizedProfit > 0.0) {
 				assetInfo->availableBalance += it->unrealizedProfit; // Update available balance
+				assetInfo->updateTime = static_cast<std::size_t>(
+					std::chrono::system_clock::now().time_since_epoch().count());
 			}
 		}
 	}

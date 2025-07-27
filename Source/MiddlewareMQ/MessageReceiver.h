@@ -49,7 +49,9 @@ namespace MiddlewareMQ {
         void CreateCommunicationChannel(
             const std::string& topicName,
             const std::string& subscriberAddress);
+		bool IsValidMessage(const std::string& topic, const std::string& message) const;
 
+		std::string m_topicName; // Topic name for this receiver
         std::unique_ptr<SubcriberCommunicationChannel> m_chanel;
         std::unique_ptr<LibraryUtils::Logger> m_logger;
         std::atomic<bool> m_isRunning {false}; // Non blocking thread

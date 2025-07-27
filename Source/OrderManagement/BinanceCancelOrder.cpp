@@ -71,6 +71,7 @@ std::string BinanceCancelOrder::ToStringOrder() const
 		", OrigClientOrderId: " + m_origClientOrderId +
 		", ClientOrderId: " + m_clientOrderId +
 		", OrderStatus: " + GetOrderStatusStr() +
+		", UpdateTime: " + GetUpdateTimeStr() +
 		")";
 }
 
@@ -83,6 +84,7 @@ std::string BinanceCancelOrder::ToStringAck() const
 		", OrigClientOrderId: " + m_origClientOrderId +
 		", ClientOrderId: " + m_clientOrderId +
 		", OrderStatus: " + GetOrderStatusStr() +
+		", UpdateTime: " + GetUpdateTimeStr() +
 		")";
 }
 
@@ -90,10 +92,13 @@ BqtJsonMessage BinanceCancelOrder::ToBqtJsonMessageOrder() const
 {
 	BqtJsonMessage message;
 	message.AddPair(FieldLabels::MessageType, "BinanceCancelOrder");
+	message.AddPair(FieldLabels::UserAccountID, m_userAccountID);
 	message.AddPair(FieldLabels::Symbol, m_symbol);
 	message.AddPair(FieldLabels::OrderId, TypeToStringUtils::ToString(m_orderId));
 	message.AddPair(FieldLabels::OrigClientOrderId, m_origClientOrderId);
 	message.AddPair(FieldLabels::ClientOrderId, m_clientOrderId);
+	message.AddPair(FieldLabels::OrderStatus, GetOrderStatusStr());
+	message.AddPair(FieldLabels::UpdateTime, GetUpdateTimeStr());
 	return message;
 }
 
@@ -101,9 +106,12 @@ BqtJsonMessage BinanceCancelOrder::ToBqtJsonMessageOrderAck() const
 {
 	BqtJsonMessage message;
 	message.AddPair(FieldLabels::MessageType, "BinanceCancelOrderAck");
+	message.AddPair(FieldLabels::UserAccountID, m_userAccountID);
 	message.AddPair(FieldLabels::Symbol, m_symbol);
 	message.AddPair(FieldLabels::OrderId, TypeToStringUtils::ToString(m_orderId));
 	message.AddPair(FieldLabels::OrigClientOrderId, m_origClientOrderId);
 	message.AddPair(FieldLabels::ClientOrderId, m_clientOrderId);
+	message.AddPair(FieldLabels::OrderStatus, GetOrderStatusStr());
+	message.AddPair(FieldLabels::UpdateTime, GetUpdateTimeStr());
 	return message;
 }

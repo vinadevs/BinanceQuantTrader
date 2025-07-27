@@ -50,9 +50,11 @@ namespace UserAccount {
 
 		////////////// UPSTREAM PROCESSING /////////////////////////////
 
-		bool CreateNewPosition(const QuantitativeModel::QuantOrderParammeter& param) override;
+		WorkedOrderIdentification CreateNewPosition(const QuantitativeModel::QuantOrderParammeter& param) override;
 
 		bool CancelAllOpenPositions(const std::string& symbol) override;
+
+		WorkedOrderIdentification CancelOpenPosition(const std::string& clientOrderId) override;
 
 		void UpdateAccountInfo();
 

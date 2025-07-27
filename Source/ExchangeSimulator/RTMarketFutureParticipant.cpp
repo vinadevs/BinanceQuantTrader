@@ -87,6 +87,14 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
     double maintMargin = 0.0;
 	double positionMargin = 0.0;
 
+    auto* session = m_userAccountManager->OpenEditSessionForFutureUserAccount(
+        userAccount->GetUserAccountId());
+
+	if (!session)
+	{
+		return HandleRejectedOrder("Failed to open edit session for user account: ", order);
+	}
+
 	// if there is no existing position, we will create a new one
     if (!existedPosition)
     {
@@ -95,9 +103,11 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
         //---------------------------------------------------------------------------
         const double notional = entryPrice * contracts;          // position value
         // Calculate Exit Fee = Position Value × Free Rate
-        const double exitFee = notional * (ExchangeRuleMgr->GetFutureMakerCommission() + ExchangeRuleMgr->GetFutureTakerCommission());
+        const double exitFee = notional * (ExchangeRuleMgr->GetFutureMakerCommission() 
+            + ExchangeRuleMgr->GetFutureTakerCommission());
         // Calculate Entry Fee = Position Value × Free Rate
-        const double entryFee = notional * (ExchangeRuleMgr->GetFutureMakerCommission() + ExchangeRuleMgr->GetFutureTakerCommission());
+        const double entryFee = notional * (ExchangeRuleMgr->GetFutureMakerCommission()
+            + ExchangeRuleMgr->GetFutureTakerCommission());
         // Calculate total fee = Entry Fee + Exit Fee
         const double totalFee = entryFee + exitFee;
 
@@ -122,9 +132,6 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
         }
         else
         {
-            auto* session = m_userAccountManager->OpenEditSessionForFutureUserAccount(
-                userAccount->GetUserAccountId());
-
             // create new future position with the initial margin and other details
             KernelTrading::PositionInfo newFuturePosition{ order.GetSymbol(), positionInitMargin, initialMaintMargin,
                 0.0, positionInitMargin, 0.0, leverage, order.GetIsolatedMargin(), entryPrice, notional, order.GetSideStr(),
@@ -166,9 +173,6 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
 
 	if (pnl != 0.0) // Only update balance if there is a PnL change
     {
-        auto* session = m_userAccountManager->OpenEditSessionForFutureUserAccount(
-            userAccount->GetUserAccountId());
-
         const auto evt = (pnl > 0.0)
             ? KernelTrading::BalanceChangeEvent::PROFIT
             : KernelTrading::BalanceChangeEvent::LOSS;
@@ -179,12 +183,8 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
     //---------------------------------------------------------------------------
     // 7. Margin‑call / liquidation checks
     //---------------------------------------------------------------------------
-    if ((isLong && marketPrice <= (liqPrice + maintMargin)) ||
-        (!isLong && marketPrice >= (liqPrice - maintMargin)))
+    if (positionMargin <= maintMargin) // 
     {
-        auto* session = m_userAccountManager->OpenEditSessionForFutureUserAccount(
-            userAccount->GetUserAccountId());
-
 		session->RemotePosition(order.GetSymbol()); // Remove liquidated position
 
         m_logger->Warning("Liquidation triggered for order: " + order.ToStringOrder());
@@ -213,7 +213,9 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
     return true; // Order accepted
 }
 
-bool RTMarketFutureParticipant::OnTradeChange(MarketData::MarketDataSubject* marketData, const std::string& symbol)
+bool RTMarketFutureParticipant::OnTradeChange(
+    MarketData::MarketDataSubject* marketData,
+    const std::string& symbol)
 {
     std::unique_lock<std::mutex> lock(m_mutex);
     if (const auto* data = marketData->GetSynchronousMarketData(symbol))
@@ -235,11 +237,13 @@ bool RTMarketFutureParticipant::OnTradeChange(MarketData::MarketDataSubject* mar
     return false;
 }
 
-void RTMarketFutureParticipant::CreateDownstreamFuturePriceManagers(const std::unordered_set<std::string>& subcribedSymbols)
+void RTMarketFutureParticipant::CreateDownstreamFuturePriceManagers(
+    const std::unordered_set<std::string>& subcribedSymbols)
 {
     for (const auto& symbol : subcribedSymbols)
     {
-        m_downstreamFuturePriceManagers.emplace(symbol, std::make_unique<DownstreamFuturePriceManager>(symbol, ZERO_DOUBLE_VALUE));
+        m_downstreamFuturePriceManagers.emplace(symbol, 
+            std::make_unique<DownstreamFuturePriceManager>(symbol, ZERO_DOUBLE_VALUE));
     }
 }
 
@@ -256,11 +260,33 @@ void RTMarketFutureParticipant::UpdateCurrentMarketPrice(const std::string& symb
     }
 }
 
-bool RTMarketFutureParticipant::HandleRejectedOrder(const std::string& message, OrderManagement::BinanceNewOrder& order)
+bool RTMarketFutureParticipant::HandleRejectedOrder(
+    const std::string& message,
+    OrderManagement::BinanceNewOrder& order)
 {
     m_logger->Error(message + order.ToStringOrder());
     order.SetRemainingAmount(order.GetAmount());
     order.SetFilledAmount(0.0);
     order.SetOrderStatus(BinanceNewOrderStatus::REJECTED);
     return false; // Order rejected
+}
+
+void RTMarketFutureParticipant::HandleUserBalanceAfterCancelOrder(
+    const OrderManagement::BinanceNewOrder& order)
+{
+	auto* session = m_userAccountManager->OpenEditSessionForFutureUserAccount(
+        order.GetUserAccountID());
+
+    if (session)
+    {
+        // Update the realized PnL for the canceled order
+        session->RealizedPNLPosition(order.GetStableCurrency(), order.GetSymbol());
+
+        // Remove the position from the user's account
+        session->RemotePosition(order.GetSymbol()); // Remove liquidated position
+    }
+	else
+	{
+		m_logger->Error("Failed to open edit session for user account ID: " + order.GetUserAccountID());
+	}
 }

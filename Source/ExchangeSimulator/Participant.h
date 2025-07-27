@@ -54,7 +54,11 @@ namespace ExchangeSimulator {
             UserAccountManager* userAccountManager,
             UserTradeProfileManager* userTradeProfileManager);
         virtual ~Participant();
-        virtual bool TryToMatchOrder(OrderManagement::BinanceNewOrder& ack) = 0;
+
+		// this method is used to match incoming orders from upstream order queue
+        virtual bool TryToMatchOrder(OrderManagement::BinanceNewOrder& order) = 0;
+		// this method is used to update user balance after cancel order
+        virtual void HandleUserBalanceAfterCancelOrder(const OrderManagement::BinanceNewOrder& order) = 0;
 
         ParticipantType GetParticipantType() const { return m_tradeMode; };
     protected:

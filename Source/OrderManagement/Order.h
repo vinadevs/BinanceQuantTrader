@@ -37,6 +37,7 @@ namespace OrderManagement {
 		{
 			UpdateOrderTypeStr();
 			m_userAccountID = ApiKeyInfoMgr->GetApiKeyInfo().m_userID;
+			m_updateTime = TimeUtils::GetEpochTimeTickNow(); // Initialize update time to current time
 		}
 
 		virtual ~Order() {}

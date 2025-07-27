@@ -73,22 +73,13 @@ namespace OrderManagement {
 		bool CloseAllOpenedPositionsBySide(const binapi::e_side posSide);
 		bool CloseAllOpenedPositions();
 
-		OrderManagement::BinanceOrderManager* GetWorkedOrderManager() const
-		{
-			return m_workedOrderManager.get();
-		}
+		OrderManagement::BinanceOrderManager* GetWorkedOrderManager() const;
 
-		OrderManagement::BinanceOrderManager* GetUnworkedOrderManager() const
-		{
-			return m_unworkedOrderManager.get();
-		}
+		OrderManagement::BinanceOrderManager* GetUnworkedOrderManager() const;
 
 		binapi::double_type GetWeightedAveragePrice(
 			const std::string& symbol,
-			const binapi::e_side posSide) const
-		{
-			return m_workedOrderManager->GetWeightedAveragePrice(symbol, posSide);
-		}
+			const binapi::e_side posSide) const;
 
 		// Execution of all new worked orders
 		BinanceNewOrder* UpdateNewOrderExecutionStatus(

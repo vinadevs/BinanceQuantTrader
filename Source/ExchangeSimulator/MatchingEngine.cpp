@@ -179,7 +179,7 @@ void MatchingEngine::ProcessIncommingOrders()
 			while (!m_upstreamOrderQueueMgr->HasNoOrders())
 			{
 				// delay to test the order processing, TODO: set it from config
-				std::this_thread::sleep_for(std::chrono::milliseconds(5000)); // simulate some delay
+				//std::this_thread::sleep_for(std::chrono::milliseconds(5000)); // simulate some delay
 
 				// -Dequeue order from waiting list, so the order is not in the queue anymore
 				// -We have to push it back to the end of the queue if it can not be filled by the matching engine
@@ -207,9 +207,16 @@ void MatchingEngine::ProcessIncommingOrders()
 				{
 					m_logger->Info("From upstream order queue, cancelling order=" + orderInfoStr);
 					auto& cancelOrder = std::get<BinanceCancelOrder>(order);
+
+					auto foundOrder = m_upstreamOrderQueueMgr->LookupOrder(cancelOrder.GetOrigClientOrderId());
+					auto& foundNewOrder = std::get<BinanceNewOrder>(foundOrder);
+
 					if (m_upstreamOrderQueueMgr->RemoveOrder(cancelOrder.GetOrigClientOrderId()))
 					{
+						m_participant->HandleUserBalanceAfterCancelOrder(foundNewOrder);
+						m_upstreamOrderMatchedMgr->AddOrder(cancelOrder.GetClientOrderId(), order);
 						cancelOrder.SetOrderStatus(BinanceCancelOrderStatus::FILLED);
+						cancelOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
 						PostProcessingMatchedCancelOrder(cancelOrder);
 					}
 					else
@@ -223,7 +230,9 @@ void MatchingEngine::ProcessIncommingOrders()
 					auto& replaceOrder = std::get<BinanceReplaceOrder>(order);
 					if (m_upstreamOrderQueueMgr->ReplaceOrder(replaceOrder.GetOrigClientOrderId(), replaceOrder))
 					{
+						m_upstreamOrderMatchedMgr->AddOrder(replaceOrder.GetClientOrderId(), order);
 						replaceOrder.SetOrderStatus(BinanceReplaceOrderStatus::FILLED);
+						replaceOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
 						PostProcessingMatchedReplaceOrder(replaceOrder);
 					}
 					else
@@ -236,9 +245,10 @@ void MatchingEngine::ProcessIncommingOrders()
 					m_logger->Info("From upstream order queue, querying order=" + orderInfoStr);
 					auto& queryOrder = std::get<BinanceQueryOrder>(order);
 					queryOrder.SetOrderStatus(BinanceQueryOrderStatus::FILLED);
+					queryOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
 					auto foundOrder = m_upstreamOrderQueueMgr->LookupOrder(queryOrder.GetOrigClientOrderId());
 					auto& foundNewOrder = std::get<BinanceNewOrder>(foundOrder);
-					PostProcessingMatchedQueryOrder(queryOrder);
+					PostProcessingMatchedQueryOrder(queryOrder); // TODO: update query order to ack
 				}		
 				lock.lock();  // Lock mutex again for the next iteration
 			}
@@ -273,7 +283,10 @@ void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& me
 			if (VerifyUpstreamBinanceNewOrder(newOrder))
 			{
 				newOrder.SetOrderStatus(BinanceNewOrderStatus::WAITING_FOR_FILL);
+				newOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
 				m_upstreamOrderQueueMgr->PushOrderToQueue(newOrder.GetClientOrderId(), newOrder);
+				UpstreamGateWay->SendDownstreamOrderAck(
+					AckUtils::CreateNewOrderAck(newOrder, "New order accepted, push back to the exchange order queue"));
 			}
 			else return; // dont process if order is invalid
 		}
@@ -283,7 +296,10 @@ void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& me
 			if (VerifyUpstreamBinanceCancelOrder(cancelOrder))
 			{
 				cancelOrder.SetOrderStatus(BinanceCancelOrderStatus::WAITING_FOR_CANCEL);
+				cancelOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
 				m_upstreamOrderQueueMgr->PushOrderToQueue(cancelOrder.GetClientOrderId(), cancelOrder);
+				UpstreamGateWay->SendDownstreamOrderAck(
+					AckUtils::CreateCancelOrderAck(cancelOrder, "Cancel order accepted, push back to the exchange order queue"));
 			}
 			else return; // dont process if order is invalid
 		}
@@ -293,7 +309,10 @@ void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& me
 			if (VerifyUpstreamBinanceReplaceOrder(replaceOrder))
 			{
 				replaceOrder.SetOrderStatus(BinanceReplaceOrderStatus::WAITING_FOR_REPLACE);
+				replaceOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
 				m_upstreamOrderQueueMgr->PushOrderToQueue(replaceOrder.GetClientOrderId(), replaceOrder);
+				UpstreamGateWay->SendDownstreamOrderAck(
+					AckUtils::CreateReplaceOrderAck(replaceOrder, "Replace order accepted, push back to the exchange order queue"));
 			}
 			else return; // dont process if order is invalid
 		}
@@ -303,7 +322,10 @@ void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& me
 			if (VerifyUpstreamBinanceQueryOrder(queryOrder))
 			{
 				queryOrder.SetOrderStatus(BinanceQueryOrderStatus::WAITING_FOR_QUERY);
+				queryOrder.SetUpdateTime(TimeUtils::GetEpochTimeTickNow());
 				m_upstreamOrderQueueMgr->PushOrderToQueue(queryOrder.GetClientOrderId(), queryOrder);
+				UpstreamGateWay->SendDownstreamOrderAck(
+					AckUtils::CreateQueryOrderAck(queryOrder, "Query order accepted, push back to the exchange order queue"));
 			}
 			else return; // dont process if order is invalid	
 		}
@@ -496,7 +518,7 @@ void MatchingEngine::PostProcessingMatchedCancelOrder(BinanceCancelOrder& order)
 		m_logger->Info("Cancelled order info: " + order.ToStringAck());
 		m_logger->Info("Sending cancelled execution ack to upstream...");
 		// Notify the involved parties of the trade execution.
-		const auto ack = AckUtils::CreateCancelledOrderAck(order, "Cancelled");
+		const auto ack = AckUtils::CreateCancelledOrderAck(order, "Order cancelled succsessfully");
 		UpstreamGateWay->SendDownstreamOrderAck(ack);
 	}
 }
@@ -509,7 +531,7 @@ void MatchingEngine::PostProcessingMatchedReplaceOrder(BinanceReplaceOrder& orde
 		m_logger->Info("Replaced order info: " + order.ToStringAck());
 		m_logger->Info("Sending replaced execution ack to upstream...");
 		// Notify the involved parties of the trade execution.
-		const auto ack = AckUtils::CreateReplacedOrderAck(order, "Replaced");
+		const auto ack = AckUtils::CreateReplacedOrderAck(order, "Order replaced succsessfully");
 		UpstreamGateWay->SendDownstreamOrderAck(ack);
 	}
 }
@@ -522,7 +544,7 @@ void MatchingEngine::PostProcessingMatchedQueryOrder(BinanceQueryOrder& order)
 		m_logger->Info("Queried order info: " + order.ToStringAck());
 		m_logger->Info("Sending queried execution ack to upstream...");
 		// Notify the involved parties of the trade execution.
-		const auto ack = AckUtils::CreateQueryOrderAck(order, "Queried");
+		const auto ack = AckUtils::CreateQueryOrderAck(order, "Order queried succsessfully");
 		UpstreamGateWay->SendDownstreamOrderAck(ack);
 	}
 }

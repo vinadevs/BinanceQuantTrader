@@ -172,6 +172,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="OrderParammeterGenerator.cpp" />
+    <ClCompile Include="PricingModels.cpp" />
     <ClCompile Include="QuantMarketDataAnalyzer.cpp" />
     <ClCompile Include="TradingRulesByPassEngine.cpp" />
   </ItemGroup>

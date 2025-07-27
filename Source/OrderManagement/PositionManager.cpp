@@ -150,3 +150,20 @@ bool PositionManager::CloseAllOpenedPositionsBySide(const binapi::e_side posSide
 {
     return m_workedOrderManager->RemoveNewOrderBySide(posSide);
 }
+
+OrderManagement::BinanceOrderManager* PositionManager::GetWorkedOrderManager() const
+{
+    return m_workedOrderManager.get();
+}
+
+OrderManagement::BinanceOrderManager* PositionManager::GetUnworkedOrderManager() const
+{
+    return m_unworkedOrderManager.get();
+}
+
+binapi::double_type PositionManager::GetWeightedAveragePrice(
+    const std::string& symbol,
+    const binapi::e_side posSide) const
+{
+    return m_workedOrderManager->GetWeightedAveragePrice(symbol, posSide);
+}

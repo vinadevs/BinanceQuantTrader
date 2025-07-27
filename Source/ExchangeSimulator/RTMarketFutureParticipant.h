@@ -66,7 +66,10 @@ namespace ExchangeSimulator {
 
         // order matching for upstream orders
         bool TryToMatchOrder(OrderManagement::BinanceNewOrder& newUpstreamOrder) override;
-		// event future market price update from exchange
+		
+        void HandleUserBalanceAfterCancelOrder(const OrderManagement::BinanceNewOrder& cancelOrder) override;
+
+        // event future market price update from exchange
         bool OnTradeChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
 
         void CreateDownstreamFuturePriceManagers(const std::unordered_set<std::string>& subcribedSymbols);

@@ -37,7 +37,7 @@ BinanceReporter::BinanceReporter(
 {
 	m_logger = std::make_unique<LibraryUtils::Logger>("BinanceReporter");
 	SetupReporter(reportConfigXml);
-	m_logger->Info("setting up trading reporter finished.");
+	m_logger->Info("setting up trading spot reporter finished.");
 }
 
 BinanceReporter::~BinanceReporter() {}
@@ -53,7 +53,7 @@ void BinanceReporter::UpdateRemoteData(const std::string& symbol)
 	}
 	else
 	{
-		m_logger->Info("updating account info finished.");
+		m_logger->Info("updating spot account info finished.");
 		DEREF_V(m_accountInfo) = accountInfoResult.v;
 	}
 	const auto exchangeInfoResult = BinanceSpotApiGateWayMgr->exchange_info(symbol);
@@ -65,7 +65,7 @@ void BinanceReporter::UpdateRemoteData(const std::string& symbol)
 	}
 	else
 	{
-		m_logger->Info("updating exchange info finished.");
+		m_logger->Info("updating spot exchange info finished.");
 		DEREF_V(m_exchangeProfileMgr->AccessRemoteExchangeProfile(symbol)) = exchangeInfoResult.v;
 	}
 }

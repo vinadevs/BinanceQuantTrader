@@ -25,9 +25,9 @@
 #if USE_BACK_TEST_TRADING
 #include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
 #include "../ExchangeSimulator/DownstreamOrderAck.h"
-#include "BackTestReporter.h"
+#include "FutureBackTestReporter.h"
 #else
-#include "BinanceReporter.h"
+#include "FutureBinanceReporter.h"
 #endif
 
 #include "FutureTrader.h"
@@ -61,13 +61,13 @@ FutureTrader::FutureTrader(
 	m_logger->Info("using FutureTrader.");
 	m_binanceAccountInfo = std::make_unique<KernelTrading::UserFutureAccount>();
 	m_positionManager = std::make_unique<PositionManager>();
-//#if USE_BACK_TEST_TRADING
-//	m_exchangeReporter = std::make_unique<BackTestReporter>(
-//		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_positionManager.get());
-//#else
-//	m_exchangeReporter = std::make_unique<BinanceReporter>(
-//		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_positionManager.get());
-//#endif
+#if USE_BACK_TEST_TRADING
+	m_futureExchangeReporter = std::make_unique<FutureBackTestReporter>(
+		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_positionManager.get());
+#else
+	m_futureExchangeReporter = std::make_unique<FutureBinanceReporter>(
+		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_positionManager.get());
+#endif
 }
 
 ////////////// UPSTREAM PROCESSING /////////////////////////////
@@ -79,7 +79,7 @@ double FutureTrader::CalculateTradeValue(
 	return quality * refPrice;
 }
 
-bool FutureTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammeter& param)
+WorkedOrderIdentification FutureTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammeter& param)
 {
 #if USE_BACK_TEST_TRADING
 	if (param.m_side == binapi::e_side::buy)
@@ -100,7 +100,7 @@ bool FutureTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammet
 			{
 				m_logger->Error("Failed to update user trade profile for symbol=" 
 					+ newSingleFutureLongOrder->GetSymbol() + ", error=" + resultMessage);
-				return false;
+				return { false , "" };
 			}
 
 			const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleFutureLongOrder.get());
@@ -117,12 +117,12 @@ bool FutureTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammet
 			{
 				m_positionManager->AddUnworkedOrder(clientOrderId, std::move(newSingleFutureLongOrder));
 			}
-			return isSendingOrderSucceeded;
+			return { isSendingOrderSucceeded, clientOrderId };
 		}
 		else
 		{
 			m_logger->Warning("User future account has no stable coin available, could not create long (buy) position for=" + param.m_symbol);
-			return false;
+			return { false , "" };
 		}
 	}
 	else if (param.m_side == binapi::e_side::sell)
@@ -141,7 +141,7 @@ bool FutureTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammet
 			{
 				m_logger->Error("Failed to update user trade profile for symbol="
 					+ newSingleFutureShortOrder->GetSymbol() + ", error=" + resultMessage);
-				return false;
+				return { false , "" };
 			}
 
 			const auto result = ExchangeSimulatorGateWay->SendNewSimulatorOrderFull(newSingleFutureShortOrder.get());
@@ -158,16 +158,16 @@ bool FutureTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammet
 			{
 				m_positionManager->AddUnworkedOrder(clientOrderId, std::move(newSingleFutureShortOrder));
 			}
-			return isSendingOrderSucceeded;
+			return { isSendingOrderSucceeded, clientOrderId };
 		}
 		else
 		{
 			m_logger->Warning("User future has no asset available, could not create short (sell) position for=" + param.m_symbol);
-			return false;
+			return { false , "" };
 		}
 	}
 #endif
-	return false;
+	return { false , "" };
 }
 
 bool FutureTrader::CancelAllOpenPositions(const std::string& symbol)
@@ -206,6 +206,46 @@ bool FutureTrader::CancelAllOpenPositions(const std::string& symbol)
 	return false;
 }
 
+WorkedOrderIdentification FutureTrader::CancelOpenPosition(const std::string& clientOrderId)
+{
+#if USE_BACK_TEST_TRADING
+	const auto workedOrderManager = m_positionManager->GetWorkedOrderManager();
+	if (workedOrderManager)
+	{
+		auto* order = workedOrderManager->LookupOrder(clientOrderId);
+		if (order)
+		{
+			auto newCancelOrder = m_positionManager->CancelPositionUpstreamOrder(order);
+			const auto result = ExchangeSimulatorGateWay->SendCancelSimulatorOrder(newCancelOrder.get());
+			newCancelOrder->SetSendingOrderResult(result);
+			const auto isSendingOrderSucceeded = static_cast<bool>(result);
+			const auto cancelClientOrderId = newCancelOrder->GetClientOrderId();
+			if (isSendingOrderSucceeded)
+			{
+				newCancelOrder->SetOrderStatus(BinanceCancelOrderStatus::WAITING_FOR_CANCEL);
+				m_positionManager->AddNewCancelOrder(cancelClientOrderId, std::move(newCancelOrder));
+				m_positionManager->CloseOpenedPositionUpstreamOrder(cancelClientOrderId);
+			}
+			else
+			{
+				m_positionManager->AddUnworkedCancelOrder(cancelClientOrderId, std::move(newCancelOrder));
+			}
+			return { isSendingOrderSucceeded, cancelClientOrderId };
+		}
+		else
+		{
+			m_logger->Warning("No open position found for client order ID: " + clientOrderId);
+			return { false , "" };
+		}
+	}
+	else
+	{
+		m_logger->Warning("No open positions available to cancel.");
+		return { false , "" };
+	}
+#endif
+}
+
 void FutureTrader::UpdateAccountInfo()
 {
 	m_portfolio->UpdateBinanceFutureAccountInfo();
@@ -213,7 +253,7 @@ void FutureTrader::UpdateAccountInfo()
 
 void FutureTrader::ReportTradeResults(const std::string& symbol)
 {
-	//m_exchangeReporter->DoTradeExecutionReport(symbol);
+	m_futureExchangeReporter->DoTradeExecutionReport(symbol);
 }
 
 void FutureTrader::CreatePortfolioManagement(const std::vector<std::string>&targetTradeSymbols)
@@ -246,6 +286,13 @@ void FutureTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage
 			message.GetStringValueByTag(FieldLabels::OrderStatus));
 		auto* ackOrder = m_positionManager->UpdateNewOrderExecutionStatus(
 			clientOrderId, symbol, filledAmount, filledPrice, remainingAmount, updateTime, orderStatus);
+
+		if (!ackOrder)
+		{
+			m_logger->Error("Failed to update new order execution status for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+			return;
+		}
+
 		if (ackOrder->GetOrderStatus() == BinanceNewOrderStatus::LIQUIDATED)
 		{
 			m_logger->Info("Received liquidated order ack for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
