@@ -13,6 +13,8 @@
 
 #include "ExchangeServiceInterface.h"
 
+#include <mutex>
+
 namespace tinyxml2 {
 	class XMLElement;
 };
@@ -48,5 +50,6 @@ namespace ExchangeSimulator {
 
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
 		MiddlewareMQ::MessageHandler* m_nessageHandler {nullptr};
+		std::mutex m_mutex;
 	};
 };

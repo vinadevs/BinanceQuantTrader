@@ -60,12 +60,11 @@ namespace TradingStrategies {
 
 		void InitializeParameters(const std::string& strategyCfgPath) override;
 
-		void InitializeMarketDataAnalyzer();
-
 		void StartLive() override;
 
 		void StopLive() override;
 	private:
+		void InitializeMarketDataAnalyzer();
 		void PrepareTargetMonitorSymbols();
 		void SubscribeTargetSymbols();
 		void UnsubscribeTargetSymbols();

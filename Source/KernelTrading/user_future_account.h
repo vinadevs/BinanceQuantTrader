@@ -181,6 +181,7 @@ namespace KernelTrading {
         double leverage{0.0};                 // Leverage used (e.g. 10x)
         bool isolated{0.0};                   // Whether this is isolated margin
         double entryPrice{0.0};               // Average entry price
+		double marketPrice{ 0.0 };            // Current market price (not in original, but useful for trading)
         double maxNotional{0.0};              // Max notional value allowed
         std::string positionSide;             // LONG, SHORT or BOTH
         double positionAmt{0.0};              // Position quantity
@@ -207,7 +208,7 @@ namespace KernelTrading {
 		bool IsAccountHavingSufficientCashBalance(const std::string& currency, const double requiredMarginCash) const;
 
 		void UpdateAssetBalanceCash(const std::string& currency, const double pnl, const BalanceChangeEvent event);
-		void UpdatePositionCash(const std::string& symbol, const double pnl, const BalanceChangeEvent event);
+		void UpdatePositionCash(const std::string& symbol, const double pnl, const double currentMarketPrice, const BalanceChangeEvent event);
 		void RealizedPNLPositions(const std::string& currency);
         void RealizedPNLPosition(const std::string& currency, const std::string& symbol);
 

@@ -137,6 +137,7 @@ std::string BinanceNewOrder::ToStringAck() const
             ", TradingType: " + GetOrderTradingTypeStr() +
             ", FilledAmount: " + GetFilledAmountStr() +
             ", FilledPrice: " + GetFilledPriceStr() +
+			", ExchangeText: " + GetExchangeText() +
             ", RemainingAmount: " + GetOrigQuoteOrderQuantityStr() +
             ", OrigQuoteOrderQuantity: " + GetOrigQuoteOrderQuantityStr() +
             ", CummulativeQuoteQty: " + GetCumulativeQuoteQuantityStr() +
@@ -162,6 +163,7 @@ std::string BinanceNewOrder::ToStringAck() const
             ", FutureLeverageRatio: " + GetFutureLeverageRatioStr() +
             ", FilledAmount: " + GetFilledAmountStr() +
             ", FilledPrice: " + GetFilledPriceStr() +
+			", ExchangeText: " + GetExchangeText() +
             ", RemainingAmount: " + GetOrigQuoteOrderQuantityStr() +
             ", OrigQuoteOrderQuantity: " + GetOrigQuoteOrderQuantityStr() +
             ", CummulativeQuoteQty: " + GetCumulativeQuoteQuantityStr() +
@@ -230,11 +232,11 @@ BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrderAck() const
     message.AddPair(FieldLabels::UpdateTime, GetUpdateTimeStr());
 	if (m_orderTradingType == BinanceNewOrderTradingType::FUTURE)
 	{
-	/*	message.AddPair(FieldLabels::FutureLeverageRatio, GetFutureLeverageRatioStr());
+		message.AddPair(FieldLabels::FutureLeverageRatio, GetFutureLeverageRatioStr());
 		message.AddPair(FieldLabels::FutureInitialMarginPrice, GetFutureInitialMarginPriceStr());
 		message.AddPair(FieldLabels::FutureMaintainingMarginPrice, GetFutureMaintainingMarginPriceStr());
 		message.AddPair(FieldLabels::FutureLiquidationPrice, GetFutureLiquidationPriceStr());
-		message.AddPair(FieldLabels::FutureIsolatedMargin, GetIsolatedMarginStr());*/
+		message.AddPair(FieldLabels::FutureIsolatedMargin, GetIsolatedMarginStr());
 	}
     return message;
 }
@@ -256,6 +258,18 @@ std::string BinanceNewOrder::GetOrderStatusStr() const
         return "PARTIAL_FILLED";
     case BinanceNewOrderStatus::FULL_FILLED:
         return "FULL_FILLED";
+	case BinanceNewOrderStatus::LIQUIDATED:
+		return "LIQUIDATED";
+	case BinanceNewOrderStatus::MARGIN_CALL:
+		return "MARGIN_CALL";
+	case BinanceNewOrderStatus::REJECTED:
+		return "REJECTED";
+	case BinanceNewOrderStatus::EXPIRED:
+		return "EXPIRED";
+	case BinanceNewOrderStatus::CANCELED:
+		return "CANCELED";
+	case BinanceNewOrderStatus::SKIPPED:
+		return "SKIPPED";
     default:
         return "UNDEF";
     };
@@ -267,6 +281,12 @@ BinanceNewOrderStatus BinanceNewOrder::GetOrderStatusEnum(const std::string stat
     else if (status == "WAITING_FOR_FILL") return BinanceNewOrderStatus::WAITING_FOR_FILL;
     else if (status == "PARTIAL_FILLED") return BinanceNewOrderStatus::PARTIAL_FILLED;
     else if (status == "FULL_FILLED") return BinanceNewOrderStatus::FULL_FILLED;
+	else if (status == "LIQUIDATED") return BinanceNewOrderStatus::LIQUIDATED;
+	else if (status == "MARGIN_CALL") return BinanceNewOrderStatus::MARGIN_CALL;
+	else if (status == "REJECTED") return BinanceNewOrderStatus::REJECTED;
+	else if (status == "EXPIRED") return BinanceNewOrderStatus::EXPIRED;
+	else if (status == "CANCELED") return BinanceNewOrderStatus::CANCELED;
+	else if (status == "SKIPPED") return BinanceNewOrderStatus::SKIPPED;
     return BinanceNewOrderStatus::UNDEF;
 }
 

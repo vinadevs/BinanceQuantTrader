@@ -177,7 +177,7 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
             ? KernelTrading::BalanceChangeEvent::PROFIT
             : KernelTrading::BalanceChangeEvent::LOSS;
 
-        session->UpdatePositionCash(order.GetSymbol(), std::fabs(pnl), evt);
+        session->UpdatePositionCash(order.GetSymbol(), std::fabs(pnl), marketPrice, evt);
     }
 
     //---------------------------------------------------------------------------

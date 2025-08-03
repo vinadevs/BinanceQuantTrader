@@ -18,6 +18,8 @@
 #include "../ComplianceNRegulatory/BinanceTradingRules.h"
 #include "../ComplianceNRegulatory/BinanceExchangeProfile.h"
 #include "../QuantitativeModel/QuantOrderParammeter.h"
+#include "../QuantitativeModel/MarketDataAnalyzer.h"
+#include "../QuantitativeModel/QuantMarketDataAnalyzer.h"
 #include "../LibraryUtils/PathUtils.h"
 #include "../LibraryUtils/FileUtils.h"
 
@@ -35,7 +37,8 @@ SmartLongShortStrategy::SmartLongShortStrategy(
 	Trader* trader,
 	BinanceTradingRules* tradingRules)
 	: TradingStrategyBase("SmartLongShortStrategy", "Create future smart orders...",
-		strategyCfgPath, marketData, trader, tradingRules)
+		strategyCfgPath, marketData, trader, tradingRules),
+	  AlarmSystem(LibraryUtils::DefaultAlarmInterval, AlarmSystem::AlarmMode::REPEAT)
 {
 	SetStrategyType(StrategyType::FULL_AUTO);
 	InitializeParameters(strategyCfgPath);
@@ -51,19 +54,129 @@ bool SmartLongShortStrategy::OnIndividualBookTickerChange(MarketDataSubject* mar
 {
 	if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
 	{
+		if (auto* analyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol))
+		{
+			analyzer->AnalysisIndividualBookTicker(syncedData->m_individualBookTickerData);
+			return true;
+		}
+	}
+	else
+	{
+		m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
+	}
+	return false;
+}
+
+void SmartLongShortStrategy::ReportTradeResults(const std::string& symbol)
+{
+	m_futureTrader->ReportTradeResults(symbol);
+}
+
+void SmartLongShortStrategy::InitializeParameters(const std::string& strategyCfgPath)
+{
+	m_strategyCfgXml = std::make_unique<XMLDocument>();
+	const auto errLoadFileXml = m_strategyCfgXml->LoadFile(strategyCfgPath.c_str());
+	if (errLoadFileXml != XML_SUCCESS)
+	{
+		throw std::runtime_error("SmartLongShortStrategy: Load file Xml error="
+			+ std::string(XMLDocument::ErrorIDToName(errLoadFileXml)) + ", error path:" + strategyCfgPath);
+	}
+	SetupStrategyLifeTime(m_strategyCfgXml.get());
+	// when we use alarm system, we need to set up the order scheduler
+	SetupOrderScheduler();
+}
+
+void SmartLongShortStrategy::InitializeMarketDataAnalyzer()
+{
+	m_marketDataAnalyzer = std::make_unique<QuantitativeModel::MarketDataAnalyzer>(m_targetFutureTradeSymbols, m_logger.get());
+}
+
+void SmartLongShortStrategy::SetupOrderScheduler()
+{
+	m_logger->Info("Setting up alarm system for order sending interval.");
+	const XMLElement* generalConfigXml = m_strategyCfgXml->FirstChildElement("OrderScheduler");
+	assert(generalConfigXml);
+	const XMLElement* orderSendingInvervalXml = generalConfigXml->FirstChildElement("OrderSendingInverval");
+	assert(orderSendingInvervalXml);
+	const int64_t alarmIntervalSecond = orderSendingInvervalXml->Int64Attribute("AlarmIntervalSecond");
+	if (alarmIntervalSecond <= 0)
+	{
+		throw std::runtime_error("SmartLongShortStrategy: Invalid alarm interval second="
+			+ std::to_string(alarmIntervalSecond) + ", must be greater than 0.");
+	}
+	AlarmSystem::SetCustomInterval(alarmIntervalSecond);
+	m_strategyOrderScheduler = StrategyOrderScheduler::ALARM_BASED;
+}
+
+void SmartLongShortStrategy::StartLive()
+{
+	// Change Strategy state to live
+	m_strategyRunStatus = StrategyRunStatus::LIVE;
+	// Prepare target symbols list
+	m_logger->Info("Prepare target symbols list.");
+	PrepareTargetMonitorSymbols();
+	// Create Market Data Analyzer
+	m_logger->Info("Create market data analyzer.");
+	InitializeMarketDataAnalyzer();
+	// Create exchange filter profile
+	m_logger->Info("Create binance exchange profile.");
+	CreateBinanceExchangeProfile();
+	// Create portfolio management
+	m_logger->Info("Create portfolio management.");
+	CreatePortfolioManagement();
+	// Subscribe target symbols to receive real time market data
+	m_logger->Info("Subscribe target symbols.");
+	SubscribeTargetSymbols();
+	// Start alarm system to send orders
+	m_logger->Info("Starting live and trade.");
+	AlarmSystem::Start();
+}
+
+void SmartLongShortStrategy::StopLive()
+{
+	m_strategyRunStatus = StrategyRunStatus::STOP;
+	// Unsubscribe target symbols to stop receiving real time market data
+	m_logger->Info("Unsubscribe target symbols.");
+	UnsubscribeTargetSymbols();
+}
+
+void SmartLongShortStrategy::OnAlarmTriggered(const int passToDerived)
+{
+	for (const auto& symbol : m_targetFutureTradeSymbols)
+	{
+		auto* marketDataAnalyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol);
+		std::unique_lock<std::mutex> lock(marketDataAnalyzer->m_mutex);
+
 		// Test future orders
 		QuantOrderParammeter futureOrder;
 		futureOrder.m_symbol = symbol;
-		futureOrder.m_side = binapi::e_side::buy; // default to buy/long
-		futureOrder.m_type = binapi::e_type::market; // default to market order
+		futureOrder.m_type = binapi::e_type::limit; // default to market order
 		futureOrder.m_time = binapi::e_time::GTC;// default to GTC
 		futureOrder.m_amount = 1; // default to 1 coin
-		futureOrder.m_price = syncedData->m_individualBookTickerData.m_bestBidPrice->GetDoubleData(); // use best ask price as market price
 		futureOrder.m_tradeType = OrderManagement::BinanceNewOrderTradingType::FUTURE; // set to future trading type
 		futureOrder.m_stableCurrency = "USDT"; // default stable currency is USDT
-
 		// Set leverage ratio
 		futureOrder.m_leverageRatio = 50; // default leverage ratio is x50
+
+		QuantitativeModel::PriceTickerTrend priceTickerTrend = marketDataAnalyzer->GetMarketDataSignals().m_priceTickerTrend;
+
+		if (priceTickerTrend == QuantitativeModel::PriceTickerTrend::DOWN_TREND)
+		{
+			// If the price ticker trend is down, we will create a short position
+			futureOrder.m_side = binapi::e_side::sell;
+			futureOrder.m_price = marketDataAnalyzer->GetMarketDataSignals().m_lastBestAskPrice.convert_to<double>(); // use last price as default price
+		}
+		else if (priceTickerTrend == QuantitativeModel::PriceTickerTrend::UP_TREND)
+		{
+			// If the price ticker trend is UP_TREND, we will create a long position
+			futureOrder.m_side = binapi::e_side::buy;
+			futureOrder.m_price = marketDataAnalyzer->GetMarketDataSignals().m_lastBestBidPrice.convert_to<double>(); // use last price as default price
+		}
+		else
+		{
+			m_logger->Warning("No valid price ticker trend for symbol=" + symbol + ", skipping order creation.");
+			continue; // skip this symbol if no valid trend
+		}		
 
 		//std::this_thread::sleep_for(std::chrono::milliseconds(5000)); // simulate some delay
 
@@ -94,56 +207,7 @@ bool SmartLongShortStrategy::OnIndividualBookTickerChange(MarketDataSubject* mar
 			//}
 			//IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
 		}
-		return true;
 	}
-	else
-	{
-		m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
-	}
-	return false;
-}
-
-void SmartLongShortStrategy::ReportTradeResults(const std::string& symbol)
-{
-	m_futureTrader->ReportTradeResults(symbol);
-}
-
-void SmartLongShortStrategy::InitializeParameters(const std::string& strategyCfgPath)
-{
-	m_strategyCfgXml = std::make_unique<XMLDocument>();
-	const auto errLoadFileXml = m_strategyCfgXml->LoadFile(strategyCfgPath.c_str());
-	if (errLoadFileXml != XML_SUCCESS)
-	{
-		throw std::runtime_error("SmartLongShortStrategy: Load file Xml error="
-			+ std::string(XMLDocument::ErrorIDToName(errLoadFileXml)) + ", error path:" + strategyCfgPath);
-	}
-	SetupStrategyLifeTime(m_strategyCfgXml.get());
-}
-
-void SmartLongShortStrategy::StartLive()
-{
-	// Change Strategy state to live
-	m_strategyRunStatus = StrategyRunStatus::LIVE;
-	// Prepare target symbols list
-	m_logger->Info("Prepare target symbols list.");
-	PrepareTargetMonitorSymbols();
-	// Create exchange filter profile
-	m_logger->Info("Create binance exchange profile.");
-	CreateBinanceExchangeProfile();
-	// Create portfolio management
-	m_logger->Info("Create portfolio management.");
-	CreatePortfolioManagement();
-	// Subscribe target symbols to receive real time market data
-	m_logger->Info("Subscribe target symbols.");
-	SubscribeTargetSymbols();
-}
-
-void SmartLongShortStrategy::StopLive()
-{
-	m_strategyRunStatus = StrategyRunStatus::STOP;
-	// Unsubscribe target symbols to stop receiving real time market data
-	m_logger->Info("Unsubscribe target symbols.");
-	UnsubscribeTargetSymbols();
 }
 
 void SmartLongShortStrategy::CreateBinanceExchangeProfile()

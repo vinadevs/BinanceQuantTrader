@@ -273,10 +273,31 @@ void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessag
 		const auto filledPrice = message.GetDoubleValueByTag(FieldLabels::FilledPrice);
 		const auto remainingAmount = message.GetDoubleValueByTag(FieldLabels::RemainingAmount);
 		const auto updateTime = message.GetIntValueByTag(FieldLabels::UpdateTime);
+		const auto exchangeText = message.GetStringValueByTag(FieldLabels::SimulatorAck::ExchangeText);
 		const auto orderStatus = BinanceNewOrder::GetOrderStatusEnum(
 			message.GetStringValueByTag(FieldLabels::OrderStatus));
-		m_positionManager->UpdateNewOrderExecutionStatus(
-			clientOrderId, symbol, filledAmount, filledPrice, remainingAmount, updateTime, orderStatus);
+		auto* ackOrder = m_positionManager->UpdateNewOrderExecutionStatus(
+			clientOrderId, symbol, filledAmount, filledPrice, remainingAmount, updateTime, orderStatus, exchangeText);
+
+		if (!ackOrder)
+		{
+			m_logger->Error("Failed to update new order execution status for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+			return;
+		}
+
+		if (ackOrder->GetOrderStatus() == BinanceNewOrderStatus::FULL_FILLED)
+		{
+			m_logger->Info("Received liquidated order ack for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+		}
+		else if (ackOrder->GetOrderStatus() == BinanceNewOrderStatus::PARTIAL_FILLED)
+		{
+			m_logger->Info("Received margin call order ack for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+		}
+		else if (ackOrder->GetOrderStatus() == BinanceNewOrderStatus::REJECTED)
+		{
+			m_logger->Info("Received rejected order ack for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+		}
+
 		// Updates the portfolio manager’s account information.
 		m_portfolio->UpdateBinanceAccountInfo();
 	}
@@ -287,10 +308,17 @@ void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessag
 		const auto clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
 		const auto symbol = message.GetStringValueByTag(FieldLabels::Symbol);
 		const auto updateTime = message.GetIntValueByTag(FieldLabels::UpdateTime);
+		const auto exchangeText = message.GetStringValueByTag(FieldLabels::SimulatorAck::ExchangeText);
 		const auto orderStatus = BinanceCancelOrder::GetOrderStatusEnum(
 			message.GetStringValueByTag(FieldLabels::OrderStatus));
-		m_positionManager->UpdateOrderCancellingStatus(
-			clientOrderId, symbol, updateTime, orderStatus);
+		auto* ackOrder = m_positionManager->UpdateOrderCancellingStatus(
+			clientOrderId, symbol, updateTime, orderStatus, exchangeText);
+
+		if (!ackOrder)
+		{
+			m_logger->Error("Failed to update new order execution status for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+			return;
+		}
 	}
 	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::ReplaceOrderAck ||
 			 simulatorAckType == FieldLabels::DownstreamAckTypes::ReplacedOrderAck)

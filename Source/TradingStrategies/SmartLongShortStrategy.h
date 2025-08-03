@@ -30,6 +30,10 @@ namespace MarketData {
 	class MarketDataSubject;
 }
 
+namespace QuantitativeModel {
+	class MarketDataAnalyzer;
+}
+
 // The SmartLongShortStrategy class is an automated trading strategy designed to manage long and short positions
 // in future market. It inherits from TradingStrategyBase and implements the TradingHintsListener
 // interface to react to trading hints. This class is responsible for initializing parameters, managing trading
@@ -41,8 +45,9 @@ namespace MarketData {
 namespace TradingStrategies {
 	class DLL_CLASS_TRADING_TRATEGIES_EXPORTS
 		SmartLongShortStrategy :
-		public TradingStrategyBase,
-		public MarketData::MarketDataObserver
+			public TradingStrategyBase, // strategy core
+			public MarketData::MarketDataObserver, // market data update
+			public LibraryUtils::AlarmSystem // schedule trading
 	{
 	public:
 		SmartLongShortStrategy(const std::string& strategyCfgPath,
@@ -61,7 +66,12 @@ namespace TradingStrategies {
 		void StartLive() override;
 
 		void StopLive() override;
+
+		// - This function is called when the alarm is triggered, which is used to send orders
+		void OnAlarmTriggered(const int passToDerived = 0) override;
 	private:
+		void InitializeMarketDataAnalyzer();
+		void SetupOrderScheduler();
 		void CreateBinanceExchangeProfile();
 		void CreatePortfolioManagement();
 		void PrepareTargetMonitorSymbols();
@@ -69,5 +79,6 @@ namespace TradingStrategies {
 		void UnsubscribeTargetSymbols();
 		// List of symbols that we will trade in future market
 		std::vector<std::string> m_targetFutureTradeSymbols;
+		std::unique_ptr<QuantitativeModel::MarketDataAnalyzer> m_marketDataAnalyzer;
 	};
 };

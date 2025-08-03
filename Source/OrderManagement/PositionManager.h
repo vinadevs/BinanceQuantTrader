@@ -89,14 +89,16 @@ namespace OrderManagement {
 			const double filledPrice,
 			const double remainingAmount,
 			const std::size_t updateTime,
-			const BinanceNewOrderStatus orderStatus);
+			const BinanceNewOrderStatus orderStatus,
+			const std::string& exchangeText);
 
 		// Execution of all cancel orders
 		BinanceCancelOrder* UpdateOrderCancellingStatus(
 			const std::string& clientOrderId,
 			const std::string& symbol,
 			const std::size_t updateTime,
-			const BinanceCancelOrderStatus orderStatus);
+			const BinanceCancelOrderStatus orderStatus,
+			const std::string& exchangeText);
 
 	private:
         std::unique_ptr<LibraryUtils::Logger> m_logger;

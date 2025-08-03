@@ -77,6 +77,13 @@ namespace TradingStrategies {
 		INTRA_MONTH, // strategy run in a month
 	};
 
+	enum class StrategyOrderScheduler : unsigned
+	{
+		UNDEF,
+		ALARM_BASED, // use alarm system to schedule trading
+		SIGNAL_BASED, // use signal/indicator events to schedule trading
+	};
+
 	// -A trading strategy is a predefined set of rules and guidelines that a trader
 	// follows to make buying or selling decisions in financial markets, 
 	// such as stocks, cryptocurrencies, forex, or commodities.
@@ -177,6 +184,8 @@ protected:
 		// -For strategies that run in a same thread with main thread
 		// then we can check this flag to know if the strategy is still live
 		StrategyRunStatus m_strategyRunStatus{ StrategyRunStatus::UNDEF };
+		// Which order scheduler will be used for this strategy
+		StrategyOrderScheduler m_strategyOrderScheduler{ StrategyOrderScheduler::UNDEF };
 		// -For strategies that need to be run in a separated thread
 		// then it will need to maintain a TradingLoop() function to 
 		// keep the thread live, this hack will help to keep the while loop running

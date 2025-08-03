@@ -5,6 +5,10 @@
   <EnableComplianceChecker Enable="false"/>
 </GeneralConfig>
 
+<OrderScheduler>
+  <OrderSendingInverval AlarmIntervalSecond="10"/>
+</OrderScheduler>
+
 <TargetSymbol>
   <AllSymbols UseRemoteExchangeList="true" LocalListingFile="[ROOT_BQT_PATH]\Configurations\Common\BinanceListings.txt"/>
   <TradeSymbols List="BTCUSDT, ETHUSDT, BNBUSDT"/>

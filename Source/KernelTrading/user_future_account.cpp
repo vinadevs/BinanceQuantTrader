@@ -118,6 +118,8 @@ void UserFutureAccount::write_account_info_to_file(std::ofstream& fileStream, co
 			<< (position.isolated ? "true" : "false")
 			<< ", EntryPrice: "
 			<< position.entryPrice
+			<< ", MarketPrice: "
+			<< position.marketPrice
 			<< ", MaxNotional: "
 			<< position.maxNotional
 			<< ", PositionSide: "
@@ -182,7 +184,7 @@ void UserFutureAccount::UpdateAssetBalanceCash(const std::string& currency, cons
 }
 
 void UserFutureAccount::UpdatePositionCash(
-    const std::string& symbol, const double pnl, const BalanceChangeEvent event)
+    const std::string& symbol, const double pnl, const double currentMarketPrice, const BalanceChangeEvent event)
 {
 	auto it = std::find_if(m_positions.begin(), m_positions.end(),
 		[&symbol](const PositionInfo& p) { return p.symbol == symbol; });
@@ -197,6 +199,7 @@ void UserFutureAccount::UpdatePositionCash(
 			it->positionInitialMargin -= pnl; // Adjust initial margin if needed
 			break;
 		}
+		it->marketPrice = currentMarketPrice; // Update market price
 		it->updateTime = static_cast<std::size_t>(
 			std::chrono::system_clock::now().time_since_epoch().count());
 	}

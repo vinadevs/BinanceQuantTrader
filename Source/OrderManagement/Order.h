@@ -96,6 +96,13 @@ namespace OrderManagement {
 
 		std::size_t GetUpdateTime() const { return m_updateTime; }
 
+		void SetExchangeText(const std::string& exchangeText) {
+			m_exchangeText = exchangeText;
+		}
+
+		const std::string& GetExchangeText() const {
+			return m_exchangeText;
+		}
 	protected:
 		void UpdateOrderTypeStr() {
 			switch (m_binanceMessageType)
@@ -132,7 +139,8 @@ namespace OrderManagement {
 		std::string m_symbol;
 		std::size_t m_orderId{ 0 }; // m_orderId is order ID from Binance
 		std::string m_clientOrderId; // m_clientOrderId is new order ID from us
-		std::string m_binanceMessageTypeStr;
+		std::string m_binanceMessageTypeStr; // String representation of the message type
+		std::string m_exchangeText; // Text message from the exchange, e.g., "Order accepted", "Order rejected", etc.
 		MessageType m_binanceMessageType{ MessageType::UNDEF };
 		std::size_t m_updateTime{ 0 }; // Time order changed status
 		// Execution Result

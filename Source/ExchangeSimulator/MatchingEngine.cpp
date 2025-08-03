@@ -259,7 +259,6 @@ void MatchingEngine::ProcessIncommingOrders()
 
 void MatchingEngine::OnHandlingReceivedSimulatorMessage(const BqtJsonMessage& message)
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
 	if (message.IsValid())
 	{
 		const auto messageType = message.GetStringValueByTag(FieldLabels::MessageType);

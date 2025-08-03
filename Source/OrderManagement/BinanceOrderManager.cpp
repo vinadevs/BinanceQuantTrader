@@ -321,7 +321,8 @@ BinanceNewOrder* BinanceOrderManager::UpdateNewOrderExecutionStatus(
     const double filledPrice, 
     const double remainingAmount,
     const std::size_t updateTime,
-    const BinanceNewOrderStatus orderStatus)
+    const BinanceNewOrderStatus orderStatus,
+    const std::string& exchangeText)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     auto it = m_newOrders.find(clientOrderId);
@@ -335,6 +336,7 @@ BinanceNewOrder* BinanceOrderManager::UpdateNewOrderExecutionStatus(
             order->SetRemainingAmount(remainingAmount);
             order->SetUpdateTime(updateTime);
             order->SetOrderStatus(orderStatus);
+			order->SetExchangeText(exchangeText);
             LOG_INFO_STREAM(m_logger, "Order with clientOrderId '" << clientOrderId <<
                 ", symbol '" << symbol
                 << "' updated successfully.");
@@ -358,7 +360,8 @@ BinanceCancelOrder* OrderManagement::BinanceOrderManager::UpdateOrderCancellingS
     const std::string& clientOrderId, 
     const std::string& symbol,
     const std::size_t updateTime,
-    const BinanceCancelOrderStatus orderStatus)
+    const BinanceCancelOrderStatus orderStatus,
+    const std::string& exchangeText)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     auto it = m_cancelOrders.find(clientOrderId);
@@ -369,6 +372,7 @@ BinanceCancelOrder* OrderManagement::BinanceOrderManager::UpdateOrderCancellingS
         {
             order->SetUpdateTime(updateTime);
             order->SetOrderStatus(orderStatus);
+			order->SetExchangeText(exchangeText);
             LOG_INFO_STREAM(m_logger, "Cancel order with clientOrderId '" << clientOrderId
                 << "', symbol '" << symbol
                 << "' updated successfully.");

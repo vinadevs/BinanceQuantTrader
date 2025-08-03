@@ -127,8 +127,8 @@ WorkedOrderIdentification FutureTrader::CreateNewPosition(const QuantitativeMode
 	}
 	else if (param.m_side == binapi::e_side::sell)
 	{
-		if (m_portfolio->GetBinanceFuturePositionInfo(param.m_symbol).positionAmt > ZERO_DOUBLE_VALUE)
-		{
+		//if (m_portfolio->GetBinanceFuturePositionInfo(param.m_symbol).positionAmt > ZERO_DOUBLE_VALUE)
+		//{
 			auto newSingleFutureShortOrder = m_positionManager->OpenNewFuturePositionUpstreamOrder(param);
 
 			// Update User Trade Profile with the new order
@@ -159,12 +159,12 @@ WorkedOrderIdentification FutureTrader::CreateNewPosition(const QuantitativeMode
 				m_positionManager->AddUnworkedOrder(clientOrderId, std::move(newSingleFutureShortOrder));
 			}
 			return { isSendingOrderSucceeded, clientOrderId };
-		}
+		/*}
 		else
 		{
 			m_logger->Warning("User future has no asset available, could not create short (sell) position for=" + param.m_symbol);
 			return { false , "" };
-		}
+		}*/
 	}
 #endif
 	return { false , "" };
@@ -282,10 +282,11 @@ void FutureTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage
 		const auto filledPrice = message.GetDoubleValueByTag(FieldLabels::FilledPrice);
 		const auto remainingAmount = message.GetDoubleValueByTag(FieldLabels::RemainingAmount);
 		const auto updateTime = message.GetIntValueByTag(FieldLabels::UpdateTime);
+		const auto exchangeText = message.GetStringValueByTag(FieldLabels::SimulatorAck::ExchangeText);
 		const auto orderStatus = BinanceNewOrder::GetOrderStatusEnum(
 			message.GetStringValueByTag(FieldLabels::OrderStatus));
 		auto* ackOrder = m_positionManager->UpdateNewOrderExecutionStatus(
-			clientOrderId, symbol, filledAmount, filledPrice, remainingAmount, updateTime, orderStatus);
+			clientOrderId, symbol, filledAmount, filledPrice, remainingAmount, updateTime, orderStatus, exchangeText);
 
 		if (!ackOrder)
 		{
@@ -315,10 +316,17 @@ void FutureTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage
 		const auto clientOrderId = message.GetStringValueByTag(FieldLabels::ClientOrderId);
 		const auto symbol = message.GetStringValueByTag(FieldLabels::Symbol);
 		const auto updateTime = message.GetIntValueByTag(FieldLabels::UpdateTime);
+		const auto exchangeText = message.GetStringValueByTag(FieldLabels::SimulatorAck::ExchangeText);
 		const auto orderStatus = BinanceCancelOrder::GetOrderStatusEnum(
 			message.GetStringValueByTag(FieldLabels::OrderStatus));
-		m_positionManager->UpdateOrderCancellingStatus(
-			clientOrderId, symbol, updateTime, orderStatus);
+		auto* ackOrder = m_positionManager->UpdateOrderCancellingStatus(
+			clientOrderId, symbol, updateTime, orderStatus, exchangeText);
+
+		if (!ackOrder)
+		{
+			m_logger->Error("Failed to update new order execution status for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+			return;
+		}
 	}
 	else if (simulatorAckType == FieldLabels::DownstreamAckTypes::ReplaceOrderAck ||
 		simulatorAckType == FieldLabels::DownstreamAckTypes::ReplacedOrderAck)

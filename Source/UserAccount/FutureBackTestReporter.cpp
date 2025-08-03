@@ -78,7 +78,7 @@ void FutureBackTestReporter::DoTradeExecutionReport(const std::string& symbol)
 		KernelTrading::UserFutureAccount::write_account_info_to_file(
 			externalFileStream, *m_accountInfo);
 		externalFileStream << std::endl;
-		/*const auto* orderManager = m_positionManager->GetWorkedOrderManager();
+		const auto* orderManager = m_positionManager->GetWorkedOrderManager();
 		if (orderManager)
 		{
 			externalFileStream << "-- Traded Order List -------------------------" << std::endl;
@@ -96,7 +96,7 @@ void FutureBackTestReporter::DoTradeExecutionReport(const std::string& symbol)
 			{
 				externalFileStream << order.second.get()->ToStringAck() << std::endl;
 			}
-		}*/
+		}
 	}
 	else if (m_reportChannel == ReportChannel::GUI_APP)
 	{
