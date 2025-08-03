@@ -33,6 +33,7 @@ MessageDelivery::MessageDelivery(const tinyxml2::XMLElement* messageDeliveryCfg)
 
 MiddlewareMQResult MessageDelivery::DeliveryMessage(const BqtJsonMessage& message)
 {
+	std::lock_guard<std::mutex> lock(m_zmqMutex); // Ensure thread safety
     if (m_isServerSideReady)
     {
         zmq_api_result result = zmq_send(

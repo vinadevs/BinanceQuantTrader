@@ -43,7 +43,7 @@ void SynchronousMarketDataFeed::UpdateTradeData(const binapi::ws::trade_t& trade
 	m_syncMarketData->m_tradeData.m_isBuyerTheMarketMaker->SetData(trade.m);
 }
 
-void MarketData::SynchronousMarketDataFeed::UpdateIndividualMarketTickerData(const binapi::ws::market_ticker_t& market)
+void SynchronousMarketDataFeed::UpdateIndividualMarketTickerData(const binapi::ws::market_ticker_t& market)
 {
 	m_syncMarketData->m_individualMarketTickerData.m_eventTimeMs->SetData(market.E);
 	m_syncMarketData->m_individualMarketTickerData.m_priceChange->SetData(market.p);
@@ -68,54 +68,7 @@ void MarketData::SynchronousMarketDataFeed::UpdateIndividualMarketTickerData(con
 	m_syncMarketData->m_individualMarketTickerData.m_totalNumberOfTrades->SetData(market.n);
 }
 
-void MarketData::SynchronousMarketDataFeed::UpdateAllMarketTickersData(const binapi::ws::markets_tickers_t& market)
-{
-	m_syncMarketData->m_allMarketTickerData.m_eventTimeMs->SetData(
-		TimeUtils::GetCurrentTimeChrono(TimeUtils::TimeUnit::Milliseconds));
-	
-	TableMarketData<IndividualMarketTickerData> table;
-	for (const auto& [key, ticker] : market.tickers)
-	{
-		IndividualMarketTickerData individualMarketTicker;
-		individualMarketTicker.m_eventTimeMs->SetData(ticker.E);
-		individualMarketTicker.m_priceChange->SetData(ticker.p);
-		individualMarketTicker.m_priceChangePercent->SetData(ticker.P);
-		individualMarketTicker.m_weightedAvgPrice->SetData(ticker.w);
-		individualMarketTicker.m_firstTradePrice->SetData(ticker.x);
-		individualMarketTicker.m_lastPrice->SetData(ticker.c);
-		individualMarketTicker.m_lastQuantity->SetData(ticker.Q);
-		individualMarketTicker.m_bestBidPrice->SetData(ticker.b);
-		individualMarketTicker.m_bestBidQty->SetData(ticker.B);
-		individualMarketTicker.m_bestAskPrice->SetData(ticker.a);
-		individualMarketTicker.m_bestAskQty->SetData(ticker.A);
-		table.emplace(key, individualMarketTicker);
-	}
-
-	m_syncMarketData->m_allMarketTickerData.m_allIndividualMarketTicker->SetData(table);
-}
-
-void MarketData::SynchronousMarketDataFeed::UpdateAllMiniTickersData(const binapi::ws::mini_tickers_t& mini)
-{
-	m_syncMarketData->m_allMiniTickerData.m_eventTimeMs->SetData(
-		TimeUtils::GetCurrentTimeChrono(TimeUtils::TimeUnit::Milliseconds));
-	TableMarketData<IndividualMiniTickerData> table;
-
-	for (const auto& [key, ticker] : mini.tickers)
-	{
-		IndividualMiniTickerData individualMiniTicker;
-		individualMiniTicker.m_eventTimeMs->SetData(ticker.E);
-		individualMiniTicker.m_closePrice->SetData(ticker.c);
-		individualMiniTicker.m_openPrice->SetData(ticker.o);
-		individualMiniTicker.m_highPrice->SetData(ticker.h);
-		individualMiniTicker.m_lowPrice->SetData(ticker.l);
-		individualMiniTicker.m_totalTradedBaseAssetVolume->SetData(ticker.v);
-		individualMiniTicker.m_totalTradedQuoteAssetVolume->SetData(ticker.q);
-		table.emplace(key, individualMiniTicker);
-	}
-	m_syncMarketData->m_allMiniTickerData.m_tableMarketTicker->SetData(table);
-}
-
-void MarketData::SynchronousMarketDataFeed::UpdateAllPartDepthData(const binapi::ws::part_depths_t& depth)
+void SynchronousMarketDataFeed::UpdateAllPartDepthData(const binapi::ws::part_depths_t& depth)
 {
 	m_syncMarketData->m_allPartDepthData.m_eventTimeMs->SetData(
 		TimeUtils::GetCurrentTimeChrono(TimeUtils::TimeUnit::Milliseconds));
@@ -143,7 +96,7 @@ void MarketData::SynchronousMarketDataFeed::UpdateAllPartDepthData(const binapi:
 
 }
 
-void MarketData::SynchronousMarketDataFeed::UpdateAllDiffDepthData(const binapi::ws::diff_depths_t& depth)
+void SynchronousMarketDataFeed::UpdateAllDiffDepthData(const binapi::ws::diff_depths_t& depth)
 {
 	m_syncMarketData->m_allDiffDepthData.m_eventTimeMs->SetData(
 		depth.E);
@@ -172,7 +125,7 @@ void MarketData::SynchronousMarketDataFeed::UpdateAllDiffDepthData(const binapi:
 	m_syncMarketData->m_allDiffDepthData.m_asks->SetData(asks);
 }
 
-void MarketData::SynchronousMarketDataFeed::UpdateMiniTickerData(const binapi::ws::mini_ticker_t& mini)
+void SynchronousMarketDataFeed::UpdateMiniTickerData(const binapi::ws::mini_ticker_t& mini)
 {
 	m_syncMarketData->m_individualMiniTickerData.m_eventTimeMs->SetData(mini.E);
 	m_syncMarketData->m_individualMiniTickerData.m_closePrice->SetData(mini.c);
@@ -183,7 +136,7 @@ void MarketData::SynchronousMarketDataFeed::UpdateMiniTickerData(const binapi::w
 	m_syncMarketData->m_individualMiniTickerData.m_totalTradedQuoteAssetVolume->SetData(mini.q);
 }
 
-void MarketData::SynchronousMarketDataFeed::UpdateAggregateTradeData(const binapi::ws::agg_trade_t& aggregate)
+void SynchronousMarketDataFeed::UpdateAggregateTradeData(const binapi::ws::agg_trade_t& aggregate)
 {
 	m_syncMarketData->m_aggregateTradeData.m_eventTimeMs->SetData(aggregate.E);
 	m_syncMarketData->m_aggregateTradeData.m_aggregateTradeId->SetData(aggregate.a);
@@ -195,7 +148,7 @@ void MarketData::SynchronousMarketDataFeed::UpdateAggregateTradeData(const binap
 	m_syncMarketData->m_aggregateTradeData.m_isBuyerMarketMaker->SetData(aggregate.m);
 }
 
-void MarketData::SynchronousMarketDataFeed::UpdateKlineCandleStickData(const binapi::ws::kline_t& kline)
+void SynchronousMarketDataFeed::UpdateKlineCandleStickData(const binapi::ws::kline_t& kline)
 {
 	m_syncMarketData->m_klineCandleStickData.m_eventTimeMs->SetData(kline.E);
 	m_syncMarketData->m_klineCandleStickData.m_klineStartTime->SetData(kline.t);

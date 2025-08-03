@@ -171,6 +171,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="tools.h" />
     <ClInclude Include="types.h" />
+    <ClInclude Include="user_future_account.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -186,6 +187,7 @@
     </ClCompile>
     <ClCompile Include="tools.cpp" />
     <ClCompile Include="types.cpp" />
+    <ClCompile Include="user_future_account.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

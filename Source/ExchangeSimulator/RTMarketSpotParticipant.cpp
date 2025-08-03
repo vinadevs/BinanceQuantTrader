@@ -27,7 +27,7 @@ static constexpr double ZERO_DOUBLE_VALUE = 0;
 RTMarketSpotParticipant::RTMarketSpotParticipant(
     const size_t maxDownstreamOrderBookSize,
     UserAccountManager* userAccountManager)
-    : Participant(ParticipantType::REAL_TIME_SPOT_MARKET_DATA, userAccountManager),
+    : Participant(ParticipantType::REAL_TIME_SPOT_MARKET_DATA, userAccountManager, nullptr),
     m_maxDownstreamOrderBookSize(maxDownstreamOrderBookSize)
 {
     m_bidDownstreamOrderBooks = std::make_unique<DownstreamOrderBook>();
@@ -109,7 +109,7 @@ bool RTMarketSpotParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& 
                 //Execute Trades:
                 //  If a match is found (hasLiquidity), execute the trade and update the order book.
                 // open edit session for user wallet
-                auto* userAccount = m_userAccountManager->OpenEditSessionForUserAccount(newUpstreamOrder.GetUserAccountID());
+                auto* userAccount = m_userAccountManager->OpenEditSessionForSpotUserAccount(newUpstreamOrder.GetUserAccountID());
                 // update order ack to upstream
                 newUpstreamOrder.SetFilledPrice(bestExchangeBidOrder.m_price);
                 if (bestExchangeBidOrder.m_quantity >= newUpstreamOrder.GetAmount()) // FULL FILL ORDER
@@ -142,7 +142,7 @@ bool RTMarketSpotParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& 
                     // 3. update filled ack
                     newUpstreamOrder.SetFilledAmount(bestExchangeBidOrder.m_quantity);
                     newUpstreamOrder.SetRemainingAmount(newUpstreamOrder.GetAmount() - bestExchangeBidOrder.m_quantity);
-                    newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::PRTIAL_FILLED);
+                    newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::PARTIAL_FILLED);
                 }
             }
             else // process for unfilled order
@@ -197,7 +197,7 @@ bool RTMarketSpotParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& 
                 //Execute Trades:
                 //  If a match is found (hasLiquidity), execute the trade and update the order book.
                 // open edit session for user wallet
-                auto* userAccount = m_userAccountManager->OpenEditSessionForUserAccount(newUpstreamOrder.GetUserAccountID());
+                auto* userAccount = m_userAccountManager->OpenEditSessionForSpotUserAccount(newUpstreamOrder.GetUserAccountID());
                 // update order ack to upstream
                 newUpstreamOrder.SetFilledPrice(bestExchangeAskOrder.m_price);
                 if (bestExchangeAskOrder.m_quantity >= newUpstreamOrder.GetAmount()) // FULL FILL ORDER
@@ -228,7 +228,7 @@ bool RTMarketSpotParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder& 
                                 * ExchangeRuleMgr->GetMakerCommission() * ExchangeRuleMgr->GetTakerCommission()));
                     newUpstreamOrder.SetFilledAmount(bestExchangeAskOrder.m_quantity);
                     newUpstreamOrder.SetRemainingAmount(newUpstreamOrder.GetAmount() - bestExchangeAskOrder.m_quantity);
-                    newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::PRTIAL_FILLED);
+                    newUpstreamOrder.SetOrderStatus(BinanceNewOrderStatus::PARTIAL_FILLED);
                 }
             }
             else // process for unfilled order

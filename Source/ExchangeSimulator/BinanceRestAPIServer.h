@@ -39,6 +39,7 @@ namespace ExchangeSimulator {
 	class ExchangeInfoManager;
 	class UserTradeProfileManager;
     class UserAccountHttpService;
+	class UserFutureAccountService;
 	class ExchangeInfoHttpService;
 	class UserTradeProfileService;
 
@@ -60,6 +61,7 @@ namespace ExchangeSimulator {
         std::unique_ptr<LibraryUtils::Logger> m_logger;
 		// http services
         std::unique_ptr<UserAccountHttpService> m_userAccountHttpService;
+		std::unique_ptr<UserFutureAccountService> m_userFutureAccountHttpService;
         std::unique_ptr<ExchangeInfoHttpService> m_exchangeInfoHttpService;
 		std::unique_ptr<UserTradeProfileService> m_userTradeProfileService;
         // http services

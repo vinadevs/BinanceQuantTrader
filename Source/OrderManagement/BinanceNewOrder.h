@@ -49,14 +49,32 @@ namespace OrderManagement {
             const double price,
             const double stopPrice,
             const double icebergAmount,
+            const std::string& stableCurrency,
 			const BinanceNewOrderTradingType tradingType,
+            const ExchangeConnectivityType exchangeConnectivityType);
+
+        BinanceNewOrder(
+            const std::string& clientOrderId,
+            const std::string& symbol,
+            const binapi::e_side side,
+            const binapi::e_type type,
+            const binapi::e_time time,
+            const double amount,
+            const double price,
+            const double stopPrice,
+            const double icebergAmount,
+			const double lerverageRatio,
+            const std::string& stableCurrency,
+            const BinanceNewOrderTradingType tradingType,
             const ExchangeConnectivityType exchangeConnectivityType);
 
         ~BinanceNewOrder() override;
 
         // Getters
         binapi::e_side GetSide() const { return m_side; }
+		std::string GetSideStr() const { return binapi::e_side_to_string(m_side); }
         binapi::e_type GetType() const { return m_type; }
+		std::string GetTypeStr() const { return binapi::e_type_to_string(m_type); }
         binapi::e_time GetTimeInForce() const { return m_timeInForce; }
         std::string GetAmountStr() const { return std::to_string(m_amount); }
         double GetAmount() const { return m_amount; }
@@ -76,6 +94,17 @@ namespace OrderManagement {
         double GetCumulativeQuoteQuantity() const { return m_cumulativeQuoteQuantity; }
         std::string GetRemainingAmountStr() const { return std::to_string(m_remainingAmount); }
         double GetRemainingAmount() const { return m_remainingAmount; }
+		double GetFutureLeverageRatio() const { return m_futureOrderLeverageRatio; }
+		std::string GetFutureLeverageRatioStr() const { return std::to_string(m_futureOrderLeverageRatio); }
+		const std::string& GetStableCurrency() const { return m_stableCurrency; }
+		double GetFutureInitialMarginPrice() const { return m_futureInitialMarginPrice; }
+		double GetFutureMaintainingMarginPrice() const { return m_futureMaintainingMarginPrice; }
+		double GetFutureLiquidationPrice() const { return m_futureLiquidationPrice; }
+		bool GetIsolatedMargin() const { return m_isolatedMargin; }
+		std::string GetFutureInitialMarginPriceStr() const { return std::to_string(m_futureInitialMarginPrice); }
+		std::string GetFutureMaintainingMarginPriceStr() const { return std::to_string(m_futureMaintainingMarginPrice); }
+		std::string GetFutureLiquidationPriceStr() const { return std::to_string(m_futureLiquidationPrice); }
+		std::string GetIsolatedMarginStr() const { return std::to_string(m_isolatedMargin); }
 
         // Setters
         void SetSide(binapi::e_side side) { m_side = side; }
@@ -90,6 +119,12 @@ namespace OrderManagement {
         void SetOrigQuoteOrderQuantity(const double origQuoteOrderQuantity) { m_origQuoteOrderQuantity = origQuoteOrderQuantity; }
         void SetCumulativeQuoteQuantity(const double cumulativeQuoteQuantity) { m_cumulativeQuoteQuantity = cumulativeQuoteQuantity; }
         void SetRemainingAmount(const double remainingAmount) { m_remainingAmount = remainingAmount; }
+        void SetFutureLeverageRatio(const double leverageRatio) { m_futureOrderLeverageRatio = leverageRatio; }
+		void SetStableCurrency(const std::string& stableCurrency) { m_stableCurrency = stableCurrency; }
+		void SetFutureInitialMarginPrice(const double initialMarginPrice) { m_futureInitialMarginPrice = initialMarginPrice; }
+		void SetFutureMaintainingMarginPrice(const double maintainingMarginPrice) { m_futureMaintainingMarginPrice = maintainingMarginPrice; }
+		void SetFutureLiquidationPrice(const double liquidationPrice) { m_futureLiquidationPrice = liquidationPrice; }
+		void SetIsolatedMargin(const bool isolatedMargin) { m_isolatedMargin = isolatedMargin; }
 
         // Execution
         BinanceNewOrderStatus GetOrderStatus() const;
@@ -143,12 +178,24 @@ namespace OrderManagement {
         /* m_stopPrice acts as a trigger : When the market price reaches m_stopPrice, the order converts into a market
         order(for stop orders) or a limit order(for stop - limit orders).*/
         double m_stopPrice{ 0 };
+		// m_icebergAmount is used for iceberg orders, which allows traders to hide the true size of their orders.
         double m_icebergAmount{ 0 };
+		// leverage ratio for the future order
+		double m_futureOrderLeverageRatio{ 0.0 };
+		// initial margin price for the future order
+		double m_futureInitialMarginPrice{ 0.0 };
+		// maintaining margin price for the future order
+		double m_futureMaintainingMarginPrice{ 0.0 };
+		// liquidation price for the future order
+		double m_futureLiquidationPrice{ 0.0 };
+        // isolated Margin for the future order
+		bool m_isolatedMargin{ false };
         // If we trade with a basket of orders
         std::unordered_set<std::string> m_clientOrderIdList;
         BinanceNewOrderStatus m_orderStatus{ BinanceNewOrderStatus::NEW };
 		BinanceNewOrderTradingType m_orderTradingType{ BinanceNewOrderTradingType::UNDEF };
         binapi::rest::api::result<binapi::rest::new_order_resp_type> m_sendingBinananceOrderResult;
         binapi::e_type m_orderType{ binapi::e_type::limit };
+		std::string m_stableCurrency{ "USDT" }; // default currency for Binance Exchange
     };
 };

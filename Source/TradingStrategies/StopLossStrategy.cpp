@@ -32,7 +32,7 @@ using namespace tinyxml2;
 StopLossStrategy::StopLossStrategy(
 	const std::string& strategyCfgPath,
 	RealTimeMarketData* marketData,
-	BinanceTrader* trader,
+	Trader* trader,
 	BinanceTradingRules* tradingRules)
 	: TradingStrategyBase("StopLossStrategy", "The fear of missing out...",
 		strategyCfgPath, marketData, trader, tradingRules)
@@ -80,7 +80,7 @@ void StopLossStrategy::CreateTradingSignalServices()
 {
 	const auto* signalXml = m_strategyCfgXml->FirstChildElement("IndicatorAndSignals");
 	assert(signalXml);
-	m_tradingSignalService = std::make_unique<TradingSignalService>(m_trader->GetPortfolio(), signalXml);
+	m_tradingSignalService = std::make_unique<TradingSignalService>(m_spotTrader->GetPortfolio(), signalXml);
 	m_tradingSignalService->RegisterTradingHintsListener(this);
 	m_marketData->RegisterDataListener(m_tradingSignalService.get());
 }
@@ -92,6 +92,10 @@ void StopLossStrategy::SubscribeTargetSymbols()
 	const XMLElement* symbolsXml = targetSymbolXml->FirstChildElement("Symbols");
 	assert(symbolsXml);
 	m_targetTradeSymbols = StringUtils::SplitAndTrimString(symbolsXml->Attribute("List"), ',');
+	if (m_targetTradeSymbols.empty())
+	{
+		throw std::runtime_error("No target symbols to subscribe market data.");
+	}
 	for (const auto& symbol : m_targetTradeSymbols)
 	{
 		m_marketData->SubscribeSymbol(symbol);
@@ -108,17 +112,17 @@ void StopLossStrategy::UnsubscribeTargetSymbols()
 
 void StopLossStrategy::CreatePortfolioManagement()
 {
-	m_trader->CreatePortfolioManagement(m_targetTradeSymbols);
+	m_spotTrader->CreatePortfolioManagement(m_targetTradeSymbols);
 	IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
 }
 
 void StopLossStrategy::CreateOrderParameterGenerator()
 {
 	m_orderParammeterGenerator = std::make_unique<OrderParammeterGenerator>(
-		m_trader->GetTradingRules(),
-		m_trader->GetPortfolio(),
-		m_trader->GetRiskManager(),
-		m_trader->GetPositionManager(),
+		m_spotTrader->GetTradingRules(),
+		m_spotTrader->GetPortfolio(),
+		m_spotTrader->GetRiskManager(),
+		m_spotTrader->GetPositionManager(),
 		m_logger.get());
 }
 
@@ -143,7 +147,7 @@ bool StopLossStrategy::TradeAsHints(const TradingHints* hints)
 				const auto orderList = m_orderParammeterGenerator->GenerateFomoOrders(hints);
 				for (const auto& order : orderList)
 				{
-					if (m_trader->CreateNewPosition(order))
+					if (m_spotTrader->CreateNewPosition(order).first)
 					{
 						if (order.m_side == binapi::e_side::buy)
 						{
@@ -184,7 +188,7 @@ bool StopLossStrategy::TradeAsHints(const TradingHints* hints)
 
 void StopLossStrategy::ReportTradeResults(const std::string& symbol)
 {
-	m_trader->ReportTradeResults(symbol);
+	m_spotTrader->ReportTradeResults(symbol);
 }
 
 void StopLossStrategy::StartLive()

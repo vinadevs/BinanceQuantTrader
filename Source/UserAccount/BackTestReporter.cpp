@@ -20,8 +20,6 @@
 #include "ReportAPIs.h"
 #include "BackTestReporter.h"
 
-
-
 using namespace UserAccount;
 using namespace OrderManagement;
 
@@ -34,7 +32,7 @@ BackTestReporter::BackTestReporter(
 {
 	m_logger = std::make_unique<LibraryUtils::Logger>("BackTestReporter");
 	SetupReporter(reportConfigXml);
-	m_logger->Info("setting up trading reporter finished.");
+	m_logger->Info("setting up trading spot reporter finished.");
 }
 
 BackTestReporter::~BackTestReporter() {}
@@ -76,7 +74,7 @@ void BackTestReporter::UpdateRemoteData(const std::string& symbol)
 	if (ExchangeSimulatorGateWay->GetUserAccountInfo(
 		ApiKeyInfoMgr->GetApiKeyInfo().m_userID, m_accountInfo, errorMessage))
 	{
-		m_logger->Info("updating account info finished.");
+		m_logger->Info("updating spot account info finished.");
 	}
 	else
 	{
@@ -85,7 +83,7 @@ void BackTestReporter::UpdateRemoteData(const std::string& symbol)
 	if (ExchangeSimulatorGateWay->GetExchangeInfo(
 		symbol, m_exchangeProfileMgr->AccessRemoteExchangeProfile(symbol), errorMessage))
 	{
-		m_logger->Info("updating exchange info finished.");
+		m_logger->Info("updating spot exchange info finished.");
 	}
 	else
 	{

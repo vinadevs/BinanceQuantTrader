@@ -314,14 +314,15 @@ binapi::double_type BinanceOrderManager::GetWeightedAveragePrice(
 	return INVALID_PRICE;
 }
 
-void BinanceOrderManager::UpdateNewOrderExecutionStatus(
+BinanceNewOrder* BinanceOrderManager::UpdateNewOrderExecutionStatus(
     const std::string& clientOrderId, 
     const std::string& symbol, 
     const double filledAmount, 
     const double filledPrice, 
     const double remainingAmount,
     const std::size_t updateTime,
-    const BinanceNewOrderStatus orderStatus)
+    const BinanceNewOrderStatus orderStatus,
+    const std::string& exchangeText)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     auto it = m_newOrders.find(clientOrderId);
@@ -335,6 +336,7 @@ void BinanceOrderManager::UpdateNewOrderExecutionStatus(
             order->SetRemainingAmount(remainingAmount);
             order->SetUpdateTime(updateTime);
             order->SetOrderStatus(orderStatus);
+			order->SetExchangeText(exchangeText);
             LOG_INFO_STREAM(m_logger, "Order with clientOrderId '" << clientOrderId <<
                 ", symbol '" << symbol
                 << "' updated successfully.");
@@ -344,19 +346,22 @@ void BinanceOrderManager::UpdateNewOrderExecutionStatus(
             LOG_WARNING_STREAM(m_logger, "Symbol mismatch for order with clientOrderId '" 
                 << ", symbol '" << symbol << clientOrderId << "'. Update skipped.");
         }
+        return it->second.get();
     } 
     else 
     {
         LOG_WARNING_STREAM(m_logger, "No new order found with clientOrderId '" 
             << clientOrderId << "'. Update failed.");
     }
+	return nullptr;
 }
 
-void OrderManagement::BinanceOrderManager::UpdateOrderCancellingStatus(
+BinanceCancelOrder* OrderManagement::BinanceOrderManager::UpdateOrderCancellingStatus(
     const std::string& clientOrderId, 
     const std::string& symbol,
     const std::size_t updateTime,
-    const BinanceCancelOrderStatus orderStatus)
+    const BinanceCancelOrderStatus orderStatus,
+    const std::string& exchangeText)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     auto it = m_cancelOrders.find(clientOrderId);
@@ -367,6 +372,7 @@ void OrderManagement::BinanceOrderManager::UpdateOrderCancellingStatus(
         {
             order->SetUpdateTime(updateTime);
             order->SetOrderStatus(orderStatus);
+			order->SetExchangeText(exchangeText);
             LOG_INFO_STREAM(m_logger, "Cancel order with clientOrderId '" << clientOrderId
                 << "', symbol '" << symbol
                 << "' updated successfully.");
@@ -376,10 +382,12 @@ void OrderManagement::BinanceOrderManager::UpdateOrderCancellingStatus(
             LOG_WARNING_STREAM(m_logger, "Symbol mismatch for cancel order with clientOrderId '"
                 << clientOrderId << "', symbol '" << symbol << "'. Update skipped.");
         }
+        return it->second.get();
     } 
     else 
     {
         LOG_WARNING_STREAM(m_logger, "No cancel order found with clientOrderId '"
             << clientOrderId << "'. Update failed.");
     }
+	return nullptr;
 }

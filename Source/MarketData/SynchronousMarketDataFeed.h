@@ -18,11 +18,10 @@
 
 namespace MarketData {
 
-// In trading, Synchronous Market Data Feed refers to a data stream 
-// that provides real-time or near-real-time information from 
-// a specific asset class which includes many single data feeds
-
-	class SynchronousMarketDataFeed
+	// In trading, Synchronous Market Data Feed refers to a data stream 
+	// that provides real-time or near-real-time information from 
+	// a specific asset class which includes many single data feeds
+	class SynchronousMarketDataFeed final
 	{
 	public:
 		SynchronousMarketDataFeed(const std::string& symbol);
@@ -32,9 +31,6 @@ namespace MarketData {
 		void UpdateMiniTickerData(const binapi::ws::mini_ticker_t& mini);
 		void UpdateAggregateTradeData(const binapi::ws::agg_trade_t& aggregate);
 		void UpdateKlineCandleStickData(const binapi::ws::kline_t& kline);
-
-		void UpdateAllMarketTickersData(const binapi::ws::markets_tickers_t& market);
-		void UpdateAllMiniTickersData(const binapi::ws::mini_tickers_t& mini);
 		void UpdateAllPartDepthData(const binapi::ws::part_depths_t& depth);
 		void UpdateAllDiffDepthData(const binapi::ws::diff_depths_t& depth);
 
@@ -60,6 +56,7 @@ namespace MarketData {
 		bool RemoveSynchronousFeed(const std::string& symbol);
 		SynchronousMarketDataFeed* GetSynchronousFeed(const std::string& symbol);
 
+		// Get single feed by symbol and field id
 		template <typename FeedType>
 		SingleMarketDataFeed* GetSingleFeed(const std::string& symbol, const FeedType id)
 		{

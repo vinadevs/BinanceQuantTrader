@@ -38,10 +38,15 @@ void MarketDataService::SubscribeTargetSymbols()
 	const XMLElement* symbolsXml = targetSymbolXml->FirstChildElement("SubscribingSymbols");
 	assert(symbolsXml);
 	auto targetTradeSymbols = StringUtils::SplitAndTrimString(symbolsXml->Attribute("List"), ',');
+	if (targetTradeSymbols.empty())
+	{
+		throw std::runtime_error("No target symbols to subscribe market data.");
+	}
 	for (const auto& symbol : targetTradeSymbols)
 	{
 		m_marketData->SubscribeSymbol(symbol);
 	}
+	m_marketData->StartIOContext();
 }
 
 MarketDataService::~MarketDataService()

@@ -11,6 +11,7 @@
 #include "DownstreamOrderAck.h"
 #include "../OrderManagement/FieldLabels.h"
 #include "../OrderManagement/TypeToStringUtils.h"
+#include "../LibraryUtils/TimeUtils.h"
 
 using namespace ExchangeSimulator;
 using namespace AckUtils;
@@ -28,6 +29,8 @@ DownstreamOrderAck AckUtils::CreateErrorRejectOrderAck(
 	ack.AddPair(FieldLabels::ClientOrderId, clientOrderId);
 	ack.AddPair(FieldLabels::SimulatorAck::ExchangeText, errorMsg);
 	ack.AddPair(FieldLabels::SimulatorAck::ErrorCode, ErrorOrderCodeStr);
+	ack.AddPair(FieldLabels::OrderStatus, "REJECTED");
+	ack.AddPair(FieldLabels::UpdateTime, std::to_string(TimeUtils::GetEpochTimeTickNow()));
 	return ack;
 }
 
@@ -56,7 +59,7 @@ DownstreamOrderAck AckUtils::CreateCancelOrderAck(
 	const std::string& text)
 {
 	DownstreamOrderAck ack = order.ToBqtJsonMessageOrderAck();
-	ack.AddPair(FieldLabels::SimulatorAck::AckType, FieldLabels::DownstreamAckTypes::CancelledOrderAck);
+	ack.AddPair(FieldLabels::SimulatorAck::AckType, FieldLabels::DownstreamAckTypes::CancelOrderAck);
 	ack.AddPair(FieldLabels::SimulatorAck::ExchangeText, text);
 	return ack;
 }
@@ -65,26 +68,38 @@ DownstreamOrderAck AckUtils::CreateCancelledOrderAck(
 	const BinanceCancelOrder& order,
 	const std::string& text)
 {
-	return DownstreamOrderAck();
+	DownstreamOrderAck ack = order.ToBqtJsonMessageOrderAck();
+	ack.AddPair(FieldLabels::SimulatorAck::AckType, FieldLabels::DownstreamAckTypes::CancelledOrderAck);
+	ack.AddPair(FieldLabels::SimulatorAck::ExchangeText, text);
+	return ack;
 }
 
 DownstreamOrderAck AckUtils::CreateReplaceOrderAck(
 	const BinanceReplaceOrder& order,
 	const std::string& text)
 {
-	return DownstreamOrderAck();
+	DownstreamOrderAck ack = order.ToBqtJsonMessageOrderAck();
+	ack.AddPair(FieldLabels::SimulatorAck::AckType, FieldLabels::DownstreamAckTypes::ReplaceOrderAck);
+	ack.AddPair(FieldLabels::SimulatorAck::ExchangeText, text);
+	return ack;
 }
 
 DownstreamOrderAck AckUtils::CreateReplacedOrderAck(
 	const BinanceReplaceOrder& order,
 	const std::string& text)
 {
-	return DownstreamOrderAck();
+	DownstreamOrderAck ack = order.ToBqtJsonMessageOrderAck();
+	ack.AddPair(FieldLabels::SimulatorAck::AckType, FieldLabels::DownstreamAckTypes::ReplacedOrderAck);
+	ack.AddPair(FieldLabels::SimulatorAck::ExchangeText, text);
+	return ack;
 }
 
 DownstreamOrderAck AckUtils::CreateQueryOrderAck(
 	const BinanceQueryOrder& order,
 	const std::string& text)
 {
-	return DownstreamOrderAck();
+	DownstreamOrderAck ack = order.ToBqtJsonMessageOrderAck();
+	ack.AddPair(FieldLabels::SimulatorAck::AckType, FieldLabels::DownstreamAckTypes::QueryOrderAck);
+	ack.AddPair(FieldLabels::SimulatorAck::ExchangeText, text);
+	return ack;
 }

@@ -14,11 +14,14 @@
 using namespace ExchangeSimulator;
 using namespace OrderManagement;
 
-Participant::Participant(const ParticipantType& mode, UserAccountManager* userAccountManager)
+Participant::Participant(const ParticipantType& mode,
+	UserAccountManager* userAccountManager,
+	UserTradeProfileManager* userTradeProfileManager)
   : m_logger{ std::make_unique<LibraryUtils::Logger>("Participant") }, 
 	m_downstreamOrderBook{ std::make_unique<DownstreamOrderBook>() },
 	m_tradeMode(mode),
-	m_userAccountManager(userAccountManager)
+	m_userAccountManager(userAccountManager),
+	m_userTradeProfileManager(userTradeProfileManager)
 {
 }
 

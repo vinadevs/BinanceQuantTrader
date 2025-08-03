@@ -29,7 +29,7 @@ namespace MarketData {
 };
 
 namespace UserAccount {
-	class BinanceTrader;
+	class Trader;
 };
 
 namespace ComplianceNRegulatory {
@@ -79,7 +79,7 @@ namespace BinanceQuantTrader {
 		// Trading components
 		std::unique_ptr<PortfolioManager::PortfolioInvestmentBinance> m_portfolio;
 		std::unique_ptr<MarketData::RealTimeMarketData> m_marketData;
-		std::unique_ptr<UserAccount::BinanceTrader> m_trader;
+		std::unique_ptr<UserAccount::Trader> m_trader;
 		std::unique_ptr<ComplianceNRegulatory::BinanceTradingRules> m_tradingRules;
 		std::unique_ptr<RiskManagement::RiskManager> m_riskManager;
 		std::unique_ptr<TradingStrategies::TradingStrategyBase> m_strategy;

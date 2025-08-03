@@ -11,6 +11,7 @@
 #include "dlldefine.h"
 
 #include "../MiddlewareMQ/MessageDelivery.h"
+#include "../KernelTrading/types.h"
 #include "../LibraryUtils/MacroUtils.h"
 
 #include <string>
@@ -21,6 +22,10 @@ namespace OrderManagement {
 	class BinanceReplaceOrder;
 	class BinanceQueryOrder;
 }
+
+namespace KernelTrading {
+	class UserFutureAccount;
+};
 
 namespace LibraryUtils {
 	class Logger;
@@ -77,6 +82,11 @@ namespace ExchangeConnectivity {
 		bool GetUserAccountInfo(
 			const std::string& userId,
 			binapi::rest::account_info_t* account,
+			std::string& errorMessage);
+
+		bool GetUserFutureAccountInfo(
+			const std::string& userId,
+			KernelTrading::UserFutureAccount* userFutureAccount,
 			std::string& errorMessage);
 
 		bool GetExchangeInfo(

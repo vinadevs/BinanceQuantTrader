@@ -27,8 +27,13 @@ namespace OrderManagement {
         UNDEF,               // Undefined status
         NEW,                 // Order has been created but not yet processed
         WAITING_FOR_FILL,    // Order is waiting to be filled
-        PRTIAL_FILLED,       // Order has been partially filled
+        PARTIAL_FILLED,      // Order has been partially filled
         FULL_FILLED,         // Order has been fully filled
+		REJECTED,            // Order was rejected
+		EXPIRED,             // Order has expired
+		CANCELED,            // Order was canceled
+		LIQUIDATED,          // Order was liquidated (future trading context)
+		MARGIN_CALL,         // Order was margin called (future trading context)
         SKIPPED,             // Order was skipped
     };
 

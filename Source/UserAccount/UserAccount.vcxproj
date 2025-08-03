@@ -154,10 +154,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BackTestReporter.h" />
+    <ClInclude Include="BaseReporter.h" />
     <ClInclude Include="BinanceReporter.h" />
     <ClInclude Include="BinanceTrader.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="FutureBackTestReporter.h" />
+    <ClInclude Include="FutureTrader.h" />
+    <ClInclude Include="FutureTradeReporter.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ReportAPIs.h" />
     <ClInclude Include="ExchangeReporter.h" />
@@ -168,6 +172,7 @@
     <ClCompile Include="BinanceReporter.cpp" />
     <ClCompile Include="BinanceTrader.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="FutureBackTestReporter.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -175,6 +180,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ReportAPIs.cpp" />
+    <ClCompile Include="FutureTrader.cpp" />
     <ClCompile Include="Trader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

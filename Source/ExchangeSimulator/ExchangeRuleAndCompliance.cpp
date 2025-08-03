@@ -9,6 +9,7 @@
 #include "pch.h"
 
 #include "../SettingNConfig/tinyxml2.h"
+#include "../LibraryUtils/PathUtils.h"
 
 #include "ExchangeRuleAndCompliance.h"
 
@@ -49,11 +50,15 @@ void ExchangeRuleAndCompliance::SetRuleAndCompliance(const tinyxml2::XMLElement*
 		throw std::runtime_error("FutureMakerCommission/FutureTakerCommission are invalid.");
 	}
 	// Load margin rate info from JSON file
-	const auto* marginRateInfoXml = exchangeRuleConfigXml->FirstChildElement("MarginRateInfo");
-	if (marginRateInfoXml) {
-		const char* filename = marginRateInfoXml->Attribute("FileName");
-		if (filename) {
-			LoadLeverageBracketsFromFile(filename);
+	const auto* futureMarginRateInfo = exchangeRuleConfigXml->FirstChildElement("FutureMarginRateInfo");
+	if (futureMarginRateInfo)
+    {
+        const char* filename = futureMarginRateInfo->Attribute("File");
+		if (filename)
+        {
+            std::string marginRateInfoFile(filename);
+            PathUtils::ReplaceSubString(marginRateInfoFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
+			LoadLeverageBracketsFromFile(marginRateInfoFile);
 		}
 		else {
 			std::cerr << "No filename specified for MarginRateInfo.\n";
@@ -114,6 +119,19 @@ const CurlAPI::LeverageBracket& ExchangeRuleAndCompliance::GetFutureLeverageBrac
 		}
 	}
 	throw std::runtime_error("No leverage bracket found for symbol: " + symbol + " with notional: " + std::to_string(postitionNotional));
+}
+
+const CurlAPI::LeverageBracket& ExchangeRuleAndCompliance::GetFutureLeverageBracketByTier(
+    const std::string& symbol,
+    const double tier)
+{
+	const auto& marginRateInfo = GetFutureMarginRateInfo(symbol);
+	for (const auto& bracket : marginRateInfo.m_Brackets) {
+		if (bracket.m_Tier == tier) {
+			return bracket;
+		}
+	}
+	throw std::runtime_error("No leverage bracket found for symbol: " + symbol + " with tier: " + std::to_string(tier));
 }
 
 void ExchangeRuleAndCompliance::LoadLeverageBracketsFromFile(const std::string& filename)

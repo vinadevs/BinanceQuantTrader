@@ -13,6 +13,7 @@
 #include "../HistoricalData/HistoricalDataManager.h"
 #include "../PortfolioManager/PortfolioInvestmentBinance.h"
 #include "../UserAccount/BinanceTrader.h"
+#include "../UserAccount/FutureTrader.h"
 #include "../ComplianceNRegulatory/BinanceTradingRules.h"
 #include "../RiskManagement/RiskManager.h"
 #include "../TradingStrategies/TradingStrategyBase.h"
@@ -273,4 +274,5 @@ void TradingModel::RunModel()
 		// Start receive real time market data and analyze to find trading opportunity signals
 		m_marketData->StartStreamingData();  // this is a child thread
 	}
+	// Should not reach here, because the model is running in a trading loop
 }

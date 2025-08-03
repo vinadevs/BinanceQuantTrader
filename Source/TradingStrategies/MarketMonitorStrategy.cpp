@@ -185,7 +185,7 @@ bool MarketMonitorStrategy::OnAllMiniTickersChange(MarketDataSubject* marketData
 	return false;
 }
 
-bool MarketMonitorStrategy::OnAllMarketDepthChange(MarketDataSubject* marketData, const std::string& symbol)
+bool MarketMonitorStrategy::OnAllPartDepthChange(MarketDataSubject* marketData, const std::string& symbol)
 {
 	if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
 	{
@@ -202,7 +202,7 @@ bool MarketMonitorStrategy::OnAllMarketDepthChange(MarketDataSubject* marketData
 	return false;
 }
 
-bool MarketMonitorStrategy::OnAllMarketDepthDiffChange(MarketDataSubject* marketData, const std::string& symbol)
+bool MarketMonitorStrategy::OnAllDiffDepthChange(MarketDataSubject* marketData, const std::string& symbol)
 {
 	if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
 	{
@@ -283,6 +283,10 @@ void MarketMonitorStrategy::PrepareTargetMonitorSymbols()
 
 void MarketMonitorStrategy::SubscribeTargetSymbols()
 {
+	if (m_targetMonitorSymbols.empty())
+	{
+		throw std::runtime_error("No target symbols to subscribe market data.");
+	}
 	// register this class with market data to receive real time data
 	m_marketData->RegisterDataListener(this);
 	// subscibe all target symbols

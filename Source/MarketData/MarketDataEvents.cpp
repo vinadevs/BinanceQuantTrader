@@ -146,12 +146,9 @@ bool MarketDataEvents::Subscribe(const std::string& symbol)
         }
         if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("KlineCandleStickData"), "true"))
         {
-            SubscibeKlineCandleStick(symbol);
-        }
-        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("PartDepthData"), "true"))
-        {
-            SubscibePartDepth(symbol);
-        }
+			const std::string interval = "1m";
+            SubscibeKlineCandleStick(symbol, interval);
+        }  
         if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("DiffDepthData"), "true"))
         {
             SubscibeDiffDepth(symbol);
@@ -165,6 +162,23 @@ bool MarketDataEvents::Subscribe(const std::string& symbol)
         m_logger->Warning("Could not create new market data feed for symbol=" + symbol);
         return false;
     }
+}
+
+bool MarketDataEvents::SubscribePartDepth(const std::string& symbol)
+{
+	std::lock_guard<std::mutex> lock(m_marketDataMutex);
+	m_logger->Info("Starting subscribing part depth for symbol=" + symbol);
+	if (m_feedHandler->CreateNewMarketDataFeed(symbol))
+	{
+		SubscibePartDepth(symbol);
+		m_subscribedSymbols.emplace(symbol);
+		return true;
+	}
+	else
+	{
+		m_logger->Warning("Could not create new market data feed for symbol=" + symbol);
+		return false;
+	}
 }
 
 bool MarketDataEvents::Unsubscribe(const std::string& symbol)
@@ -260,34 +274,112 @@ void MarketDataEvents::SubscibeTrade(const std::string& symbol)
 
 void MarketDataEvents::SubscibeIndividualMarketTicker(const std::string& symbol)
 {
+	const auto handle = m_webSocketRealTime->market(symbol.c_str(),
+		std::bind(&MarketDataFeedHandler::HandleIndividualMarketTickerData,
+			m_feedHandler,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4));
+	VerifySubscriptionHandle(symbol, "individual market ticker", handle,
+		SubscriptionHandleType::INDIVIDUAL_MARKET_TICKER);
 }
 
 void MarketDataEvents::SubscibeAllMarketTickers(const std::string& symbol)
 {
+	const auto handle = m_webSocketRealTime->markets(
+		std::bind(&MarketDataFeedHandler::HandleAllMarketTickersData,
+			m_feedHandler,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4));
+	VerifySubscriptionHandle(symbol, "all market tickers", handle,
+		SubscriptionHandleType::ALL_MARKET_TICKERS);
 }
 
 void MarketDataEvents::SubscibeIndividualMiniTicker(const std::string& symbol)
 {
+	const auto handle = m_webSocketRealTime->mini_ticker(symbol.c_str(),
+		std::bind(&MarketDataFeedHandler::HandleMiniTickerData,
+			m_feedHandler,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4));
+	VerifySubscriptionHandle(symbol, "individual mini ticker", handle,
+		SubscriptionHandleType::INDIVIDUAL_MINI_TICKER);
 }
 
 void MarketDataEvents::SubscibeAllMiniTickers(const std::string& symbol)
 {
+	const auto handle = m_webSocketRealTime->mini_tickers(
+		std::bind(&MarketDataFeedHandler::HandleAllMiniTickerData,
+			m_feedHandler,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4));
+	VerifySubscriptionHandle(symbol, "all mini tickers", handle,
+		SubscriptionHandleType::ALL_MINI_TICKERS);
 }
 
 void MarketDataEvents::SubscibeAggregateTrade(const std::string& symbol)
 {
+	const auto handle = m_webSocketRealTime->agg_trade(symbol.c_str(),
+		std::bind(&MarketDataFeedHandler::HandleAggregateTradeData,
+			m_feedHandler,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4));
+	VerifySubscriptionHandle(symbol, "aggregate trade", handle,
+		SubscriptionHandleType::AGGREGATE_TRADE);
 }
 
-void MarketDataEvents::SubscibeKlineCandleStick(const std::string& symbol)
+void MarketDataEvents::SubscibeKlineCandleStick(const std::string& symbol, const std::string& interval)
 {
+	const auto handle = m_webSocketRealTime->klines(symbol.c_str(),
+		interval.c_str(),
+		std::bind(&MarketDataFeedHandler::HandleKlineCandleStickData,
+			m_feedHandler,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4));
+	VerifySubscriptionHandle(symbol, "kline candle stick", handle,
+		SubscriptionHandleType::KLINE_CANDLE_STICK);
 }
 
+// We can only subscribe to part depth data for one symbol at a time
 void MarketDataEvents::SubscibePartDepth(const std::string& symbol)
 {
+	m_feedHandler->SetPartDiffSymbol(symbol); // set part diff symbol to feed handler
+	const auto handle = m_webSocketRealTime->part_depth(symbol.c_str(),
+        binapi::e_levels::_20, // default level 20
+        binapi::e_freq::_100ms, // default frequency 100ms
+		std::bind(&MarketDataFeedHandler::HandlePartDepthData,
+			m_feedHandler,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4));
+	VerifySubscriptionHandle(symbol, "part depth", handle,
+		SubscriptionHandleType::PART_DEPTH);
 }
 
 void MarketDataEvents::SubscibeDiffDepth(const std::string& symbol)
 {
+	const auto handle = m_webSocketRealTime->diff_depth(symbol.c_str(),
+		binapi::e_freq::_100ms, // default frequency 100ms
+		std::bind(&MarketDataFeedHandler::HandleDiffDepthData,
+			m_feedHandler,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4));
+	VerifySubscriptionHandle(symbol, "diff depth", handle,
+		SubscriptionHandleType::DIFF_DEPTH);
 }
 
 void MarketDataEvents::SubscibeUserData(const std::string& symbol)

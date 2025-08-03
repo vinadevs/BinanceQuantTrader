@@ -10,25 +10,20 @@
 using namespace MarketDataCapture;
 using namespace MarketData;
 
-inline constexpr std::string_view indentation = "    "; // 4 spaces
-
 MarketDataListener::MarketDataListener()
     : m_logger{ std::make_unique<LibraryUtils::Logger>("MarketDataListener") }
 {
 }
 
-MarketDataListener::~MarketDataListener()
-{
-}
+MarketDataListener::~MarketDataListener() {}
 
 bool MarketDataListener::OnIndividualBookTickerChange(
-	MarketData::MarketDataSubject* marketData, const std::string& symbol)
+	MarketDataSubject* marketData, const std::string& symbol)
 {
     if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
-        LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << " | "
+        LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << "|"
             << syncedData->m_individualBookTickerData);
-
         return true;
     }
     else
@@ -39,13 +34,12 @@ bool MarketDataListener::OnIndividualBookTickerChange(
 }
 
 bool MarketDataListener::OnTradeChange(
-	MarketData::MarketDataSubject* marketData, const std::string& symbol)
+	MarketDataSubject* marketData, const std::string& symbol)
 {
     if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
-        LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << " | "
+        LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
             << syncedData->m_tradeData);
-
         return true;
     }
     else
@@ -55,11 +49,11 @@ bool MarketDataListener::OnTradeChange(
     return false;
 }
 
-bool MarketDataListener::OnIndividualMarketTickerChange(MarketData::MarketDataSubject* marketData, const std::string& symbol)
+bool MarketDataListener::OnIndividualMarketTickerChange(MarketDataSubject* marketData, const std::string& symbol)
 {
 	if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
 	{
-        LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << " | "
+        LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
             << syncedData->m_individualMarketTickerData);
 		return true;
 	}
@@ -67,32 +61,29 @@ bool MarketDataListener::OnIndividualMarketTickerChange(MarketData::MarketDataSu
 	{
 		m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
 	}
-
 	return false;
 }
 
-bool MarketDataListener::OnMiniTickerChange(MarketData::MarketDataSubject* marketData, const std::string& symbol)
+bool MarketDataListener::OnMiniTickerChange(MarketDataSubject* marketData, const std::string& symbol)
 {
     if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
-        LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << " | "
+        LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
             << syncedData->m_individualMiniTickerData);
-
         return true;
     }
     else
     {
         m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
     }
-
     return false;
 }
 
-bool MarketDataListener::OnAggregateTradeChange(MarketData::MarketDataSubject* marketData, const std::string& symbol)
+bool MarketDataListener::OnAggregateTradeChange(MarketDataSubject* marketData, const std::string& symbol)
 {
     if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
-        LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << " | "
+        LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
             << syncedData->m_aggregateTradeData);
         return true;
     }
@@ -100,15 +91,14 @@ bool MarketDataListener::OnAggregateTradeChange(MarketData::MarketDataSubject* m
     {
         m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
     }
-
     return false;
 }
 
-bool MarketDataCapture::MarketDataListener::OnKlineCandleStickChange(MarketData::MarketDataSubject* marketData, const std::string& symbol)
+bool MarketDataListener::OnKlineCandleStickChange(MarketDataSubject* marketData, const std::string& symbol)
 {
 	if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
 	{
-		LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << " | "
+		LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
 			<< syncedData->m_klineCandleStickData);
 		return true;
 	}
@@ -119,60 +109,62 @@ bool MarketDataCapture::MarketDataListener::OnKlineCandleStickChange(MarketData:
     return false;
 }
 
-bool MarketDataListener::OnAllMarketTickersChange(MarketData::MarketDataSubject* marketData, const std::string& symbol)
+bool MarketDataListener::OnAllMarketTickersChange(MarketDataSubject* marketData, const std::string& symbol)
 {
     if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
-        return true;
+        LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << "|"
+            << syncedData->m_allMarketTickerData);
+		return true;
     }
     else
     {
         m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
     }
-
     return false;
 }
 
-bool MarketDataListener::OnAllMiniTickersChange(MarketData::MarketDataSubject* marketData, const std::string& symbol)
+bool MarketDataListener::OnAllMiniTickersChange(MarketDataSubject* marketData, const std::string& symbol)
 {
     if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
-
-        return true;
+		LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
+			<< syncedData->m_allMiniTickerData);
+		return true;
     }
     else
     {
         m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
     }
-
     return false;
 }
 
-bool MarketDataListener::OnAllMarketDepthChange(MarketData::MarketDataSubject* marketData, const std::string& symbol)
+bool MarketDataListener::OnAllDiffDepthChange(MarketDataSubject* marketData, const std::string& symbol)
 {
     if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
-
-        return true;
+		LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << "|"
+			<< syncedData->m_allDiffDepthData);
+		return true;
     }
     else
     {
         m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
     }
-
     return false;
 }
 
-bool MarketDataListener::OnAllMarketDepthDiffChange(MarketData::MarketDataSubject* marketData, const std::string& symbol)
+bool MarketDataListener::OnAllPartDepthChange(MarketDataSubject* marketData, const std::string& symbol)
 {
     if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
-        return true;
+		LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << "|"
+			<< syncedData->m_allPartDepthData);
+		return true;
     }
     else
     {
         m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
     }
-
     return false;
 }

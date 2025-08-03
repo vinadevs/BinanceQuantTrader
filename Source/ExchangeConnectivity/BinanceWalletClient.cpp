@@ -11,8 +11,11 @@
 #include "../KernelTrading/types.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../LibraryUtils/Logger.h"
+#include "../KernelTrading/user_future_account.h"
 
 #include "BinanceWalletClient.h"
+
+#include <nlohmann/json.hpp>
 
 using namespace ExchangeConnectivity;
 
@@ -23,11 +26,17 @@ BinanceWalletClient::BinanceWalletClient(const tinyxml2::XMLElement* binanceWall
     const auto* connectionXml = binanceWalletClientXmlCfg->FirstChildElement("Connection");
     assert(connectionXml);
     m_logger->Info("Creating new Http connection...");
-    m_grpcConnection.m_serverIpAddress = std::string(connectionXml->Attribute("ServerIpAddress"));
-    m_grpcConnection.m_serverPort = std::string(connectionXml->Attribute("ServerPort"));
-    m_grpcConnection.m_serverConnection = m_grpcConnection.m_serverIpAddress + ":" + m_grpcConnection.m_serverPort;
-    m_grpcConnection.m_grpcChannel = grpc::CreateChannel(m_grpcConnection.m_serverConnection, grpc::InsecureChannelCredentials());
-    m_grpcConnection.m_grpcStub = account::UserAccountService::NewStub(m_grpcConnection.m_grpcChannel);
+    m_grpcConnectionFutureAccount.m_serverIpAddress = std::string(connectionXml->Attribute("ServerIpAddress"));
+    m_grpcConnectionFutureAccount.m_serverPort = std::string(connectionXml->Attribute("ServerPort"));
+    m_grpcConnectionFutureAccount.m_serverConnection = m_grpcConnectionFutureAccount.m_serverIpAddress + ":" + m_grpcConnectionFutureAccount.m_serverPort;
+    m_grpcConnectionFutureAccount.m_grpcChannel = grpc::CreateChannel(m_grpcConnectionFutureAccount.m_serverConnection, grpc::InsecureChannelCredentials());
+    m_grpcConnectionFutureAccount.m_grpcStubFutureAccount = futureaccount::UserAccountService::NewStub(m_grpcConnectionFutureAccount.m_grpcChannel);
+
+	/*m_grpcConnectionFutureAccount.m_serverIpAddress = m_grpcConnection.m_serverIpAddress;
+	m_grpcConnectionFutureAccount.m_serverPort = m_grpcConnection.m_serverPort;
+	m_grpcConnectionFutureAccount.m_serverConnection = m_grpcConnection.m_serverConnection;
+	m_grpcConnectionFutureAccount.m_grpcChannel = grpc::CreateChannel(m_grpcConnectionFutureAccount.m_serverConnection, grpc::InsecureChannelCredentials());
+	m_grpcConnectionFutureAccount.m_grpcStubFutureAccount = futureaccount::UserAccountService::NewStub(m_grpcConnectionFutureAccount.m_grpcChannel);*/
 }
 
 BinanceWalletClient::~BinanceWalletClient() {}
@@ -78,6 +87,104 @@ bool BinanceWalletClient::GetUserAccountDataResponse(
     else 
     {
         errorMessage = status.error_message();
+        return false;
+    }
+}
+
+bool BinanceWalletClient::GetUserFutureAccountDataResponse(const std::string& userId,
+    KernelTrading::UserFutureAccount* account,
+    std::string& errorMessage)
+{
+	m_logger->Info("Sending request UserFutureAccount data for user account id=" + userId);
+    // 1. Setup stub and request
+    grpc::ClientContext context;
+    futureaccount::GetUserFutureAccountRequest request;
+    futureaccount::GetUserFutureAccountResponse response;
+
+    request.set_useraccountid(userId);
+
+    // 2. Make RPC call
+    grpc::Status status = m_grpcConnectionFutureAccount.m_grpcStubFutureAccount->GetUserFutureAccount(&context, request, &response);
+
+    if (!status.ok()) {
+        errorMessage = status.error_message();
+        return false;
+    }
+
+    // 3. Extract protobuf response
+    const futureaccount::UserFutureAccount& pb = response.account();
+
+    // 4. Convert protobuf UserFutureAccount -> your ExchangeSimulator::UserFutureAccount
+    try {
+        // Set fields directly using setters
+        account->SetFeeTier(pb.feetier());
+        account->SetCanTrade(pb.cantrade());
+        account->SetCanDeposit(pb.candeposit());
+        account->SetCanWithdraw(pb.canwithdraw());
+        account->SetUpdateTime(pb.updatetime());
+
+        account->SetTotalInitialMargin(pb.totalinitialmargin());
+        account->SetTotalMaintMargin(pb.totalmaintmargin());
+        account->SetTotalWalletBalance(pb.totalwalletbalance());
+        account->SetTotalUnrealizedProfit(pb.totalunrealizedprofit());
+        account->SetTotalMarginBalance(pb.totalmarginbalance());
+        account->SetTotalPositionInitialMargin(pb.totalpositioninitialmargin());
+        account->SetTotalOpenOrderInitialMargin(pb.totalopenorderinitialmargin());
+        account->SetTotalCrossWalletBalance(pb.totalcrosswalletbalance());
+        account->SetTotalCrossUnPnl(pb.totalcrossunpnl());
+        account->SetAvailableBalance(pb.availablebalance());
+        account->SetMaxWithdrawAmount(pb.maxwithdrawamount());
+
+        // Assets
+        std::vector<KernelTrading::AssetInfo> assets;
+		assets.reserve(pb.assets_size());
+        for (const auto& a : pb.assets()) {
+            assets.emplace_back(
+                a.asset(),
+                a.walletbalance(),
+                a.unrealizedprofit(),
+                a.marginbalance(),
+                a.maintmargin(),
+                a.initialmargin(),
+                a.positioninitialmargin(),
+                a.openorderinitialmargin(),
+                a.crosswalletbalance(),
+                a.crossunpnl(),
+                a.availablebalance(),
+                a.maxwithdrawamount(),
+                a.marginavailable(),
+                a.updatetime()
+            );
+        }
+        account->SetAssets(assets);
+
+        // Positions
+        std::vector<KernelTrading::PositionInfo> positions;
+		positions.reserve(pb.positions_size());
+        for (const auto& p : pb.positions()) {
+            positions.emplace_back(
+                p.symbol(),
+                p.initialmargin(),
+                p.maintmargin(),
+                p.unrealizedprofit(),
+                p.positioninitialmargin(),
+                p.openorderinitialmargin(),
+                p.leverage(),
+                p.isolated(),
+                p.entryprice(),
+                p.maxnotional(),
+                p.positionside(),
+                p.positionamt(),
+                p.notional(),
+                p.isolatedwallet(),
+                p.updatetime()
+            );
+        }
+        account->SetPositions(positions);
+        return true;
+    }
+    catch (const std::exception& ex) {
+        errorMessage = ex.what();
         return false;
     }
 }

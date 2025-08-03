@@ -38,6 +38,10 @@ void MarketDataSubject::AttachMarketDataObserver(MarketDataObserver* observer)
 			m_marketDataObservers.emplace_back(observer);
 		}
 	}
+	else
+	{
+		throw std::invalid_argument("MarketDataSubject::AttachMarketDataObserver: observer is null");
+	}
 }
 
 void MarketDataSubject::DettachMarketDataObserver(MarketDataObserver* observer)
@@ -45,6 +49,10 @@ void MarketDataSubject::DettachMarketDataObserver(MarketDataObserver* observer)
 	if (observer)
 	{
 		m_marketDataObservers.remove(observer);
+	}
+	else
+	{
+		throw std::invalid_argument("MarketDataSubject::DettachMarketDataObserver: observer is null");
 	}
 }
 
@@ -95,10 +103,10 @@ int MarketDataSubject::NotifyAllMiniTickersChange(const std::string& symbol)
 
 int MarketDataSubject::NotifyAllPartDepthChange(const std::string& symbol)
 {
-	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllMarketDepthChange);
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllPartDepthChange);
 }
 
 int MarketDataSubject::NotifyAllDiffDepthChange(const std::string& symbol)
 {
-	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllMarketDepthDiffChange);
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllDiffDepthChange);
 }

@@ -10,6 +10,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 namespace CurlAPI {
     /**
@@ -43,5 +44,18 @@ namespace CurlAPI {
         SymbolMarginRateInfo(const std::string& symbol) : m_Symbol(symbol) {}
 		// Default constructor
 		SymbolMarginRateInfo() : m_Symbol("") {}
+
+        friend std::ostream& operator<<(std::ostream& os, const SymbolMarginRateInfo& info) {
+			os << "Symbol: " << info.m_Symbol << "\n";
+			for (const auto& bracket : info.m_Brackets) {
+				os << "Tier: " << bracket.m_Tier
+					<< ", Notional Cap: " << bracket.m_NotionalCap
+					<< ", Initial Leverage: " << bracket.m_InitialLeverage
+					<< ", Initial Margin Rate: " << bracket.m_InitialMarginRate
+					<< ", Maintenance Margin Rate: " << bracket.m_MaintMarginRate
+					<< "\n";
+			}
+			return os;
+		}
     };
 }; // namespace CurlAPI

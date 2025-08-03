@@ -42,6 +42,9 @@ namespace ExchangeSimulator {
 
         // order matching for upstream orders
         bool TryToMatchOrder(OrderManagement::BinanceNewOrder& newUpstreamOrder) override;
+
+        void HandleUserBalanceAfterCancelOrder(const OrderManagement::BinanceNewOrder& order) override {}
+
         // book quote for downstream orders
         bool OnIndividualBookTickerChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
 

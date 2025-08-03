@@ -71,6 +71,15 @@ namespace ExchangeSimulator {
 		 * @return The LeverageBracket for the given symbol and notional.
 		 */
 		const CurlAPI::LeverageBracket& GetFutureLeverageBracketByNotional(const std::string& symbol, const double postitionNotional);
+
+		/**
+		 * @brief Get the leverage bracket for a specific symbol and tier.
+		 * @param symbol The trading symbol (e.g., "BTCUSDT").
+		 * @param tier The leverage tier.
+		 * @return The LeverageBracket for the given symbol and tier.
+		 */
+		const CurlAPI::LeverageBracket& GetFutureLeverageBracketByTier(const std::string& symbol, const double tier);
+
 	private:
 		/**
 		 * @brief Load leverage brackets from a JSON file.

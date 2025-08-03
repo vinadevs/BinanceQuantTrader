@@ -85,7 +85,9 @@ void BinanceExchangeSimulator::PrepareExchangeServices(const tinyxml2::XMLDocume
 	m_logger->Info("Initiating UserTradeProfileManager.");
 	const auto* userTradeProfileManagerCfg = configSimulatorXml->FirstChildElement("UserTradeProfileManager");
 	assert(userTradeProfileManagerCfg);
-	m_userTradeProfileManager = std::make_unique<UserTradeProfileManager>(userTradeProfileManagerCfg);
+	m_userTradeProfileManager = std::make_unique<UserTradeProfileManager>(
+		userTradeProfileManagerCfg,
+		m_userAccountManager->GetUserAccountIds());
 
 	m_logger->Info("Initiating BinanceRestAPIServer.");
 	const auto* binanceRestAPIServerCfg = configSimulatorXml->FirstChildElement("BinanceRestAPIServer");
@@ -99,7 +101,7 @@ void BinanceExchangeSimulator::PrepareExchangeServices(const tinyxml2::XMLDocume
 	m_logger->Info("Initiating Exchange Matching Engine.");
 	const auto* matchingEngineCfg = configSimulatorXml->FirstChildElement("MatchingEngine");
 	assert(matchingEngineCfg);
-	m_matchingEngine = std::make_unique<MatchingEngine>(matchingEngineCfg, m_userAccountManager.get());
+	m_matchingEngine = std::make_unique<MatchingEngine>(matchingEngineCfg, m_userAccountManager.get(), m_userTradeProfileManager.get());
 
 	m_logger->Info("Initiating Message Transporter.");
 	const auto* messageTransporterCfg = configSimulatorXml->FirstChildElement("MessageTransporter");

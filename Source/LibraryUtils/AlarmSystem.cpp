@@ -41,6 +41,19 @@ void AlarmSystem::RequestAlarm(long customIntervalMs) {
     if (customIntervalMs > 0) {
         m_customInterval = customIntervalMs; // Set temporary custom interval
     }
+    else {
+		throw std::invalid_argument("Custom interval must be greater than 0.");
+    }
+}
+
+void AlarmSystem::SetCustomInterval(const long customIntervalMs) {
+	std::lock_guard<std::mutex> lock(m_mutex);
+    if (customIntervalMs > 0) {
+        m_customInterval = customIntervalMs; // Set custom interval
+    }
+    else {
+        throw std::invalid_argument("Custom interval must be greater than 0.");
+    }
 }
 
 void AlarmSystem::Run() {

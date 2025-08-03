@@ -22,6 +22,9 @@
     <Filter Include="Market Data Analyzer">
       <UniqueIdentifier>{6a2787c1-f052-4366-b0a2-5a511d31042f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Pricing Models">
+      <UniqueIdentifier>{b73616a2-8abe-477f-9891-a57a266af687}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -67,6 +70,9 @@
     </ClCompile>
     <ClCompile Include="QuantMarketDataAnalyzer.cpp">
       <Filter>Market Data Analyzer</Filter>
+    </ClCompile>
+    <ClCompile Include="PricingModels.cpp">
+      <Filter>Pricing Models</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

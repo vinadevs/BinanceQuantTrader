@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="BinanceAccountUtils.h" />
     <ClInclude Include="BinanceTradingPair.h" />
+    <ClInclude Include="PortfolioDefinitions.h" />
     <ClInclude Include="PortfolioInvestment.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="framework.h" />

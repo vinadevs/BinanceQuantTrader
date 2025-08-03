@@ -132,19 +132,21 @@ namespace ExchangeSimulator {
 	using FutureAssetBalances = std::unordered_map<AssetSymbol, FutureAssetBalance>;
 
     /**
-     * @struct UserAccount
-     * @brief Represents a user's account details on the Binance platform.
+     * @struct UserSpotAccount
+     * @brief Represents a user's spot account details on the Binance platform.
      *
      * This structure holds the essential information for managing and tracking
      * a user's account activities on Binance. It includes fields for personal
      * identification, balance tracking, and trading preferences.
     */
 
-    struct UserAccount final
+    struct UserSpotAccount final
     {
-        UserAccount() = default;
+        UserSpotAccount() = default;
 
-        UserAccount(const std::string& userConfigPath, const std::string& accountInfoJsonFile);
+        UserSpotAccount(
+            const std::string& userConfigPath,
+            const std::string& accountInfoJsonFile);
 
         // balances
         AssetBalances m_assetBalances;
@@ -152,9 +154,9 @@ namespace ExchangeSimulator {
         StableCoinUSDTBalance m_usdtBalance;
 		FutureAssetBalances m_futureAssetBalances;
 
-        friend std::ostream& operator<<(std::ostream& os, const UserAccount& account)
+        friend std::ostream& operator<<(std::ostream& os, const UserSpotAccount& account)
         {
-            os << "UserAccount { "
+            os << "UserSpotAccount { "
                << "userId: " << account.m_userId << ", "
                << "canTrade: " << std::boolalpha << account.IsAccountEligibleToTrade() << ", "
                << "canWithdraw: " << account.m_canWithdraw << ", "
@@ -183,7 +185,7 @@ namespace ExchangeSimulator {
             const double requiredMarginCash);
 
         AssetBalance& LookupAssetBalance(const AssetSymbol& symbol);
-		FutureAssetBalance& LookupFutureAssetBalance(const AssetSymbol& symbol);
+		FutureAssetBalance& LookupFutureAssetInfo(const AssetSymbol& symbol);
 
 		const binapi::rest::account_info_t& GetAccountInfo() const { 
             return m_accountInfo;

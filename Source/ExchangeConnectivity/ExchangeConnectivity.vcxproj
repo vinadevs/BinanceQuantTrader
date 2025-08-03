@@ -167,6 +167,8 @@
     <ClInclude Include="protobuf\user_account_data.grpc.pb.h" />
     <ClInclude Include="protobuf\user_account_data.pb.h" />
     <ClInclude Include="BinanceWalletClient.h" />
+    <ClInclude Include="protobuf\user_future_account_data.grpc.pb.h" />
+    <ClInclude Include="protobuf\user_future_account_data.pb.h" />
     <ClInclude Include="protobuf\user_trade_profile.grpc.pb.h" />
     <ClInclude Include="protobuf\user_trade_profile.pb.h" />
   </ItemGroup>
@@ -188,6 +190,8 @@
     <ClCompile Include="protobuf\user_account_data.grpc.pb.cc" />
     <ClCompile Include="protobuf\user_account_data.pb.cc" />
     <ClCompile Include="BinanceWalletClient.cpp" />
+    <ClCompile Include="protobuf\user_future_account_data.grpc.pb.cc" />
+    <ClCompile Include="protobuf\user_future_account_data.pb.cc" />
     <ClCompile Include="protobuf\user_trade_profile.grpc.pb.cc" />
     <ClCompile Include="protobuf\user_trade_profile.pb.cc" />
   </ItemGroup>

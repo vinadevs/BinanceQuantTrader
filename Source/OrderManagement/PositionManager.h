@@ -50,6 +50,10 @@ namespace OrderManagement {
 		std::unique_ptr<BinanceNewOrder> OpenNewTestPositionUpstreamOrder(
 			const QuantitativeModel::QuantOrderParammeter& param);
 
+		// Create new future position upstream order
+		std::unique_ptr<BinanceNewOrder> OpenNewFuturePositionUpstreamOrder(
+			const QuantitativeModel::QuantOrderParammeter& param);
+
 		std::unique_ptr<BinanceCancelOrder> CancelPositionUpstreamOrder(
 			const BinanceNewOrder* originalOrder);
 
@@ -69,39 +73,32 @@ namespace OrderManagement {
 		bool CloseAllOpenedPositionsBySide(const binapi::e_side posSide);
 		bool CloseAllOpenedPositions();
 
-		OrderManagement::BinanceOrderManager* GetWorkedOrderManager() const
-		{
-			return m_workedOrderManager.get();
-		}
+		OrderManagement::BinanceOrderManager* GetWorkedOrderManager() const;
 
-		OrderManagement::BinanceOrderManager* GetUnworkedOrderManager() const
-		{
-			return m_unworkedOrderManager.get();
-		}
+		OrderManagement::BinanceOrderManager* GetUnworkedOrderManager() const;
 
 		binapi::double_type GetWeightedAveragePrice(
 			const std::string& symbol,
-			const binapi::e_side posSide) const
-		{
-			return m_workedOrderManager->GetWeightedAveragePrice(symbol, posSide);
-		}
+			const binapi::e_side posSide) const;
 
 		// Execution of all new worked orders
-		void UpdateNewOrderExecutionStatus(
+		BinanceNewOrder* UpdateNewOrderExecutionStatus(
 			const std::string& clientOrderId,
 			const std::string& symbol,
 			const double filledAmount,
 			const double filledPrice,
 			const double remainingAmount,
 			const std::size_t updateTime,
-			const BinanceNewOrderStatus orderStatus);
+			const BinanceNewOrderStatus orderStatus,
+			const std::string& exchangeText);
 
 		// Execution of all cancel orders
-		void UpdateOrderCancellingStatus(
+		BinanceCancelOrder* UpdateOrderCancellingStatus(
 			const std::string& clientOrderId,
 			const std::string& symbol,
 			const std::size_t updateTime,
-			const BinanceCancelOrderStatus orderStatus);
+			const BinanceCancelOrderStatus orderStatus,
+			const std::string& exchangeText);
 
 	private:
         std::unique_ptr<LibraryUtils::Logger> m_logger;

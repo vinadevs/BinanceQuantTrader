@@ -47,12 +47,16 @@ namespace MarketData {
 		bool HandleMiniTickerData(const char* fl, int ec, std::string emsg, binapi::ws::mini_ticker_t mini);
 		bool HandleAggregateTradeData(const char* fl, int ec, std::string emsg, binapi::ws::agg_trade_t aggregate);
 		bool HandleKlineCandleStickData(const char* fl, int ec, std::string emsg, binapi::ws::kline_t kline);
-
 		bool HandleAllMiniTickerData(const char* fl, int ec, std::string emsg, binapi::ws::mini_tickers_t mini);
-		bool HandleAllMarketTickerData(const char* fl, int ec, std::string emsg, binapi::ws::markets_tickers_t market);
-		bool HandleAllPartDepthData(const char* fl, int ec, std::string emsg, binapi::ws::part_depths_t depth);
-		bool HandleAllDiffDepthData(const char* fl, int ec, std::string emsg, binapi::ws::diff_depths_t depth);
+		bool HandleAllMarketTickersData(const char* fl, int ec, std::string emsg, binapi::ws::markets_tickers_t market);
+		bool HandlePartDepthData(const char* fl, int ec, std::string emsg, binapi::ws::part_depths_t depth);
+		bool HandleDiffDepthData(const char* fl, int ec, std::string emsg, binapi::ws::diff_depths_t depth);
+
+		// Set and get part diff symbol, this is used to store the symbol of part diff depth data
+		void SetPartDiffSymbol(const std::string& symbol) { m_partDiffSymbol = symbol; }
+		const std::string& GetPartDiffSymbol() const { return m_partDiffSymbol; }
 	private:
 		std::unique_ptr<MarketDataFeedManager> m_synchronousFeedMgr;
+		std::string m_partDiffSymbol; // this is used to store the symbol of part diff depth data
 	};
 };

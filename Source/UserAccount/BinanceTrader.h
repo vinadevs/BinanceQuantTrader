@@ -12,10 +12,6 @@
 
 #include "../OrderManagement/PositionManager.h"
 
-#if USE_BACK_TEST_TRADING
-#include "../MiddlewareMQ/BqtJsonMessage.h"
-#endif
-
 #include "ExchangeReporter.h"
 #include "Trader.h"
 
@@ -41,6 +37,8 @@ namespace tinyxml2 {
 
 namespace UserAccount {
 
+	// This class will manage binance spot trade activities like buy/sell/report...
+	// It will also manage the portfolio, trading rules, and risk management.
 	class DLL_CLASS_USERACCOUNT_EXPORTS
 		BinanceTrader : public Trader
 	{
@@ -52,15 +50,17 @@ namespace UserAccount {
 
 		////////////// UPSTREAM PROCESSING /////////////////////////////
 
-		bool CreateNewPosition(const QuantitativeModel::QuantOrderParammeter& param) override;
+		WorkedOrderIdentification CreateNewPosition(const QuantitativeModel::QuantOrderParammeter& param) override;
 
 		bool CancelAllOpenPositions(const std::string& symbol) override;
+
+		WorkedOrderIdentification CancelOpenPosition(const std::string& clientOrderId) override;
 
 		void UpdateAccountInfo();
 
 		void ReportTradeResults(const std::string& symbol);
 
-		void CreatePortfolioManagement(const std::vector<std::string>& targetTradeSymbols);
+		void CreatePortfolioManagement(const std::vector<std::string>& targetTradeSymbols) override;
 
 		PortfolioManager::PortfolioInvestmentBinance* GetPortfolio() const { return m_portfolio; }
 		
@@ -74,7 +74,7 @@ namespace UserAccount {
 
 		////////////// DOWNSTREAM PROCESSING /////////////////////////////
 #if USE_BACK_TEST_TRADING  
-		void HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage& message);
+		void HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage& message) override;
 #endif
 	private:
 		double CalculateTradeValue(

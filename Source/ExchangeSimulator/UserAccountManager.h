@@ -8,12 +8,14 @@
 
 #pragma once
 
-#include "UserAccount.h"
+#include "UserSpotAccount.h"
+#include "../KernelTrading/user_future_account.h"
 
 #include <memory>
 #include <mutex>
 #include <map>
 #include <string>
+#include <vector>
 
 namespace LibraryUtils {
     class Logger;
@@ -22,23 +24,6 @@ namespace LibraryUtils {
 namespace tinyxml2 {
     class XMLElement;
 };
-
-/**
- * @class UserAccountManager
- * @brief Manages user accounts in the trading system.
- *
- * This class is responsible for handling user login information, managing cash balances,
- * tracking cryptocurrency quantities, and providing methods to interact with user account data.
- * It ensures secure access to account information and performs necessary validations for
- * account-related operations within the trading system.
- *
- * Key Responsibilities:
- * - Authenticate users during login.
- * - Store and manage user cash balances.
- * - Maintain records of cryptocurrency holdings per user.
- * - Provide methods to deposit, withdraw, or update account balances and crypto quantities.
- * - Support secure and efficient account operations.
- */
 
 namespace ExchangeSimulator {
 
@@ -59,33 +44,54 @@ namespace ExchangeSimulator {
 	 * - Support secure and efficient account operations.
 	 */
 
-    using Accounts = std::map<std::string, std::unique_ptr<UserAccount>>;
+	 // Spot user accounts are stored in UserSpotAccount
+    using SpotAccounts = std::map<std::string, std::unique_ptr<UserSpotAccount>>;
+	// Future user accounts are stored in UserFutureAccount
+	using FutureAccounts = std::map<std::string, std::unique_ptr<KernelTrading::UserFutureAccount>>;
 
-    class UserAccountManager
+    class UserAccountManager final
     {
     public:
         UserAccountManager(const tinyxml2::XMLElement* userAccountManagerCfg);
         ~UserAccountManager();
 
-        void AddNewUserAccount(
+        void AddNewSpotUserAccount(
             const std::string& userId,
             const std::string& userConfigPath,
             const std::string& accountInfoJsonFile);
 
-        void RemoveUserAccount(const std::string& userId);
+		void AddNewFutureUserAccount(
+			const std::string& userId,
+			const std::string& userConfigPath,
+			const std::string& accountInfoJsonFile);
 
-        UserAccount* LookupUserAccount(const std::string& userId);
+        void RemoveSpotUserAccount(const std::string& userId);
 
-        UserAccount* OpenEditSessionForUserAccount(const std::string& userId);
+		void RemoveFutureUserAccount(const std::string& userId);
+
+        const UserSpotAccount* LookupSpotUserAccount(const std::string& userId);
+
+		const KernelTrading::UserFutureAccount* LookupFutureUserAccount(const std::string& userId);
+
+        UserSpotAccount* OpenEditSessionForSpotUserAccount(const std::string& userId);
+
+		KernelTrading::UserFutureAccount* OpenEditSessionForFutureUserAccount(const std::string& userId);
 
         void ClearAll();
 
-        const Accounts& GetUserAccounts();
+        const SpotAccounts& GetUserSpotAccounts();
+
+		const FutureAccounts& GetUserFutureAccounts();
+
+		const std::vector<std::pair<std::string, std::string>>& GetUserAccountIds()
+			const { return m_userAccountIds; }
     protected:
         std::unique_ptr<LibraryUtils::Logger> m_logger;
-        Accounts m_accounts;
+		SpotAccounts m_spotAccounts;
+		FutureAccounts m_futureAccounts;
         std::mutex m_mutex;
         std::size_t m_maxAccount{ 0 };
+		std::vector<std::pair<std::string, std::string>> m_userAccountIds;
     };
 };
 

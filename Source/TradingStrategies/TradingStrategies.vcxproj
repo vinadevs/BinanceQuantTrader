@@ -162,6 +162,7 @@
     <ClInclude Include="protobuf\strategy_control_request.pb.h" />
     <ClInclude Include="protobuf\strategy_parent_order.grpc.pb.h" />
     <ClInclude Include="protobuf\strategy_parent_order.pb.h" />
+    <ClInclude Include="SmartLongShortStrategy.h" />
     <ClInclude Include="StopLossStrategy.h" />
     <ClInclude Include="StrategyMessageServer.h" />
     <ClInclude Include="CompilanceChecker.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="protobuf\strategy_control_request.pb.cc" />
     <ClCompile Include="protobuf\strategy_parent_order.grpc.pb.cc" />
     <ClCompile Include="protobuf\strategy_parent_order.pb.cc" />
+    <ClCompile Include="SmartLongShortStrategy.cpp" />
     <ClCompile Include="StopLossStrategy.cpp" />
     <ClCompile Include="StrategyMessageServer.cpp" />
     <ClCompile Include="dllmain.cpp" />

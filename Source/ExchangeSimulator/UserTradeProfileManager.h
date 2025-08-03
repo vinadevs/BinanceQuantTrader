@@ -10,6 +10,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace tinyxml2 {
 	class XMLElement;
@@ -29,7 +30,9 @@ namespace ExchangeSimulator {
 	class UserTradeProfileManager final 
 	{
 	public:
-		UserTradeProfileManager(const tinyxml2::XMLElement* exchangeInfoManagerCfg);
+		UserTradeProfileManager(
+			const tinyxml2::XMLElement* userTradeProfileManagerCfg,
+			const std::vector<std::pair<std::string, std::string>>& userIds);
 		~UserTradeProfileManager();
 		bool AddUserTradeProfile(const UserTradeProfile& userTradeProfile);
 		UserTradeProfile& LookupUserTradeProfile(const std::string& userAccountId);
