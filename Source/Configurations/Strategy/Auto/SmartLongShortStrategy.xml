@@ -6,7 +6,7 @@
 </GeneralConfig>
 
 <OrderScheduler>
-  <OrderSendingInverval AlarmIntervalSecond="10"/>
+  <OrderSendingInverval AlarmIntervalSecond="1"/>
 </OrderScheduler>
 
 <TargetSymbol>

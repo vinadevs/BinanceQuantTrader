@@ -104,7 +104,7 @@ void SmartLongShortStrategy::SetupOrderScheduler()
 		throw std::runtime_error("SmartLongShortStrategy: Invalid alarm interval second="
 			+ std::to_string(alarmIntervalSecond) + ", must be greater than 0.");
 	}
-	AlarmSystem::SetCustomInterval(alarmIntervalSecond);
+	AlarmSystem::SetRepeatInterval(alarmIntervalSecond);
 	m_strategyOrderScheduler = StrategyOrderScheduler::ALARM_BASED;
 }
 

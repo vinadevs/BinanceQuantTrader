@@ -28,7 +28,7 @@ namespace OrderManagement {
         NEW,                 // Order has been created but not yet processed
         WAITING_FOR_FILL,    // Order is waiting to be filled
         PARTIAL_FILLED,      // Order has been partially filled
-        FULL_FILLED,         // Order has been fully filled
+		FULL_FILLED,         // Order has been fully filled, closed future position
 		REJECTED,            // Order was rejected
 		EXPIRED,             // Order has expired
 		CANCELED,            // Order was canceled

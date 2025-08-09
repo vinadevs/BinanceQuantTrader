@@ -11,8 +11,8 @@
 
 using namespace LibraryUtils;
 
-AlarmSystem::AlarmSystem(const long customIntervalMs, AlarmMode mode)
-    : m_intervalMs(customIntervalMs),
+AlarmSystem::AlarmSystem(const long repeatInterval, AlarmMode mode)
+    : m_intervalMs(repeatInterval),
     m_mode(mode),
     m_running(false),
     m_alarmRequested(false), 
@@ -46,26 +46,26 @@ void AlarmSystem::RequestAlarm(long customIntervalMs) {
     }
 }
 
-void AlarmSystem::SetCustomInterval(const long customIntervalMs) {
+void AlarmSystem::SetRepeatInterval(const long repeatInterval) {
 	std::lock_guard<std::mutex> lock(m_mutex);
-    if (customIntervalMs > 0) {
-        m_customInterval = customIntervalMs; // Set custom interval
+    if (repeatInterval > 0) {
+        m_intervalMs = repeatInterval; // Set custom interval
     }
     else {
-        throw std::invalid_argument("Custom interval must be greater than 0.");
+        throw std::invalid_argument("Repeat interval must be greater than 0.");
     }
 }
 
 void AlarmSystem::Run() {
     while (m_running.load()) {
-        long current_interval = m_intervalMs; // Default interval
+        long currentInterval = m_intervalMs; // Default interval
         {
             std::lock_guard<std::mutex> lock(m_mutex);
             if (m_customInterval.has_value()) {
-                current_interval = m_customInterval.value(); // Use custom interval if set
+                currentInterval = m_customInterval.value(); // Use custom interval if set
             }
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(current_interval));
+        std::this_thread::sleep_for(std::chrono::milliseconds(currentInterval));
         if (m_running.load()) {
             std::lock_guard<std::mutex> lock(m_mutex);
             if ((m_mode == AlarmMode::REPEAT) ||

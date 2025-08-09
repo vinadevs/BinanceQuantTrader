@@ -136,8 +136,9 @@ void UserFutureAccount::write_account_info_to_file(std::ofstream& fileStream, co
 	}
 }
 
-const AssetInfo* UserFutureAccount::LookupFutureAssetInfo(const std::string& currency) const {
-    for (const auto& asset : m_assets) {
+AssetInfo* UserFutureAccount::LookupFutureAssetInfo(const std::string& currency)
+{
+    for (auto& asset : m_assets) {
         if (asset.asset == currency) {
             return &asset;
         }
@@ -145,9 +146,9 @@ const AssetInfo* UserFutureAccount::LookupFutureAssetInfo(const std::string& cur
     return nullptr; // Not found
 }
 
-const PositionInfo* UserFutureAccount::LookupFuturePositionInfo(const std::string& symbol) const
+PositionInfo* UserFutureAccount::LookupFuturePositionInfo(const std::string& symbol)
 {
-	for (const auto& position : m_positions) {
+	for (auto& position : m_positions) {
 		if (position.symbol == symbol) {
 			return &position;
 		}
@@ -157,9 +158,9 @@ const PositionInfo* UserFutureAccount::LookupFuturePositionInfo(const std::strin
 
 bool UserFutureAccount::IsAccountHavingSufficientCashBalance(
     const std::string& currency,
-    const double requiredMarginCash) const
+    const double requiredMarginCash)
 {
-	const auto* assetInfo = LookupFutureAssetInfo(currency);
+	auto* assetInfo = LookupFutureAssetInfo(currency);
 	if (assetInfo) {
 		return assetInfo->availableBalance >= requiredMarginCash;
 	}
@@ -220,7 +221,7 @@ void UserFutureAccount::RealizedPNLPositions(const std::string& currency)
     }
 }
 
-void UserFutureAccount::RealizedPNLPosition(const std::string& currency, const std::string& symbol)
+void UserFutureAccount::RealizedPNLPosition(const std::string& currency, const std::string& symbol, const double exitFee)
 {
 	const auto it = std::find_if(m_positions.begin(), m_positions.end(),
 		[&symbol](const PositionInfo& p) { return p.symbol == symbol; });
@@ -229,7 +230,7 @@ void UserFutureAccount::RealizedPNLPosition(const std::string& currency, const s
 		if (assetInfo) {
 			// Realize the profit/loss for the specific position
 			if (it->unrealizedProfit > 0.0) {
-				assetInfo->availableBalance += it->unrealizedProfit; // Update available balance
+				assetInfo->availableBalance += it->unrealizedProfit - exitFee; // Update available balance
 				assetInfo->updateTime = static_cast<std::size_t>(
 					std::chrono::system_clock::now().time_since_epoch().count());
 			}

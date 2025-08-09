@@ -110,6 +110,11 @@ StrategyType TradingStrategyBase::GetStrategyType() const
 	return m_strategyType;
 }
 
+StrategyOrderScheduler TradingStrategyBase::GetStrategyOrderScheduler() const
+{
+	return m_strategyOrderScheduler;
+}
+
 void TradingStrategyBase::SetStrategyType(const StrategyType strategyType)
 {
 	m_strategyType = strategyType;

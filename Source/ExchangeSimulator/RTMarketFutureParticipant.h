@@ -17,6 +17,7 @@
 #include <string>
 #include <unordered_set>
 #include <memory>
+#include <tuple>
 
 namespace ExchangeSimulator {
 
@@ -40,12 +41,12 @@ namespace ExchangeSimulator {
 		void SetNewMarketPrice(const double price) { m_currentMarketPrice = price; }
 	private:
 		std::string m_symbol;
-		double m_currentMarketPrice{ 0 }; // Current market price from exchange for the symbol
+		double m_currentMarketPrice{ 0.0 }; // Current market price from exchange for the symbol
     };
 
     /**
      * @class RTMarketFutureParticipant
-     * @brief Represents a real-time market spot participant in the exchange simulator.
+     * @brief Represents a real-time market future participant in the exchange simulator.
      *
      * This class is responsible for handling order matching for upstream orders and managing
      * downstream order books for subscribed symbols. It observes market data changes and updates
@@ -78,6 +79,10 @@ namespace ExchangeSimulator {
         void UpdateCurrentMarketPrice(const std::string& symbol, const double price);
 
         bool HandleRejectedOrder(const std::string& message, OrderManagement::BinanceNewOrder& order);
+
+        double RecalculateAverageEntryPrice(const double oldAvg, const double oldQty, const double newPrice, const double newQty);
+
+        std::tuple<double, double, double> Recalculate_Notation_InitialMargin_MaintMargin(const std::string& symbol, const double entryPrice, const double contracts, const double leverage);
 
 		std::unordered_map<std::string, std::unique_ptr<DownstreamFuturePriceManager>> m_downstreamFuturePriceManagers;
     };
