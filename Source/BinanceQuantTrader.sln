@@ -111,6 +111,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ComplianceNRegulatory", "Co
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "UnitTest\UnitTest.vcxproj", "{F772B424-1793-4577-8AC7-4D46DDC098B3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{64B4D971-847A-40B4-8A41-767072998B45} = {64B4D971-847A-40B4-8A41-767072998B45}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BackTesting", "BackTesting\BackTesting.vcxproj", "{06611517-CB6C-4EE2-BABC-143F8B80D42A}"
 	ProjectSection(ProjectDependencies) = postProject

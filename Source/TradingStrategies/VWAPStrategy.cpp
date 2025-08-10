@@ -7,3 +7,5 @@
 #*******************************************************************************/
 
 #include "pch.h"
+#include "VWAPStrategy.h"
+#include "../RiskManagement/VWAPOrderExecutionRiskMetrics.h"
