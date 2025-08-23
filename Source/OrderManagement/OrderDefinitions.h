@@ -14,11 +14,11 @@ namespace OrderManagement {
     enum class MessageType : unsigned
     {
         UNDEF,
-        NEW,
-        CANCEL,
-        REPLACE,
-        QUERY,
-        TEST,
+		NEW, // New order message
+		CANCEL, // Cancel order message
+		REPLACE, // Replace order message
+		QUERY, // Query order message
+		TEST, // Test order message
     };
 
     // Represents the status of a Binance new order
@@ -86,8 +86,8 @@ namespace OrderManagement {
 
     enum class TestOrderSide : unsigned
     {
-        BUY_SIDE,
-        SELL_SIDE,
+		BUY_SIDE, // Represents a buy order side
+		SELL_SIDE, // Represents a sell order side
         UNKNOWN,
     };
 } // namespace OrderManagement

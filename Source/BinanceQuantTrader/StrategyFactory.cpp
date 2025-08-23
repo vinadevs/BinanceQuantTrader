@@ -66,7 +66,7 @@ StrategyFactory::CreateTargetStrategy(
 		}
 		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "VWAPStrategy"))
 		{
-			//return std::make_unique<VWAPStrategy>(strategyCfgFile, marketData, trader, tradingRules);
+			return std::make_unique<VWAPStrategy>(strategyCfgFile, marketData, trader, tradingRules);
 		}
 		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "TestStrategy"))
 		{
