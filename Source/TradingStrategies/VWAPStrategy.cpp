@@ -34,6 +34,8 @@ using namespace ComplianceNRegulatory;
 using namespace LibraryUtils;
 using namespace tinyxml2;
 
+#undef max
+
 VWAPStrategy::VWAPStrategy(
 	const std::string& strategyCfgPath,
 	RealTimeMarketData* marketData,
@@ -53,21 +55,59 @@ VWAPStrategy::~VWAPStrategy()
 	m_marketData->UnRegisterDataListener(this); // I earn enough money, leave the market now!
 }
 
-bool VWAPStrategy::OnIndividualBookTickerChange(MarketDataSubject* marketData, const std::string& symbol)
+bool VWAPStrategy::OnTradeChange(MarketData::MarketDataSubject* marketData, const std::string& symbol)
 {
 	if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
 	{
-		if (auto* analyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol))
-		{
-			analyzer->AnalysisIndividualBookTicker(syncedData->m_individualBookTickerData);
-			return true;
-		}
+		const auto price = syncedData->GetSingleFeed(TradeID::PRICE)->GetDoubleData();
+		const auto volume = syncedData->GetSingleFeed(TradeID::QUANTITY)->GetDoubleData();
+		const auto time = syncedData->GetSingleFeed(TradeID::TRADE_TIME)->GetUnsignedIntData();
+		m_vwapVolumeProfilier->AddNewBucketVolume(volume, time);
+		m_cumPriceVolume += price * volume;
+		m_totalMarketVolume += volume;
 	}
 	else
 	{
 		m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
 	}
 	return false;
+}
+
+double VWAPStrategy::CalculateCurrentVWAP() const 
+{
+	return (m_totalMarketVolume > 0.0) ? (m_cumPriceVolume / m_totalMarketVolume) : 0.0;
+}
+
+double VWAPStrategy::GetOrderSizeForCurrentBucket(std::chrono::system_clock::time_point ts) 
+{
+	const auto bucketId = GetBucketVWAPId(ts);
+	const auto profile = m_vwapVolumeProfilier->GetVolumeProfiles();
+
+	double pct = 0.0;
+	for (auto& p : profile)
+	{
+		if (p.first == bucketId)
+		{
+			pct = p.second;
+			break;
+		}
+	}
+
+	const double targetForBucket = m_targetVWAPAmount * pct;
+	const double alreadyBought = m_executedVolume[bucketId];
+	return std::max(0.0, targetForBucket - alreadyBought);
+}
+
+void VWAPStrategy::RecordTradeExecution(double volume, std::chrono::system_clock::time_point ts) 
+{
+	m_executedVolume[GetBucketVWAPId(ts)] += volume;
+}
+
+size_t VWAPStrategy::GetBucketVWAPId(std::chrono::system_clock::time_point ts) const 
+{
+	auto epochSec = std::chrono::duration_cast<std::chrono::seconds>(
+		ts.time_since_epoch()).count();
+	return epochSec / m_profileBucketSeconds;
 }
 
 void VWAPStrategy::ReportTradeResults(const std::string& symbol)
@@ -162,8 +202,45 @@ void VWAPStrategy::OnAlarmTriggered(const int passToDerived)
 {
 	for (const auto& symbol : m_targetFutureTradeSymbols)
 	{
-		
+		// Calculate next VWAP volume size at current time bucket
+		const auto now = std::chrono::system_clock::now();
+		const double orderSize = GetOrderSizeForCurrentBucket(now);
+		const double marketVWAP = CalculateCurrentVWAP();
+
+		if (orderSize > 0.0)
+		{
+			SendOrderToExchange(orderSize, limitPrice);
+			RecordTradeExecution(orderSize, ts);
+			m_executedPrices.push_back(executedPrice);
+			m_vwapPrices.push_back(marketVWAP);
+			m_pnlSeries.push_back(currentPnL());
+			m_slippageSeries.push_back(executedPrice - limitPrice);
+		}
+
+		// Risk management checks
+		if (m_executedPrices.size() > 5)
+		{
+			const double avgSlip = RiskManagement::VWAPOrderExecutionRiskMetrics::computeAverageSlippage(m_executedPrices, m_vwapPrices);
+			const double volSlip = RiskManagement::VWAPOrderExecutionRiskMetrics::computeStdDevSlippage(m_executedPrices, m_vwapPrices);
+			const double mdd = RiskManagement::VWAPOrderExecutionRiskMetrics::computeMaxDrawdown(m_pnlSeries);
+			const double skew = RiskManagement::VWAPOrderExecutionRiskMetrics::computeSkewness(m_slippageSeries);
+
+			if (avgSlip > 5.0 || mdd > 100.0) 
+			{
+				HaltExecution();
+			}
+		}
 	}
+}
+
+void VWAPStrategy::SendOrderToExchange(const double orderSize, const double limitPrice)
+{
+
+}
+
+void VWAPStrategy::HaltExecution()
+{
+
 }
 
 void VWAPStrategy::CreateBinanceExchangeProfile()

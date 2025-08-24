@@ -13,6 +13,7 @@
 #include <chrono>
 #include <utility> // for std::pair
 #include <cstddef> // for size_t
+#include "../LibraryUtils/TimeUtils.h"
 
 namespace TradingStrategies {
 
@@ -23,8 +24,8 @@ public:
         : m_bucketSeconds(bucketSeconds) {
     }
 
-    void AddNewBucketVolume(const double volume, std::chrono::system_clock::time_point ts) {
-        size_t bucketId = GetBucketId(ts);
+    void AddNewBucketVolume(const double volume, const long long epochTickValue) {
+        size_t bucketId = GetBucketId(epochTickValue);
         m_bucketVolumes[bucketId] += volume;
         m_totalVolume += volume;
     }
@@ -39,9 +40,9 @@ public:
     }
 
 private:
-    size_t GetBucketId(std::chrono::system_clock::time_point ts) const {
-        auto epochSec = std::chrono::duration_cast<std::chrono::seconds>(
-            ts.time_since_epoch()).count();
+    size_t GetBucketId(const long long epochTickValue) const {
+		auto epochSec = TimeUtils::EpochToTimePoint(epochTickValue,
+            TimeUtils::TimeUnit::Seconds).time_since_epoch().count();
         return epochSec / m_bucketSeconds;
     }
 

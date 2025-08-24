@@ -16,6 +16,8 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <chrono>
+#include <unordered_map>
 
 namespace UserAccount {
 	class Trader;
@@ -69,7 +71,8 @@ namespace TradingStrategies {
 
 		virtual ~VWAPStrategy();
 
-		bool OnIndividualBookTickerChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+		// last trade market data from exchange
+		bool OnTradeChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
 
 		void ReportTradeResults(const std::string& symbol) override;
 
@@ -90,7 +93,14 @@ namespace TradingStrategies {
 		void PrepareTargetMonitorSymbols();
 		void SubscribeTargetSymbols();
 		void UnsubscribeTargetSymbols();
-		// List of symbols that we will trade in future market
+		double CalculateCurrentVWAP() const;
+		double GetOrderSizeForCurrentBucket(std::chrono::system_clock::time_point ts);
+		void RecordTradeExecution(double volume, std::chrono::system_clock::time_point ts);
+		size_t GetBucketVWAPId(std::chrono::system_clock::time_point ts) const;
+		void SendOrderToExchange(const double orderSize, const double limitPrice);
+		void HaltExecution();
+
+		// List of symbols that we will trade in VWAP
 		std::vector<std::string> m_targetFutureTradeSymbols;
 		std::unique_ptr<QuantitativeModel::MarketDataAnalyzer> m_marketDataAnalyzer;
 		std::unique_ptr<VWAPVolumeProfile> m_vwapVolumeProfilier; // VWAP volume profile calculator
@@ -99,5 +109,6 @@ namespace TradingStrategies {
 		double m_cumPriceVolume{ 0.0 };
 		double m_totalMarketVolume{ 0.0 };
 		long m_profileBucketSeconds{ 0 };
+
 	};
 };
