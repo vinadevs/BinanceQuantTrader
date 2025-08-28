@@ -15,6 +15,7 @@
 #include <memory>
 #include <filesystem>
 #include <fstream>
+#include <vector>
 
 namespace tinyxml2 {
 	class XMLElement;
@@ -51,6 +52,7 @@ namespace UserAccount {
 		virtual void UpdateRemoteReportCalculateLossForOrders(const std::string& symbol) {};
 		virtual void DoRemoteExecutionReport(const std::string& symbol) {};
 		virtual void DoLocalExecutionReport(const std::string& symbol) {};
+		virtual std::vector<double> GetPlnSeries(const std::string& symbol) { return std::vector<double>(); }
 
 	protected:
 		virtual bool MergeLocalAndRemmoteReport() { return true; };

@@ -78,7 +78,7 @@ double VWAPStrategy::CalculateCurrentVWAP() const
 	return (m_totalMarketVolume > 0.0) ? (m_cumPriceVolume / m_totalMarketVolume) : 0.0;
 }
 
-double VWAPStrategy::GetOrderSizeForCurrentBucket(std::chrono::system_clock::time_point ts) 
+double VWAPStrategy::GetOrderSizeForCurrentBucket(const std::chrono::system_clock::time_point& ts)
 {
 	const auto bucketId = GetBucketVWAPId(ts);
 	const auto profile = m_vwapVolumeProfilier->GetVolumeProfiles();
@@ -98,12 +98,12 @@ double VWAPStrategy::GetOrderSizeForCurrentBucket(std::chrono::system_clock::tim
 	return std::max(0.0, targetForBucket - alreadyBought);
 }
 
-void VWAPStrategy::RecordTradeExecution(double volume, std::chrono::system_clock::time_point ts) 
+void VWAPStrategy::RecordTradeExecution(double volume, const std::chrono::system_clock::time_point& ts)
 {
 	m_executedVolume[GetBucketVWAPId(ts)] += volume;
 }
 
-size_t VWAPStrategy::GetBucketVWAPId(std::chrono::system_clock::time_point ts) const 
+size_t VWAPStrategy::GetBucketVWAPId(const std::chrono::system_clock::time_point& ts) const
 {
 	auto epochSec = std::chrono::duration_cast<std::chrono::seconds>(
 		ts.time_since_epoch()).count();
@@ -207,25 +207,35 @@ void VWAPStrategy::OnAlarmTriggered(const int passToDerived)
 		const double orderSize = GetOrderSizeForCurrentBucket(now);
 		const double marketVWAP = CalculateCurrentVWAP();
 
-		if (orderSize > 0.0)
+		if (orderSize > 0.0) // still not finished the target volume
 		{
+			auto* marketDataAnalyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol);
+			std::unique_lock<std::mutex> lock(marketDataAnalyzer->m_mutex);
+
+			const double limitPrice = marketDataAnalyzer->GetMarketDataSignals().m_lastBestAskPrice.convert_to<double>(); // use last price as default price
 			SendOrderToExchange(orderSize, limitPrice);
-			RecordTradeExecution(orderSize, ts);
-			m_executedPrices.push_back(executedPrice);
-			m_vwapPrices.push_back(marketVWAP);
-			m_pnlSeries.push_back(currentPnL());
-			m_slippageSeries.push_back(executedPrice - limitPrice);
+			RecordTradeExecution(orderSize, now);
+			m_executedPrices = m_spotTrader->GetOrderExecutedPrices(symbol);
+			m_slippageSeries = m_spotTrader->GetOrderExecutedSlippagePrices(symbol);
+			m_pnlSeries = m_spotTrader->GetPnLSeries(symbol);
+			m_vwapPrices.emplace_back(marketVWAP);
+		}
+		else
+		{
+			m_logger->Info("VWAP target volume completed for symbol=" + symbol);
+			HaltExecution();
+			return;
 		}
 
 		// Risk management checks
 		if (m_executedPrices.size() > 5)
 		{
-			const double avgSlip = RiskManagement::VWAPOrderExecutionRiskMetrics::computeAverageSlippage(m_executedPrices, m_vwapPrices);
-			const double volSlip = RiskManagement::VWAPOrderExecutionRiskMetrics::computeStdDevSlippage(m_executedPrices, m_vwapPrices);
-			const double mdd = RiskManagement::VWAPOrderExecutionRiskMetrics::computeMaxDrawdown(m_pnlSeries);
+			const double avgSlippage = RiskManagement::VWAPOrderExecutionRiskMetrics::computeAverageSlippage(m_executedPrices, m_vwapPrices);
+			const double volSlippage = RiskManagement::VWAPOrderExecutionRiskMetrics::computeStdDevSlippage(m_executedPrices, m_vwapPrices);
+			const double maxDrawdown = RiskManagement::VWAPOrderExecutionRiskMetrics::computeMaxDrawdown(m_pnlSeries);
 			const double skew = RiskManagement::VWAPOrderExecutionRiskMetrics::computeSkewness(m_slippageSeries);
 
-			if (avgSlip > 5.0 || mdd > 100.0) 
+			if (avgSlippage > 5.0 || maxDrawdown > 100.0)
 			{
 				HaltExecution();
 			}
@@ -233,7 +243,9 @@ void VWAPStrategy::OnAlarmTriggered(const int passToDerived)
 	}
 }
 
-void VWAPStrategy::SendOrderToExchange(const double orderSize, const double limitPrice)
+void VWAPStrategy::SendOrderToExchange(
+	const double orderSize,
+	const double limitPrice)
 {
 
 }

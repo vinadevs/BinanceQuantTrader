@@ -256,6 +256,21 @@ void BinanceTrader::CreatePortfolioManagement(const std::vector<std::string>& ta
 	m_logger->Info("querying account info finished.");
 }
 
+std::vector<double> BinanceTrader::GetOrderExecutedPrices(const std::string& symbol) const
+{
+	return m_positionManager->GetOrderExecutedPrices(symbol);
+}
+
+std::vector<double> BinanceTrader::GetOrderExecutedSlippagePrices(const std::string& symbol) const
+{
+	return m_positionManager->GetOrderExecutedSlippagePrices(symbol);
+}
+
+std::vector<double> BinanceTrader::GetPnLSeries(const std::string& symbol) const
+{
+	return m_exchangeReporter->GetPlnSeries(symbol);
+}
+
 ////////////// DOWNSTREAM PROCESSING /////////////////////////////
 
 #if USE_BACK_TEST_TRADING  

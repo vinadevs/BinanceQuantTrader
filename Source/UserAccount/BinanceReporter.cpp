@@ -195,3 +195,8 @@ bool BinanceReporter::MergeLocalAndRemmoteReport()
 {
 	return true;
 }
+
+std::vector<double> BinanceReporter::GetPlnSeries(const std::string& symbol)
+{
+	return {};
+}

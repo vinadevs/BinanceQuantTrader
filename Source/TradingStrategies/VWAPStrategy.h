@@ -94,9 +94,9 @@ namespace TradingStrategies {
 		void SubscribeTargetSymbols();
 		void UnsubscribeTargetSymbols();
 		double CalculateCurrentVWAP() const;
-		double GetOrderSizeForCurrentBucket(std::chrono::system_clock::time_point ts);
-		void RecordTradeExecution(double volume, std::chrono::system_clock::time_point ts);
-		size_t GetBucketVWAPId(std::chrono::system_clock::time_point ts) const;
+		double GetOrderSizeForCurrentBucket(const std::chrono::system_clock::time_point& ts);
+		void RecordTradeExecution(double volume, const std::chrono::system_clock::time_point& ts);
+		size_t GetBucketVWAPId(const std::chrono::system_clock::time_point& ts) const;
 		void SendOrderToExchange(const double orderSize, const double limitPrice);
 		void HaltExecution();
 
@@ -105,6 +105,10 @@ namespace TradingStrategies {
 		std::unique_ptr<QuantitativeModel::MarketDataAnalyzer> m_marketDataAnalyzer;
 		std::unique_ptr<VWAPVolumeProfile> m_vwapVolumeProfilier; // VWAP volume profile calculator
 		std::unordered_map<size_t, double> m_executedVolume;
+		std::vector<double> m_executedPrices;
+		std::vector<double> m_vwapPrices;
+		std::vector<double> m_slippageSeries;
+		std::vector<double> m_pnlSeries;
 		double m_targetVWAPAmount{ 0.0 };
 		double m_cumPriceVolume{ 0.0 };
 		double m_totalMarketVolume{ 0.0 };
