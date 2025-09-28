@@ -180,6 +180,7 @@
     <ClInclude Include="TradingStrategyBase.h" />
     <ClInclude Include="TWAPStrategy.h" />
     <ClInclude Include="VWAPStrategy.h" />
+    <ClInclude Include="VWAPVolumeProfile.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ChildOrder.cpp" />

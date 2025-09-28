@@ -104,7 +104,7 @@ void SmartLongShortStrategy::SetupOrderScheduler()
 		throw std::runtime_error("SmartLongShortStrategy: Invalid alarm interval second="
 			+ std::to_string(alarmIntervalSecond) + ", must be greater than 0.");
 	}
-	AlarmSystem::SetCustomInterval(alarmIntervalSecond);
+	AlarmSystem::SetRepeatInterval(alarmIntervalSecond);
 	m_strategyOrderScheduler = StrategyOrderScheduler::ALARM_BASED;
 }
 
@@ -178,7 +178,7 @@ void SmartLongShortStrategy::OnAlarmTriggered(const int passToDerived)
 			continue; // skip this symbol if no valid trend
 		}		
 
-		//std::this_thread::sleep_for(std::chrono::milliseconds(5000)); // simulate some delay
+		std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // simulate some delay
 
 		const auto newFutureOrder = m_futureTrader->CreateNewPosition(futureOrder);
 		if (newFutureOrder.first)

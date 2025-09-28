@@ -202,15 +202,15 @@ namespace KernelTrading {
 			FromJson(j);
 		}
 
-        const AssetInfo* LookupFutureAssetInfo(const std::string& currency) const;
-		const PositionInfo* LookupFuturePositionInfo(const std::string& symbol) const;
+        AssetInfo* LookupFutureAssetInfo(const std::string& currency);
+		PositionInfo* LookupFuturePositionInfo(const std::string& symbol);
 
-		bool IsAccountHavingSufficientCashBalance(const std::string& currency, const double requiredMarginCash) const;
+		bool IsAccountHavingSufficientCashBalance(const std::string& currency, const double requiredMarginCash);
 
 		void UpdateAssetBalanceCash(const std::string& currency, const double pnl, const BalanceChangeEvent event);
 		void UpdatePositionCash(const std::string& symbol, const double pnl, const double currentMarketPrice, const BalanceChangeEvent event);
 		void RealizedPNLPositions(const std::string& currency);
-        void RealizedPNLPosition(const std::string& currency, const std::string& symbol);
+        void RealizedPNLPosition(const std::string& currency, const std::string& symbol, const double exitFee);
 
         // Setters for account-level basic flags and tier
         void SetFeeTier(int feeTier) { m_feeTier = feeTier; }

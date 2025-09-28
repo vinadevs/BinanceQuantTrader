@@ -53,6 +53,10 @@ namespace UserAccount {
         void DoRemoteExecutionReport(const std::string& symbol) override;
         void DoLocalExecutionReport(const std::string& symbol) override;
         void DoTradeExecutionReport(const std::string& symbol) override;
+
+        // PNL
+        std::vector<double> GetPlnSeries(const std::string& symbol) override;
+
     private:
         bool MergeLocalAndRemmoteReport() override;
     };

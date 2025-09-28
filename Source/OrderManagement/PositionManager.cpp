@@ -151,17 +151,27 @@ BinanceCancelOrder* PositionManager::UpdateOrderCancellingStatus(
         clientOrderId, symbol, updateTime, orderStatus, exchangeText);
 }
 
+std::vector<double> PositionManager::GetOrderExecutedPrices(const std::string& symbol) const
+{
+	return m_workedOrderManager->GetOrderExecutedPrices(symbol);
+}
+
+std::vector<double> PositionManager::GetOrderExecutedSlippagePrices(const std::string& symbol) const
+{
+	return m_workedOrderManager->GetOrderExecutedSlippagePrices(symbol);
+}
+
 bool PositionManager::CloseAllOpenedPositionsBySide(const binapi::e_side posSide)
 {
     return m_workedOrderManager->RemoveNewOrderBySide(posSide);
 }
 
-OrderManagement::BinanceOrderManager* PositionManager::GetWorkedOrderManager() const
+BinanceOrderManager* PositionManager::GetWorkedOrderManager() const
 {
     return m_workedOrderManager.get();
 }
 
-OrderManagement::BinanceOrderManager* PositionManager::GetUnworkedOrderManager() const
+BinanceOrderManager* PositionManager::GetUnworkedOrderManager() const
 {
     return m_unworkedOrderManager.get();
 }

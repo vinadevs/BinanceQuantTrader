@@ -81,7 +81,7 @@ int MarketDataSubject::NotifyMiniTickerChange(const std::string& symbol)
 	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnMiniTickerChange);
 }
 
-int MarketData::MarketDataSubject::NotifyKlineCandleStickChange(const std::string& symbol)
+int MarketDataSubject::NotifyKlineCandleStickChange(const std::string& symbol)
 {
 	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnKlineCandleStickChange);
 }

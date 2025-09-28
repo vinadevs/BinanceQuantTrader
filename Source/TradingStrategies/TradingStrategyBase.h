@@ -44,7 +44,7 @@ namespace tinyxml2 {
 
 // -All Algos, Strategies should follow this base class
 // Strategy/Algo should take actions when signal/indicator event
-// triggered...
+// triggered or alarm system is triggered after preset interval time...
 
 // -If USE_MULTITHREADING flag is enabled then Strategies is trading
 // as ansynchronous with signal/indicator events
@@ -138,6 +138,8 @@ namespace TradingStrategies {
 		StrategyRunStatus GetStrategyRunStatus() const;
 		// -Gets the strategy type, which defines how the strategy operates.
 		StrategyType GetStrategyType() const;
+		// -Get order scheduler type, which defines how the strategy schedules orders.
+		StrategyOrderScheduler GetStrategyOrderScheduler() const;
 		// -Sets the strategy type, which defines how the strategy operates.
 		void SetStrategyType(const StrategyType strategyType);
 		// -Gets the strategy lifetime, which defines how long the strategy will run.

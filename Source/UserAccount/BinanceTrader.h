@@ -72,6 +72,12 @@ namespace UserAccount {
 
 		binapi::rest::account_info_t* GetBinanceAccountInfo() const { return m_binanceAccountInfo.get(); }
 
+		std::vector<double> GetOrderExecutedPrices(const std::string& symbol) const;
+
+		std::vector<double> GetOrderExecutedSlippagePrices(const std::string& symbol) const;
+
+		std::vector<double> GetPnLSeries(const std::string& symbol) const;
+
 		////////////// DOWNSTREAM PROCESSING /////////////////////////////
 #if USE_BACK_TEST_TRADING  
 		void HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage& message) override;

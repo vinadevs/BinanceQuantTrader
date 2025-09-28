@@ -14,11 +14,11 @@ namespace OrderManagement {
     enum class MessageType : unsigned
     {
         UNDEF,
-        NEW,
-        CANCEL,
-        REPLACE,
-        QUERY,
-        TEST,
+		NEW, // New order message
+		CANCEL, // Cancel order message
+		REPLACE, // Replace order message
+		QUERY, // Query order message
+		TEST, // Test order message
     };
 
     // Represents the status of a Binance new order
@@ -28,7 +28,7 @@ namespace OrderManagement {
         NEW,                 // Order has been created but not yet processed
         WAITING_FOR_FILL,    // Order is waiting to be filled
         PARTIAL_FILLED,      // Order has been partially filled
-        FULL_FILLED,         // Order has been fully filled
+		FULL_FILLED,         // Order has been fully filled, closed future position
 		REJECTED,            // Order was rejected
 		EXPIRED,             // Order has expired
 		CANCELED,            // Order was canceled
@@ -86,8 +86,8 @@ namespace OrderManagement {
 
     enum class TestOrderSide : unsigned
     {
-        BUY_SIDE,
-        SELL_SIDE,
+		BUY_SIDE, // Represents a buy order side
+		SELL_SIDE, // Represents a sell order side
         UNKNOWN,
     };
 } // namespace OrderManagement

@@ -78,3 +78,31 @@ std::string TimeUtils::ConvertEpochTickToTimeString(std::size_t epochTick)
 
     return oss.str();
 }
+
+std::chrono::system_clock::time_point TimeUtils::EpochToTimePoint(
+    const long long epochTickValue, const TimeUnit unit)
+{
+    using clock = std::chrono::system_clock;
+    using dur = clock::duration;
+
+    switch (unit) {
+    case TimeUnit::Seconds:
+        return clock::time_point{
+            std::chrono::duration_cast<dur>(std::chrono::seconds{epochTickValue})
+        };
+    case TimeUnit::Milliseconds:
+        return clock::time_point{
+            std::chrono::duration_cast<dur>(std::chrono::milliseconds{epochTickValue})
+        };
+    case TimeUnit::Microseconds:
+        return clock::time_point{
+            std::chrono::duration_cast<dur>(std::chrono::microseconds{epochTickValue})
+        };
+    case TimeUnit::Nanoseconds:
+        return clock::time_point{
+            std::chrono::duration_cast<dur>(std::chrono::nanoseconds{epochTickValue})
+        };
+    default:
+        throw std::invalid_argument("Unsupported TimeUnit");
+    }
+}

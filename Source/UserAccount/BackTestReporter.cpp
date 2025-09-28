@@ -14,6 +14,8 @@
 #include "../LibraryUtils/StringUtils.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../OrderManagement/PositionManager.h"
+#include "../OrderManagement/BinanceOrderManager.h"
+#include "../OrderManagement/BinanceNewOrder.h"
 #include "../ComplianceNRegulatory/BinanceExchangeProfile.h"
 #include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
 
@@ -168,4 +170,24 @@ void BackTestReporter::DoTradeExecutionReport(const std::string& symbol)
 bool BackTestReporter::MergeLocalAndRemmoteReport()
 {
 	return true;
+}
+
+std::vector<double> BackTestReporter::GetPlnSeries(const std::string& symbol)
+{
+	std::vector<double> pnlSeries;
+	auto* orderManager = m_positionManager->GetWorkedOrderManager();
+	if (orderManager)
+	{
+		double cumulativePnl = 0.0;
+		for (const auto& order : orderManager->GetOrdersOfSymbol(symbol))
+		{
+			if (order->GetSymbol() == symbol && order->GetFilledAmount() > 0)
+			{
+				const auto slippage = order->GetFilledPrice() - order->GetPrice();
+				cumulativePnl += (slippage * order->GetAmount());
+				pnlSeries.emplace_back(cumulativePnl);
+			}
+		}
+	}
+	return pnlSeries;
 }

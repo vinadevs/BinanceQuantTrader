@@ -391,3 +391,32 @@ BinanceCancelOrder* OrderManagement::BinanceOrderManager::UpdateOrderCancellingS
     }
 	return nullptr;
 }
+
+std::vector<double> BinanceOrderManager::GetOrderExecutedPrices(const std::string& symbol)
+{
+	std::lock_guard<std::mutex> lock(m_mutex);
+	std::vector<double> executedPrices;
+	for (const auto& order : m_newOrders)
+	{
+		if (order.second->GetSymbol() == symbol && order.second->GetFilledAmount() > 0)
+		{
+			executedPrices.emplace_back(order.second->GetFilledPrice());
+		}
+	}
+	return executedPrices;
+}
+
+std::vector<double> BinanceOrderManager::GetOrderExecutedSlippagePrices(const std::string& symbol)
+{
+	std::lock_guard<std::mutex> lock(m_mutex);
+	std::vector<double> slippagePrices;
+	for (const auto& order : m_newOrders)
+	{
+		if (order.second->GetSymbol() == symbol && order.second->GetFilledAmount() > 0)
+		{
+			const auto slippage = std::abs(order.second->GetFilledPrice() - order.second->GetPrice());
+			slippagePrices.emplace_back(slippage);
+		}
+	}
+	return slippagePrices;
+}

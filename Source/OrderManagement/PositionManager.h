@@ -100,6 +100,10 @@ namespace OrderManagement {
 			const BinanceCancelOrderStatus orderStatus,
 			const std::string& exchangeText);
 
+		std::vector<double> GetOrderExecutedPrices(const std::string& symbol) const;
+
+		std::vector<double> GetOrderExecutedSlippagePrices(const std::string& symbol) const;
+
 	private:
         std::unique_ptr<LibraryUtils::Logger> m_logger;
 		std::unique_ptr<OrderCreator> m_orderCreator;
