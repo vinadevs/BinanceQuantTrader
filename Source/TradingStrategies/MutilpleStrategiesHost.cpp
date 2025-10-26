@@ -32,13 +32,13 @@ void MutilpleStrategiesHost::StartStrategyThread(TradingStrategyBase* strategy)
     m_threadStarted = true;
     m_strategyControler = std::make_unique<StrategyControler>(strategy);
     m_strategyThread = std::thread([this]
-        {
-            m_strategyControler->StartStrategy();
-        });
+    {
+        m_strategyControler->StartStrategy();
+    });
     m_logger->Info("Strategy thread started.");
 }
 
-void TradingStrategies::MutilpleStrategiesHost::StopStrategyThread()
+void MutilpleStrategiesHost::StopStrategyThread()
 {
     if (!m_threadStarted)
     {

@@ -1,3 +1,11 @@
+/*#*******************************************************************************
+# COPYRIGHT NOTES
+# ---------------
+# This is a part of Binance Quant Trader Project
+# Copyright(C) - vinadevs
+# This source code can be used, distributed or modified under Apache license
+#*******************************************************************************/
+
 #include "../MarketData/RealTimeMarketData.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../LibraryUtils/Logger.h"
