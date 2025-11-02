@@ -140,10 +140,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="MarketDataCapture.cpp" />
+    <ClCompile Include="MarketDataFileWriter.cpp" />
     <ClCompile Include="MarketDataListener.cpp" />
     <ClCompile Include="MarketDataService.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MarketDataFileWriter.h" />
     <ClInclude Include="MarketDataListener.h" />
     <ClInclude Include="MarketDataService.h" />
   </ItemGroup>

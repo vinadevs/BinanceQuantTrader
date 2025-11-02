@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ArrayMarketDtaFeed.h" />
+    <ClInclude Include="BinanceMarketData.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="FeedIdentification.h" />
     <ClInclude Include="framework.h" />
@@ -171,6 +172,7 @@
     <ClInclude Include="TableMarketDataFeed.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BinanceMarketData.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="MarketDataObserver.cpp" />
     <ClCompile Include="MarketDataSubscriptionManager.cpp" />

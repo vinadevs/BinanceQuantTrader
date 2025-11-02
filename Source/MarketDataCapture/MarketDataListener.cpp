@@ -10,17 +10,39 @@
 #include "../MarketData/SynchronousMarketData.h"
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/TimeUtils.h"
+#include "../SettingNConfig/tinyxml2.h"
 
 #include "MarketDataListener.h"
+#include "MarketDataFileWriter.h"
 
 #include <type_traits>
+#include <filesystem>
 
 using namespace MarketDataCapture;
 using namespace MarketData;
 
-MarketDataListener::MarketDataListener()
+MarketDataListener::MarketDataListener(const tinyxml2::XMLElement* dataCaptureCfg)
     : m_logger{ std::make_unique<LibraryUtils::Logger>("MarketDataListener") }
 {
+    const auto* dataCaptureModeXml = dataCaptureCfg->FirstChildElement("DataCaptureMode");
+    assert(dataCaptureModeXml);
+    const auto mode = dataCaptureModeXml->Attribute("Mode");
+    if (mode == "LocalFile") {
+		m_dataCaptureMode = DataCaptureMode::LocalFile;
+        const auto* localFilePathXml = dataCaptureCfg->FirstChildElement("LocalFilePath");
+        assert(localFilePathXml);
+        m_localFilePath = localFilePathXml->Attribute("Path");
+        if (std::filesystem::exists(m_localFilePath) == false) {
+            throw std::runtime_error("MarketDataListener: local file path does not exist: " + m_localFilePath);
+        }
+        m_fileWriter = std::make_unique<MarketDataFileWriter>(m_localFilePath, MarketDataFileWriter::DataSourceType::TextFile);
+    }
+    else if (mode == "ConsoleLog") {
+		m_dataCaptureMode = DataCaptureMode::ConsoleLog;
+    }
+    else {
+		throw std::runtime_error("Unsupported data capture mode: " + std::string(mode));
+    }
 }
 
 MarketDataListener::~MarketDataListener() {}
@@ -28,10 +50,15 @@ MarketDataListener::~MarketDataListener() {}
 bool MarketDataListener::OnIndividualBookTickerChange(
 	MarketDataSubject* marketData, const std::string& symbol)
 {
-    if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
+    if (auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
-        LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << "|"
-            << syncedData->m_individualBookTickerData);
+        if (m_dataCaptureMode == DataCaptureMode::ConsoleLog) {
+            LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << "|"
+                << syncedData->m_individualBookTickerData);
+        }
+        else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
+			m_fileWriter->Write((syncedData->m_individualBookTickerData).ToString());
+        }
         return true;
     }
     else
@@ -44,10 +71,15 @@ bool MarketDataListener::OnIndividualBookTickerChange(
 bool MarketDataListener::OnTradeChange(
 	MarketDataSubject* marketData, const std::string& symbol)
 {
-    if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
+    if (auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
-        LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
-            << syncedData->m_tradeData);
+        if (m_dataCaptureMode == DataCaptureMode::ConsoleLog) {
+            LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
+                << syncedData->m_tradeData);
+        }
+		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
+			m_fileWriter->Write((syncedData->m_tradeData).ToString());
+		}
         return true;
     }
     else
@@ -59,10 +91,15 @@ bool MarketDataListener::OnTradeChange(
 
 bool MarketDataListener::OnIndividualMarketTickerChange(MarketDataSubject* marketData, const std::string& symbol)
 {
-	if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
-	{
-        LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
-            << syncedData->m_individualMarketTickerData);
+	if (auto* syncedData = marketData->GetSynchronousMarketData(symbol)) 
+    {
+        if (m_dataCaptureMode == DataCaptureMode::ConsoleLog) {
+            LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
+                << syncedData->m_individualMarketTickerData);
+        }
+		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
+			m_fileWriter->Write((syncedData->m_individualMarketTickerData).ToString());
+		}
 		return true;
 	}
 	else
@@ -74,10 +111,15 @@ bool MarketDataListener::OnIndividualMarketTickerChange(MarketDataSubject* marke
 
 bool MarketDataListener::OnMiniTickerChange(MarketDataSubject* marketData, const std::string& symbol)
 {
-    if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
+    if (auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
-        LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
-            << syncedData->m_individualMiniTickerData);
+        if (m_dataCaptureMode == DataCaptureMode::ConsoleLog) {
+            LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
+                << syncedData->m_individualMiniTickerData);
+        }
+		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
+			m_fileWriter->Write((syncedData->m_individualMiniTickerData).ToString());
+		}
         return true;
     }
     else
@@ -89,10 +131,15 @@ bool MarketDataListener::OnMiniTickerChange(MarketDataSubject* marketData, const
 
 bool MarketDataListener::OnAggregateTradeChange(MarketDataSubject* marketData, const std::string& symbol)
 {
-    if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
+    if (auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
-        LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
-            << syncedData->m_aggregateTradeData);
+        if (m_dataCaptureMode == DataCaptureMode::ConsoleLog) {
+            LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
+                << syncedData->m_aggregateTradeData);
+        }
+		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
+			m_fileWriter->Write((syncedData->m_aggregateTradeData).ToString());
+		}
         return true;
     }
     else
@@ -104,10 +151,15 @@ bool MarketDataListener::OnAggregateTradeChange(MarketDataSubject* marketData, c
 
 bool MarketDataListener::OnKlineCandleStickChange(MarketDataSubject* marketData, const std::string& symbol)
 {
-	if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
+	if (auto* syncedData = marketData->GetSynchronousMarketData(symbol))
 	{
-		LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
-			<< syncedData->m_klineCandleStickData);
+        if (m_dataCaptureMode == DataCaptureMode::ConsoleLog) {
+            LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
+                << syncedData->m_klineCandleStickData);
+        }
+		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
+			m_fileWriter->Write((syncedData->m_klineCandleStickData).ToString());
+		}
 		return true;
 	}
 	else
@@ -119,10 +171,15 @@ bool MarketDataListener::OnKlineCandleStickChange(MarketDataSubject* marketData,
 
 bool MarketDataListener::OnAllMarketTickersChange(MarketDataSubject* marketData, const std::string& symbol)
 {
-    if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
+    if (auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
-        LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << "|"
-            << syncedData->m_allMarketTickerData);
+        if (m_dataCaptureMode == DataCaptureMode::ConsoleLog) {
+            LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << "|"
+                << syncedData->m_allMarketTickerData);
+        }
+		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
+			m_fileWriter->Write((syncedData->m_allMarketTickerData).ToString());
+		}
 		return true;
     }
     else
@@ -134,10 +191,15 @@ bool MarketDataListener::OnAllMarketTickersChange(MarketDataSubject* marketData,
 
 bool MarketDataListener::OnAllMiniTickersChange(MarketDataSubject* marketData, const std::string& symbol)
 {
-    if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
+    if (auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
-		LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
-			<< syncedData->m_allMiniTickerData);
+        if (m_dataCaptureMode == DataCaptureMode::ConsoleLog) {
+            LOG_INFO_STREAM(m_logger, "[Level1] Symbol=" << syncedData->GetSymbol() << "|"
+                << syncedData->m_allMiniTickerData);
+        }
+		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
+			m_fileWriter->Write((syncedData->m_allMiniTickerData).ToString());
+		}
 		return true;
     }
     else
@@ -149,10 +211,15 @@ bool MarketDataListener::OnAllMiniTickersChange(MarketDataSubject* marketData, c
 
 bool MarketDataListener::OnAllDiffDepthChange(MarketDataSubject* marketData, const std::string& symbol)
 {
-    if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
+    if (auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
+        if (m_dataCaptureMode == DataCaptureMode::ConsoleLog) {
 		LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << "|"
 			<< syncedData->m_allDiffDepthData);
+		}
+		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
+			m_fileWriter->Write((syncedData->m_allDiffDepthData).ToString());
+		}
 		return true;
     }
     else
@@ -164,10 +231,15 @@ bool MarketDataListener::OnAllDiffDepthChange(MarketDataSubject* marketData, con
 
 bool MarketDataListener::OnAllPartDepthChange(MarketDataSubject* marketData, const std::string& symbol)
 {
-    if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
+    if (auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
-		LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << "|"
-			<< syncedData->m_allPartDepthData);
+        if (m_dataCaptureMode == DataCaptureMode::ConsoleLog) {
+            LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << "|"
+                << syncedData->m_allPartDepthData);
+        }
+		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
+			m_fileWriter->Write((syncedData->m_allPartDepthData).ToString());
+		}
 		return true;
     }
     else

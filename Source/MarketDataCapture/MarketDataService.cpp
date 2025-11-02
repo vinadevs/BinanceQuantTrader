@@ -29,9 +29,10 @@ MarketDataService::MarketDataService(const std::string& configFile)
 		throw std::runtime_error("Load file Xml error: "
 			+ std::string(tinyxml2::XMLDocument::ErrorIDToName(errMBXml)) + ", error path:" + configFile);
 	}
-
 	m_logger->Info("Initiating Market Data Listener.");
-	m_marketDataListener = std::make_unique<MarketDataListener>();
+	const auto* dataCaptureCfg = m_rootConfigXml->FirstChildElement("MarketDataCapture");
+	assert(dataCaptureCfg);
+	m_marketDataListener = std::make_unique<MarketDataListener>(dataCaptureCfg);
 	m_logger->Info("Initiating Real Time Market Data.");
 	const auto* realTimeMarketDataCfg = m_rootConfigXml->FirstChildElement("RealTimeMarketData");
 	assert(realTimeMarketDataCfg);
