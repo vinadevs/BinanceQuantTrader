@@ -1,0 +1,10 @@
+file(GLOB SOURCE_FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/VWAPOrderExecutionRiskMetrics.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/VWAPOrderExecutionRiskMetrics.h"
+)
+
+# Define the DLL library
+add_library(RiskManagement SHARED ${SOURCE_FILES})
+
+# Headers visible to consumers
+target_include_directories(RiskManagement PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
