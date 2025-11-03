@@ -24,14 +24,12 @@ PRIVATE
 # Link JSON
 target_link_libraries(${library_name}
 PRIVATE
-    Boost::algorithm
-    LibraryUtils
+    Boost::algorithm 
 )
 
 # Export symbols when compiling this library
 target_compile_definitions(${library_name}
 PRIVATE
-    SETTINGS_AND_CONFIGS_EXPORTS
-    TINYXML2_EXPORT
+    LIBRARYUTILS_EXPORTS
     BINAPI_HEADER_ONLY
 )
