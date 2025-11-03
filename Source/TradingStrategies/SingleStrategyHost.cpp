@@ -39,7 +39,7 @@ void SingleStrategyHost::StartStrategyThread(TradingStrategyBase* strategy)
     m_logger->Info("Strategy thread started.");
 }
 
-void TradingStrategies::SingleStrategyHost::StopStrategyThread()
+void SingleStrategyHost::StopStrategyThread()
 {
     std::unique_lock<std::mutex> lock(m_threadSafeMutex);
     if (!m_threadStarted)
