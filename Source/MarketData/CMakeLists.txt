@@ -9,7 +9,7 @@ list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/dllmain.cpp")
 get_filename_component(library_name "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
 
 # Find packages
-find_package(Boost REQUIRED COMPONENTS algorithm)
+find_package(Boost REQUIRED COMPONENTS asio)
 
 # Create the library
 add_library(${library_name} SHARED ${SOURCE_FILES})
@@ -24,14 +24,16 @@ PRIVATE
 # Link JSON
 target_link_libraries(${library_name}
 PRIVATE
-    Boost::algorithm
     LibraryUtils
+    SettingNConfig
+    KernelTrading
+    RealTimeSocket
+    Boost::asio
 )
 
 # Export symbols when compiling this library
 target_compile_definitions(${library_name}
 PRIVATE
-    SETTINGS_AND_CONFIGS_EXPORTS
-    TINYXML2_EXPORT
+    MARKETDATA_EXPORTS
     BINAPI_HEADER_ONLY
 )

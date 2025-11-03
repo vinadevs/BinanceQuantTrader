@@ -9,7 +9,10 @@ list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/dllmain.cpp")
 get_filename_component(library_name "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
 
 # Find packages
-find_package(Boost REQUIRED COMPONENTS algorithm)
+find_package(Boost REQUIRED COMPONENTS multiprecision)
+find_package(Boost REQUIRED COMPONENTS asio)
+find_package(Boost REQUIRED COMPONENTS beast)
+find_package(OpenSSL REQUIRED)
 
 # Create the library
 add_library(${library_name} SHARED ${SOURCE_FILES})
@@ -18,20 +21,20 @@ add_library(${library_name} SHARED ${SOURCE_FILES})
 target_include_directories(${library_name}
 PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/.."
-    ${Boost_INCLUDE_DIRS}
 )
 
 # Link JSON
 target_link_libraries(${library_name}
 PRIVATE
-    Boost::algorithm
-    LibraryUtils
+    Boost::multiprecision
+    Boost::asio
+    Boost::beast
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    KernelTrading
 )
 
 # Export symbols when compiling this library
-target_compile_definitions(${library_name}
-PRIVATE
-    SETTINGS_AND_CONFIGS_EXPORTS
-    TINYXML2_EXPORT
-    BINAPI_HEADER_ONLY
+target_compile_definitions(${library_name} PRIVATE
+    REALTIMESOCKET_EXPORTS
 )

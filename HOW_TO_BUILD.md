@@ -39,3 +39,8 @@ cmake --build build
 cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
+
+**Clean Build**
+```bash
+cmake --build .\build\ --target clean
+```
