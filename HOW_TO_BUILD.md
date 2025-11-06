@@ -44,3 +44,12 @@ cmake --build build
 ```bash
 cmake --build .\build\ --target clean
 ```
+
+**Dev Container (Vscode only)**
+
+```bash
+vcpkg install
+vcpkg integrate install
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+cmake --build build # Need to remove library from window before build in linux
+```
