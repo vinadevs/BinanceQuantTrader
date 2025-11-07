@@ -131,7 +131,7 @@ namespace KernelTrading {
         double crossUnPnl{0.0};               // Unrealized PnL in cross margin
         double availableBalance{0.0};         // Free balance available to trade
         double maxWithdrawAmount{0.0};        // Max amount allowed to withdraw
-        bool marginAvailable{0.0};            // Whether margin is available
+        bool marginAvailable{false};            // Whether margin is available
         int64_t updateTime{0};                // Last update time in milliseconds
     };
 
@@ -179,7 +179,7 @@ namespace KernelTrading {
         double positionInitialMargin{0.0};    // Initial margin for position size
         double openOrderInitialMargin{0.0};   // Initial margin reserved for open orders
         double leverage{0.0};                 // Leverage used (e.g. 10x)
-        bool isolated{0.0};                   // Whether this is isolated margin
+        bool isolated{false};                   // Whether this is isolated margin
         double entryPrice{0.0};               // Average entry price
 		double marketPrice{ 0.0 };            // Current market price (not in original, but useful for trading)
         double maxNotional{0.0};              // Max notional value allowed
