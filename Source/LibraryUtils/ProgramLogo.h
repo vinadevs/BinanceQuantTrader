@@ -13,8 +13,8 @@
 // SOMETHING LIKE #IFDEF WINDOWS_ ELSE LINUX_
 #ifdef _WIN32
 #include <windows.h>
-#endif
 #include <Lmcons.h>
+#endif
 #include <iostream>
 #include <cstdio>
 #include <ctime>
