@@ -11,10 +11,17 @@
 
 #include <filesystem>
 #include <exception>
+#ifndef _WIN32
+#include <limits.h>
+#endif
 
 std::string PathUtils::GetApplicationFolderPath()
 {
+#ifdef _WIN32
     char szPath[MAX_PATH];
+#else
+    char szPath[PATH_MAX];
+#endif
 #ifdef _WIN32
     if (GetModuleFileNameA(NULL, szPath, ARRAYSIZE(szPath)) == 0)
     {

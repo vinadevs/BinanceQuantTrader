@@ -20,5 +20,5 @@
 #endif
 #endif  // SETTINGS_AND_CONFIGS_EXPORTS
 #else
-#define DLL_CLASS
+#define DLL_CLASS_SETTINGS_AND_CONFIGS_EXPORTS __attribute__((visibility("default")))
 #endif  // _MSC_VER
