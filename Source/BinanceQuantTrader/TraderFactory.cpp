@@ -9,6 +9,7 @@
 #include "TraderFactory.h"
 
 #include "../UserAccount/BinanceTrader.h"
+#include "../UserAccount/FutureTrader.h"
 #include "../PortfolioManager/PortfolioInvestmentBinance.h"
 #include "../RiskManagement/RiskManager.h"
 #include "../SettingNConfig/tinyxml2.h"
@@ -18,12 +19,14 @@
 
 using namespace BinanceQuantTrader;
 using namespace PortfolioManager;
+using namespace ComplianceNRegulatory;
 using namespace RiskManagement;
 using namespace UserAccount;
 using namespace tinyxml2;
 
-std::unique_ptr<BinanceTrader> TraderFactory::CreateSmartTrader(
+std::unique_ptr<Trader> TraderFactory::CreateSmartTrader(
 	PortfolioInvestmentBinance* portfolio, 
+	BinanceTradingRules* tradingRules,
 	RiskManager* riskManager,
 	const XMLElement* traderXmlCfg)
 {
@@ -34,7 +37,13 @@ std::unique_ptr<BinanceTrader> TraderFactory::CreateSmartTrader(
 	{
 		const auto* reportXml = traderXmlCfg->FirstChildElement("Report");
 		assert(reportXml);
-		return std::make_unique<UserAccount::BinanceTrader>(reportXml, portfolio, riskManager);
+		return std::make_unique<UserAccount::BinanceTrader>(reportXml, portfolio, tradingRules, riskManager);
+	}
+	else if (StringUtils::IsConfigAttributeMatched(usingTraderXml->Attribute("Type"), "FutureTrader"))
+	{
+		const auto* reportXml = traderXmlCfg->FirstChildElement("Report");
+		assert(reportXml);
+		return std::make_unique<UserAccount::FutureTrader>(reportXml, portfolio, tradingRules, riskManager);
 	}
 	else
 	{

@@ -127,6 +127,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
+      <AdditionalDependencies>LibraryUtilsD.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,10 +151,12 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
+      <AdditionalDependencies>LibraryUtils.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="dlldefine.h" />
+    <ClInclude Include="double_defaults.h" />
     <ClInclude Include="double_type.h" />
     <ClInclude Include="dtf.h" />
     <ClInclude Include="enums.h" />
@@ -168,6 +171,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="tools.h" />
     <ClInclude Include="types.h" />
+    <ClInclude Include="user_future_account.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -183,6 +187,7 @@
     </ClCompile>
     <ClCompile Include="tools.cpp" />
     <ClCompile Include="types.cpp" />
+    <ClCompile Include="user_future_account.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

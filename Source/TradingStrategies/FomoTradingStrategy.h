@@ -17,6 +17,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 #if USE_MULTITHREADING
 #include <queue>
 #include <mutex>
@@ -28,12 +29,20 @@ namespace MarketData {
 }
 
 namespace UserAccount {
-	class BinanceTrader;
+	class Trader;
 }
 
 namespace ComplianceNRegulatory {
 	class BinanceTradingRules;
 }
+
+namespace QuantitativeModel {
+	class OrderParammeterGenerator;
+};
+
+namespace tinyxml2 {
+	class XMLDocument;
+};
 
 // The fear of missing out, or FOMO, refers to the feeling or 
 // perception that others are having more fun, living better lives,
@@ -47,10 +56,10 @@ namespace TradingStrategies {
 		: public TradingStrategyBase,
 		  public IndicatorNSignals::TradingHintsListener
 	{
-	public:
+	public: 
 		FomoTradingStrategy(const std::string& strategyCfgPath,
 							MarketData::RealTimeMarketData* marketData,
-							UserAccount::BinanceTrader* trader,
+							UserAccount::Trader* trader,
 							ComplianceNRegulatory::BinanceTradingRules* tradingRules);
 
 		virtual ~FomoTradingStrategy();
@@ -65,11 +74,21 @@ namespace TradingStrategies {
 
 		void StopLive() override;
 	private:
+		void CreateTradingSignalServices();
+		void SubscribeTargetSymbols();
+		void UnsubscribeTargetSymbols();
+		void CreatePortfolioManagement();
+		void CreateOrderParameterGenerator();
+		void CreateBinanceExchangeProfile();
 		bool TradeAsHints(const IndicatorNSignals::TradingHints* hints);
 
 #if USE_MULTITHREADING
 		void TradingLoop();
-		std::mutex m_marketDataMutex;
+
+		std::unique_ptr<tinyxml2::XMLDocument> m_strategyCfgXml;
+		std::unique_ptr<QuantitativeModel::OrderParammeterGenerator> m_orderParammeterGenerator;
+		std::vector<std::string> m_targetTradeSymbols;
+		std::mutex m_tradingHintsMutex;
 		std::condition_variable m_tradingHintCond; // avoid polling thread
 		std::atomic<bool> m_hasNewTradingHint{ false }; // lock free thread
 		// customize queue with thread safe protection

@@ -9,73 +9,176 @@
 #include "pch.h"
 
 #include "../OrderManagement/OrderCreator.h"
+#include "../OrderManagement/FieldLabels.h"
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/GeneralUtils.h"
 #include "../LibraryUtils/StringDefinitions.h"
 
-#include "BinanceWorkedOrderManager.h"
 #include "PositionManager.h"
 
 using namespace OrderManagement;
 
-PositionManager::PositionManager(BinanceWorkedOrderManager* workedOrderManager)
+PositionManager::PositionManager()
     : m_logger{ std::make_unique<LibraryUtils::Logger>("PositionManager") },
       m_orderCreator(std::make_unique<OrderCreator>()),
-      m_workedOrderManager(workedOrderManager){}
+      m_workedOrderManager{ std::make_unique<BinanceOrderManager>() } {
+}
 
 PositionManager::~PositionManager() {}
 
 ////////////////////// postion ////////////////////////////////////////
 
 std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewPositionUpstreamOrder(
-	const std::string& symbol,
-    const PositionSide posSide,
-	const binapi::double_type quality,
-	const binapi::double_type refPrice)
+    const QuantitativeModel::QuantOrderParammeter& param)
 {
-    const double stopPrice = 0;
-    const double icebergAmount = 0;
-    const auto clientOrderId = GeneralUtils::GenerateUniqueID(StringDefinitions::BQTNewLongOrder);
-    m_workedPositions.try_emplace(clientOrderId, posSide);
-    return m_orderCreator->CreateNewBinanceTestOrderFull(
+	const auto clientOrderId = GeneralUtils::GenerateUniqueID(
+		param.m_side == binapi::e_side::buy ? StringDefinitions::BQTNewLongOrder : StringDefinitions::BQTNewShortOrder);
+    return m_orderCreator->CreateNewBinanceOrderFull(
           clientOrderId
-        , symbol
-        , posSide == PositionSide::LONG ? binapi::e_side::buy : binapi::e_side::sell
-        , binapi::e_type::limit
-        , binapi::e_time::GTC
-        , quality.convert_to<double>()
-        , refPrice.convert_to<double>()
-        , stopPrice
-        , icebergAmount);
+        , param.m_symbol
+        , param.m_side
+        , param.m_type
+        , param.m_time
+        , param.m_amount
+        , param.m_price
+        , param.m_stopPrice
+        , param.m_icebergAmount
+		, param.m_stableCurrency
+        , param.m_tradeType);
+}
+
+std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewTestPositionUpstreamOrder(
+    const QuantitativeModel::QuantOrderParammeter& param)
+{
+	const auto clientOrderId = GeneralUtils::GenerateUniqueID(
+		param.m_side == binapi::e_side::buy ? StringDefinitions::BQTNewLongOrder : StringDefinitions::BQTNewShortOrder);
+    return m_orderCreator->CreateNewBinanceTestOrderFull(
+        clientOrderId
+        , param.m_symbol
+        , param.m_side
+        , param.m_type
+        , param.m_time
+        , param.m_amount
+        , param.m_price
+        , param.m_stopPrice
+        , param.m_icebergAmount
+		, param.m_stableCurrency
+        , param.m_tradeType);
+}
+
+std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewFuturePositionUpstreamOrder(const QuantitativeModel::QuantOrderParammeter& param)
+{
+	const auto clientOrderId = GeneralUtils::GenerateUniqueID(
+		param.m_side == binapi::e_side::buy ? StringDefinitions::BQTNewLongOrder : StringDefinitions::BQTNewShortOrder);
+    return m_orderCreator->CreateNewBinanceFutureOrderFull(
+        clientOrderId
+        , param.m_symbol
+        , param.m_side
+        , param.m_type
+        , param.m_time
+        , param.m_amount
+        , param.m_price
+        , param.m_stopPrice
+        , param.m_icebergAmount
+		, param.m_leverageRatio
+		, param.m_stableCurrency
+        , param.m_tradeType);
+}
+
+std::unique_ptr<BinanceCancelOrder> PositionManager::CancelPositionUpstreamOrder(
+    const BinanceNewOrder* originalOrder)
+{
+    const auto clientOrderId = GeneralUtils::GenerateUniqueID(StringDefinitions::BQTCancelOrder);
+    return m_orderCreator->CreateCancelBinanceOrder(
+        clientOrderId,
+        originalOrder->GetSymbol(),
+        originalOrder->GetOrderId(),
+        originalOrder->GetClientOrderId());
+}
+
+void PositionManager::AddNewWorkedOrder(const std::string& clientOrderId, std::unique_ptr<BinanceNewOrder> order)
+{
+    m_workedOrderManager->AddNewOrder(clientOrderId, std::move(order));
+}
+
+void PositionManager::AddUnworkedOrder(const std::string& clientOrderId, std::unique_ptr<BinanceNewOrder> order)
+{
+	m_unworkedOrderManager->AddNewOrder(clientOrderId, std::move(order));
+}         
+
+void PositionManager::AddNewCancelOrder(const std::string& clientOrderId, std::unique_ptr<BinanceCancelOrder> order)
+{
+	m_workedOrderManager->AddCancelOrder(clientOrderId, std::move(order));
+}
+
+void PositionManager::AddUnworkedCancelOrder(const std::string& clientOrderId, std::unique_ptr<BinanceCancelOrder> order)
+{
+	m_unworkedOrderManager->AddCancelOrder(clientOrderId, std::move(order));
 }
 
 bool PositionManager::CloseOpenedPositionUpstreamOrder(const std::string& clientOrderId)
 {
-    return CloseWorkedPosition(clientOrderId) && CloseWorkeOrder(clientOrderId);
+    return m_workedOrderManager->RemoveOrder(clientOrderId);
 }
 
-bool PositionManager::CloseAllOpenedPositionUpstreamOrder(const PositionSide posSide, const PositionType posType)
+bool PositionManager::CloseAllOpenedPositions()
 {
-    return false;
+    return m_workedOrderManager->RemoveAllNewOrders();
 }
 
-bool PositionManager::CloseWorkedPosition(const std::string& clientOrderId)
+BinanceNewOrder* PositionManager::UpdateNewOrderExecutionStatus(
+    const std::string& clientOrderId,
+    const std::string& symbol, 
+    const double filledAmount, 
+    const double filledPrice, 
+    const double remainingAmount,
+    const std::size_t updateTime,
+    const BinanceNewOrderStatus orderStatus,
+    const std::string& exchangeText)
 {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    auto it = m_workedPositions.find(clientOrderId);
-    if (it != m_workedPositions.end())
-    {
-        m_workedPositions.erase(it);
-        return true;
-    }
-    else
-    {
-        m_logger->Error("No UpstramOrder found with symbol='" + clientOrderId + "'.");
-    }
-    return false;
+    return m_workedOrderManager->UpdateNewOrderExecutionStatus(
+        clientOrderId, symbol, filledAmount, filledPrice, remainingAmount, updateTime, orderStatus, exchangeText);
 }
 
-bool PositionManager::CloseWorkeOrder(const std::string& clientOrderId)
+BinanceCancelOrder* PositionManager::UpdateOrderCancellingStatus(
+    const std::string& clientOrderId,
+    const std::string& symbol, 
+    const std::size_t updateTime, 
+    const BinanceCancelOrderStatus orderStatus,
+    const std::string& exchangeText)
 {
-    return m_workedOrderManager->RemoveNewOrder(clientOrderId);
+    return m_workedOrderManager->UpdateOrderCancellingStatus(
+        clientOrderId, symbol, updateTime, orderStatus, exchangeText);
+}
+
+std::vector<double> PositionManager::GetOrderExecutedPrices(const std::string& symbol) const
+{
+	return m_workedOrderManager->GetOrderExecutedPrices(symbol);
+}
+
+std::vector<double> PositionManager::GetOrderExecutedSlippagePrices(const std::string& symbol) const
+{
+	return m_workedOrderManager->GetOrderExecutedSlippagePrices(symbol);
+}
+
+bool PositionManager::CloseAllOpenedPositionsBySide(const binapi::e_side posSide)
+{
+    return m_workedOrderManager->RemoveNewOrderBySide(posSide);
+}
+
+BinanceOrderManager* PositionManager::GetWorkedOrderManager() const
+{
+    return m_workedOrderManager.get();
+}
+
+BinanceOrderManager* PositionManager::GetUnworkedOrderManager() const
+{
+    return m_unworkedOrderManager.get();
+}
+
+binapi::double_type PositionManager::GetWeightedAveragePrice(
+    const std::string& symbol,
+    const binapi::e_side posSide) const
+{
+    return m_workedOrderManager->GetWeightedAveragePrice(symbol, posSide);
 }

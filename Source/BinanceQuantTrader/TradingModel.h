@@ -29,7 +29,7 @@ namespace MarketData {
 };
 
 namespace UserAccount {
-	class BinanceTrader;
+	class Trader;
 };
 
 namespace ComplianceNRegulatory {
@@ -43,7 +43,8 @@ namespace RiskManagement {
 namespace TradingStrategies {
 	class SingleStrategyHost;
 	class TradingStrategyBase;
-#if USE_TEST_TRADING
+	class ExternalController;
+#if USE_BACK_TEST_TRADING
 	class StrategyMessageServer;
 #endif
 };
@@ -78,14 +79,18 @@ namespace BinanceQuantTrader {
 		// Trading components
 		std::unique_ptr<PortfolioManager::PortfolioInvestmentBinance> m_portfolio;
 		std::unique_ptr<MarketData::RealTimeMarketData> m_marketData;
-		std::unique_ptr<UserAccount::BinanceTrader> m_trader;
+		std::unique_ptr<UserAccount::Trader> m_trader;
 		std::unique_ptr<ComplianceNRegulatory::BinanceTradingRules> m_tradingRules;
 		std::unique_ptr<RiskManagement::RiskManager> m_riskManager;
 		std::unique_ptr<TradingStrategies::TradingStrategyBase> m_strategy;
 		std::unique_ptr<TradingStrategies::SingleStrategyHost> m_strategyHost;
-#if USE_TEST_TRADING
+		std::unique_ptr<TradingStrategies::ExternalController> m_externalController;
+		std::unique_ptr<tinyxml2::XMLDocument> m_binanceMarketDataConfig;
+		std::unique_ptr<LibraryUtils::Logger> m_logger;
+#if USE_BACK_TEST_TRADING
 		std::unique_ptr<TradingStrategies::StrategyMessageServer> m_strategyMessageServer;
 #endif
-		std::unique_ptr<LibraryUtils::Logger> m_logger;
+		bool m_allowMutipleThreadTrade{ false };
+		bool m_allowExternalControlling{ false };
 	};
 };

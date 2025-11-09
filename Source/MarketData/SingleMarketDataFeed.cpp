@@ -11,8 +11,6 @@
 
 using namespace MarketData;
 
-SingleMarketDataFeed::SingleMarketDataFeed() {}
-
 void SingleMarketDataFeed::SetData(const SingleMarketData& newData)
 {
     m_data = newData;
@@ -42,4 +40,9 @@ double SingleMarketDataFeed::GetDoubleData() const
 MarketDataFeedStatus SingleMarketDataFeed::GetDataStatus() const
 {
     return m_mkdataFeedStatus;
+}
+
+std::string SingleMarketDataFeed::GetStringData() const
+{
+    return std::get<std::string>(m_data);
 }

@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Web Scraper">
+      <UniqueIdentifier>{5afea47d-0bad-4c72-8382-30ad2753c05b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -22,6 +25,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MacroData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WebScraper.h">
+      <Filter>Web Scraper</Filter>
+    </ClInclude>
+    <ClInclude Include="dlldefine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -34,6 +43,9 @@
     </ClCompile>
     <ClCompile Include="MacroData.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WebScraper.cpp">
+      <Filter>Web Scraper</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

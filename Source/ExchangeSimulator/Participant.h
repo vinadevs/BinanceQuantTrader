@@ -39,23 +39,33 @@ namespace ExchangeSimulator {
     {
         UNDEF,
         SIMULATOR, // Participant is trader simulation
-        REAL_TIME_MARKET_DATA, // Participant is from live market data
+		REAL_TIME_SPOT_MARKET_DATA, // Participant is from real-time spot market data
+		REAL_TIME_FUTURE_MARKET_DATA, // Participant is from real-time future market data
         HISTORICAL_DATA, // Participant is from historical market data
     };
 
     class UserAccountManager;
+	class UserTradeProfileManager;
+
     class Participant
     {
     public:
-        Participant(const ParticipantType& mode, UserAccountManager* userAccountManager);
+        Participant(const ParticipantType& mode,
+            UserAccountManager* userAccountManager,
+            UserTradeProfileManager* userTradeProfileManager);
         virtual ~Participant();
-        virtual bool TryToMatchOrder(OrderManagement::BinanceNewOrder& ack) = 0;
+
+		// this method is used to match incoming orders from upstream order queue
+        virtual bool TryToMatchOrder(OrderManagement::BinanceNewOrder& order) = 0;
+		// this method is used to update user balance after cancel order
+        virtual void HandleUserBalanceAfterCancelOrder(const OrderManagement::BinanceNewOrder& order) = 0;
 
         ParticipantType GetParticipantType() const { return m_tradeMode; };
     protected:
         std::unique_ptr<LibraryUtils::Logger> m_logger;
         std::unique_ptr<DownstreamOrderBook> m_downstreamOrderBook;
         UserAccountManager* m_userAccountManager{ nullptr };
+        UserTradeProfileManager* m_userTradeProfileManager{ nullptr };
         std::mutex m_mutex;
         ParticipantType m_tradeMode{ ParticipantType::UNDEF };
     };

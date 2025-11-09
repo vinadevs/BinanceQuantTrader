@@ -41,7 +41,7 @@ const std::string& ExchangeSimulator::UpstreamOrderUtils::GetOrderSymbol(const U
 	GET_BINANCE_ORDER_ATTRIBUTE(order, GetSymbol);
 }
 
-const std::string& ExchangeSimulator::UpstreamOrderUtils::GetOrderTypeName(const UpstreamOrder& order)
+const std::string& ExchangeSimulator::UpstreamOrderUtils::GetOrderMessageTypeName(const UpstreamOrder& order)
 {
-	GET_BINANCE_ORDER_ATTRIBUTE(order, GetOrderTypeStr);
+	GET_BINANCE_ORDER_ATTRIBUTE(order, GetOrderMessageTypeStr);
 }

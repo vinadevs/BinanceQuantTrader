@@ -10,11 +10,9 @@
 
 #include "dlldefine.h"
 
-#include <memory>
-#include <string>
-
-#include "../OrderManagement/Order.h"
 #include "ExchangeServiceInterface.h"
+
+#include <memory>
 
 namespace LibraryUtils {
     class Logger;
@@ -35,6 +33,8 @@ namespace tinyxml2 {
 namespace ExchangeSimulator {
 
     class UserAccountManager;
+	class ExchangeInfoManager;
+	class UserTradeProfileManager;
 
     class DLL_CLASS_EXCHANGESIMULATOR_EXPORTS BinanceExchangeSimulator final
     {
@@ -55,9 +55,11 @@ namespace ExchangeSimulator {
         // List exchange component services 
         ExchangeService m_matchingEngine;
         ExchangeService m_bqtJsonMessageServer;
-        ExchangeService m_binanceWalletServer;
+        ExchangeService m_binanceRestAPIServer;
 
         std::unique_ptr<UserAccountManager> m_userAccountManager;
+        std::unique_ptr<ExchangeInfoManager> m_exchangeInfoManager;
+		std::unique_ptr<UserTradeProfileManager> m_userTradeProfileManager;
         std::unique_ptr<LibraryUtils::Logger> m_logger;
     };
 };

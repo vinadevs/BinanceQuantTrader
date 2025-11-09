@@ -12,6 +12,7 @@
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/StringUtils.h"
 #include "../LibraryUtils/PathUtils.h"
+#include "../LibraryUtils/FileUtils.h"
 
 #include "UserAccountManager.h"
 
@@ -27,37 +28,67 @@ UserAccountManager::UserAccountManager(const tinyxml2::XMLElement* userAccountMa
     assert(generalSettingXml);
     m_maxAccount = generalSettingXml->Unsigned64Attribute("MaximumAccount");
 
+	// Load user accounts from XML configuration
     const auto* testUserAccountXml = userAccountManagerCfg->FirstChildElement("TestUserAccount");
     assert(testUserAccountXml);
     const auto* listUserIDStr = testUserAccountXml->Attribute("ListUserID");
-    auto listUserID = StringUtils::ParseStringPairs(listUserIDStr);
-    for (auto& userPair : listUserID) 
+    m_userAccountIds = StringUtils::ParseStringPairs(listUserIDStr);
+
+    const auto* spotAccountInfoXml = userAccountManagerCfg->FirstChildElement("SpotAccountInfo");
+    assert(spotAccountInfoXml);
+    std::string spotAccountInfoJsonFile(spotAccountInfoXml->Attribute("File"));
+    PathUtils::ReplaceSubString(spotAccountInfoJsonFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
+
+    for (auto& userPair : m_userAccountIds)
     {
         PathUtils::ReplaceSubString(userPair.second, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
         if (std::filesystem::exists(userPair.second))
         {
-            AddNewUserAccount(userPair.first, userPair.second);
+            AddNewSpotUserAccount(userPair.first, userPair.second, spotAccountInfoJsonFile);
         }
         else
         {
             std::cout << "Path does not exist=" << userPair.second << "\n";
         }
     }
+
+    const auto* futureAccountInfoXml = userAccountManagerCfg->FirstChildElement("FutureAccountInfo");
+    assert(futureAccountInfoXml);
+    std::string futureAccountInfoJsonFile(futureAccountInfoXml->Attribute("File"));
+    PathUtils::ReplaceSubString(futureAccountInfoJsonFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
+
+    for (auto& userPair : m_userAccountIds)
+	{
+		PathUtils::ReplaceSubString(userPair.second, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
+		if (std::filesystem::exists(userPair.second))
+		{
+			AddNewFutureUserAccount(userPair.first, userPair.second, futureAccountInfoJsonFile);
+		}
+		else
+		{
+			std::cout << "Path does not exist=" << userPair.second << "\n";
+		}
+	}
 }
 
 UserAccountManager::~UserAccountManager()
 {
+	m_logger->Info("UserAccountManager destroyed.");
 }
 
-void UserAccountManager::AddNewUserAccount(const std::string& userId, const std::string& configPath)
+void UserAccountManager::AddNewSpotUserAccount(
+    const std::string& userId,
+    const std::string& userConfigPath,
+    const std::string& accountInfoJsonFile)
 {
     std::unique_lock<std::mutex> lock(m_mutex);
-    if (m_accounts.size() <= m_maxAccount)
+    if (m_spotAccounts.size() <= m_maxAccount)
     {
-        const auto result = m_accounts.try_emplace(userId, std::make_unique<UserAccount>(configPath));
+        const auto result = m_spotAccounts.try_emplace(
+            userId, std::make_unique<UserSpotAccount>(userConfigPath, accountInfoJsonFile));
         if (!result.second)
         {
-            LOG_WARNING_STREAM(m_logger, "UserAccount with userId '" << userId << "' already exists.");
+            LOG_WARNING_STREAM(m_logger, "UserSpotAccount with userId '" << userId << "' already exists.");
         }
     }
     else
@@ -66,50 +97,114 @@ void UserAccountManager::AddNewUserAccount(const std::string& userId, const std:
     }
 }
 
-void UserAccountManager::RemoveUserAccount(const std::string& userId)
+void UserAccountManager::AddNewFutureUserAccount(
+    const std::string& userId,
+    const std::string& userConfigPath,
+    const std::string& accountInfoJsonFile)
+{
+	std::unique_lock<std::mutex> lock(m_mutex);
+	if (m_futureAccounts.size() <= m_maxAccount)
+	{
+		const nlohmann::json jsonData = nlohmann::json::parse(FileUtils::ReadFileContent(accountInfoJsonFile));
+		const auto result = m_futureAccounts.try_emplace(
+            userId, std::make_unique<KernelTrading::UserFutureAccount>(userId, userConfigPath, jsonData));
+		if (!result.second)
+		{
+			LOG_WARNING_STREAM(m_logger, "UserFutureAccount with userId '" << userId << "' already exists.");
+		}
+	}
+	else
+	{
+		LOG_ERROR_STREAM(m_logger, "Exceeded maximum account setting.");
+	}
+}
+
+void UserAccountManager::RemoveSpotUserAccount(const std::string& userId)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    const auto it = m_accounts.find(userId);
-    if (it != m_accounts.end())
+    const auto it = m_spotAccounts.find(userId);
+    if (it != m_spotAccounts.end())
     {
-        m_accounts.erase(it);
-        LOG_INFO_STREAM(m_logger, "UserAccount with userId '" << userId << "' removed successfully.");
+        m_spotAccounts.erase(it);
+        LOG_INFO_STREAM(m_logger, "UserSpotAccount with userId '" << userId << "' removed successfully.");
     }
     else
     {
-        throw std::runtime_error("No UserAccount found with userId '" + userId + "'.");
+        throw std::runtime_error("No UserSpotAccount found with userId '" + userId + "'.");
     }
 }
 
-const UserAccount* UserAccountManager::LookupUserAccount(const std::string& userId)
+void UserAccountManager::RemoveFutureUserAccount(const std::string& userId)
 {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    const auto it = m_accounts.find(userId);
-    if (it != m_accounts.end()) 
-    {
-        return it->second.get();
-    }
-    throw std::runtime_error("No UserAccount found with userId '" + userId + "'.");
+	std::lock_guard<std::mutex> lock(m_mutex);
+	const auto it = m_futureAccounts.find(userId);
+	if (it != m_futureAccounts.end())
+	{
+		m_futureAccounts.erase(it);
+		LOG_INFO_STREAM(m_logger, "UserFutureAccount with userId '" << userId << "' removed successfully.");
+	}
+	else
+	{
+		throw std::runtime_error("No UserFutureAccount found with userId '" + userId + "'.");
+	}
 }
 
-UserAccount* UserAccountManager::OpenEditSessionForUserAccount(const std::string& userId)
+const UserSpotAccount* UserAccountManager::LookupSpotUserAccount(const std::string& userId)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    auto it = m_accounts.find(userId);
-    if (it != m_accounts.end())
+    const auto it = m_spotAccounts.find(userId);
+    if (it != m_spotAccounts.end()) 
     {
         return it->second.get();
     }
-    throw std::runtime_error("No UserAccount found with userId '" + userId + "'.");
+    throw std::runtime_error("No UserSpotAccount found with userId '" + userId + "'.");
+}
+
+const KernelTrading::UserFutureAccount* UserAccountManager::LookupFutureUserAccount(const std::string& userId)
+{
+	std::lock_guard<std::mutex> lock(m_mutex);
+	auto it = m_futureAccounts.find(userId);
+	if (it != m_futureAccounts.end())
+	{
+		return it->second.get();
+	}
+	throw std::runtime_error("No UserFutureAccount found with userId '" + userId + "'.");
+}
+
+UserSpotAccount* UserAccountManager::OpenEditSessionForSpotUserAccount(const std::string& userId)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    auto it = m_spotAccounts.find(userId);
+    if (it != m_spotAccounts.end())
+    {
+        return it->second.get();
+    }
+    throw std::runtime_error("No UserSpotAccount found with userId '" + userId + "'.");
+}
+
+KernelTrading::UserFutureAccount* UserAccountManager::OpenEditSessionForFutureUserAccount(const std::string& userId)
+{
+	std::lock_guard<std::mutex> lock(m_mutex);
+	auto it = m_futureAccounts.find(userId);
+	if (it != m_futureAccounts.end())
+	{
+		return it->second.get();
+	}
+	throw std::runtime_error("No UserFutureAccount found with userId '" + userId + "'.");
 }
 
 void UserAccountManager::ClearAll()
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-	m_accounts.clear();
+	m_spotAccounts.clear();
 }
 
-const Accounts& UserAccountManager::GetUserAccounts()
+const SpotAccounts& UserAccountManager::GetUserSpotAccounts()
 {
-	return m_accounts;
+	return m_spotAccounts;
+}
+
+const FutureAccounts& UserAccountManager::GetUserFutureAccounts()
+{
+	return m_futureAccounts;
 }

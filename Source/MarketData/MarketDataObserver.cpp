@@ -20,3 +20,43 @@ bool MarketDataObserver::OnTradeChange(MarketDataSubject* marketDataconst, const
 {
 	return true;
 }
+
+bool MarketDataObserver::OnIndividualMarketTickerChange(MarketDataSubject* marketDataconst, const std::string& symbol)
+{
+	return true;
+}
+
+bool MarketDataObserver::OnMiniTickerChange(MarketDataSubject* marketDataconst, const std::string& symbol)
+{
+	return true;
+}
+
+bool MarketDataObserver::OnAggregateTradeChange(MarketDataSubject* marketDataconst, const std::string& symbol)
+{
+	return true;
+}
+
+bool MarketDataObserver::OnKlineCandleStickChange(MarketDataSubject* marketData, const std::string& symbol)
+{
+	return true;
+}
+
+bool MarketDataObserver::OnAllMarketTickersChange(MarketDataSubject* marketDataconst, const std::string& symbol)
+{
+	return true;
+}
+
+bool MarketDataObserver::OnAllMiniTickersChange(MarketDataSubject* marketDataconst, const std::string& symbol)
+{
+	return true;
+}
+
+bool MarketDataObserver::OnAllPartDepthChange(MarketDataSubject* marketDataconst, const std::string& symbol)
+{
+	return true;
+}
+
+bool MarketDataObserver::OnAllDiffDepthChange(MarketDataSubject* marketData, const std::string& symbol)
+{
+	return true;
+}

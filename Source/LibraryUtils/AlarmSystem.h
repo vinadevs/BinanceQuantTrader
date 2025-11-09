@@ -27,6 +27,8 @@
 
 namespace LibraryUtils
 {
+    static constexpr long DefaultAlarmInterval = 10000;
+
     class DLL_CLASS_LIBRARYUTILS_EXPORTS AlarmSystem {
     public:
         enum class AlarmMode : unsigned {
@@ -35,7 +37,7 @@ namespace LibraryUtils
             ON_REQUEST, // repeat alarm when there is next request
         };
 
-        AlarmSystem(const long customIntervalMs, AlarmMode mode = AlarmMode::REPEAT);
+        AlarmSystem(const long repeatInterval, AlarmMode mode = AlarmMode::REPEAT);
         virtual ~AlarmSystem();
 
         DISABLE_COPY_AND_MOVE(AlarmSystem);
@@ -48,6 +50,8 @@ namespace LibraryUtils
 
         // Allows derived classes to request an alarm trigger with a custom interval
         void RequestAlarm(long customIntervalMs = 0);
+
+        void SetRepeatInterval(const long repeatInterval);
 
     protected:
         // Virtual method to be overridden by derived classes to receive alarm alerts

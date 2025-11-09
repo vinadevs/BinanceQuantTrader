@@ -1,6 +1,8 @@
 // user_account_data.proto
 syntax = "proto3";
 
+package account;
+
 service UserAccountService {
     rpc GetUserAccountData (UserAccountDataRequest) returns (UserAccountDataResponse);
 }
@@ -25,6 +27,6 @@ message UserAccountDataResponse {
     bool can_trade = 7;             // Indicates if trading is allowed.
     bool can_withdraw = 8;          // Indicates if withdrawal is allowed.
     bool can_deposit = 9;           // Indicates if deposit is allowed.
-       double stable_coin_amount = 10; // Amount currently stable coin.
+	double stable_coin_amount = 10; // Amount currently stable coin.
     map<string, Balance> balances = 11; // Map of asset symbol to Balance.
 }

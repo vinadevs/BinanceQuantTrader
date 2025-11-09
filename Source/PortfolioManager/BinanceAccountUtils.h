@@ -18,12 +18,22 @@ namespace LibraryUtils {
 
 namespace binapi {
 	namespace rest {
-		class account_info_t;
+		struct account_info_t;
 	};
 };
 
+namespace KernelTrading {
+	class UserFutureAccount;
+};
+
 namespace BinanceAccountUtils {
-	bool QueryBinanceAccount(
+	// This function queries the Binance spot account information.
+	bool QueryBinanceSpotAccount(
 		binapi::rest::account_info_t* account,
+		LibraryUtils::Logger* logger = nullptr);
+
+	// This function queries the Binance future account information.
+	bool QueryBinanceFutureAccount(
+		KernelTrading::UserFutureAccount* account,
 		LibraryUtils::Logger* logger = nullptr);
 };

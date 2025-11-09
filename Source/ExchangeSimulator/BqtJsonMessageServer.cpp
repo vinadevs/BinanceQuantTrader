@@ -42,6 +42,7 @@ void BqtJsonMessageServer::Stop()
 
 void BqtJsonMessageServer::OnReceivedMessage(const BqtJsonMessage& message)
 {
+	std::lock_guard<std::mutex> lock(m_mutex); // Ensure thread safety
 	m_logger->Debug("Received: " + message.SerializeMessage());
 	m_nessageHandler->OnHandlingReceivedSimulatorMessage(message);
 }

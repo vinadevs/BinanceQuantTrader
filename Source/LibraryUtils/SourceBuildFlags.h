@@ -16,10 +16,16 @@
 #define USE_MULTITHREADING_MESSAGE "Using singe thread trading mode."
 #endif
 
+#define ENABLE_FEATURE 1
+#define DISABLE_FEATURE 0
+
 // Macro flag to enable or disable test trading mode
-#define USE_TEST_TRADING 1  // Set to 0 to disable test mode, CAREFULLY, lose monney!!!!
-#if USE_TEST_TRADING
-#define USE_TEST_TRADING_MESSAGE "Using test trading mode."
+#define USE_BACK_TEST_TRADING ENABLE_FEATURE  // Set to 0 to disable test mode, CAREFULLY, lose monney!!!!
+#define USE_BINANCE_TEST_TRADING DISABLE_FEATURE  // Set to 0 to disable test mode, CAREFULLY, lose monney!!!!
+#if USE_BACK_TEST_TRADING
+#define USE_BACK_TEST_TRADING_MESSAGE "Using back test trading mode."
+#elif USE_BINANCE_TEST_TRADING
+#define USE_BINANCE_TEST_TRADING_MESSAGE "Using binance test trading mode."
 #else
-#define USE_TEST_TRADING_MESSAGE "Using real trading mode."
+#define USE_REAL_TRADING_MESSAGE "Using real trading mode."
 #endif

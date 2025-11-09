@@ -13,17 +13,22 @@
 #include "../HistoricalData/HistoricalDataManager.h"
 #include "../PortfolioManager/PortfolioInvestmentBinance.h"
 #include "../UserAccount/BinanceTrader.h"
+#include "../UserAccount/FutureTrader.h"
 #include "../ComplianceNRegulatory/BinanceTradingRules.h"
 #include "../RiskManagement/RiskManager.h"
 #include "../TradingStrategies/TradingStrategyBase.h"
 #include "../TradingStrategies/SingleStrategyHost.h"
+#include "../TradingStrategies/ExternalController.h"
 #include "../SettingNConfig/tinyxml2.h"
+#include "../SettingNConfig/BqtXmlUtils.h"
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/SourceBuildFlags.h"
 #include "../RestAPI/ApiKeyInfoManager.h"
-#include "../RestAPI/BinanceAPI.h"
+#include "../RestAPI/BinanceSpotApiGateWay.h"
+#include "../CurlAPI/BinanceFutureApiGateway.h"
+#include "../SettingNConfig/BqtGlobalSettings.h"
 
-#if USE_TEST_TRADING
+#if USE_BACK_TEST_TRADING
 #include "../TradingStrategies/StrategyMessageServer.h"
 #include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
 #endif
@@ -45,7 +50,9 @@ using namespace HistoricalData;
 using namespace UserAccount;
 using namespace tinyxml2;
 using namespace LibraryUtils;
+using namespace SettingNConfig;
 using namespace RestAPI;
+using namespace CurlAPI;
 
 TradingModel::TradingModel(
 	const XMLDocument* configBQTXml,
@@ -84,7 +91,11 @@ void TradingModel::PrepareTradingComponents(
 	const XMLDocument* configAccessKeyXml)
 {
 	// PREPARES TRADING COMPONENTS
-	m_logger->Info("Initiating User Account And Binance API.");
+	m_logger->Info("Initiating Global Settings.");
+	const auto* globalSettingsCfg = configBQTXml->FirstChildElement("GlobalSettings");
+	BqtGlobalSettingsMgr->InitGlobalSetting(globalSettingsCfg);
+
+	// User account and API key (Strictly confidential information, be careful !!!!)
 	const auto* userAccountXml = configAccessKeyXml->FirstChildElement("UserAccount");
 	assert(userAccountXml);
 	const auto* keyXml = userAccountXml->FirstChildElement("Key");
@@ -94,23 +105,58 @@ void TradingModel::PrepareTradingComponents(
 	const auto* userID = keyXml->Attribute("UserID"); // must be always exist
 	ApiKeyInfoMgr->InitApiKeyInfo(userID, pk, sk);
 
-#if USE_TEST_TRADING
-	m_logger->Info("Initiating Message Transporter.");
+#if USE_BACK_TEST_TRADING
+	m_logger->Info("Initiating Test Message Transporter.");
 	const auto* messageTransporterCfg = configBQTXml->FirstChildElement("MessageTransporter");
 	ExchangeSimulatorGateWay->InitMessageTransporter(messageTransporterCfg);
 
-	m_logger->Info("Initiating Binance Wallet Client.");
+	m_logger->Info("Initiating Test Binance Wallet Client.");
 	const auto* binanceWalletClientCfg = configBQTXml->FirstChildElement("BinanceWalletClient");
 	ExchangeSimulatorGateWay->InitBinanceWalletClient(binanceWalletClientCfg);
+
+	m_logger->Info("Initiating Test Binance Exchange Client.");
+	const auto* binanceExchangeClientCfg = configBQTXml->FirstChildElement("BinanceExchangeClient");
+	ExchangeSimulatorGateWay->InitBinanceExchangeClient(binanceExchangeClientCfg);
+
+	m_logger->Info("Initiating Test Binance Trade Profile.");
+	const auto* binanceTradeProfileCfg = configBQTXml->FirstChildElement("BinanceTradeProfile");
+	ExchangeSimulatorGateWay->InitBinanceTradeProfile(binanceTradeProfileCfg);
 #else
-	const auto* binanceAPICfg = configBQTXml->FirstChildElement("BinanceAPI");
+	// Spot API
+	const auto* binanceAPICfg = configBQTXml->FirstChildElement("BinanceSpotApiGateWay");
 	assert(binanceAPICfg);
 	const auto* connectionXml = binanceAPICfg->FirstChildElement("Connection");
 	assert(connectionXml);
-	const auto* apiBinanceCom = connectionXml->Attribute("ApiBinanceCom");
-	const auto* apiBinancePort = connectionXml->Attribute("ApiBinancePort");
-	const auto* connectionTimeoutMs = connectionXml->Attribute("ConnectionTimeoutMs");
-	BinanceAPI::GetInstance()->InitiateAPI(apiBinanceCom, apiBinancePort, pk, sk, connectionTimeoutMs);
+	const auto enableSpotTrading = connectionXml->BoolAttribute("Enable");
+	if (enableSpotTrading)
+	{
+		const auto* spotApiBinanceUrl = connectionXml->Attribute("SpotApiBinanceUrl");
+		const auto* apiBinancePort = connectionXml->Attribute("ApiBinancePort");
+		const auto* connectionTimeoutMs = connectionXml->Attribute("ConnectionTimeoutMs");
+		m_logger->Info("Initiating Binance Spot API.");
+		BinanceSpotApiGateWay::GetInstance()->InitiateAPI(spotApiBinanceUrl, apiBinancePort, pk, sk, connectionTimeoutMs);
+	}
+	else
+	{
+		m_logger->Info("Binance Spot API is disabled.");
+	}
+	// Future API
+	// -Binance Future API is not supported in this country yet, so we can not trade with it for now
+	const auto* binanceFutureAPICfg = configBQTXml->FirstChildElement("BinanceFutureApiGateWay");
+	assert(binanceFutureAPICfg);
+	const auto* connectionFutureXml = binanceFutureAPICfg->FirstChildElement("Connection");
+	assert(connectionFutureXml);
+	const auto enableFutureTrading = connectionFutureXml->BoolAttribute("Enable");
+	if (enableFutureTrading)
+	{
+		const auto* futureApiBinanceUrl = connectionFutureXml->Attribute("FutureApiBinanceUrl");
+		m_logger->Info("Initiating Binance Future API.");
+		BinanceFutureApiGateway::GetInstance().InitiateAPI(futureApiBinanceUrl, pk, sk);
+	}
+	else
+	{
+		m_logger->Info("Binance Future API is disabled.");
+	}
 #endif
 	m_logger->Info("Initiating Static Data.");
 	const auto* staticDataCfg = configBQTXml->FirstChildElement("StaticData");
@@ -122,11 +168,17 @@ void TradingModel::PrepareTradingComponents(
 
 	m_logger->Info("Initiating Real Time Market Data.");
 	const auto* realTimeMarketDataCfg = configBQTXml->FirstChildElement("RealTimeMarketData");
-	m_marketData = std::make_unique<RealTimeMarketData>(realTimeMarketDataCfg);
+	m_binanceMarketDataConfig = BqtXmlUtils::GetBinanceMarketDataConfig(realTimeMarketDataCfg);
+	const auto* binanceRealTimeMarketDataCfg = m_binanceMarketDataConfig->FirstChildElement("RealTimeMarketData");
+	m_marketData = std::make_unique<RealTimeMarketData>(binanceRealTimeMarketDataCfg);
 
 	m_logger->Info("Initiating Portfolio Investment.");
 	const auto* portfolioCfg = configBQTXml->FirstChildElement("PortfolioInvestment");
 	m_portfolio = std::make_unique<PortfolioInvestmentBinance>(portfolioCfg, m_marketData.get());
+
+	m_logger->Info("Initiating Compliance And Regulatory.");
+	const auto* complianceCfg = configBQTXml->FirstChildElement("ComplianceNRegulatory");
+	m_tradingRules = std::make_unique<BinanceTradingRules>(complianceCfg);
 
 	m_logger->Info("Initiating Risk Management.");
 	const auto* riskManagementCfg = configBQTXml->FirstChildElement("RiskManagement");
@@ -134,55 +186,93 @@ void TradingModel::PrepareTradingComponents(
 
 	m_logger->Info("Initiating Trader.");
 	const auto* traderXmlCfg = configBQTXml->FirstChildElement("TraderInfo");
-	m_trader = TraderFactory::CreateSmartTrader(m_portfolio.get(), m_riskManager.get(), traderXmlCfg);
-
-	m_logger->Info("Initiating Compliance And Regulatory .");
-	const auto* complianceCfg = configBQTXml->FirstChildElement("ComplianceNRegulatory");
-	m_tradingRules = std::make_unique<BinanceTradingRules>(complianceCfg);
+	m_trader = TraderFactory::CreateSmartTrader(
+		m_portfolio.get(),
+		m_tradingRules.get(),
+		m_riskManager.get(),
+		traderXmlCfg);
 
 	m_logger->Info("Initiating Trading Strategy.");
 	const auto* strategyCfg = configBQTXml->FirstChildElement("TradingStrategy");
-	m_strategy = StrategyFactory::CreateTargetStrategy(strategyCfg,
+	m_strategy = StrategyFactory::CreateTargetStrategy(
+		strategyCfg,
 		m_marketData.get(),
 		m_trader.get(),
 		m_tradingRules.get());
 
-#if USE_TEST_TRADING
-	m_logger->Info("Initiating Message Server.");
+#if USE_BACK_TEST_TRADING
+	m_logger->Info("Initiating Test Message Server.");
 	const auto* messageServerCfg = configBQTXml->FirstChildElement("MessageServer");
 	m_strategyMessageServer = std::make_unique<StrategyMessageServer>(messageServerCfg);
 	m_strategyMessageServer->RegisterMessageHandler(m_strategy.get());
 #endif
+
+	m_logger->Info("Initiating Trading Model.");
+	const auto* tradingModelCfg = configBQTXml->FirstChildElement("TradingModel");
+	m_allowMutipleThreadTrade = tradingModelCfg->FirstChildElement("MultipleThreads")->BoolAttribute("Enable");
+	m_allowExternalControlling = tradingModelCfg->FirstChildElement("ExternalControlling")->BoolAttribute("Enable");
+	
+	if (m_allowExternalControlling)
+	{
+		m_logger->Info("Initiating External Controller.");
+		const auto* externalControllerCfg = configBQTXml->FirstChildElement("ExternalController");
+		assert(externalControllerCfg);
+		m_externalController = std::make_unique<ExternalController>(externalControllerCfg);
+	}
 }
 
 void TradingModel::RunModel()
 {
-#if USE_TEST_TRADING
+	// Start the external controller,
+	// this is for setup parameter control (admin request, parent order) from external applications
+	if (m_allowExternalControlling)
+	{
+		m_externalController->Start(); // this is a child thread
+	}
+	// Start the strategy message server
+	// This is a child thread
+	// It will be used to receive messages from the exchange simulator
+	// for testing trade
+#if USE_BACK_TEST_TRADING
 	// -This message receiver is a BQT Json Message server
 	// We will use it to receive acks from the Exchange Simulator
 	// for testing trade
 	// -We dont have a Binance message server, because Binance API 
 	// is using REST protocol so we will use HTTP/REST protocol instead
-	m_strategyMessageServer->Start();
+	m_strategyMessageServer->Start(); // this is a child thread
+	m_logger->Info(USE_BACK_TEST_TRADING_MESSAGE);
+#elif USE_BINANCE_TEST_TRADING
+	m_logger->Info(USE_BINANCE_TEST_TRADING_MESSAGE);
+#else
+	m_logger->Info(USE_REAL_TRADING_MESSAGE);
 #endif
 	m_logger->Info(USE_MULTITHREADING_MESSAGE);
-#if USE_MULTITHREADING
+#if USE_MULTITHREADING // control from build setup
 	// If Strategies and Trading Services (Market Data,...) want to run in mutiple threads
 	// to avoid stale trading signals but the trade might be slower than single thread mode
-	if (m_strategy && m_strategyHost)
+	if (m_strategy && m_strategyHost && m_allowMutipleThreadTrade)
 	{
-		m_strategyHost->StartStrategyThread(m_strategy.get());
+		if (m_strategyHost && m_allowMutipleThreadTrade) // control from configuration setup
+		{
+			m_strategyHost->StartStrategyThread(m_strategy.get());  // this is a child thread
+		}
+		else //If Strategies and Trading Services (Market Data,...) want to run in single thread
+		{
+			m_strategy->StartLive();
+		}
 	}
 #else
-	//If Strategies and Trading Services (Market Data,...) want to run in single thread
+	// If Strategies and Trading Services (Market Data,...) want to run in single thread
 	if (m_strategy)
 	{
 		m_strategy->StartLive();
 	}
 #endif
+	// Start market data streaming
 	if (m_marketData)
 	{
 		// Start receive real time market data and analyze to find trading opportunity signals
-		m_marketData->StartStreamingData();
+		m_marketData->StartStreamingData();  // this is a child thread
 	}
+	// Should not reach here, because the model is running in a trading loop
 }

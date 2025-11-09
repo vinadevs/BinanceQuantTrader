@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package usertradeprofile;
+
+// A message to update the ser trade profile for a user's account
+message UpdateUserTradeProfileRequest {
+  string user_account_id = 1;  // ID of the user or trading account
+  double leverage = 2;         // New leverage rate
+}
+
+// Response message
+message UpdateUserTradeProfileResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// gRPC service definition
+service TradeService {
+  // RPC to update the user trade profile of a user account
+  rpc UpdateUserTradeProfile(UpdateUserTradeProfileRequest) returns (UpdateUserTradeProfileResponse);
+}

@@ -8,43 +8,66 @@
 
 #pragma once
 
+#include "../RestAPI/RestAPI.h"
+
+#include "BaseReporter.h"
+
 #include <memory>
+#include <filesystem>
+#include <fstream>
+#include <vector>
 
 namespace tinyxml2 {
 	class XMLElement;
 };
 
-namespace LibraryUtils {
-	class Logger;
-};
+namespace ComplianceNRegulatory {
+	class BinanceExchangeProfileMgr;
+}
 
-namespace PortfolioManager {
-	class PortfolioInvestmentBinance;
+namespace OrderManagement {
+	class PositionManager;
 }
 
 namespace UserAccount {
-	class ExchangeReporter
+	
+	// The ExchangeReporter class is responsible for generating reports on trading activities.
+	class ExchangeReporter : public BaseReporter
 	{
 	public:
-		ExchangeReporter(PortfolioManager::PortfolioInvestmentBinance* portfolio)
-			: m_portfolio(portfolio) {}
+		ExchangeReporter(
+			binapi::rest::account_info_t* accountInfo,
+			ComplianceNRegulatory::BinanceExchangeProfileMgr* exchangeProfileMgr,
+			OrderManagement::PositionManager* positionManager)
+			: m_accountInfo(accountInfo),
+			m_exchangeProfileMgr(exchangeProfileMgr),
+			m_positionManager(positionManager) {}
+
 		virtual ~ExchangeReporter() {};
-		virtual void SetupReporter(const tinyxml2::XMLElement* reportCfg) = 0;
-		virtual void UpdateRemoteReportTrades(const std::string& symbol) = 0;
-		virtual void UpdateRemoteReportOpenOrders(const std::string& symbol) = 0;
-		virtual void UpdateRemoteReportAccountBalance(const std::string& symbol) = 0;
-		virtual void DoRemoteExecutionReport(const std::string& symbol) = 0;
-		virtual void DoLocalExecutionReport(const std::string& symbol) = 0;
-		virtual void DoTradeExecutionReport() = 0;
+
+		virtual void UpdateRemoteReportTrades(const std::string& symbol) {};
+		virtual void UpdateRemoteReportOpenOrders(const std::string& symbol) {};
+		virtual void UpdateRemoteReportAccountBalance(const std::string& symbol) {};
+		virtual void UpdateRemoteReportExchangerPriceForOrders(const std::string& symbol) {};
+		virtual void UpdateRemoteReportCalculateLossForOrders(const std::string& symbol) {};
+		virtual void DoRemoteExecutionReport(const std::string& symbol) {};
+		virtual void DoLocalExecutionReport(const std::string& symbol) {};
+		virtual std::vector<double> GetPlnSeries(const std::string& symbol) { return std::vector<double>(); }
+
 	protected:
-		virtual bool MergeLocalAndRemmoteReport() = 0;
+		virtual bool MergeLocalAndRemmoteReport() { return true; };
 
-		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr };
-		std::unique_ptr<LibraryUtils::Logger> m_logger;
+		ComplianceNRegulatory::BinanceExchangeProfileMgr* m_exchangeProfileMgr{ nullptr };
+		OrderManagement::PositionManager* m_positionManager{ nullptr };
 
-		bool m_enableTradeReporter{ false };
+		bool m_enableLastDayTradeReporter{ false };
 		bool m_enableOpenOrderReporter{ false };
 		bool m_enableBalanceReporter{ false };
+		bool m_enableExchangerPriceForOrdersReporter{ false };
+		bool m_enableCalculateLossForOrdersReporter{ false };
+
+		// restAPI data
+		binapi::rest::account_info_t* m_accountInfo;
 	};
 };
 

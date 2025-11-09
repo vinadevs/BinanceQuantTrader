@@ -21,9 +21,10 @@
 #include <grpcpp/server_context.h>
 #include <grpcpp/impl/service_type.h>
 #include <grpcpp/support/sync_stream.h>
+namespace account {
 
 static const char* UserAccountService_method_names[] = {
-  "/UserAccountService/GetUserAccountData",
+  "/account.UserAccountService/GetUserAccountData",
 };
 
 std::unique_ptr< UserAccountService::Stub> UserAccountService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -36,23 +37,23 @@ UserAccountService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>&
   : channel_(channel), rpcmethod_GetUserAccountData_(UserAccountService_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
-::grpc::Status UserAccountService::Stub::GetUserAccountData(::grpc::ClientContext* context, const ::UserAccountDataRequest& request, ::UserAccountDataResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::UserAccountDataRequest, ::UserAccountDataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetUserAccountData_, context, request, response);
+::grpc::Status UserAccountService::Stub::GetUserAccountData(::grpc::ClientContext* context, const ::account::UserAccountDataRequest& request, ::account::UserAccountDataResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::account::UserAccountDataRequest, ::account::UserAccountDataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetUserAccountData_, context, request, response);
 }
 
-void UserAccountService::Stub::async::GetUserAccountData(::grpc::ClientContext* context, const ::UserAccountDataRequest* request, ::UserAccountDataResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::UserAccountDataRequest, ::UserAccountDataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetUserAccountData_, context, request, response, std::move(f));
+void UserAccountService::Stub::async::GetUserAccountData(::grpc::ClientContext* context, const ::account::UserAccountDataRequest* request, ::account::UserAccountDataResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::account::UserAccountDataRequest, ::account::UserAccountDataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetUserAccountData_, context, request, response, std::move(f));
 }
 
-void UserAccountService::Stub::async::GetUserAccountData(::grpc::ClientContext* context, const ::UserAccountDataRequest* request, ::UserAccountDataResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+void UserAccountService::Stub::async::GetUserAccountData(::grpc::ClientContext* context, const ::account::UserAccountDataRequest* request, ::account::UserAccountDataResponse* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetUserAccountData_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::UserAccountDataResponse>* UserAccountService::Stub::PrepareAsyncGetUserAccountDataRaw(::grpc::ClientContext* context, const ::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::UserAccountDataResponse, ::UserAccountDataRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetUserAccountData_, context, request);
+::grpc::ClientAsyncResponseReader< ::account::UserAccountDataResponse>* UserAccountService::Stub::PrepareAsyncGetUserAccountDataRaw(::grpc::ClientContext* context, const ::account::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::account::UserAccountDataResponse, ::account::UserAccountDataRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetUserAccountData_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::UserAccountDataResponse>* UserAccountService::Stub::AsyncGetUserAccountDataRaw(::grpc::ClientContext* context, const ::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::account::UserAccountDataResponse>* UserAccountService::Stub::AsyncGetUserAccountDataRaw(::grpc::ClientContext* context, const ::account::UserAccountDataRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncGetUserAccountDataRaw(context, request, cq);
   result->StartCall();
@@ -63,11 +64,11 @@ UserAccountService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       UserAccountService_method_names[0],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< UserAccountService::Service, ::UserAccountDataRequest, ::UserAccountDataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< UserAccountService::Service, ::account::UserAccountDataRequest, ::account::UserAccountDataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](UserAccountService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::UserAccountDataRequest* req,
-             ::UserAccountDataResponse* resp) {
+             const ::account::UserAccountDataRequest* req,
+             ::account::UserAccountDataResponse* resp) {
                return service->GetUserAccountData(ctx, req, resp);
              }, this)));
 }
@@ -75,11 +76,13 @@ UserAccountService::Service::Service() {
 UserAccountService::Service::~Service() {
 }
 
-::grpc::Status UserAccountService::Service::GetUserAccountData(::grpc::ServerContext* context, const ::UserAccountDataRequest* request, ::UserAccountDataResponse* response) {
+::grpc::Status UserAccountService::Service::GetUserAccountData(::grpc::ServerContext* context, const ::account::UserAccountDataRequest* request, ::account::UserAccountDataResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
+
+}  // namespace account
 

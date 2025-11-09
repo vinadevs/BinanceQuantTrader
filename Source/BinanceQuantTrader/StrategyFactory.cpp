@@ -10,9 +10,16 @@
 
 #include "../SettingNConfig/tinyxml2.h"
 #include "../MarketData/RealTimeMarketData.h"
+
+// list of strategy types supported
+#include "../TradingStrategies/TestTradingStrategy.h"
 #include "../TradingStrategies/TradingStrategyBase.h"
 #include "../TradingStrategies/FomoTradingStrategy.h"
-#include "../TradingStrategies/TestTradingStrategy.h"
+#include "../TradingStrategies/MarketMonitorStrategy.h"
+#include "../TradingStrategies/StopLossStrategy.h"
+#include "../TradingStrategies/SmartLongShortStrategy.h"
+#include "../TradingStrategies/VWAPStrategy.h"
+
 #include "../LibraryUtils/PathUtils.h"
 #include "../LibraryUtils/StringUtils.h"
 
@@ -31,7 +38,7 @@ std::unique_ptr<TradingStrategyBase>
 StrategyFactory::CreateTargetStrategy(
 	const XMLElement* strategyXmlCfg,
 	RealTimeMarketData* marketData,
-	BinanceTrader* trader,
+	Trader* trader,
 	BinanceTradingRules* tradingRules)
 {
 	assert(strategyXmlCfg);
@@ -44,6 +51,22 @@ StrategyFactory::CreateTargetStrategy(
 		if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "FomoStrategy"))
 		{
 			return std::make_unique<FomoTradingStrategy>(strategyCfgFile, marketData, trader, tradingRules);
+		}
+		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "MarketMonitorStrategy"))
+		{
+			return std::make_unique<MarketMonitorStrategy>(strategyCfgFile, marketData);
+		}
+		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "StopLossStrategy"))
+		{
+			return std::make_unique<StopLossStrategy>(strategyCfgFile, marketData, trader, tradingRules);
+		}
+		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "SmartLongShortStrategy"))
+		{
+			return std::make_unique<SmartLongShortStrategy>(strategyCfgFile, marketData, trader, tradingRules);
+		}
+		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "VWAPStrategy"))
+		{
+			return std::make_unique<VWAPStrategy>(strategyCfgFile, marketData, trader, tradingRules);
 		}
 		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "TestStrategy"))
 		{

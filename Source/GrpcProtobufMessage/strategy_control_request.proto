@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package strategy;
+
+// gRPC service for receiving strategy control commands
+service StrategyRequestService {
+    rpc ControlStrategy(StrategyRequest) returns (StrategyResponse);
+}
+
+// Enum for controlling live trading
+enum LiveTradingControl {
+    STOP = 0;
+    RESUME = 1;
+}
+
+// Enum for status in response
+enum RequestStatus {
+    SUCCESS = 0;
+    FAILURE = 1;
+}
+
+// Strategy request message
+message StrategyRequest {
+    string strategy_id = 1;
+    LiveTradingControl live_trading_control = 2;
+}
+
+// Strategy response message
+message StrategyResponse {
+    RequestStatus status = 1;
+    string error_message = 2; // Only populated on FAILURE
+}

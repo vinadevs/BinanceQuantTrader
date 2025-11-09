@@ -18,6 +18,8 @@
 #include "../SettingNConfig/tinyxml2.h"
 
 #include "BinanceWalletClient.h"
+#include "BinanceExchangeClient.h"
+#include "BinanceTradeProfile.h"
 #include "ExchangeSimulatorConnectivity.h"
 
 using namespace ExchangeConnectivity;
@@ -45,6 +47,16 @@ void ExchangeSimulatorConnectivity::InitBinanceWalletClient(const XMLElement* bi
     m_binanceWalletClient = std::make_unique<BinanceWalletClient>(binanceWalletClientXmlCfg);
 }
 
+void ExchangeSimulatorConnectivity::InitBinanceExchangeClient(const tinyxml2::XMLElement* binanceExchangeClientXmlCfg)
+{
+    m_binanceExchangeClient = std::make_unique<BinanceExchangeClient>(binanceExchangeClientXmlCfg);
+}
+
+void ExchangeSimulatorConnectivity::InitBinanceTradeProfile(const tinyxml2::XMLElement* binanceTradeProfileXmlCfg)
+{
+	m_binanceTradeProfile = std::make_unique<BinanceTradeProfile>(binanceTradeProfileXmlCfg);
+}
+
 MiddlewareMQ::MiddlewareMQResult
 ExchangeSimulatorConnectivity::SendNewSimulatorOrderFull(
     BinanceNewOrder* newOrder)
@@ -53,12 +65,12 @@ ExchangeSimulatorConnectivity::SendNewSimulatorOrderFull(
     const auto newOrderResult = m_messageDelivery->DeliveryMessage(message);
     if (!newOrderResult.m_result)
     {
-        LOG_ERROR_STREAM(m_logger, "could not place a new order="
+        LOG_ERROR_STREAM(m_logger, "could not place a new [SIMULATOR] order="
             << message << ", reason=" << newOrderResult.m_errMsg);
     }
     else
     {
-        LOG_INFO_STREAM(m_logger, "placed a new order=" << message);
+        LOG_INFO_STREAM(m_logger, "successfully placed a new [SIMULATOR] order=" << message);
     }
     return newOrderResult;
 }
@@ -67,16 +79,16 @@ MiddlewareMQ::MiddlewareMQResult
 ExchangeSimulatorConnectivity::SendCancelSimulatorOrder(
     BinanceCancelOrder* cancelOrder)
 {
-    const auto& message = cancelOrder->ToBqtJsonMessage();
+    const auto& message = cancelOrder->ToBqtJsonMessageOrder();
     const auto cancelOrderResult = m_messageDelivery->DeliveryMessage(message);
     if (!cancelOrderResult.m_result)
     {
-        LOG_ERROR_STREAM(m_logger, "could not cancel order="
+        LOG_ERROR_STREAM(m_logger, "could not cancel [SIMULATOR] order="
             << message << ", reason=" << cancelOrderResult.m_errMsg);
     }
     else
     {
-        LOG_INFO_STREAM(m_logger, "sent cancel order=" << message);
+        LOG_INFO_STREAM(m_logger, "successfully sent cancel [SIMULATOR] order=" << message);
     }
     return cancelOrderResult;
 }
@@ -85,16 +97,16 @@ MiddlewareMQ::MiddlewareMQResult
 ExchangeSimulatorConnectivity::SendCancelReplaceSimulatorOrder(
     BinanceReplaceOrder* replaceOrder)
 {
-    const auto& message = replaceOrder->ToBqtJsonMessage();
+    const auto& message = replaceOrder->ToBqtJsonMessageOrder();
     const auto replaceOrderResult = m_messageDelivery->DeliveryMessage(message);
     if (!replaceOrderResult.m_result)
     {
-        LOG_ERROR_STREAM(m_logger, "could not replace order="
+        LOG_ERROR_STREAM(m_logger, "could not replace [SIMULATOR] order="
             << message << ", reason=" << replaceOrderResult.m_errMsg);
     }
     else
     {
-        LOG_INFO_STREAM(m_logger, "sent replace order=" << message);
+        LOG_INFO_STREAM(m_logger, "successfully sent replace [SIMULATOR] order=" << message);
     }
     return replaceOrderResult;
 }
@@ -102,16 +114,16 @@ ExchangeSimulatorConnectivity::SendCancelReplaceSimulatorOrder(
 MiddlewareMQ::MiddlewareMQResult
 ExchangeSimulatorConnectivity::QuerySimulatorOrderStatus(BinanceQueryOrder* queryOrder)
 {
-    const auto& message = queryOrder->ToBqtJsonMessage();
+    const auto& message = queryOrder->ToBqtJsonMessageOrder();
     const auto queryOrderResult = m_messageDelivery->DeliveryMessage(message);
     if (!queryOrderResult.m_result)
     {
-        LOG_ERROR_STREAM(m_logger, "could not query order="
+        LOG_ERROR_STREAM(m_logger, "could not query [SIMULATOR] order="
             << message << ", reason=" << queryOrderResult.m_errMsg);
     }
     else
     {
-        LOG_INFO_STREAM(m_logger, "sent query order=" << message);
+        LOG_INFO_STREAM(m_logger, "successfully sent query [SIMULATOR] order=" << message);
     }
     return queryOrderResult;
 }
@@ -122,4 +134,28 @@ bool ExchangeSimulatorConnectivity::GetUserAccountInfo(
     std::string& errorMessage)
 {
     return m_binanceWalletClient->GetUserAccountDataResponse(userId, account, errorMessage);
+}
+
+bool ExchangeSimulatorConnectivity::GetUserFutureAccountInfo(
+    const std::string& userId,
+    KernelTrading::UserFutureAccount* userFutureAccount,
+    std::string& errorMessage)
+{
+	return m_binanceWalletClient->GetUserFutureAccountDataResponse(userId, userFutureAccount, errorMessage);
+}
+
+bool ExchangeSimulatorConnectivity::GetExchangeInfo(
+    const std::string& symbol,
+    binapi::rest::exchange_info_t* exchangeInfo,
+    std::string& errorMessage)
+{
+    return m_binanceExchangeClient->GetExchangeInfoResponse(symbol, exchangeInfo, errorMessage);
+}
+
+bool ExchangeSimulatorConnectivity::UpdateUserTradeProfileData(
+    const std::string& userId,
+    const double leverageRate,
+    std::string& resultMessage)
+{
+	return m_binanceTradeProfile->UpdateUserTradeProfileData(userId, leverageRate, resultMessage);
 }

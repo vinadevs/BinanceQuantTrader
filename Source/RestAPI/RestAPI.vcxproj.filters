@@ -27,10 +27,10 @@
     <ClInclude Include="dlldefine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BinanceAPI.h">
+    <ClInclude Include="ApiKeyInfoManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ApiKeyInfoManager.h">
+    <ClInclude Include="BinanceSpotApiGateWay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,10 +44,10 @@
     <ClCompile Include="RestAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BinanceAPI.cpp">
+    <ClCompile Include="ApiKeyInfoManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ApiKeyInfoManager.cpp">
+    <ClCompile Include="BinanceSpotApiGateWay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -9,25 +9,19 @@
 #include "pch.h"
 #include "SynchronousMarketData.h"
 
-using namespace MarketData;
+namespace MarketData {
 
-SynchronousMarketData::SynchronousMarketData(const std::string& symbol)
-	: m_symbol(symbol) {}
-
-SingleMarketDataFeed* SynchronousMarketData::GetFeed(const FeedID id) const
-{
-	switch (id)
-	{
-	case FeedID::BEST_BID_PRICE:
-		return m_individualBookTickerData.m_bestBidPrice.get();
-	case FeedID::BEST_BID_QUANTY:
-		return m_individualBookTickerData.m_bestBidQty.get();
-	case FeedID::BEST_ASK_PRICE:
-		return m_individualBookTickerData.m_bestAskPrice.get();
-	case FeedID::BEST_ASK_QUANTY:
-		return m_individualBookTickerData.m_bestAskQty.get();
-	default:
-		break;
+	SynchronousMarketData::SynchronousMarketData(const std::string& symbol)
+		: m_symbol(symbol) {
 	}
-	return nullptr;
+
+	std::ostream& operator<<(std::ostream& os, const SynchronousMarketData& o)
+	{
+		os
+			<< "{\n"
+			<< "\"Symbol\": \"" << o.m_symbol << "\",\n"
+			<< "}";
+
+		return os;
+	}
 }

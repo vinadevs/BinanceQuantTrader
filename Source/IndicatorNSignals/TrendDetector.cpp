@@ -33,22 +33,17 @@ TradingTrendDetector::TradingTrendDetector(
 
 void TradingTrendDetector::AnalysisIndividualBookTicker(const SynchronousMarketData* data)
 {
-    UpdateBestBidPrice(data->GetFeed(FeedID::BEST_BID_PRICE)->GetDoubleMultiprecisionData());
-    UpdateBestAskPrice(data->GetFeed(FeedID::BEST_ASK_PRICE)->GetDoubleMultiprecisionData());
-    UpdateBestBidQuality(data->GetFeed(FeedID::BEST_BID_QUANTY)->GetDoubleMultiprecisionData());
-    UpdateBestAskQuality(data->GetFeed(FeedID::BEST_ASK_QUANTY)->GetDoubleMultiprecisionData());
+    UpdateBestBidPrice(data->GetSingleFeed(IndividualBookTickerID::BEST_BID_PRICE)->GetDoubleMultiprecisionData());
+    UpdateBestAskPrice(data->GetSingleFeed(IndividualBookTickerID::BEST_ASK_PRICE)->GetDoubleMultiprecisionData());
+    UpdateBestBidQuality(data->GetSingleFeed(IndividualBookTickerID::BEST_BID_QUANTITY)->GetDoubleMultiprecisionData());
+    UpdateBestAskQuality(data->GetSingleFeed(IndividualBookTickerID::BEST_ASK_QUANTITY)->GetDoubleMultiprecisionData());
     // update trading hints
     m_tradingHints->isInvertedTrend = IsInvertedTrend();
     m_tradingHints->isUpTrend = IsUpTrend();
     m_tradingHints->isDownTrend = IsDownTrend();
-    m_tradingHints->longSuggestionQuantity = 0.0001;
-    m_tradingHints->shortSuggestionQuantity = 0.0001;
-    const auto qualitySantizied1 = m_tradingHints->longSuggestionQuantity.convert_to<double>();
-    const auto qualitySantiziedd1 = std::to_string(qualitySantizied1);
-    const auto qualitySantiziedd1s = qualitySantiziedd1.c_str();
     m_tradingHints->windowBestAskPrice = GetWindowBestAskPrice();
     m_tradingHints->windowBestBidPrice = GetWindowBestBidPrice();
-    if (this->m_tradingTrendType != TradingTrendType::SETTLE_TREND)
+    if (m_tradingHints->CanTrade())
     {
         IndicatorAndSignals::NotifyTradingHintsToListeners();
     }

@@ -14,7 +14,7 @@ using namespace MarketData;
 
 #define IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(callback) \
 int updated{ 0 };  \
-for (auto obverver : m_marketDataObservers)  \
+for (auto& obverver : m_marketDataObservers)  \
 {  \
 	if (obverver->callback(this, symbol))  \
 	{ \
@@ -38,6 +38,10 @@ void MarketDataSubject::AttachMarketDataObserver(MarketDataObserver* observer)
 			m_marketDataObservers.emplace_back(observer);
 		}
 	}
+	else
+	{
+		throw std::invalid_argument("MarketDataSubject::AttachMarketDataObserver: observer is null");
+	}
 }
 
 void MarketDataSubject::DettachMarketDataObserver(MarketDataObserver* observer)
@@ -45,6 +49,10 @@ void MarketDataSubject::DettachMarketDataObserver(MarketDataObserver* observer)
 	if (observer)
 	{
 		m_marketDataObservers.remove(observer);
+	}
+	else
+	{
+		throw std::invalid_argument("MarketDataSubject::DettachMarketDataObserver: observer is null");
 	}
 }
 
@@ -61,4 +69,44 @@ int MarketDataSubject::NotifyIndividualBookTickerChange(const std::string& symbo
 int MarketDataSubject::NotifyTradeChange(const std::string& symbol)
 {
 	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnTradeChange);
+}
+
+int MarketDataSubject::NotifyIndividualMarketTickerChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnIndividualMarketTickerChange);
+}
+
+int MarketDataSubject::NotifyMiniTickerChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnMiniTickerChange);
+}
+
+int MarketDataSubject::NotifyKlineCandleStickChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnKlineCandleStickChange);
+}
+
+int MarketDataSubject::NotifyAggregateTradeChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAggregateTradeChange);
+}
+
+int MarketDataSubject::NotifyAllMarketTickersChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllMarketTickersChange);
+}
+
+int MarketDataSubject::NotifyAllMiniTickersChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllMiniTickersChange);
+}
+
+int MarketDataSubject::NotifyAllPartDepthChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllPartDepthChange);
+}
+
+int MarketDataSubject::NotifyAllDiffDepthChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllDiffDepthChange);
 }

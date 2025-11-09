@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 
 <StableCoinUSDTBalance>
-  <UsdtAmount Amount="10000"/>
+  <UsdtAmount Amount="100"/>
 </StableCoinUSDTBalance>
 
 <BalanceAssets>
-  <Bitcoin Symbol="BTC" FreeAmount="1" LockAmount="0"/>
-  <Ethereum Symbol="ETH" FreeAmount="1" LockAmount="0"/>
-  <BNB Symbol="BNB" FreeAmount="1" LockAmount="0"/>
+  <Bitcoin Symbol="BTC" FreeAmount="0" LockAmount="0"/>
+  <Ethereum Symbol="ETH" FreeAmount="0" LockAmount="0"/>
+  <BNB Symbol="BNB" FreeAmount="0" LockAmount="0"/>
 </BalanceAssets>

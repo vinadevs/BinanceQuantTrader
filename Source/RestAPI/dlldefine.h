@@ -20,5 +20,5 @@
 #endif
 #endif  // RESTAPI_EXPORTS
 #else
-#define DLL_CLASS
+#define DLL_CLASS_RESTAPI_EXPORTS
 #endif  // _MSC_VER

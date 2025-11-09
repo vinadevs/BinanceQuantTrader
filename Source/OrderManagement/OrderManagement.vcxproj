@@ -157,15 +157,15 @@
     <ClInclude Include="BinanceNewOrder.h" />
     <ClInclude Include="BinanceQueryOrder.h" />
     <ClInclude Include="BinanceReplaceOrder.h" />
-    <ClInclude Include="BinanceWorkedOrderManager.h" />
+    <ClInclude Include="BinanceOrderManager.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="FieldLabels.h" />
     <ClInclude Include="Order.h" />
     <ClInclude Include="OrderCreator.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="OrderDefinitions.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PositionManager.h" />
-    <ClInclude Include="TestOrder.h" />
     <ClInclude Include="TypeToStringUtils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -173,7 +173,7 @@
     <ClCompile Include="BinanceNewOrder.cpp" />
     <ClCompile Include="BinanceQueryOrder.cpp" />
     <ClCompile Include="BinanceReplaceOrder.cpp" />
-    <ClCompile Include="BinanceWorkedOrderManager.cpp" />
+    <ClCompile Include="BinanceOrderManager.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="OrderCreator.cpp" />
     <ClCompile Include="pch.cpp">
@@ -183,7 +183,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PositionManager.cpp" />
-    <ClCompile Include="TestOrder.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

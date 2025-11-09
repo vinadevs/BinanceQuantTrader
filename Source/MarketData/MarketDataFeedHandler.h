@@ -41,11 +41,22 @@ namespace MarketData {
 		// handling function will be called back from a seperated worker thread.
 		// - After we processed market data feed, we will notify changes to subscribed listeners
 		// - We are using "pass by value" in param for std::move later
-		bool HandleIndividualBookTickerData(const char* fl,
-			int ec, std::string emsg, binapi::ws::book_ticker_t book);
-		bool HandleTradeData(const char* fl,
-			int ec, std::string emsg, binapi::ws::trade_t trade);
+		bool HandleIndividualBookTickerData(const char* fl, int ec, std::string emsg, binapi::ws::book_ticker_t book);
+		bool HandleTradeData(const char* fl, int ec, std::string emsg, binapi::ws::trade_t trade);
+		bool HandleIndividualMarketTickerData(const char* fl, int ec, std::string emsg, binapi::ws::market_ticker_t market);
+		bool HandleMiniTickerData(const char* fl, int ec, std::string emsg, binapi::ws::mini_ticker_t mini);
+		bool HandleAggregateTradeData(const char* fl, int ec, std::string emsg, binapi::ws::agg_trade_t aggregate);
+		bool HandleKlineCandleStickData(const char* fl, int ec, std::string emsg, binapi::ws::kline_t kline);
+		bool HandleAllMiniTickerData(const char* fl, int ec, std::string emsg, binapi::ws::mini_tickers_t mini);
+		bool HandleAllMarketTickersData(const char* fl, int ec, std::string emsg, binapi::ws::markets_tickers_t market);
+		bool HandlePartDepthData(const char* fl, int ec, std::string emsg, binapi::ws::part_depths_t depth);
+		bool HandleDiffDepthData(const char* fl, int ec, std::string emsg, binapi::ws::diff_depths_t depth);
+
+		// Set and get part diff symbol, this is used to store the symbol of part diff depth data
+		void SetPartDiffSymbol(const std::string& symbol) { m_partDiffSymbol = symbol; }
+		const std::string& GetPartDiffSymbol() const { return m_partDiffSymbol; }
 	private:
 		std::unique_ptr<MarketDataFeedManager> m_synchronousFeedMgr;
+		std::string m_partDiffSymbol; // this is used to store the symbol of part diff depth data
 	};
 };

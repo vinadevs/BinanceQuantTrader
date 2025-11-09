@@ -124,7 +124,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>MiddlewareMQD.lib;SettingNConfigD.lib;ExchangeConnectivityD.lib;StaticDataD.lib;LibraryUtilsD.lib;RestAPID.lib;ExchangeSimulatorD.lib;PortfolioManagerD.lib;OrderManagementD.lib;KernelTradingD.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>QuantitativeModelD.lib;ComplianceNRegulatoryD.lib;MiddlewareMQD.lib;SettingNConfigD.lib;ExchangeConnectivityD.lib;StaticDataD.lib;LibraryUtilsD.lib;RestAPID.lib;ExchangeSimulatorD.lib;PortfolioManagerD.lib;OrderManagementD.lib;KernelTradingD.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -147,17 +147,21 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>MiddlewareMQ.lib;SettingNConfig.lib;ExchangeConnectivity.lib;StaticData.lib;LibraryUtils.lib;RestAPI.lib;ExchangeSimulator.lib;PortfolioManager.lib;OrderManagement.lib;KernelTrading.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>QuantitativeModel.lib;ComplianceNRegulatory.lib;MiddlewareMQ.lib;SettingNConfig.lib;ExchangeConnectivity.lib;StaticData.lib;LibraryUtils.lib;RestAPI.lib;ExchangeSimulator.lib;PortfolioManager.lib;OrderManagement.lib;KernelTrading.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BackTestReporter.h" />
+    <ClInclude Include="BaseReporter.h" />
     <ClInclude Include="BinanceReporter.h" />
     <ClInclude Include="BinanceTrader.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="FutureBackTestReporter.h" />
+    <ClInclude Include="FutureTrader.h" />
+    <ClInclude Include="FutureTradeReporter.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ReportAPIs.h" />
     <ClInclude Include="ExchangeReporter.h" />
@@ -168,6 +172,7 @@
     <ClCompile Include="BinanceReporter.cpp" />
     <ClCompile Include="BinanceTrader.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="FutureBackTestReporter.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -175,6 +180,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ReportAPIs.cpp" />
+    <ClCompile Include="FutureTrader.cpp" />
     <ClCompile Include="Trader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

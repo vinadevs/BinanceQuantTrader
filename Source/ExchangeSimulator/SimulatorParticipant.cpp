@@ -12,7 +12,7 @@
 using namespace ExchangeSimulator;
 
 SimulatorParticipant::SimulatorParticipant(UserAccountManager* userAccountManager)
-	: Participant(ParticipantType::REAL_TIME_MARKET_DATA, userAccountManager)
+	: Participant(ParticipantType::SIMULATOR, userAccountManager, nullptr)
 {
 }
 

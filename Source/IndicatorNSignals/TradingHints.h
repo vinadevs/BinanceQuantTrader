@@ -15,6 +15,8 @@
 #include "dlldefine.h"
 
 #include "../KernelTrading/double_type.h"
+#include "../KernelTrading/types.h"
+#include "../StaticData/StaticDataManager.h"
 
 #include <string>
 
@@ -22,15 +24,22 @@ namespace IndicatorNSignals {
 
 	struct DLL_CLASS_INDICATORNSIGNALS_EXPORTS TradingHints
 	{
-		TradingHints(const std::string& s) : symbol(s) {}
+		TradingHints(const std::string& s) : symbol(s) {
+			assetName = StaticData::StaticDataManager::GetSymbolFromTradingPair(symbol,
+				StaticDataMgr->GetStableCoinUSDTSymbol());
+		}
 		std::string symbol;
+		std::string assetName;
 		bool isInvertedTrend{ false };
 		bool isUpTrend{ false };
 		bool isDownTrend{ false };
+		bool shouldCancelAllOrder{ false };
 		binapi::double_type windowBestBidPrice{ 0 };
 		binapi::double_type windowBestAskPrice{ 0 };
-		binapi::double_type shortSuggestionQuantity{ 0 };
-		binapi::double_type longSuggestionQuantity{ 0 };
+		binapi::e_time timeInForce{ binapi::e_time::IOC };
+		bool CanTrade() {
+			return isUpTrend || isDownTrend;
+		}
 	};
 
 	class DLL_CLASS_INDICATORNSIGNALS_EXPORTS TradingHintsListener

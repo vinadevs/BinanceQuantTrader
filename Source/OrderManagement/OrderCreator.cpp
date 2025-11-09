@@ -9,7 +9,7 @@
 #include "pch.h"
 #include "OrderCreator.h"
 
-#include "../RestAPI/BinanceAPI.h"
+#include "../RestAPI/BinanceSpotApiGateWay.h"
 
 #include <iostream>
 
@@ -25,9 +25,32 @@ std::unique_ptr<BinanceNewOrder> OrderCreator::CreateNewBinanceOrderFull(
     , const double amount
     , const double price
     , const double stopPrice
-    , const double icebergAmount)
+    , const double icebergAmount
+	, const std::string& stableCurrency
+    , const BinanceNewOrderTradingType tradingType)
 {
-    return std::make_unique<BinanceNewOrder>(clientOrderId, symbol, side, type, time, amount, price, stopPrice, icebergAmount);
+    // last param is true mean this is real order
+    return std::make_unique<BinanceNewOrder>(clientOrderId, symbol, side, type, time,
+        amount, price, stopPrice, icebergAmount, stableCurrency, tradingType, ExchangeConnectivityType::REAL);
+}
+
+std::unique_ptr<BinanceNewOrder> OrderCreator::CreateNewBinanceFutureOrderFull(
+    const std::string& clientOrderId, 
+    const std::string& symbol,
+    const binapi::e_side side,
+    const binapi::e_type type,
+    const binapi::e_time time,
+    const double amount, 
+    const double price,
+    const double stopPrice,
+    const double icebergAmount,
+    const double leverage,
+	const std::string& stableCurrency,
+    const BinanceNewOrderTradingType tradingType)
+{
+	// last param is true mean this is real order
+	return std::make_unique<BinanceNewOrder>(clientOrderId, symbol, side, type, time,
+		amount, price, stopPrice, icebergAmount, leverage, stableCurrency, tradingType, ExchangeConnectivityType::REAL);
 }
 
 std::unique_ptr<BinanceNewOrder> OrderCreator::CreateNewBinanceTestOrderFull(
@@ -39,9 +62,13 @@ std::unique_ptr<BinanceNewOrder> OrderCreator::CreateNewBinanceTestOrderFull(
     , const double amount
     , const double price
     , const double stopPrice
-    , const double icebergAmount)
+    , const double icebergAmount
+	, const std::string& stableCurrency
+    , const BinanceNewOrderTradingType tradingType)
 {
-    return std::make_unique<BinanceNewOrder>(clientOrderId, symbol, side, type, time, amount, price, stopPrice, icebergAmount);
+    // last param is false mean this is test order
+    return std::make_unique<BinanceNewOrder>(clientOrderId, symbol, side, type, time,
+        amount, price, stopPrice, icebergAmount, stableCurrency, tradingType, ExchangeConnectivityType::TEST);
 }
 
 std::unique_ptr<BinanceCancelOrder> OrderCreator::CreateCancelBinanceOrder(

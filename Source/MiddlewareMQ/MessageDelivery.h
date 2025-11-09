@@ -10,6 +10,7 @@
 #define MESSAGE_DELIVERY_H
 
 #include <memory>
+#include <mutex>
 
 #include "dlldefine.h"
 #include "CommunicationChannel.h"
@@ -43,6 +44,7 @@ namespace MiddlewareMQ {
             const std::string& topicName,
             const std::string& publisherAddress);
 
+        std::mutex m_zmqMutex;
         std::unique_ptr<PublisherCommunicationChannel> m_chanel;
         std::unique_ptr<LibraryUtils::Logger> m_logger;
         // TODO: implement heartbeat query to check server is on/off

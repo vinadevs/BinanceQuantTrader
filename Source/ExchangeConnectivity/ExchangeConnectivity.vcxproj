@@ -153,18 +153,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BinanceExchangeClient.h" />
+    <ClInclude Include="BinanceTradeProfile.h" />
     <ClInclude Include="BqtMessageEnhancer.h" />
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="ExchangeSimulatorConnectivity.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="BinanceExchangeConnectivity.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="protobuf\exchange_info_data.grpc.pb.h" />
+    <ClInclude Include="protobuf\exchange_info_data.pb.h" />
     <ClInclude Include="protobuf\pch.h" />
     <ClInclude Include="protobuf\user_account_data.grpc.pb.h" />
     <ClInclude Include="protobuf\user_account_data.pb.h" />
     <ClInclude Include="BinanceWalletClient.h" />
+    <ClInclude Include="protobuf\user_future_account_data.grpc.pb.h" />
+    <ClInclude Include="protobuf\user_future_account_data.pb.h" />
+    <ClInclude Include="protobuf\user_trade_profile.grpc.pb.h" />
+    <ClInclude Include="protobuf\user_trade_profile.pb.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BinanceExchangeClient.cpp" />
+    <ClCompile Include="BinanceTradeProfile.cpp" />
     <ClCompile Include="BqtMessageEnhancer.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="BinanceExchangeConnectivity.cpp" />
@@ -175,9 +185,15 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="protobuf\exchange_info_data.grpc.pb.cc" />
+    <ClCompile Include="protobuf\exchange_info_data.pb.cc" />
     <ClCompile Include="protobuf\user_account_data.grpc.pb.cc" />
     <ClCompile Include="protobuf\user_account_data.pb.cc" />
     <ClCompile Include="BinanceWalletClient.cpp" />
+    <ClCompile Include="protobuf\user_future_account_data.grpc.pb.cc" />
+    <ClCompile Include="protobuf\user_future_account_data.pb.cc" />
+    <ClCompile Include="protobuf\user_trade_profile.grpc.pb.cc" />
+    <ClCompile Include="protobuf\user_trade_profile.pb.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -26,19 +26,26 @@ using namespace LibraryUtils;
 using namespace tinyxml2;
 using namespace MarketData;
 using namespace StaticData;
+using namespace KernelTrading;
+
+static constexpr double ZERO_DOUBLE_VALUE = 0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool BinanceTradingPairManager::CreateNewTradingPair(const std::string& tradingPairPair, const RealTimeMarketData* marketData, const BinanceBalance& balance)
+bool BinanceTradingPairManager::CreateNewTradingPair(
+    const std::string& tradingPair,
+    RealTimeMarketData* marketData,
+    const BinanceBalance& balance)
 {
     std::unique_lock<std::mutex> lock(m_threadSafeMutex);
-    return m_assets.try_emplace(tradingPairPair, std::make_unique<BinanceTradingPair>(tradingPairPair, marketData, balance)).second;
+    return m_assets.try_emplace(tradingPair,
+        std::make_unique<BinanceTradingPair>(tradingPair, marketData, balance)).second;
 }
 
-bool BinanceTradingPairManager::RemoveTradingPair(const std::string& tradingPairPair)
+bool BinanceTradingPairManager::RemoveTradingPair(const std::string& tradingPair)
 {
     std::unique_lock<std::mutex> lock(m_threadSafeMutex);
-    if (const auto it = m_assets.find(tradingPairPair); it != m_assets.end())
+    if (const auto it = m_assets.find(tradingPair); it != m_assets.end())
     {
         m_assets.erase(it);
         return true;
@@ -46,10 +53,10 @@ bool BinanceTradingPairManager::RemoveTradingPair(const std::string& tradingPair
     return false;
 }
 
-BinanceTradingPair* BinanceTradingPairManager::GetTradingPair(const std::string& tradingPairPair)
+BinanceTradingPair* BinanceTradingPairManager::GetTradingPair(const std::string& tradingPair)
 {
     std::unique_lock<std::mutex> lock(m_threadSafeMutex);
-    if (const auto it = m_assets.find(tradingPairPair); it != m_assets.end())
+    if (const auto it = m_assets.find(tradingPair); it != m_assets.end())
     {
         return it->second.get();
     }
@@ -62,36 +69,40 @@ const BinanceTradingPairMap& BinanceTradingPairManager::GetTradingPairs() const
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-PortfolioInvestmentBinance::PortfolioInvestmentBinance(const XMLElement* portfolioCfg, const RealTimeMarketData* marketData)
+PortfolioInvestmentBinance::PortfolioInvestmentBinance(
+    const XMLElement* portfolioCfg, RealTimeMarketData* marketData)
 	: PortfolioInvestment(PortfolioType::BINANCE_ASSET) , m_marketData(marketData)
 {
     m_logger = std::make_unique<LibraryUtils::Logger>("PortfolioInvestmentBinance");
     assert(portfolioCfg);
-    const auto* investmentListXml = portfolioCfg->FirstChildElement("InvestmentManagement");
-    assert(investmentListXml);
 }
 
 PortfolioInvestmentBinance::~PortfolioInvestmentBinance() {}
 
-void PortfolioInvestmentBinance::SetUserAccountInfo(binapi::rest::account_info_t* account)
+void PortfolioInvestmentBinance::SetUserSpotAccountInfo(binapi::rest::account_info_t* account)
 {
     assert(account);
-    m_binanceAccountInfo = account;
+    m_binanceSpotAccountInfo = account;
 }
 
-bool PortfolioInvestmentBinance::IsCryptoAssetHasMarketData(const std::string& asset) const
+void PortfolioInvestmentBinance::SetUserFutureAccountInfo(KernelTrading::UserFutureAccount* account)
+{
+	assert(account);
+	m_binanceFutureAccountInfo = account;
+}
+
+bool PortfolioInvestmentBinance::IsCryptoAssetHasMarketData(const std::string& asset)
 {
     assert(m_marketData);
-    const auto tradingPairPair = CreateTradingPairSymbol(asset);
-    return m_marketData->GetSubscribingSymbols().find(tradingPairPair) 
-        != m_marketData->GetSubscribingSymbols().end();
+    const auto tradingPair = CreateTradingPairSymbol(asset);
+    return m_marketData->IsSubscribedSymbol(tradingPair);
 }
 
 void PortfolioInvestmentBinance::UpdateBinanceAccountInfo()
 {
-    if (BinanceAccountUtils::QueryBinanceAccount(m_binanceAccountInfo, m_logger.get()))
+    if (BinanceAccountUtils::QueryBinanceSpotAccount(m_binanceSpotAccountInfo, m_logger.get()))
     {
-        m_logger->Info("updated Binance account information to portfolio manager.");
+        m_logger->Info("updated Binance spot account information to portfolio manager.");
         UpdateBinanceTradingPairs();
     }
     else
@@ -100,41 +111,79 @@ void PortfolioInvestmentBinance::UpdateBinanceAccountInfo()
         // APIError(code=-2015): Invalid API-key, IP, or permissions for action from the python-binance module
         // This maybe because your API-key has been expired
         // Please try to renew your API-key at https://www.binance.com/en-JP/my/settings/api-management 
+        // OR: Way too much request weight used; IP banned until specific time
+
+		// OR if you are using simulator then you need to check if the simulator is running
+		// to retrieve the simulation account information
         throw std::runtime_error("PortfolioInvestmentBinance: failed to update Binance account information.");
+    }
+}
+
+void PortfolioInvestmentBinance::UpdateBinanceFutureAccountInfo()
+{
+    if (BinanceAccountUtils::QueryBinanceFutureAccount(m_binanceFutureAccountInfo, m_logger.get()))
+    {
+        m_logger->Info("updated Binance future account information to portfolio manager.");
+    }
+    else
+    {
+        // If you are seeing the error:
+        // APIError(code=-2015): Invalid API-key, IP, or permissions for action from the python-binance module
+        // This maybe because your API-key has been expired
+        // Please try to renew your API-key at https://www.binance.com/en-JP/my/settings/api-management 
+        // OR: Way too much request weight used; IP banned until specific time
+
+        // OR if you are using simulator then you need to check if the simulator is running
+        // to retrieve the simulation account information
+        throw std::runtime_error("PortfolioInvestmentBinance: failed to update Binance future account information.");
     }
 }
 
 void PortfolioInvestmentBinance::UpdateBinanceTradingPairs()
 {
-    for (const auto& balance : m_binanceAccountInfo->balances)
+    for (const auto& balance : m_binanceSpotAccountInfo->balances)
     {
+        const auto binanceSymbol = CreateTradingPairSymbol(balance.first);
         if (IsCryptoAssetAbleToTrade(balance.second))
         {
-            const auto tradingPairPair = CreateTradingPairSymbol(balance.first);
-            BinanceTradingPair* tradingPair{ nullptr };
-            tradingPair = m_binanceTradingPairMgr.GetTradingPair(tradingPairPair);
-            if (tradingPair)
+            if (BinanceTradingPair* tradingPair 
+                = m_binanceTradingPairMgr.GetTradingPair(binanceSymbol))
             {
                 tradingPair->UpdateTradingPair(balance.second);
             }
-            else if (m_binanceTradingPairMgr.CreateNewTradingPair(tradingPairPair, m_marketData, balance.second))
+            else
             {
-                m_logger->Info("Created new binance trading pair=" + tradingPairPair);
+                m_logger->Info("Could not update binance asset=" 
+                    + binanceSymbol + ", we do NOT manage this asset now.");
             }
         }
         else
         {
-            m_logger->Warning("Invalid binance trading pair=" + balance.first);
+            m_logger->Info("Could not update binance asset=" 
+                + binanceSymbol + ", there is no asset balance or martket data available.");
         }
     }
 }
 
-binapi::rest::account_info_t* PortfolioInvestmentBinance::GetBinanceAccountInfo()
+void PortfolioInvestmentBinance::AddNewAssetToManage(const std::string& asset)
 {
-    return m_binanceAccountInfo;
+    if (m_binanceTradingPairMgr.CreateNewTradingPair(asset, m_marketData, BinanceBalance()))
+    {
+        m_logger->Info("Added new binance trading pair=" + asset);
+    }
+    else
+    {
+        m_logger->Info("Could not add new binance asset=" + asset + ".");
+    }
 }
 
-BinanceTradingPairManager& PortfolioInvestmentBinance::GetBinanceTradingPairManager(bool updateNewData /*= false*/)
+const binapi::rest::account_info_t* PortfolioInvestmentBinance::GetBinanceAccountInfo() const
+{
+    return m_binanceSpotAccountInfo;
+}
+
+BinanceTradingPairManager& PortfolioInvestmentBinance::GetBinanceTradingPairManager(
+    bool updateNewData /*= false*/)
 {
     if (updateNewData)
     {
@@ -143,7 +192,9 @@ BinanceTradingPairManager& PortfolioInvestmentBinance::GetBinanceTradingPairMana
     return m_binanceTradingPairMgr;
 }
 
-BinanceTradingPair* PortfolioInvestmentBinance::GetBinanceTradingPair(const std::string& asset, bool updateNewData /*= false*/)
+BinanceTradingPair* PortfolioInvestmentBinance::GetBinanceTradingPair(
+    const std::string& asset,
+    bool updateNewData /*= false*/)
 {
     if (updateNewData)
     {
@@ -152,9 +203,38 @@ BinanceTradingPair* PortfolioInvestmentBinance::GetBinanceTradingPair(const std:
     return m_binanceTradingPairMgr.GetTradingPair(asset);
 }
 
-bool PortfolioInvestmentBinance::IsCryptoAssetAbleToTrade(const BinanceBalance& balance) const
+const PositionInfo& PortfolioInvestmentBinance::GetBinanceFuturePositionInfo(
+    const std::string& asset,
+    bool updateNewData  /*= false*/)
 {
-    return !balance.asset.empty() && balance.free > 0 && IsCryptoAssetHasMarketData(balance.asset);
+	if (updateNewData)
+	{
+		UpdateBinanceFutureAccountInfo();
+	}
+	if (m_binanceFutureAccountInfo)
+	{
+		const auto& positions = m_binanceFutureAccountInfo->GetPositions();
+		for (const auto& position : positions)
+		{
+			if (position.symbol == asset)
+			{
+				return position;
+			}
+		}
+	}
+	throw std::runtime_error("PortfolioInvestmentBinance: we are not holding this asset/symbol=" + asset);
+}
+
+bool PortfolioInvestmentBinance::IsCryptoAssetAbleToTrade(const BinanceBalance& balance)
+{
+    return !balance.asset.empty() && IsCryptoAssetHasMarketData(balance.asset);
+}
+
+bool PortfolioInvestmentBinance::HasCryptoAssetBalance(const BinanceBalance& balance)
+{
+    return !balance.asset.empty() &&
+        balance.free > ZERO_DOUBLE_VALUE &&
+        IsCryptoAssetHasMarketData(balance.asset);
 }
 
 const BinanceBalances& PortfolioInvestmentBinance::GetAllBinanceBalances(bool updateNewData /*= false*/)
@@ -163,7 +243,7 @@ const BinanceBalances& PortfolioInvestmentBinance::GetAllBinanceBalances(bool up
     {
         UpdateBinanceAccountInfo();
     }
-    return m_binanceAccountInfo->balances;
+    return m_binanceSpotAccountInfo->balances;
 }
 
 BinanceBalances PortfolioInvestmentBinance::GetTradableBinanceBalances(bool updateNewData /*= false*/)
@@ -173,7 +253,7 @@ BinanceBalances PortfolioInvestmentBinance::GetTradableBinanceBalances(bool upda
         UpdateBinanceAccountInfo();
     }
     BinanceBalances tradableBalances;
-    for (const auto& balance : m_binanceAccountInfo->balances)
+    for (const auto& balance : m_binanceSpotAccountInfo->balances)
     {
         if (IsCryptoAssetAbleToTrade(balance.second))
         {
@@ -181,7 +261,8 @@ BinanceBalances PortfolioInvestmentBinance::GetTradableBinanceBalances(bool upda
         }
         else
         {
-            m_logger->Warning("Invalid binance trading pair=" + balance.first);
+            m_logger->Info("Could not trade binance asset=" 
+                + balance.first + ", there is no asset balance or martket data available.");
         }
     }
     return tradableBalances;
@@ -193,7 +274,7 @@ const BinanceBalance& PortfolioInvestmentBinance::GetBinanceBalance(const std::s
     {
         UpdateBinanceAccountInfo();
     }
-    for (const auto& balance : m_binanceAccountInfo->balances)
+    for (const auto& balance : m_binanceSpotAccountInfo->balances)
     {
         if (balance.first == asset)
         {
