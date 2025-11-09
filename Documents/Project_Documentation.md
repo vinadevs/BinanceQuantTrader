@@ -47,7 +47,7 @@ flowchart LR
     end
 
     subgraph B[Quantitative & Signal Layer]
-        IS[IndicatorNSignals]
+        IS[IndicatorN_Signals]
         QM[QuantitativeModel]
         MAC[MacroData]
         QL[QuantLibrary]
@@ -69,7 +69,7 @@ flowchart LR
     end
 
     subgraph E[Infrastructure & Communication]
-        ZMQ[MiddlewareMQ (ZeroMQ)]
+        ZMQ[MiddlewareMQ_ZeroMQ]
         MSG[MessageHubServer]
         GRPC[GrpcProtobufMessage]
     end
@@ -77,7 +77,7 @@ flowchart LR
     subgraph F[Persistence & Config]
         DB[Database]
         SQL[SqlDatabase]
-        CFG[Configurations / SettingNConfig]
+        CFG[Configurations_SettingNConfig]
         SD[StaticData]
         APPD[AppData]
     end
