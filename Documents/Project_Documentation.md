@@ -187,41 +187,7 @@ flowchart LR
 
 ---
 
-## 5. Coding Style & Conventions
-
-The system adheres to the **Binance Quant Trader C++ Coding Style Guide** (see `CodingStyleGuide.md`).  
-Key highlights:
-
-- Member variables use prefix `m_`.  
-- Classes and methods in `PascalCase`.  
-- Thread safety enforced via RAII.  
-- Namespace-based modularity (e.g., `MarketData::RealTimeMarketData`).  
-- Doxygen-based documentation for every class and public API.  
-
-Example snippet:
-```cpp
-class SmartLongShortStrategy :
-    public TradingStrategyBase,
-    public MarketData::MarketDataObserver
-{
-public:
-    explicit SmartLongShortStrategy(const std::string& cfgPath,
-                                    MarketData::RealTimeMarketData* marketData,
-                                    UserAccount::Trader* trader,
-                                    ComplianceNRegulatory::BinanceTradingRules* rules);
-
-    void StartLive() override;
-    void StopLive() override;
-
-private:
-    std::vector<std::string> m_targetSymbols;
-    std::unique_ptr<QuantitativeModel::MarketDataAnalyzer> m_analyzer;
-};
-```
-
----
-
-## 6. Folder Structure (Suggested)
+## 5. Folder Structure
 
 ```
 /src
@@ -256,7 +222,7 @@ private:
 
 ---
 
-## 7. Summary
+## 6. Summary
 
 ✅ Modular, multi-threaded architecture  
 ✅ Real-time and backtesting unified pipeline  
