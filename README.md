@@ -96,7 +96,7 @@ bt.report();
 ---
 
 ## 📜 License
-MIT (modifiable based on your project preference).
+ Apache-2.0 license
 
 
 
