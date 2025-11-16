@@ -1,4 +1,4 @@
-## Visual studio (Window only)
+## Visual studio IDE (Windows only)
 
 1. Make sure you have vcpkg installed in your PC
 2. Go to Source/BinanceQuantTrader
@@ -7,9 +7,14 @@
    to BinanceQuantTrader\Source\Lib64\
 5. Right click on BinanceQuantTrader then build or ctrl + B to build the whole solution
 
-## CMake (Window/Linux)
+Note: If you can not build due to missing header errors from libraries like boost, grpc,...
+It is possibility that your vcpkg manager is not configured now in your Visual Studio project solution
+then you may want to close Visual Studio and then run this command then reopen Visual Studio again
+where_you_install_vcpkg> ./vcpkg integrate install
 
-### Window
+## CMake (Windows/Linux)
+
+### Windows
 ```powershell
 $env:VCPKG_ROOT = "</path/to/vcpkg>"
 $env:PATH = "$env:VCPKG_ROOT;$env:PATH"
