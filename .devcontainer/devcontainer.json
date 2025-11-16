@@ -2,6 +2,8 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/cpp
 {
 	"name": "C++",
+	"image": "bqt-devimage:lastest",
+	"runArgs": ["--name", "bqt-devcontainer"],
 	"build": {
 		"dockerfile": "Dockerfile"
 	},
