@@ -52,6 +52,19 @@ cmake --build .\build\ --target clean
 
 **Dev Container (Vscode only)**
 
+SSH Agent Forwarding must be enabled
+
+On Windows Powershell:
+```powershell
+ssh-add $env:SSH_AUTH_SOCK
+```
+
+On Linux/Mac Terminal:
+```bash
+ssh-add $SSH_AUTH_SOCK
+```
+
+Inside Dev Container Terminal:
 ```bash
 vcpkg install
 vcpkg integrate install
