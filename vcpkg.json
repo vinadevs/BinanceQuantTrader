@@ -7,7 +7,7 @@
     { "name": "boost-callable-traits"},
     { "name": "boost-multiprecision"},
     { "name": "boost-test"},
-    { "name": "boost"},
+    { "name": "boost-variant"},
     { "name": "grpc"},
     { "name": "nlohmann-json"},
     { "name": "protobuf"},
