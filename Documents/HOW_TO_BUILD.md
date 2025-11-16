@@ -64,10 +64,12 @@ On Linux/Mac Terminal:
 ssh-add $SSH_AUTH_SOCK
 ```
 
-Inside Dev Container Terminal:
+On VSCode Command Palette: Ctrl + Shift + P
+- Dev Containers: Rebuild and reopen container...
+
+Inside Dev Container Terminal to build project:
 ```bash
-vcpkg install
 vcpkg integrate install
 cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-cmake --build build # Need to remove library from window before build in linux
+cmake --build build -j8
 ```
