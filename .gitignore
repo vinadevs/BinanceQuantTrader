@@ -88,6 +88,7 @@ Source/Configurations/BQT/BinanceAKCfgTest.xml
 Source/Configurations/Simulator/BinanceExchangeSimulatorCfgTest.xml
 Source/AppData
 Source/Lib64
+Source/AppData
 .vs/
 x64/
 vcpkg_installed/

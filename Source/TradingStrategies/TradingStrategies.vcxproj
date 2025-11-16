@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClInclude Include="ChildOrder.h" />
     <ClInclude Include="ExternalController.h" />
+    <ClInclude Include="InstrumentQuoter.h" />
     <ClInclude Include="ISStrategy.h" />
     <ClInclude Include="MarketMonitorStrategy.h" />
     <ClInclude Include="POVStrategy.h" />
@@ -186,6 +187,7 @@
     <ClCompile Include="ChildOrder.cpp" />
     <ClCompile Include="CompilanceChecker.cpp" />
     <ClCompile Include="ExternalController.cpp" />
+    <ClCompile Include="InstrumentQuoter.cpp" />
     <ClCompile Include="ISStrategy.cpp" />
     <ClCompile Include="MarketMonitorStrategy.cpp" />
     <ClCompile Include="POVStrategy.cpp" />

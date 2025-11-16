@@ -98,119 +98,138 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
 	// if there is no existing position, we will create a new one
     if (!existedPosition)
     {
-        //---------------------------------------------------------------------------
-        // 3. Risk constants
-        //---------------------------------------------------------------------------
-		const auto [notional, positionInitMargin, initialMaintMargin] =
-			Recalculate_Notation_InitialMargin_MaintMargin(order.GetSymbol(), entryPrice, contracts, leverage);
-
-        // Calculate maximum position size based on the user's leverage and initial margin
-        const double maxPositionValue = notional;
-
-        order.SetFutureInitialMarginPrice(positionInitMargin);
-        order.SetFutureMaintainingMarginPrice(initialMaintMargin);
-
-        //---------------------------------------------------------------------------
-        // 4. Pre‑trade checks (size & cash)
-        //---------------------------------------------------------------------------
-        if (!userAccount->IsAccountHavingSufficientCashBalance(order.GetStableCurrency(), positionInitMargin))
+        try
         {
-            return HandleRejectedOrder("User account does not have sufficient cash balance for required margin for order: ", order);
-        }
-        else
+            //---------------------------------------------------------------------------
+            // 3. Risk constants
+            //---------------------------------------------------------------------------
+            const auto [notional, positionInitMargin, initialMaintMargin] =
+                Recalculate_Notation_InitialMargin_MaintMargin(order.GetSymbol(), entryPrice, contracts, leverage);
+
+            // Calculate maximum position size based on the user's leverage and initial margin
+            const double maxPositionValue = notional;
+
+            order.SetFutureInitialMarginPrice(positionInitMargin);
+            order.SetFutureMaintainingMarginPrice(initialMaintMargin);
+
+            //---------------------------------------------------------------------------
+            // 4. Pre‑trade checks (size & cash)
+            //---------------------------------------------------------------------------
+            if (!userAccount->IsAccountHavingSufficientCashBalance(order.GetStableCurrency(), positionInitMargin))
+            {
+                return HandleRejectedOrder("User account does not have sufficient cash balance for required margin for order: ", order);
+            }
+            else
+            {
+                // create new future position with the initial margin and other details
+                KernelTrading::PositionInfo newFuturePosition{ order.GetSymbol(), positionInitMargin, initialMaintMargin,
+                    0.0, positionInitMargin, 0.0, leverage, order.GetIsolatedMargin(), entryPrice, notional, order.GetSideStr(),
+                    contracts, maxPositionValue, 0.0, static_cast<int64_t>(TimeUtils::GetEpochTimeTickNow()) };
+                userAccount->AddPosition(newFuturePosition);
+
+                // Calculate Entry Fee = Position Value × Free Rate
+                const double entryFee = notional * (ExchangeRuleMgr->GetFutureMakerCommission()
+                    + ExchangeRuleMgr->GetFutureTakerCommission());
+
+                const double totalCashForPosition = positionInitMargin + entryFee;
+
+                // update asset balance cash after create new future position
+                userAccount->UpdateAssetBalanceCash(order.GetStableCurrency(), totalCashForPosition,
+                    KernelTrading::BalanceChangeEvent::WITHDRAWAL);
+            }
+
+            maintMargin = initialMaintMargin; // Set maintenance margin for new position
+            positionMargin = positionInitMargin; // Set initial margin for new position
+		}
+        catch (const std::exception& ex)
         {
-            // create new future position with the initial margin and other details
-            KernelTrading::PositionInfo newFuturePosition{ order.GetSymbol(), positionInitMargin, initialMaintMargin,
-                0.0, positionInitMargin, 0.0, leverage, order.GetIsolatedMargin(), entryPrice, notional, order.GetSideStr(),
-                contracts, maxPositionValue, 0.0, static_cast<int64_t>(TimeUtils::GetEpochTimeTickNow()) };
-            userAccount->AddPosition(newFuturePosition);
-
-            // Calculate Entry Fee = Position Value × Free Rate
-            const double entryFee = notional * (ExchangeRuleMgr->GetFutureMakerCommission()
-                + ExchangeRuleMgr->GetFutureTakerCommission());
-
-			const double totalCashForPosition = positionInitMargin + entryFee;
-
-            // update asset balance cash after create new future position
-            userAccount->UpdateAssetBalanceCash(order.GetStableCurrency(), totalCashForPosition,
-                KernelTrading::BalanceChangeEvent::WITHDRAWAL);
+            return HandleRejectedOrder(std::string("Exception during new position creation for order: ") + ex.what(), order);
         }
-
-        maintMargin = initialMaintMargin; // Set maintenance margin for new position
-        positionMargin = positionInitMargin; // Set initial margin for new position
     }
     else // if the position already exists, we will use the existing position's margin values
     {
-		// increase position if same direction
-        if ((existedPosition->positionAmt > 0 && isLong) || (existedPosition->positionAmt < 0 && !isLong)) {
-            const double oldQty = std::abs(existedPosition->positionAmt);
-            const double newQty = contracts;
-            const double oldAvg = existedPosition->entryPrice;
+        // backup to reverse if any issue occurs for order processing
+        const auto oldPositionAmt = existedPosition->positionAmt;
+        const auto oldEntryPrice = existedPosition->entryPrice;
+        try
+        {
+            // increase position if same direction
+            if ((existedPosition->positionAmt > 0 && isLong) || (existedPosition->positionAmt < 0 && !isLong)) {
+                const double oldQty = std::abs(existedPosition->positionAmt);
+                const double newQty = contracts;
+                const double oldAvg = existedPosition->entryPrice;
 
-            const double updatedAvg = RecalculateAverageEntryPrice(oldAvg, oldQty, entryPrice, newQty);
+                const double updatedAvg = RecalculateAverageEntryPrice(oldAvg, oldQty, entryPrice, newQty);
 
-			// update position with new average entry price
-            existedPosition->positionAmt += isLong ? contracts : -contracts;
-            existedPosition->entryPrice = updatedAvg;
+                // update position with new average entry price
+                existedPosition->positionAmt += isLong ? contracts : -contracts;
+                existedPosition->entryPrice = updatedAvg;
 
-			m_logger->Info("Position increased: " + order.GetSymbol() +
-				", qty = " + std::to_string(existedPosition->positionAmt) +
-				", avg = " + std::to_string(existedPosition->entryPrice));
-        }
-
-		// decrease position if opposite direction
-        else if ((existedPosition->positionAmt > 0 && !isLong) || (existedPosition->positionAmt < 0 && isLong)) {
-            const double oldQty = std::abs(existedPosition->positionAmt);
-            const double reduceQty = contracts;
-
-            if (reduceQty < oldQty) {
-				// close part of the position
-                existedPosition->positionAmt += (!isLong) ? -reduceQty : reduceQty;
-				m_logger->Info("Position partially reduced: " + order.GetSymbol() +
-					", qty = " + std::to_string(existedPosition->positionAmt) +
-					", avg = " + std::to_string(existedPosition->entryPrice));
+                m_logger->Info("Position increased: " + order.GetSymbol() +
+                    ", qty=" + std::to_string(existedPosition->positionAmt) +
+                    ", avg=" + std::to_string(existedPosition->entryPrice));
             }
-            else if (reduceQty == oldQty) {
-				// close the entire position
 
-                userAccount->RemotePosition(order.GetSymbol()); // Remove liquidated position
+            // decrease position if opposite direction
+            else if ((existedPosition->positionAmt > 0 && !isLong) || (existedPosition->positionAmt < 0 && isLong)) {
+                const double oldQty = std::abs(existedPosition->positionAmt);
+                const double reduceQty = contracts;
 
-                // Update filled ack to upstream
-                order.SetRemainingAmount(0.0);
-                order.SetFilledAmount(contracts);
-                order.SetOrderStatus(BinanceNewOrderStatus::FULL_FILLED);
+                if (reduceQty < oldQty) {
+                    // close part of the position
+                    existedPosition->positionAmt += (!isLong) ? -reduceQty : reduceQty;
+                    m_logger->Info("Position partially reduced: " + order.GetSymbol() +
+                        ", qty= " + std::to_string(existedPosition->positionAmt) +
+                        ", avg= " + std::to_string(existedPosition->entryPrice));
+                }
+                else if (reduceQty == oldQty) {
+                    // close the entire position
 
-				m_logger->Info("Position fully closed: " + order.GetSymbol() +
-					", qty = " + std::to_string(existedPosition->positionAmt) +
-					", avg = " + std::to_string(existedPosition->entryPrice));
+                    userAccount->RemotePosition(order.GetSymbol()); // Remove liquidated position
 
-				return true; // position closed, no need to update processing
-			}
-            else {
-				// close the position and reverse it
-                const double reverseQty = reduceQty - oldQty;
-                existedPosition->positionAmt = (!isLong) ? -reverseQty : reverseQty;
-                existedPosition->entryPrice = entryPrice;
+                    // Update filled ack to upstream
+                    order.SetRemainingAmount(0.0);
+                    order.SetFilledAmount(contracts);
+                    order.SetOrderStatus(BinanceNewOrderStatus::FULL_FILLED);
 
-				m_logger->Info("Position reversed: " + order.GetSymbol() + 
-					", qty = " + std::to_string(existedPosition->positionAmt) +
-					", avg = " + std::to_string(existedPosition->entryPrice));
+                    m_logger->Info("Position fully closed: " + order.GetSymbol() +
+                        ", qty= " + std::to_string(existedPosition->positionAmt) +
+                        ", avg= " + std::to_string(existedPosition->entryPrice));
+
+                    return true; // position closed, no need to update processing
+                }
+                else {
+                    // close the position and reverse it
+                    const double reverseQty = reduceQty - oldQty;
+                    existedPosition->positionAmt = (!isLong) ? -reverseQty : reverseQty;
+                    existedPosition->entryPrice = entryPrice;
+
+                    m_logger->Info("Position reversed: " + order.GetSymbol() +
+                        ", qty= " + std::to_string(existedPosition->positionAmt) +
+                        ", avg= " + std::to_string(existedPosition->entryPrice));
+                }
             }
+
+            const auto [notional, positionInitMargin, initialMaintMargin] =
+                Recalculate_Notation_InitialMargin_MaintMargin(order.GetSymbol(),
+                    entryPrice, existedPosition->positionAmt, leverage);
+
+            existedPosition->maxNotional = notional; // Update existing position's max notional value
+            existedPosition->notional = notional; // Update existing position's notional value
+            existedPosition->maintMargin = initialMaintMargin; // Update existing position's maintenance margin
+            existedPosition->positionInitialMargin = positionInitMargin; // Update existing position's initial margin
+            order.SetFutureInitialMarginPrice(positionInitMargin);
+            order.SetFutureMaintainingMarginPrice(initialMaintMargin);
+
+            maintMargin = initialMaintMargin; // Use existing position's maintenance margin
+            positionMargin = positionInitMargin; // Use existing position's initial margin
         }
-
-        const auto [notional, positionInitMargin, initialMaintMargin] =
-            Recalculate_Notation_InitialMargin_MaintMargin(order.GetSymbol(),
-                entryPrice, existedPosition->positionAmt, leverage);
-
-		existedPosition->maxNotional = notional; // Update existing position's max notional value
-		existedPosition->notional = notional; // Update existing position's notional value
-		existedPosition->maintMargin = initialMaintMargin; // Update existing position's maintenance margin
-		existedPosition->positionInitialMargin = positionInitMargin; // Update existing position's initial margin
-		order.SetFutureInitialMarginPrice(positionInitMargin);
-		order.SetFutureMaintainingMarginPrice(initialMaintMargin);
-
-        maintMargin = initialMaintMargin; // Use existing position's maintenance margin
-        positionMargin = positionInitMargin; // Use existing position's initial margin
+		catch (const std::exception& ex)
+		{
+			existedPosition->positionAmt = oldPositionAmt; // revert to old position amount
+			existedPosition->entryPrice = oldEntryPrice; // revert to old entry price
+			return HandleRejectedOrder(std::string("Exception during existing position update for order: ") + ex.what(), order);
+		}
     }
 
     const double marketPrice = priceMgr->GetCurrentMarketPrice();

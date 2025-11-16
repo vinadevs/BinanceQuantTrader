@@ -14,6 +14,10 @@ namespace LibraryUtils {
     class Logger;
 };
 
+namespace tinyxml2 {
+    class XMLElement;
+};
+
 namespace MarketDataCapture {
 
  /**
@@ -35,11 +39,20 @@ namespace MarketDataCapture {
  *
  */
 
+	enum class DataCaptureMode : unsigned
+	{
+		Undefined = 0,
+		LocalFile,
+		ConsoleLog
+	};
+
+    class MarketDataFileWriter;
+
     class MarketDataListener final
         : public MarketData::MarketDataObserver
     {
     public:
-        MarketDataListener();
+        MarketDataListener(const tinyxml2::XMLElement* dataCaptureCfg);
         ~MarketDataListener() override;
 
         // book quote for downstream orders
@@ -64,5 +77,8 @@ namespace MarketDataCapture {
         bool OnAllDiffDepthChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
     private:
         std::unique_ptr<LibraryUtils::Logger> m_logger;
+        DataCaptureMode m_dataCaptureMode{ DataCaptureMode::Undefined };
+		std::string m_localFilePath;
+		std::unique_ptr<MarketDataFileWriter> m_fileWriter;
     };
 };

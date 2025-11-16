@@ -156,7 +156,7 @@ void SmartLongShortStrategy::OnAlarmTriggered(const int passToDerived)
 		futureOrder.m_tradeType = OrderManagement::BinanceNewOrderTradingType::FUTURE; // set to future trading type
 		futureOrder.m_stableCurrency = "USDT"; // default stable currency is USDT
 		// Set leverage ratio
-		futureOrder.m_leverageRatio = 50; // default leverage ratio is x50
+		futureOrder.m_leverageRatio = 5; // default leverage ratio is x50
 
 		QuantitativeModel::PriceTickerTrend priceTickerTrend = marketDataAnalyzer->GetMarketDataSignals().m_priceTickerTrend;
 

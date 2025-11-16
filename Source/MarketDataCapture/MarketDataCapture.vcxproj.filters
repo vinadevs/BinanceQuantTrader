@@ -22,6 +22,9 @@
     <ClCompile Include="MarketDataService.cpp">
       <Filter>Market Data Service</Filter>
     </ClCompile>
+    <ClCompile Include="MarketDataFileWriter.cpp">
+      <Filter>Market Data Listener</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MarketDataListener.h">
@@ -29,6 +32,9 @@
     </ClInclude>
     <ClInclude Include="MarketDataService.h">
       <Filter>Market Data Service</Filter>
+    </ClInclude>
+    <ClInclude Include="MarketDataFileWriter.h">
+      <Filter>Market Data Listener</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

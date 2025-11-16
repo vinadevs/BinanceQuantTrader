@@ -1,42 +1,102 @@
-# Binance Quant Trader
+# Binance Quantitative Trader Framework
 
-Quantitative trading model for Binance Coin Exchange
+A **complete, extensible, and low-latency quantitative trading framework for cryptocurrency** built on **Modern C++**, designed for researchers and developers to implement and deploy custom crypto trading strategies on the **Binance Exchange**.
 
-A. Binance Quantitative Trader is an advanced High-Frequency Trading (HFT) system designed to automate and optimize trading strategies on the Binance exchange. Leveraging quantitative analysis, statistical models, and real-time data, this system aims to execute trades with precision, speed, and efficiency beyond manual capabilities. Quantitative trading systems like this are typically built to make data-driven decisions, minimizing emotional influence in trading and maximizing profit potential by analyzing large volumes of market data and historical patterns.
+This framework handles all core components of a production trading system—including real-time market data, execution, risk management, and backtesting—allowing developers to focus solely on building strategy logic.
 
-Key Features of Binance Quantitative Trader
+---
 
-1. Employs trading algorithms that follow predefined rules, such as entry and exit signals, position sizing, and stop-loss levels.
-Uses various strategies, such as market making, arbitrage, trend-following, and mean reversion, to capitalize on different market conditions.
+## 📈 Why This Framework?
+- Ideal for developers and learners who want to study quantitative trading, market microstructure, and algo/HFT system design through a real, production-style framework.
+- Built for **speed**, **stability**, and **extensibility**.
+- Abstracts away exchange complexity and system plumbing.
+- Lets developers focus 100% on **alpha generation**.
+- Suitable for research, live trading, and HFT experimentation.
 
-2. Designed to execute multiple trades within milliseconds, capturing minimal price discrepancies.
-Exploits short-lived opportunities with high-speed infrastructure for fast data processing and order execution.
+---
 
-4. Continuously monitors price changes, order book depth, and volume to identify potential opportunities.
-Uses Binance’s WebSocket API to receive live data feeds, enabling the system to react instantly to market changes.
+## 🚀 Key Features
 
-5. Runs historical simulations to evaluate and fine-tune trading strategies, ensuring they are profitable and resilient under various market conditions.
-Uses performance metrics such as Sharpe ratio, maximum drawdown, and win rate to optimize strategies.
+### **1. Modular Strategy Plug-In Architecture**
+- Clean, event-driven interface for adding custom strategies.
+- Developers only write trading logic; infrastructure is fully handled.
+- Suitable for rapid prototyping and deployment of low-latency trading algos.
 
-6. Implements strict risk management protocols, including dynamic stop-losses, maximum position limits, and diversification across assets.
-Adjusts position sizes based on volatility, liquidity, and the system’s risk tolerance to protect capital and avoid significant drawdowns.
+### **2. High-Performance Low-Latency Core**
+- Millisecond-level processing speeds.
+- Optimized concurrency model for high-frequency trading.
+- Efficient handling of order book updates, execution events, and tick data.
 
-7. Integrates machine learning models to improve prediction accuracy, particularly in identifying patterns, trends, and sentiment analysis.
-Utilizes AI algorithms that continuously learn and adapt based on past performance, adjusting trading parameters to adapt to evolving market behavior.
+### **3. Real-Time Market Data Integration**
+- Full integration with **Binance WebSocket streams** (depth, trades, klines, system events).
+- Normalized data models to ensure consistency across all strategy modules.
 
-Benefits of Quantitative Trading
+### **4. Backtesting & Simulation Engine**
+- Integrates an advanced Exchange simulator (Matching Engine) which provides liquidity for strategy's order.
+- Supports historical simulations with realistic fill modeling.
+- Models latency, queue position, slippage, and market microstructure.
+- Provides Sharpe ratio, drawdown, win rate, PnL curves, volatility metrics, and more.
 
-Efficiency and Consistency: Operates 24/7 with consistent, systematic decision-making that removes emotional biases from trading.
-Scalability: Capable of managing multiple assets simultaneously, making it suitable for diversified portfolios.
-Speed and Accuracy: Executes trades faster than manual trading, maximizing opportunities in high-volatility markets.
+### **5. Robust Risk Management Layer**
+- Position limits, stop-loss rules, leverage caps, and exposure constraints.
+- Real-time capital protection and algorithm oversight.
 
-B. Typical Use Cases
-Institutional and Professional Traders: For large-scale operations seeking to execute sophisticated strategies and enhance return on investment.
-Retail Quant Traders: Individual traders looking to automate their strategies and improve efficiency in trade execution.
-Arbitrage Traders: Exploits price discrepancies across different Binance trading pairs or between Binance and other exchanges.
+### **6. Machine Learning & Analytics Integration**
+- Optional ML modules for prediction, trend detection, and volatility forecasting.
+- Supports offline training and online adaptation.
 
-C. Technical Requirements
-API Access: Uses Binance’s REST and WebSocket APIs for trading, data collection, and real-time monitoring.
-High-Performance Computing: Requires powerful computing infrastructure to handle large datasets, low-latency data processing, and fast execution speeds.
-Programming and Data Science Expertise: Developed using programming languages such as Python or C++ for flexibility in machine learning and quantitative modeling.
-Binance Quantitative Trading is a powerful solution for those aiming to capitalize on data-driven trading strategies with robust automation and sophisticated analysis. It can adapt to varying market conditions, continuously refine strategies, and make trading faster, more reliable, and potentially more profitable.
+### **7. Production-Ready Infrastructure**
+- Built-in logging, error recovery, reconnect logic, and monitoring.
+- Designed for 24/7 crypto trading operations.
+- Clear separation of concerns: framework handles core mechanics; developers handle strategy logic.
+
+---
+
+## 🧰 Tech Stack & Low-Latency Engineering
+
+### **Modern C++ Foundation**
+- Written in **C++17/20**.
+
+---
+
+## 🧪 Strategy Development
+Implement your strategy by inheriting and overriding core virtual callbacks:
+
+```cpp
+class SmartLongShortStrategy :
+    public TradingStrategyBase,
+    public MarketData::MarketDataObserver
+{
+public:
+    explicit SmartLongShortStrategy(const std::string& cfgPath,
+                                    MarketData::RealTimeMarketData* marketData,
+                                    UserAccount::Trader* trader,
+                                    ComplianceNRegulatory::BinanceTradingRules* rules);
+
+    void StartLive() override;
+    void StopLive() override;
+
+private:
+    std::vector<std::string> m_targetSymbols;
+    std::unique_ptr<QuantitativeModel::MarketDataAnalyzer> m_analyzer;
+};
+```
+
+---
+
+## 📊 Backtesting Example
+```cpp
+BQTBacktestEngine bt;
+bt.loadHistoricalData("BTCUSDT");
+bt.setStrategy(std::make_unique<SmartLongShortStrategy>());
+bt.run();
+bt.report();
+```
+
+---
+
+## 📜 License
+ Apache-2.0 license
+
+
+
