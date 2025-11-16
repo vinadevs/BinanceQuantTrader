@@ -154,6 +154,7 @@
   <ItemGroup>
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="FutureRiskEngine.h" />
     <ClInclude Include="VWAPOrderExecutionRiskMetrics.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RiskManager.h" />
@@ -161,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="FutureRiskEngine.cpp" />
     <ClCompile Include="VWAPOrderExecutionRiskMetrics.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

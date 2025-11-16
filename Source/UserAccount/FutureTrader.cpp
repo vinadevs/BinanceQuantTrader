@@ -268,7 +268,7 @@ void FutureTrader::CreatePortfolioManagement(const std::vector<std::string>&targ
 ////////////// DOWNSTREAM PROCESSING /////////////////////////////
 
 #if USE_BACK_TEST_TRADING  
-void FutureTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage & message)
+void FutureTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage& message)
 {
 	m_logger->Info("Received simulator ack=" + message.SerializeMessage());
 	const std::string simulatorAckType = message.GetStringValueByTag(FieldLabels::SimulatorAck::AckType);

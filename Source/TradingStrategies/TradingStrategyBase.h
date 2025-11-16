@@ -120,6 +120,7 @@ namespace TradingStrategies {
 		// -After this function called, then real trading will start, the preparation is finished.
 		// -There are many algo/strategy trading types from full-auto to semi-auto.
 		// -So each strategy with have a different behaviour with other types
+		// -We should create all necessary components for the strategy inside this function
 		// -We will not add any specific logic, just make it as a pure method
 		// and let derived class implement the detail.
 		virtual void StartLive() = 0;

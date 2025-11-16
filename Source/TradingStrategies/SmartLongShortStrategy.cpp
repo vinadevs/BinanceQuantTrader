@@ -20,8 +20,10 @@
 #include "../QuantitativeModel/QuantOrderParammeter.h"
 #include "../QuantitativeModel/MarketDataAnalyzer.h"
 #include "../QuantitativeModel/QuantMarketDataAnalyzer.h"
+#include "../RiskManagement/FutureRiskEngine.h"	
 #include "../LibraryUtils/PathUtils.h"
 #include "../LibraryUtils/FileUtils.h"
+
 
 using namespace TradingStrategies;
 using namespace QuantitativeModel;
@@ -30,6 +32,7 @@ using namespace UserAccount;
 using namespace ComplianceNRegulatory;
 using namespace LibraryUtils;
 using namespace tinyxml2;
+using namespace RiskManagement;
 
 SmartLongShortStrategy::SmartLongShortStrategy(
 	const std::string& strategyCfgPath,
@@ -124,6 +127,9 @@ void SmartLongShortStrategy::StartLive()
 	// Create portfolio management
 	m_logger->Info("Create portfolio management.");
 	CreatePortfolioManagement();
+	// Create risk management engine
+	m_logger->Info("Create risk management engine.");
+	CreateRiskManagementEngine();
 	// Subscribe target symbols to receive real time market data
 	m_logger->Info("Subscribe target symbols.");
 	SubscribeTargetSymbols();
@@ -223,6 +229,15 @@ void SmartLongShortStrategy::CreatePortfolioManagement()
 {
 	m_futureTrader->CreatePortfolioManagement(m_targetFutureTradeSymbols);
 	IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
+}
+
+void SmartLongShortStrategy::CreateRiskManagementEngine()
+{
+	m_futureRiskEngine = std::make_unique<RiskManagement::FutureRiskEngine>(
+		m_futureTrader->GetPortfolio(),
+		m_futureTrader->GetRiskManager(),
+		m_futureTrader->GetBinanceAccountInfo(),
+		m_logger.get());
 }
 
 void SmartLongShortStrategy::PrepareTargetMonitorSymbols()
