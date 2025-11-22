@@ -21,7 +21,7 @@ namespace ComplianceNRegulatory {
 
 	struct HardTradingLimits;
 	class BinanceExchangeProfileMgr;
-
+	
 	// -Trading Rules from an Exchange are guidelines and
 	// rules established by the exchange to ensure fair,
 	// orderly, and transparent markets.These rules are essential 
@@ -62,6 +62,11 @@ namespace ComplianceNRegulatory {
 		size_t GetRequestWeightPerMinuteCounter() const { return m_requestWeightPerMinuteCounter; }
 		size_t GetOrdersPerTenSecondsCounter() const { return m_ordersPerTenSecondsCounter; }
 		size_t GetOrdersPerTwentyFourHoursCounter() const { return m_ordersPerTwentyFourHoursCounter; }
+
+		// you can more requests if needed
+		static const std::size_t SINGLE_REQUEST = 1;
+		static const std::size_t DOUBLE_REQUEST = 2;
+		static const std::size_t TRIPLE_REQUEST = 3;
 	private:
 		std::mutex m_mutex; // for thread safe
 		std::unique_ptr<HardTradingLimits> m_limits;

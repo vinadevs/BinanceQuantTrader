@@ -39,8 +39,8 @@ std::string BinanceReplaceOrder::GetOrderStatusStr() const
 		return "NEW";
 	case BinanceReplaceOrderStatus::WAITING_FOR_REPLACE:
 		return "WAITING_FOR_REPLACE";
-	case BinanceReplaceOrderStatus::FILLED:
-		return "FILLED";
+	case BinanceReplaceOrderStatus::REPLACED:
+		return "REPLACED";
 	case BinanceReplaceOrderStatus::REJECTED:
 		return "REJECTED";
 	default:
@@ -52,7 +52,7 @@ BinanceReplaceOrderStatus BinanceReplaceOrder::GetOrderStatusEnum(const std::str
 {
 	if (status == "NEW") return BinanceReplaceOrderStatus::NEW;
 	else if (status == "WAITING_FOR_REPLACE") return BinanceReplaceOrderStatus::WAITING_FOR_REPLACE;
-	else if (status == "FILLED") return BinanceReplaceOrderStatus::FILLED;
+	else if (status == "REPLACED") return BinanceReplaceOrderStatus::REPLACED;
 	else if (status == "REJECTED") return BinanceReplaceOrderStatus::REJECTED;
 	return BinanceReplaceOrderStatus::UNDEF;
 }

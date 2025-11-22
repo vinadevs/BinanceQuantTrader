@@ -38,11 +38,15 @@ namespace ComplianceNRegulatory {
 
 namespace QuantitativeModel {
 	class OrderParammeterGenerator;
-};
+}
 
 namespace tinyxml2 {
 	class XMLDocument;
-};
+}
+
+namespace RiskManagement {
+	class SpotRiskEngine;
+}
 
 // The fear of missing out, or FOMO, refers to the feeling or 
 // perception that others are having more fun, living better lives,
@@ -65,6 +69,13 @@ namespace TradingStrategies {
 		virtual ~FomoTradingStrategy();
 
 		bool OnReceivedTradingHints(const IndicatorNSignals::TradingHints* hints) override;
+		
+		// when an order is fully filled and exchange sends back an ack message
+		void OnOrderFilledAck(const OrderManagement::BinanceNewOrder* filledOrder);
+		// when an order partially filled and exchange sends back an ack message
+		void OnOrderPartiallyFilledAck(const OrderManagement::BinanceNewOrder* partiallyFilledOrder);
+		// when an order is rejected and exchange sends back an ack message
+		void OnOrderRejectedAck(const OrderManagement::BinanceNewOrder* rejectedOrder);
 
 		void ReportTradeResults(const std::string& symbol) override;
 
@@ -80,6 +91,7 @@ namespace TradingStrategies {
 		void CreatePortfolioManagement();
 		void CreateOrderParameterGenerator();
 		void CreateBinanceExchangeProfile();
+		void CreateRiskManagementEngine();
 		bool TradeAsHints(const IndicatorNSignals::TradingHints* hints);
 
 #if USE_MULTITHREADING
@@ -95,5 +107,6 @@ namespace TradingStrategies {
 		MultipleThreads::BQTQueue<const IndicatorNSignals::TradingHints*> m_tradingHintsQueue;
 #endif
 		std::unique_ptr<IndicatorNSignals::TradingSignalService> m_tradingSignalService;
+		std::unique_ptr < RiskManagement::SpotRiskEngine> m_spotRiskEngine;
 	};
 };

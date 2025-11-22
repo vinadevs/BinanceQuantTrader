@@ -46,6 +46,13 @@ namespace MarketDataCapture {
 		ConsoleLog
 	};
 
+	enum class ServerType : unsigned
+	{
+		Undefined = 0,
+		StandaloneDataCaptureServer, // run as a standalone server to store data
+		ClientPythonDataCaptureServer, // run as a server to send data to python client
+	};
+
     class MarketDataFileWriter;
 
     class MarketDataListener final

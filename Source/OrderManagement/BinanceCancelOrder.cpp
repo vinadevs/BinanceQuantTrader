@@ -39,8 +39,8 @@ std::string BinanceCancelOrder::GetOrderStatusStr() const
 		return "NEW";
 	case BinanceCancelOrderStatus::WAITING_FOR_CANCEL:
 		return "WAITING_FOR_CANCEL";
-	case BinanceCancelOrderStatus::FILLED:
-		return "FILLED";
+	case BinanceCancelOrderStatus::CANCELED:
+		return "CANCELED";
 	case BinanceCancelOrderStatus::REJECTED:
 		return "REJECTED";
 	default:
@@ -52,7 +52,7 @@ BinanceCancelOrderStatus BinanceCancelOrder::GetOrderStatusEnum(const std::strin
 {
 	if (status == "NEW") return BinanceCancelOrderStatus::NEW;
 	else if (status == "WAITING_FOR_CANCEL") return BinanceCancelOrderStatus::WAITING_FOR_CANCEL;
-	else if (status == "FILLED") return BinanceCancelOrderStatus::FILLED;
+	else if (status == "CANCELED") return BinanceCancelOrderStatus::CANCELED;
 	else if (status == "REJECTED") return BinanceCancelOrderStatus::REJECTED;
 	return BinanceCancelOrderStatus::UNDEF;
 }

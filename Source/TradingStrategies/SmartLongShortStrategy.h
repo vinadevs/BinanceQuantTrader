@@ -63,6 +63,15 @@ namespace TradingStrategies {
 
 		bool OnIndividualBookTickerChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
 
+		// when an order is opening and exchange sends back an ack message
+		virtual void OnOrderOpeningPositionAck(const OrderManagement::BinanceNewOrder* openingOrder) override;
+		// when an order is closed and exchange sends back an ack message
+		virtual void OnOrderClosedPositionAck(const OrderManagement::BinanceNewOrder* closedOrder) override;
+		// when an order is liquidated and exchange sends back an ack message
+		virtual void OnOrderLiquidatedPositionAck(const OrderManagement::BinanceNewOrder* liquidatedOrder) override;
+		// when an order is margin called and exchange sends back an ack message
+		virtual void OnOrderMarginCalledPositionAck(const OrderManagement::BinanceNewOrder* marginCalledOrder) override;
+
 		void ReportTradeResults(const std::string& symbol) override;
 
 		void InitializeParameters(const std::string& strategyCfgPath) override;

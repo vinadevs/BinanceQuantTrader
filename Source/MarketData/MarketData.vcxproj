@@ -158,6 +158,7 @@
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="FeedIdentification.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="HistoricalMarketDataEvents.h" />
     <ClInclude Include="MarketDataNotifyMessage.h" />
     <ClInclude Include="MarketDataObserver.h" />
     <ClInclude Include="MarketDataSubscriptionManager.h" />
@@ -174,6 +175,7 @@
   <ItemGroup>
     <ClCompile Include="BinanceMarketData.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="HistoricalMarketDataEvents.cpp" />
     <ClCompile Include="MarketDataObserver.cpp" />
     <ClCompile Include="MarketDataSubscriptionManager.cpp" />
     <ClCompile Include="RealTimeMarketData.cpp" />

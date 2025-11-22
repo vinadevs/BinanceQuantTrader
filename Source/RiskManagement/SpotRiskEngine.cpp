@@ -7,7 +7,7 @@
 #*******************************************************************************/
 
 #include "pch.h"
-#include "FutureRiskEngine.h"
+#include "SpotRiskEngine.h"
 
 #include "../LibraryUtils/Logger.h"
 #include "../PortfolioManager/PortfolioInvestmentBinance.h"
@@ -16,23 +16,23 @@
 
 using namespace RiskManagement;
 
-FutureRiskEngine::FutureRiskEngine(
+SpotRiskEngine::SpotRiskEngine(
 	PortfolioManager::PortfolioInvestmentBinance* portfolio,
 	RiskManagement::RiskManager* riskManager,
-	KernelTrading::UserFutureAccount* userFutureAccount,
+	binapi::rest::account_info_t* userSpotAccount,
 	LibraryUtils::Logger* logger)
 	: m_logger{ logger },
 	m_portfolio{ portfolio },
 	m_riskManager{ riskManager },
-	m_userFutureAccount{ userFutureAccount }
+	m_userSpotAccount{ userSpotAccount }
 {
 }
 
-FutureRiskEngine::~FutureRiskEngine()
+SpotRiskEngine::~SpotRiskEngine()
 {
 }
 
-RiskReport FutureRiskEngine::AssessTradingRisk(const OrderManagement::Order* order)
+RiskReport SpotRiskEngine::AssessTradingRisk(const OrderManagement::Order* order)
 {
 	return RiskReport();
 }

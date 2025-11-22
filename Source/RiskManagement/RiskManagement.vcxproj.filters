@@ -42,6 +42,12 @@
     <ClInclude Include="FutureRiskEngine.h">
       <Filter>Risk Engine</Filter>
     </ClInclude>
+    <ClInclude Include="RiskDefinitions.h">
+      <Filter>Risk Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotRiskEngine.h">
+      <Filter>Risk Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -60,6 +66,9 @@
       <Filter>Risk Engine</Filter>
     </ClCompile>
     <ClCompile Include="FutureRiskEngine.cpp">
+      <Filter>Risk Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="SpotRiskEngine.cpp">
       <Filter>Risk Engine</Filter>
     </ClCompile>
   </ItemGroup>

@@ -200,6 +200,8 @@ void VWAPStrategy::StopLive()
 
 void VWAPStrategy::OnAlarmTriggered(const int passToDerived)
 {
+	BEGIN_STRATEGY_TRADING_ACTIVITY
+
 	for (const auto& symbol : m_targetFutureTradeSymbols)
 	{
 		// Calculate next VWAP volume size at current time bucket
@@ -241,6 +243,8 @@ void VWAPStrategy::OnAlarmTriggered(const int passToDerived)
 			}
 		}
 	}
+
+	END_STRATEGY_TRADING_ACTIVITY_NO_RETURN
 }
 
 void VWAPStrategy::SendOrderToExchange(
@@ -260,14 +264,14 @@ void VWAPStrategy::CreateBinanceExchangeProfile()
 	for (const auto& symbol : m_targetFutureTradeSymbols)
 	{
 		m_tradingRules->GetExchangeProfileMgr()->UpdateRemoteExchangeProfiles(symbol, true);
-		IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
+		IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 	}
 }
 
 void VWAPStrategy::CreatePortfolioManagement()
 {
 	m_spotTrader->CreatePortfolioManagement(m_targetFutureTradeSymbols);
-	IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
+	IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 }
 
 void VWAPStrategy::PrepareTargetMonitorSymbols()

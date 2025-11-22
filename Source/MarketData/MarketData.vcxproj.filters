@@ -66,6 +66,9 @@
     <ClInclude Include="BinanceMarketData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="HistoricalMarketDataEvents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -102,6 +105,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BinanceMarketData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HistoricalMarketDataEvents.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

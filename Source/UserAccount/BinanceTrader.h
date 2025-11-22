@@ -35,6 +35,10 @@ namespace tinyxml2 {
 	class XMLElement;
 };
 
+namespace TradingStrategies {
+	class TradingStrategyBase;
+};
+
 namespace UserAccount {
 
 	// This class will manage binance spot trade activities like buy/sell/report...
@@ -49,6 +53,8 @@ namespace UserAccount {
 					  RiskManagement::RiskManager* riskManager);
 
 		////////////// UPSTREAM PROCESSING /////////////////////////////
+
+		void UseThisStrategyToTrade(TradingStrategies::TradingStrategyBase* strategy) override;
 
 		WorkedOrderIdentification CreateNewPosition(const QuantitativeModel::QuantOrderParammeter& param) override;
 

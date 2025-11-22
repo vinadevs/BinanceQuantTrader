@@ -12,6 +12,7 @@
 
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/SourceBuildFlags.h"
+#include "../OrderRouting/OrderEventHandler.h"
 #if USE_BACK_TEST_TRADING
 #include "../MiddlewareMQ/MessageHandler.h"
 #include "../MiddlewareMQ/BqtJsonMessage.h"
@@ -40,7 +41,7 @@ namespace ComplianceNRegulatory {
 
 namespace tinyxml2 {
 	class XMLDocument;
-};
+}
 
 // -All Algos, Strategies should follow this base class
 // Strategy/Algo should take actions when signal/indicator event
@@ -93,10 +94,11 @@ namespace TradingStrategies {
 	// indicators to complex algorithms involving data analysis...
 
 	class DLL_CLASS_TRADING_TRATEGIES_EXPORTS
-		TradingStrategyBase
-#if USE_BACK_TEST_TRADING  
-		: public MiddlewareMQ::MessageHandler
+		TradingStrategyBase :
+#if USE_BACK_TEST_TRADING
+		public MiddlewareMQ::MessageHandler,
 #endif
+		public OrderRouting::OrderEventHandler
 	{
 	public:
 		// This construcor is used for strategies that needs to send order to exchange
@@ -158,6 +160,8 @@ namespace TradingStrategies {
 		// -Increases the counter for REST API requests made to the exchange for compliance tracking.
 		// This helps monitor and limit the number of requests to avoid exceeding API rate limits.
 		void IncreaseComplianceRestAPIRequestCounter(const size_t noOfRequests);
+
+		
 protected:
 		// -Logs the hard limits for trading, such as maximum orders or API requests allowed.
 		// This is useful for debugging and ensuring the strategy operates within defined constraints.
@@ -199,3 +203,61 @@ protected:
 		std::unique_ptr<tinyxml2::XMLDocument> m_strategyCfgXml;
 	};
 };
+
+//---------------------------------------------------------------------------------------------
+// This pair of macros should be used to wrap all trading activities
+// start of trading activity macro
+#define BEGIN_STRATEGY_TRADING_ACTIVITY \
+try \
+{ \
+	if (m_strategyRunStatus == StrategyRunStatus::LIVE) \
+	{ \
+		if (IsNotIsNotExceededTradingRules()) \
+		{
+// end of trading activity macro with return value
+#define END_STRATEGY_TRADING_ACTIVITY_RETURN \
+} \
+		else \
+		{ \
+			m_logger->Debug("Warning: number of REST request is exceeded exchange rule/limitations."); \
+		} \
+	} \
+	else \
+	{ \
+		m_logger->Warning("Strategy is not living now."); \
+	} \
+} \
+catch (const std::exception& e) \
+{ \
+	m_logger->Exception(std::string(e.what())); \
+	return false; \
+} \
+catch (...) \
+{ \
+	m_logger->Exception("Unknown exception occurred."); \
+	return false; \
+}
+// end of trading activity macro without return value
+#define END_STRATEGY_TRADING_ACTIVITY_NO_RETURN \
+} \
+		else \
+		{ \
+			m_logger->Debug("Warning: number of REST request is exceeded exchange rule/limitations."); \
+		} \
+	} \
+	else \
+	{ \
+		m_logger->Warning("Strategy is not living now."); \
+	} \
+} \
+catch (const std::exception& e) \
+{ \
+	m_logger->Exception(std::string(e.what())); \
+	return; \
+} \
+catch (...) \
+{ \
+	m_logger->Exception("Unknown exception occurred."); \
+	return; \
+}
+//---------------------------------------------------------------------------------------------

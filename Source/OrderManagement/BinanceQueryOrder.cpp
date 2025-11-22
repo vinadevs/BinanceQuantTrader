@@ -39,8 +39,8 @@ std::string BinanceQueryOrder::GetOrderStatusStr() const
 		return "NEW";
 	case BinanceQueryOrderStatus::WAITING_FOR_QUERY:
 		return "WAITING_FOR_QUERY";
-	case BinanceQueryOrderStatus::FILLED:
-		return "FILLED";
+	case BinanceQueryOrderStatus::QERRIED:
+		return "QERRIED";
 	case BinanceQueryOrderStatus::REJECTED:
 		return "REJECTED";
 	default:
@@ -52,7 +52,7 @@ BinanceQueryOrderStatus BinanceQueryOrder::GetOrderStatusEnum(const std::string 
 {
 	if (status == "NEW") return BinanceQueryOrderStatus::NEW;
 	else if (status == "WAITING_FOR_QUERY") return BinanceQueryOrderStatus::WAITING_FOR_QUERY;
-	else if (status == "FILLED") return BinanceQueryOrderStatus::FILLED;
+	else if (status == "QERRIED") return BinanceQueryOrderStatus::QERRIED;
 	else if (status == "REJECTED") return BinanceQueryOrderStatus::REJECTED;
 	return BinanceQueryOrderStatus::UNDEF;
 }

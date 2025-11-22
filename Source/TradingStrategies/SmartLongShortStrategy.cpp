@@ -24,7 +24,6 @@
 #include "../LibraryUtils/PathUtils.h"
 #include "../LibraryUtils/FileUtils.h"
 
-
 using namespace TradingStrategies;
 using namespace QuantitativeModel;
 using namespace MarketData;
@@ -148,6 +147,8 @@ void SmartLongShortStrategy::StopLive()
 
 void SmartLongShortStrategy::OnAlarmTriggered(const int passToDerived)
 {
+	BEGIN_STRATEGY_TRADING_ACTIVITY
+
 	for (const auto& symbol : m_targetFutureTradeSymbols)
 	{
 		auto* marketDataAnalyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol);
@@ -197,9 +198,9 @@ void SmartLongShortStrategy::OnAlarmTriggered(const int passToDerived)
 			{
 				m_logger->Info("Created a new [Short Position] for symbol=" + symbol);
 			}
-			IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
+			IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 			ReportTradeResults(symbol);
-			IncreaseComplianceRestAPIRequestCounter(2); // register a sent http request to ComplianceNRegulatory
+			IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::DOUBLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 
 			// test cancel order
 			//const auto newFutureCancelOrder = m_futureTrader->CancelOpenPosition(newFutureOrder.second);
@@ -211,9 +212,11 @@ void SmartLongShortStrategy::OnAlarmTriggered(const int passToDerived)
 			//{
 			//	m_logger->Error("Failed to cancel the open position for symbol=" + symbol);
 			//}
-			//IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
+			//IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 		}
 	}
+
+	END_STRATEGY_TRADING_ACTIVITY_NO_RETURN
 }
 
 void SmartLongShortStrategy::CreateBinanceExchangeProfile()
@@ -221,14 +224,14 @@ void SmartLongShortStrategy::CreateBinanceExchangeProfile()
 	for (const auto& symbol : m_targetFutureTradeSymbols)
 	{
 		m_tradingRules->GetExchangeProfileMgr()->UpdateRemoteExchangeProfiles(symbol, true);
-		IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
+		IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 	}
 }
 
 void SmartLongShortStrategy::CreatePortfolioManagement()
 {
 	m_futureTrader->CreatePortfolioManagement(m_targetFutureTradeSymbols);
-	IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
+	IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 }
 
 void SmartLongShortStrategy::CreateRiskManagementEngine()
@@ -289,4 +292,23 @@ void SmartLongShortStrategy::UnsubscribeTargetSymbols()
 	{
 		m_marketData->UnsubscribeSymbol(symbol);
 	}
+}
+
+// DOWNSTREAM ACKS --------------------------------------------------------------------------------------------------
+
+void SmartLongShortStrategy::OnOrderOpeningPositionAck(const OrderManagement::BinanceNewOrder* openingOrder)
+{
+	const auto orderRiskReport = m_futureRiskEngine->AssessTradingRisk(openingOrder);
+}
+
+void SmartLongShortStrategy::OnOrderClosedPositionAck(const OrderManagement::BinanceNewOrder* closedOrder)
+{
+}
+
+void SmartLongShortStrategy::OnOrderLiquidatedPositionAck(const OrderManagement::BinanceNewOrder* liquidatedOrder)
+{
+}
+
+void SmartLongShortStrategy::OnOrderMarginCalledPositionAck(const OrderManagement::BinanceNewOrder* marginCalledOrder)
+{
 }

@@ -124,7 +124,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>QuantitativeModelD.lib;KernelTradingD.lib;MiddlewareMQD.lib;ComplianceNRegulatoryD.lib;RiskManagementD.lib;StaticDataD.lib;LibraryUtilsD.lib;SettingNConfigD.lib;IndicatorNSignalsD.lib;UserAccountD.lib;MarketDataD.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OrderRoutingD.lib;QuantitativeModelD.lib;KernelTradingD.lib;MiddlewareMQD.lib;ComplianceNRegulatoryD.lib;RiskManagementD.lib;StaticDataD.lib;LibraryUtilsD.lib;SettingNConfigD.lib;IndicatorNSignalsD.lib;UserAccountD.lib;MarketDataD.lib;OrderManagementD.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -147,7 +147,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>QuantitativeModel.lib;KernelTrading.lib;MiddlewareMQ.lib;ComplianceNRegulatory.lib;RiskManagement.lib;StaticData.lib;LibraryUtils.lib;SettingNConfig.lib;IndicatorNSignals.lib;UserAccount.lib;MarketData.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OrderRouting.lib;QuantitativeModel.lib;KernelTrading.lib;MiddlewareMQ.lib;ComplianceNRegulatory.lib;RiskManagement.lib;StaticData.lib;LibraryUtils.lib;SettingNConfig.lib;IndicatorNSignals.lib;UserAccount.lib;MarketData.lib;OrderManagement.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
     </Link>

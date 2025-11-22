@@ -38,6 +38,23 @@ namespace tinyxml2 {
 };
 
 namespace HistoricalData {
+
+	enum class HistoricalDataSource : unsigned
+	{
+		UNDEF,
+		CSV_FILE, // historical data source is CSV file
+		DATABASE, // historical data source is data base
+	};
+
+	enum class HistoricalDataType : unsigned
+	{
+		OHLCV, // Open High Low Close Volume data
+		TICK_BY_TICK, // tick by tick data
+		LAST_TRADE, // last trade data
+		ORDER_BOOK, // order book data
+		FULL, // full historical data
+	};
+
 	class DLL_CLASS_HISTORICALDATA_EXPORTS HistoricalDataManager final
 	{
 	public:

@@ -187,10 +187,10 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
 
                     userAccount->RemotePosition(order.GetSymbol()); // Remove liquidated position
 
-                    // Update filled ack to upstream
+                    // Update closed position ack to upstream
                     order.SetRemainingAmount(0.0);
                     order.SetFilledAmount(contracts);
-                    order.SetOrderStatus(BinanceNewOrderStatus::FULL_FILLED);
+                    order.SetOrderStatus(BinanceNewOrderStatus::CLOSED_POSITION);
 
                     m_logger->Info("Position fully closed: " + order.GetSymbol() +
                         ", qty= " + std::to_string(existedPosition->positionAmt) +
@@ -271,19 +271,19 @@ bool RTMarketFutureParticipant::TryToMatchOrder(OrderManagement::BinanceNewOrder
         order.SetRemainingAmount(0.0);
         order.SetFilledAmount(contracts);
 		order.SetFutureLiquidationPrice(liqPrice);
-		order.SetOrderStatus(BinanceNewOrderStatus::LIQUIDATED);
+		order.SetOrderStatus(BinanceNewOrderStatus::LIQUIDATED_POSITION);
     }
     else if (positionMargin <= (maintMargin + maintMargin * 0.1))
     {
         m_logger->Warning("Margin call threshold reached for order: " + order.ToStringOrder());
-		order.SetOrderStatus(BinanceNewOrderStatus::MARGIN_CALL);
+		order.SetOrderStatus(BinanceNewOrderStatus::MARGIN_CALL_POSITION);
         order.SetRemainingAmount(contracts);
         order.SetFilledAmount(0.0);
     }
     else
     {
-        // No fill in this tick – keep the order on the book
-		order.SetOrderStatus(BinanceNewOrderStatus::PARTIAL_FILLED);
+		// Position is healthy and still open
+		order.SetOrderStatus(BinanceNewOrderStatus::OPENING_POSITION);
         order.SetRemainingAmount(contracts);
 		order.SetFilledAmount(contracts);
     }

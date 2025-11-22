@@ -32,9 +32,11 @@ namespace OrderManagement {
 		REJECTED,            // Order was rejected
 		EXPIRED,             // Order has expired
 		CANCELED,            // Order was canceled
-		LIQUIDATED,          // Order was liquidated (future trading context)
-		MARGIN_CALL,         // Order was margin called (future trading context)
         SKIPPED,             // Order was skipped
+        CLOSED_POSITION,     // Order is closed (future trading context)
+        OPENING_POSITION,    // Order is opening a position (future trading context)
+        LIQUIDATED_POSITION, // Order was liquidated (future trading context)
+        MARGIN_CALL_POSITION,// Order was margin called (future trading context)
     };
 
     // Represents the type of Exchange Connectivity for a new order
@@ -60,7 +62,7 @@ namespace OrderManagement {
         UNDEF,               // Undefined status, used as a default or uninitialized state.
         NEW,                 // The cancel order has been created but not yet processed.
         WAITING_FOR_CANCEL,  // The cancel order is waiting to be executed.
-        FILLED,              // The cancel order has been successfully executed.
+        CANCELED,            // The cancel order has been successfully executed.
         REJECTED,            // The cancel order was rejected.
     };
 
@@ -70,7 +72,7 @@ namespace OrderManagement {
         UNDEF, // Undefined status, used as a default or uninitialized state.
         NEW, // The order has been created but not yet processed.
         WAITING_FOR_QUERY, //The order is awaiting a query or response from the system.
-        FILLED,// The order has been successfully completed.
+        QERRIED,// The order has been successfully completed.
         REJECTED, // The order has been rejected by the system.
     };
 
@@ -80,7 +82,7 @@ namespace OrderManagement {
         UNDEF,  // Undefined status, used as a default or uninitialized state. 
         NEW, // The order has been created and is new.  
         WAITING_FOR_REPLACE, // The order is waiting to be replaced.  
-        FILLED, // The order has been completely filled.  
+        REPLACED, // The order has been completely filled.  
         REJECTED, // The order has been rejected.  
     };
 
