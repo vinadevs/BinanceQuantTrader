@@ -14,10 +14,19 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Define project name and version
 project(
-  BinanceQuantTrader
-  VERSION 0.0.1
-  DESCRIPTION ""
-  LANGUAGES CXX C)
+    BinanceQuantTrader
+    VERSION 0.0.1
+    DESCRIPTION ""
+    LANGUAGES CXX C)
+
+set(GIT_SHA
+    "Unknown"
+    CACHE STRING "SHA this build was generated from")
+string(
+  SUBSTRING "${GIT_SHA}"
+            0
+            8
+            GIT_SHORT_SHA)
 
 if (MSVC)
     add_compile_options(/bigobj)
