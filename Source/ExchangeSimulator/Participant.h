@@ -44,6 +44,12 @@ namespace ExchangeSimulator {
         HISTORICAL_DATA, // Participant is from historical market data
     };
 
+    enum class FillType : unsigned
+    {
+		BASED_ON_LAST_TRADE, // fill algo's order bases on last trade price
+		BASED_ON_BEST_BID_ASK, // fill algo's order bases on best bid/ask price
+    };
+
     class UserAccountManager;
 	class UserTradeProfileManager;
 

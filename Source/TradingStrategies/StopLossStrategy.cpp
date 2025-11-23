@@ -113,7 +113,7 @@ void StopLossStrategy::UnsubscribeTargetSymbols()
 void StopLossStrategy::CreatePortfolioManagement()
 {
 	m_spotTrader->CreatePortfolioManagement(m_targetTradeSymbols);
-	IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
+	IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 }
 
 void StopLossStrategy::CreateOrderParameterGenerator()
@@ -131,58 +131,36 @@ void StopLossStrategy::CreateBinanceExchangeProfile()
 	for (const auto& symbol : m_targetTradeSymbols)
 	{
 		m_tradingRules->GetExchangeProfileMgr()->UpdateRemoteExchangeProfiles(symbol, true);
-		IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
+		IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 	}
 }
 
 bool StopLossStrategy::TradeAsHints(const TradingHints* hints)
 {
-	try
+	BEGIN_STRATEGY_TRADING_ACTIVITY
+
+	m_logger->Info("Creating order parameters for symbol=" + hints->symbol);
+	const auto orderList = m_orderParammeterGenerator->GenerateFomoOrders(hints);
+	for (const auto& order : orderList)
 	{
-		if (m_strategyRunStatus == StrategyRunStatus::LIVE)
+		if (m_spotTrader->CreateNewPosition(order).first)
 		{
-			if (IsNotIsNotExceededTradingRules())
+			if (order.m_side == binapi::e_side::buy)
 			{
-				m_logger->Info("Creating order parameters for symbol=" + hints->symbol);
-				const auto orderList = m_orderParammeterGenerator->GenerateFomoOrders(hints);
-				for (const auto& order : orderList)
-				{
-					if (m_spotTrader->CreateNewPosition(order).first)
-					{
-						if (order.m_side == binapi::e_side::buy)
-						{
-							m_logger->Info("Created a new [Long Position] for symbol=" + hints->symbol);
-						}
-						else if (order.m_side == binapi::e_side::sell)
-						{
-							m_logger->Info("Created a new [Short Position] for symbol=" + hints->symbol);
-						}
-						IncreaseComplianceRestAPIRequestCounter(1); // register a sent http request to ComplianceNRegulatory
-						ReportTradeResults(hints->symbol);
-						IncreaseComplianceRestAPIRequestCounter(2); // register a sent http request to ComplianceNRegulatory
-					}
-				}
+				m_logger->Info("Created a new [Long Position] for symbol=" + hints->symbol);
 			}
-			else
+			else if (order.m_side == binapi::e_side::sell)
 			{
-				m_logger->Debug("Strategy received a hint signal but it is exceeded exchange rule/limitations.");
+				m_logger->Info("Created a new [Short Position] for symbol=" + hints->symbol);
 			}
-		}
-		else
-		{
-			m_logger->Warning("Strategy received a hint signal but it is not living now.");
+			IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
+			ReportTradeResults(hints->symbol);
+			IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::DOUBLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 		}
 	}
-	catch (const std::exception& e)
-	{
-		m_logger->Exception(std::string(e.what()));
-		return false;
-	}
-	catch (...)
-	{
-		m_logger->Exception("Unknown exception occurred.");
-		return false;
-	}
+
+	END_STRATEGY_TRADING_ACTIVITY_RETURN
+
 	return true;
 }
 

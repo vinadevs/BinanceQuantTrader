@@ -22,6 +22,7 @@
 #include "../LibraryUtils/SourceBuildFlags.h"
 #include "../LibraryUtils/StringUtils.h"
 #include "../KernelTrading/user_future_account.h"
+#include "../TradingStrategies/TradingStrategyBase.h"
 #if USE_BACK_TEST_TRADING
 #include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
 #include "../ExchangeSimulator/DownstreamOrderAck.h"
@@ -77,6 +78,12 @@ double FutureTrader::CalculateTradeValue(
 	const double refPrice)
 {
 	return quality * refPrice;
+}
+
+void FutureTrader::UseThisStrategyToTrade(TradingStrategies::TradingStrategyBase* strategy)
+{
+	assert(strategy);
+	m_tradingStrategy = strategy;
 }
 
 WorkedOrderIdentification FutureTrader::CreateNewPosition(const QuantitativeModel::QuantOrderParammeter& param)
@@ -268,7 +275,7 @@ void FutureTrader::CreatePortfolioManagement(const std::vector<std::string>&targ
 ////////////// DOWNSTREAM PROCESSING /////////////////////////////
 
 #if USE_BACK_TEST_TRADING  
-void FutureTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage & message)
+void FutureTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage& message)
 {
 	m_logger->Info("Received simulator ack=" + message.SerializeMessage());
 	const std::string simulatorAckType = message.GetStringValueByTag(FieldLabels::SimulatorAck::AckType);
@@ -294,17 +301,25 @@ void FutureTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessage
 			return;
 		}
 
-		if (ackOrder->GetOrderStatus() == BinanceNewOrderStatus::LIQUIDATED)
+		if (ackOrder->GetOrderStatus() == BinanceNewOrderStatus::OPENING_POSITION)
+		{
+			m_logger->Info("Received opening position order ack for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+			m_tradingStrategy->OnOrderOpeningPositionAck(ackOrder);
+		}
+		if (ackOrder->GetOrderStatus() == BinanceNewOrderStatus::LIQUIDATED_POSITION)
 		{
 			m_logger->Info("Received liquidated order ack for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+			m_tradingStrategy->OnOrderLiquidatedPositionAck(ackOrder);
 		}
-		else if (ackOrder->GetOrderStatus() == BinanceNewOrderStatus::MARGIN_CALL)
+		else if (ackOrder->GetOrderStatus() == BinanceNewOrderStatus::MARGIN_CALL_POSITION)
 		{
 			m_logger->Info("Received margin call order ack for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+			m_tradingStrategy->OnOrderMarginCalledPositionAck(ackOrder);
 		}
 		else if (ackOrder->GetOrderStatus() == BinanceNewOrderStatus::REJECTED)
 		{
 			m_logger->Info("Received rejected order ack for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+			m_tradingStrategy->OnOrderRejectedAck(ackOrder);
 		}
 		// Updates the portfolio manager’s future account information.
 		m_portfolio->UpdateBinanceFutureAccountInfo();

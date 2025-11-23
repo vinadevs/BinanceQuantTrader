@@ -258,10 +258,14 @@ std::string BinanceNewOrder::GetOrderStatusStr() const
         return "PARTIAL_FILLED";
     case BinanceNewOrderStatus::FULL_FILLED:
         return "FULL_FILLED";
-	case BinanceNewOrderStatus::LIQUIDATED:
-		return "LIQUIDATED";
-	case BinanceNewOrderStatus::MARGIN_CALL:
-		return "MARGIN_CALL";
+	case BinanceNewOrderStatus::LIQUIDATED_POSITION:
+        return "LIQUIDATED_POSITION";
+	case BinanceNewOrderStatus::MARGIN_CALL_POSITION:
+		return "MARGIN_CALL_POSITION";
+	case BinanceNewOrderStatus::OPENING_POSITION:
+		return "OPENING_POSITION";
+	case BinanceNewOrderStatus::CLOSED_POSITION:
+		return "CLOSED_POSITION";
 	case BinanceNewOrderStatus::REJECTED:
 		return "REJECTED";
 	case BinanceNewOrderStatus::EXPIRED:
@@ -281,8 +285,10 @@ BinanceNewOrderStatus BinanceNewOrder::GetOrderStatusEnum(const std::string stat
     else if (status == "WAITING_FOR_FILL") return BinanceNewOrderStatus::WAITING_FOR_FILL;
     else if (status == "PARTIAL_FILLED") return BinanceNewOrderStatus::PARTIAL_FILLED;
     else if (status == "FULL_FILLED") return BinanceNewOrderStatus::FULL_FILLED;
-	else if (status == "LIQUIDATED") return BinanceNewOrderStatus::LIQUIDATED;
-	else if (status == "MARGIN_CALL") return BinanceNewOrderStatus::MARGIN_CALL;
+	else if (status == "LIQUIDATED_POSITION") return BinanceNewOrderStatus::LIQUIDATED_POSITION;
+	else if (status == "MARGIN_CALL_POSITION") return BinanceNewOrderStatus::MARGIN_CALL_POSITION;
+	else if (status == "OPENING_POSITION") return BinanceNewOrderStatus::OPENING_POSITION;
+	else if (status == "CLOSED_POSITION") return BinanceNewOrderStatus::CLOSED_POSITION;
 	else if (status == "REJECTED") return BinanceNewOrderStatus::REJECTED;
 	else if (status == "EXPIRED") return BinanceNewOrderStatus::EXPIRED;
 	else if (status == "CANCELED") return BinanceNewOrderStatus::CANCELED;

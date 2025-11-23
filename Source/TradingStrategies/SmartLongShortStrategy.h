@@ -34,6 +34,10 @@ namespace QuantitativeModel {
 	class MarketDataAnalyzer;
 }
 
+namespace RiskManagement {
+	class FutureRiskEngine;
+}
+
 // The SmartLongShortStrategy class is an automated trading strategy designed to manage long and short positions
 // in future market. It inherits from TradingStrategyBase and implements the TradingHintsListener
 // interface to react to trading hints. This class is responsible for initializing parameters, managing trading
@@ -59,6 +63,15 @@ namespace TradingStrategies {
 
 		bool OnIndividualBookTickerChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
 
+		// when an order is opening and exchange sends back an ack message
+		virtual void OnOrderOpeningPositionAck(const OrderManagement::BinanceNewOrder* openingOrder) override;
+		// when an order is closed and exchange sends back an ack message
+		virtual void OnOrderClosedPositionAck(const OrderManagement::BinanceNewOrder* closedOrder) override;
+		// when an order is liquidated and exchange sends back an ack message
+		virtual void OnOrderLiquidatedPositionAck(const OrderManagement::BinanceNewOrder* liquidatedOrder) override;
+		// when an order is margin called and exchange sends back an ack message
+		virtual void OnOrderMarginCalledPositionAck(const OrderManagement::BinanceNewOrder* marginCalledOrder) override;
+
 		void ReportTradeResults(const std::string& symbol) override;
 
 		void InitializeParameters(const std::string& strategyCfgPath) override;
@@ -74,11 +87,13 @@ namespace TradingStrategies {
 		void SetupOrderScheduler();
 		void CreateBinanceExchangeProfile();
 		void CreatePortfolioManagement();
+		void CreateRiskManagementEngine();
 		void PrepareTargetMonitorSymbols();
 		void SubscribeTargetSymbols();
 		void UnsubscribeTargetSymbols();
 		// List of symbols that we will trade in future market
 		std::vector<std::string> m_targetFutureTradeSymbols;
 		std::unique_ptr<QuantitativeModel::MarketDataAnalyzer> m_marketDataAnalyzer;
+		std::unique_ptr<RiskManagement::FutureRiskEngine> m_futureRiskEngine;
 	};
 };

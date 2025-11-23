@@ -20,5 +20,5 @@
 #endif
 #endif  // LIBRARYUTILS_EXPORTS
 #else
-#define DLL_CLASS
+#define DLL_CLASS_LIBRARYUTILS_EXPORTS __attribute__((visibility("default")))
 #endif  // _MSC_VER

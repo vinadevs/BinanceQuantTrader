@@ -7,8 +7,9 @@
    to BinanceQuantTrader\Source\Lib64\
 5. Right click on BinanceQuantTrader then build or ctrl + B to build the whole solution
 
-Note: If you could not build due to missing header errors from libraries like boost, grpc,...
-then you can close Visual Studio and then run this command again
+Note: If you can not build due to missing header errors from libraries like boost, grpc,...
+It is possibility that your vcpkg manager is not configured now in your Visual Studio project solution
+then you may want to close Visual Studio and then run this command then reopen Visual Studio again
 where_you_install_vcpkg> ./vcpkg integrate install
 
 ## CMake (Windows/Linux)
@@ -47,4 +48,28 @@ cmake --build build
 **Clean Build**
 ```bash
 cmake --build .\build\ --target clean
+```
+
+**Dev Container (Vscode only)**
+
+SSH Agent Forwarding must be enabled
+
+On Windows Powershell:
+```powershell
+ssh-add $env:SSH_AUTH_SOCK
+```
+
+On Linux/Mac Terminal:
+```bash
+ssh-add $SSH_AUTH_SOCK
+```
+
+On VSCode Command Palette: Ctrl + Shift + P
+- Dev Containers: Rebuild and reopen container...
+
+Inside Dev Container Terminal to build project:
+```bash
+vcpkg integrate install
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+cmake --build build -j8
 ```

@@ -22,6 +22,7 @@
 #include "../ComplianceNRegulatory/BinanceTradingRules.h"
 #include "../LibraryUtils/SourceBuildFlags.h"
 #include "../LibraryUtils/StringUtils.h"
+#include "../TradingStrategies/TradingStrategyBase.h"
 #if USE_BACK_TEST_TRADING
 #include "../ExchangeConnectivity/ExchangeSimulatorConnectivity.h"
 #include "../ExchangeSimulator/DownstreamOrderAck.h"
@@ -69,6 +70,12 @@ BinanceTrader::BinanceTrader(
 	m_exchangeReporter = std::make_unique<BinanceReporter>(
 		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_positionManager.get());
 #endif
+}
+
+void BinanceTrader::UseThisStrategyToTrade(TradingStrategies::TradingStrategyBase* strategy)
+{
+	assert(strategy);
+	m_tradingStrategy = strategy;
 }
 
 ////////////// UPSTREAM PROCESSING /////////////////////////////
@@ -303,14 +310,17 @@ void BinanceTrader::HandleDownstreamAckMessage(const MiddlewareMQ::BqtJsonMessag
 		if (ackOrder->GetOrderStatus() == BinanceNewOrderStatus::FULL_FILLED)
 		{
 			m_logger->Info("Received liquidated order ack for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+			m_tradingStrategy->OnOrderFilledAck(ackOrder);
 		}
 		else if (ackOrder->GetOrderStatus() == BinanceNewOrderStatus::PARTIAL_FILLED)
 		{
 			m_logger->Info("Received margin call order ack for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+			m_tradingStrategy->OnOrderPartiallyFilledAck(ackOrder);
 		}
 		else if (ackOrder->GetOrderStatus() == BinanceNewOrderStatus::REJECTED)
 		{
 			m_logger->Info("Received rejected order ack for clientOrderId=" + clientOrderId + ", symbol=" + symbol);
+			m_tradingStrategy->OnOrderRejectedAck(ackOrder);
 		}
 
 		// Updates the portfolio manager’s account information.

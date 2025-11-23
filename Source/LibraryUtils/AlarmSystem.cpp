@@ -9,6 +9,8 @@
 #include "pch.h"
 #include "AlarmSystem.h"
 
+#include <stdexcept>
+
 using namespace LibraryUtils;
 
 AlarmSystem::AlarmSystem(const long repeatInterval, AlarmMode mode)

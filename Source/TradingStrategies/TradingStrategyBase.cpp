@@ -93,6 +93,9 @@ void TradingStrategyBase::InitQuantStrategist()
 		{
 			throw std::runtime_error("TradingStrategyBase: Trader must be spot or future.");
 		}
+		// register this strategy with trader to trade
+		m_logger->Info("Quant trader will use strategy=" + m_strategyName);
+		m_trader->UseThisStrategyToTrade(this);
 	}
 	else
 	{

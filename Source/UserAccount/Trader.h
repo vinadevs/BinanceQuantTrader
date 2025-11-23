@@ -25,6 +25,10 @@ namespace tinyxml2 {
 	class XMLElement;
 };
 
+namespace TradingStrategies {
+	class TradingStrategyBase;
+};
+
 namespace UserAccount {
 
 	// -In the context of financial markets, a trader is an individual 
@@ -60,6 +64,11 @@ namespace UserAccount {
 		// Update account information, such as balances and positions.
 		virtual void CreatePortfolioManagement(
 			const std::vector<std::string>& targetTradeSymbols) = 0;
+
+		// Set up the trading strategy to be used for trading.
+		// This method has to be called at strategy initialization time.
+		virtual void UseThisStrategyToTrade(TradingStrategies::TradingStrategyBase* strategy) = 0;
+
 #if USE_BACK_TEST_TRADING  
 		// Handle downstream acknowledgment messages from the simulator.
 		virtual void HandleDownstreamAckMessage(
@@ -67,5 +76,6 @@ namespace UserAccount {
 #endif
 	protected:
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
+		TradingStrategies::TradingStrategyBase* m_tradingStrategy{ nullptr };
 	};
 };
