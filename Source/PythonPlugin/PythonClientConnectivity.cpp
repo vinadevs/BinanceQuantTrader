@@ -31,3 +31,19 @@ void PythonClientConnectivity::InitMessageTransporter(const XMLElement* messageD
 {
     m_messageDelivery = std::make_unique<MiddlewareMQ::MessageDelivery>(messageDeliveryCfg);
 }
+
+MiddlewareMQ::MiddlewareMQResult
+PythonClientConnectivity::SendBqtJsonMessage(const MiddlewareMQ::BqtJsonMessage& message)
+{
+    const auto newOrderResult = m_messageDelivery->DeliveryMessage(message);
+    if (!newOrderResult.m_result)
+    {
+        LOG_ERROR_STREAM(m_logger, "could not place a message="
+            << message << ", reason=" << newOrderResult.m_errMsg);
+    }
+    else
+    {
+        LOG_INFO_STREAM(m_logger, "successfully placed a messager=" << message);
+    }
+    return newOrderResult;
+}

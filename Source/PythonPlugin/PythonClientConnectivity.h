@@ -11,6 +11,7 @@
 #include "dlldefine.h"
 
 #include "../MiddlewareMQ/MessageDelivery.h"
+#include "../MiddlewareMQ/BqtJsonMessage.h"
 #include "../LibraryUtils/MacroUtils.h"
 
 #include <string>
@@ -37,6 +38,8 @@ namespace PythonPlugin {
 
 		void InitMessageTransporter(const tinyxml2::XMLElement* messageDeliveryCfg);
 
+		MiddlewareMQ::MiddlewareMQResult SendBqtJsonMessage(const MiddlewareMQ::BqtJsonMessage& message);
+
 	private:
 		PythonClientConnectivity();
 		~PythonClientConnectivity();
@@ -46,4 +49,4 @@ namespace PythonPlugin {
 	};
 };
 // Lets shorten the code line!
-#define ExchangeSimulatorGateWay PythonPlugin::PythonClientConnectivity::GetInstance()
+#define PythonClientGateWay PythonPlugin::PythonClientConnectivity::GetInstance()

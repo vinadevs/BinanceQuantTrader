@@ -42,15 +42,9 @@ namespace MarketDataCapture {
 	enum class DataCaptureMode : unsigned
 	{
 		Undefined = 0,
-		LocalFile,
-		ConsoleLog
-	};
-
-	enum class ServerType : unsigned
-	{
-		Undefined = 0,
-		StandaloneDataCaptureServer, // run as a standalone server to store data
-		ClientPythonDataCaptureServer, // run as a server to send data to python client
+		LocalFile, // store to local file
+		ConsoleLog, // log to console
+		PythonServer, // send to python client via MQ
 	};
 
     class MarketDataFileWriter;

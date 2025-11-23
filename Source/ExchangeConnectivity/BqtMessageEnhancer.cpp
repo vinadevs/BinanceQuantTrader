@@ -19,6 +19,6 @@ MiddlewareMQ::BqtJsonMessage BqtMessageEnhancer::AddTag(
 	const std::string& value)
 {
 	MiddlewareMQ::BqtJsonMessage newMessage = message;
-	newMessage.AddPair(fieldLabels, value);
+	newMessage.AddTag(fieldLabels, value);
 	return newMessage;
 }

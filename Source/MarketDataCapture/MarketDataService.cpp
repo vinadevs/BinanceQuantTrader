@@ -10,6 +10,7 @@
 #include "../SettingNConfig/tinyxml2.h"
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/StringUtils.h"
+#include "../PythonPlugin/PythonClientConnectivity.h"
 
 #include "MarketDataListener.h"
 #include "MarketDataService.h"
@@ -38,13 +39,16 @@ MarketDataService::MarketDataService(const std::string& configFile)
 	assert(realTimeMarketDataCfg);
 	m_marketData = std::make_unique<RealTimeMarketData>(realTimeMarketDataCfg);
 	m_marketData->RegisterDataListener(m_marketDataListener.get());
+	m_logger->Info("Initiating Test Message Transporter.");
+	const auto* messageTransporterCfg = m_rootConfigXml->FirstChildElement("MessageTransporter");
+	PythonClientGateWay->InitMessageTransporter(messageTransporterCfg);
 }
 
 void MarketDataService::SubscribeTargetSymbols()
 {
-	const auto* targetSymbolXml = m_rootConfigXml->FirstChildElement("MarketDataCapture");
+	const auto* targetSymbolXml = m_rootConfigXml->FirstChildElement("SubscribingSymbol");
 	assert(targetSymbolXml);
-	const XMLElement* symbolsXml = targetSymbolXml->FirstChildElement("SubscribingSymbols");
+	const XMLElement* symbolsXml = targetSymbolXml->FirstChildElement("Symbols");
 	assert(symbolsXml);
 	auto targetTradeSymbols = StringUtils::SplitAndTrimString(symbolsXml->Attribute("List"), ',');
 	if (targetTradeSymbols.empty())

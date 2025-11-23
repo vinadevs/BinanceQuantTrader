@@ -5,7 +5,7 @@
 </RealTimeMarketData>
 
 <MarketDataCapture>
-  <DataCaptureMode Mode="LocalFile"/>
+  <DataCaptureMode Mode="PythonServer"/>
   <LocalFilePath Path="LocalFile"/>
 </MarketDataCapture>
 
@@ -13,7 +13,10 @@
   <MatchingForSymbols List="BTCUSDT,ETHUSDT,BNBUSDT"/>
 </ExchangeSimulatorMarketData>
 
-<MarketDataCapture>
-  <SubscribingSymbols List="BTCUSDT,ETHUSDT,BNBUSDT"/>
-</MarketDataCapture>
-  
+<SubscribingSymbol>
+  <Symbols List="BTCUSDT,ETHUSDT,BNBUSDT"/>
+</SubscribingSymbol>
+
+<MessageTransporter>
+  <CommunicationChannel TopicName="AlgosToPythonClient" PublisherAddress="tcp://localhost:5555"/>
+</MessageTransporter>

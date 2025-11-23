@@ -10,8 +10,11 @@
 #include "../MarketData/SynchronousMarketData.h"
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/TimeUtils.h"
+#include "../LibraryUtils/StringUtils.h"
 #include "../SettingNConfig/tinyxml2.h"
+#include "../PythonPlugin/PythonClientConnectivity.h"
 
+#include "MarketDataJSONTags.h"
 #include "MarketDataListener.h"
 #include "MarketDataFileWriter.h"
 
@@ -26,8 +29,7 @@ MarketDataListener::MarketDataListener(const tinyxml2::XMLElement* dataCaptureCf
 {
     const auto* dataCaptureModeXml = dataCaptureCfg->FirstChildElement("DataCaptureMode");
     assert(dataCaptureModeXml);
-    const auto mode = dataCaptureModeXml->Attribute("Mode");
-    if (mode == "LocalFile") {
+    if (StringUtils::IsConfigAttributeMatched(dataCaptureModeXml->Attribute("Mode"), "LocalFile")) {
 		m_dataCaptureMode = DataCaptureMode::LocalFile;
         const auto* localFilePathXml = dataCaptureCfg->FirstChildElement("LocalFilePath");
         assert(localFilePathXml);
@@ -37,11 +39,14 @@ MarketDataListener::MarketDataListener(const tinyxml2::XMLElement* dataCaptureCf
         }
         m_fileWriter = std::make_unique<MarketDataFileWriter>(m_localFilePath, MarketDataFileWriter::DataSourceType::TextFile);
     }
-    else if (mode == "ConsoleLog") {
+    else if (StringUtils::IsConfigAttributeMatched(dataCaptureModeXml->Attribute("Mode"), "ConsoleLog")) {
 		m_dataCaptureMode = DataCaptureMode::ConsoleLog;
     }
+    else if (StringUtils::IsConfigAttributeMatched(dataCaptureModeXml->Attribute("Mode"), "PythonServer")) {
+        m_dataCaptureMode = DataCaptureMode::PythonServer;
+    }
     else {
-		throw std::runtime_error("Unsupported data capture mode: " + std::string(mode));
+		throw std::runtime_error("Unsupported data capture mode: " + std::string(dataCaptureModeXml->Attribute("Mode")));
     }
 }
 
@@ -58,6 +63,16 @@ bool MarketDataListener::OnIndividualBookTickerChange(
         }
         else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_individualBookTickerData).ToString());
+        }
+        else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+            MiddlewareMQ::BqtJsonMessage message;
+			message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
+            message.AddTag(FieldLabels::Header::MessageType, "IndividualBookTicker");
+            const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
+            if (!result.m_result) {
+                LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
+                    << symbol << ", reason=" << result.m_errMsg);
+            }
         }
         return true;
     }
@@ -80,6 +95,16 @@ bool MarketDataListener::OnTradeChange(
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_tradeData).ToString());
 		}
+		else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+			MiddlewareMQ::BqtJsonMessage message;
+            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
+			message.AddTag(FieldLabels::Header::MessageType, "Trade");
+			const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
+			if (!result.m_result) {
+				LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
+					<< symbol << ", reason=" << result.m_errMsg);
+			}
+		}
         return true;
     }
     else
@@ -99,6 +124,16 @@ bool MarketDataListener::OnIndividualMarketTickerChange(MarketDataSubject* marke
         }
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_individualMarketTickerData).ToString());
+		}
+		else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+			MiddlewareMQ::BqtJsonMessage message;
+            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
+			message.AddTag(FieldLabels::Header::MessageType, "IndividualMarketTicker");
+			const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
+			if (!result.m_result) {
+				LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
+					<< symbol << ", reason=" << result.m_errMsg);
+			}
 		}
 		return true;
 	}
@@ -120,6 +155,16 @@ bool MarketDataListener::OnMiniTickerChange(MarketDataSubject* marketData, const
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_individualMiniTickerData).ToString());
 		}
+        else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+            MiddlewareMQ::BqtJsonMessage message;
+            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
+			message.AddTag(FieldLabels::Header::MessageType, "MiniTicker");
+            const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
+            if (!result.m_result) {
+                LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
+                    << symbol << ", reason=" << result.m_errMsg);
+            }
+        }
         return true;
     }
     else
@@ -140,6 +185,16 @@ bool MarketDataListener::OnAggregateTradeChange(MarketDataSubject* marketData, c
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_aggregateTradeData).ToString());
 		}
+        else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+            MiddlewareMQ::BqtJsonMessage message;
+            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
+			message.AddTag(FieldLabels::Header::MessageType, "AggregateTrade");
+            const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
+            if (!result.m_result) {
+                LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
+                    << symbol << ", reason=" << result.m_errMsg);
+            }
+        }
         return true;
     }
     else
@@ -160,6 +215,16 @@ bool MarketDataListener::OnKlineCandleStickChange(MarketDataSubject* marketData,
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_klineCandleStickData).ToString());
 		}
+        else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+            MiddlewareMQ::BqtJsonMessage message;
+            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
+			message.AddTag(FieldLabels::Header::MessageType, "KlineCandleStick");
+            const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
+            if (!result.m_result) {
+                LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
+                    << symbol << ", reason=" << result.m_errMsg);
+            }
+        }
 		return true;
 	}
 	else
@@ -180,6 +245,16 @@ bool MarketDataListener::OnAllMarketTickersChange(MarketDataSubject* marketData,
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_allMarketTickerData).ToString());
 		}
+        else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+            MiddlewareMQ::BqtJsonMessage message;
+            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
+			message.AddTag(FieldLabels::Header::MessageType, "AllMarketTickers");
+            const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
+            if (!result.m_result) {
+                LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
+                    << symbol << ", reason=" << result.m_errMsg);
+            }
+        }
 		return true;
     }
     else
@@ -200,6 +275,16 @@ bool MarketDataListener::OnAllMiniTickersChange(MarketDataSubject* marketData, c
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_allMiniTickerData).ToString());
 		}
+        else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+            MiddlewareMQ::BqtJsonMessage message;
+            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
+			message.AddTag(FieldLabels::Header::MessageType, "AllMiniTickers");
+            const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
+            if (!result.m_result) {
+                LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
+                    << symbol << ", reason=" << result.m_errMsg);
+            }
+        }
 		return true;
     }
     else
@@ -220,6 +305,16 @@ bool MarketDataListener::OnAllDiffDepthChange(MarketDataSubject* marketData, con
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_allDiffDepthData).ToString());
 		}
+        else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+            MiddlewareMQ::BqtJsonMessage message;
+            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
+			message.AddTag(FieldLabels::Header::MessageType, "AllDiffDepth");
+            const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
+            if (!result.m_result) {
+                LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
+                    << symbol << ", reason=" << result.m_errMsg);
+            }
+        }
 		return true;
     }
     else
@@ -240,6 +335,16 @@ bool MarketDataListener::OnAllPartDepthChange(MarketDataSubject* marketData, con
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_allPartDepthData).ToString());
 		}
+        else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+            MiddlewareMQ::BqtJsonMessage message;
+            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
+			message.AddTag(FieldLabels::Header::MessageType, "AllPartDepth");
+            const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
+            if (!result.m_result) {
+                LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
+                    << symbol << ", reason=" << result.m_errMsg);
+            }
+        }
 		return true;
     }
     else
