@@ -126,6 +126,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
+      <AdditionalDependencies>SettingNConfigD.lib;MiddlewareMQD.lib;LibraryUtilsD.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -148,11 +149,14 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
+      <AdditionalDependencies>SettingNConfig.lib;MiddlewareMQ.lib;LibraryUtils.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="dlldefine.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PythonClientConnectivity.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -162,6 +166,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="PythonClientConnectivity.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
