@@ -29,7 +29,7 @@ init:
 	@echo $(DETECT_MSG)
 	@echo "Using vcpkg triplet: $(VCPKG_TRIPLET)"
 	vcpkg integrate install
-	cmake -S . -B $(BUILD_DIR)-DCMAKE_TOOLCHAIN_FILE="$(VCPKG_ROOT)/scripts/buildsystems/vcpkg.cmake"
+	cmake -S . -B $(BUILD_DIR) -DCMAKE_TOOLCHAIN_FILE="$(VCPKG_ROOT)/scripts/buildsystems/vcpkg.cmake"
 
 # ------------------------------------------------------------
 # Build (default: Release)
