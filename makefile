@@ -29,7 +29,9 @@ init:
 	@echo $(DETECT_MSG)
 	@echo "Using vcpkg triplet: $(VCPKG_TRIPLET)"
 	vcpkg integrate install
-	cmake -S . -B $(BUILD_DIR) -DCMAKE_TOOLCHAIN_FILE="$(VCPKG_ROOT)/scripts/buildsystems/vcpkg.cmake"
+	cmake -S . -B $(BUILD_DIR) \
+		-G "Ninja Multi-Config" \
+		-DCMAKE_TOOLCHAIN_FILE="$(VCPKG_ROOT)/scripts/buildsystems/vcpkg.cmake"
 
 # ------------------------------------------------------------
 # Build (default: Release)
@@ -51,7 +53,9 @@ release:
 configure:
 	@echo "Reconfiguring CMake..."
 	rm -rf $(BUILD_DIR)
-	cmake -S . -B $(BUILD_DIR) -DCMAKE_TOOLCHAIN_FILE="$(VCPKG_ROOT)/scripts/buildsystems/vcpkg.cmake"
+	cmake -S . -B $(BUILD_DIR) \
+		-G "Ninja Multi-Config" \
+		-DCMAKE_TOOLCHAIN_FILE="$(VCPKG_ROOT)/scripts/buildsystems/vcpkg.cmake"
 
 # ------------------------------------------------------------
 # Full rebuild
