@@ -83,10 +83,6 @@ void TradingStrategyBase::InitQuantStrategist()
 {
 	if (m_trader)
 	{
-		/*if (IsTraderWorkWithCurrentStrategy(m_trader->GetTraderType()) {
-			m_logger->Info("Trader is not set up with this strategy, pls change trader type in config file.");
-			return;
-		}*/
 		if (m_spotTrader = dynamic_cast<UserAccount::BinanceTrader*>(m_trader))
 		{
 			m_logger->Info("SpotTrader is set up successfully.");

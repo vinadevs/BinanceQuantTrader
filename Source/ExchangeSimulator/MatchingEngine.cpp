@@ -96,6 +96,10 @@ MatchingEngine::MatchingEngine(
 	{
 		throw std::runtime_error("MatchingEngine: unsupported Participant config");
 	}
+	const auto* orderProcessingXml = matchingEngineXmlCfg->FirstChildElement("OrderProcessing");
+	assert(orderProcessingXml);
+	m_shouldDelayOrderProcessing = orderProcessingXml->BoolAttribute("Delay");
+	m_intervalMilliseconds = orderProcessingXml->IntAttribute("IntervalMilliseconds");
 }
 
 MatchingEngine::~MatchingEngine() {}
@@ -178,8 +182,10 @@ void MatchingEngine::ProcessIncommingOrders()
 		{
 			while (!m_upstreamOrderQueueMgr->HasNoOrders())
 			{
-				// delay to test the order processing, TODO: set it from config
-				//std::this_thread::sleep_for(std::chrono::milliseconds(5000)); // simulate some delay
+				// delay to simulate deplay queue processing
+				if (m_shouldDelayOrderProcessing) {
+					std::this_thread::sleep_for(std::chrono::milliseconds(m_intervalMilliseconds));
+				}
 
 				// -Dequeue order from waiting list, so the order is not in the queue anymore
 				// -We have to push it back to the end of the queue if it can not be filled by the matching engine

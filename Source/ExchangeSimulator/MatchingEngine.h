@@ -130,6 +130,8 @@ namespace ExchangeSimulator {
         RTMarketFutureParticipant* m_rtMarketFutureParticipant{ nullptr };
         std::unique_ptr<MarketData::RealTimeMarketData> m_marketData;
         std::unique_ptr<tinyxml2::XMLDocument> m_binanceMarketDataConfig;
+		bool m_shouldDelayOrderProcessing{ false };
+		long m_intervalMilliseconds{ 0 };
         DownstreamAckBehaviour m_downstreamAckBehaviour{ DownstreamAckBehaviour::USING_HTTP_REQUEST };
     };
 };
