@@ -117,7 +117,7 @@ namespace ExchangeSimulator {
             const MiddlewareMQ::BqtJsonMessage& message);
 
         std::unique_ptr<LibraryUtils::Logger> m_logger;
-        std::thread m_thread;
+        std::thread m_threadProcessIncommingOrders;
         std::condition_variable m_orderQueueCond; // avoid polling thread
         std::atomic<bool> m_isRunning{ false }; // lock free thread
         std::atomic<bool> m_hasNewOrder{ false }; // lock free thread

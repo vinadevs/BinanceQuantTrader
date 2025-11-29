@@ -73,7 +73,8 @@ grpc::Status StrategyParentOrderHttpService::SubmitParentOrder(
         if (m_targetStrategy) {
 			if (m_targetStrategy->GetUpstreamReceiver() != strategyName) {
 				response->set_status(strategy::ORDER_FAILED);
-				response->set_error_message("Algo Engine: current strategy in Algo Engine is=" + m_targetStrategy->GetUpstreamReceiver() + ", pls use correct strategy name");
+				response->set_error_message("Algo Engine: current strategy in Algo Engine is="
+                    + m_targetStrategy->GetUpstreamReceiver() + ", pls use correct strategy name");
 				return grpc::Status::OK;
 			}
 

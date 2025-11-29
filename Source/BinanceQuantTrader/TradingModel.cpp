@@ -18,6 +18,7 @@
 #include "../RiskManagement/RiskManager.h"
 #include "../TradingStrategies/TradingStrategyBase.h"
 #include "../TradingStrategies/SingleStrategyHost.h"
+#include "../TradingStrategies/StrategyManager.h"
 #include "../TradingStrategies/ExternalController.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../SettingNConfig/BqtXmlUtils.h"
@@ -192,6 +193,9 @@ void TradingModel::PrepareTradingComponents(
 		m_riskManager.get(),
 		traderXmlCfg);
 
+	m_logger->Info("Initiating Strategy Manager.");
+	m_strategyManager = std::make_unique<StrategyManager>();
+
 	m_logger->Info("Initiating Trading Strategy.");
 	const auto* strategyCfg = configBQTXml->FirstChildElement("TradingStrategy");
 	m_strategy = StrategyFactory::CreateTargetStrategy(
@@ -199,6 +203,7 @@ void TradingModel::PrepareTradingComponents(
 		m_marketData.get(),
 		m_trader.get(),
 		m_tradingRules.get());
+	m_strategyManager->AddStrategy(m_strategy.get());
 
 #if USE_BACK_TEST_TRADING
 	m_logger->Info("Initiating Test Message Server.");

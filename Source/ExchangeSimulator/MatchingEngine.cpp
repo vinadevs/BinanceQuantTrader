@@ -125,7 +125,7 @@ void MatchingEngine::SubscribeTargetSymbols(const tinyxml2::XMLDocument* realTim
 void MatchingEngine::Start()
 {
 	m_isRunning.store(true);
-	m_thread = std::thread(&MatchingEngine::ProcessIncommingOrders, this);
+	m_threadProcessIncommingOrders = std::thread(&MatchingEngine::ProcessIncommingOrders, this);
 	if (m_participant 
 		&& (m_participant->GetParticipantType() == ParticipantType::REAL_TIME_SPOT_MARKET_DATA
 			|| m_participant->GetParticipantType() == ParticipantType::REAL_TIME_FUTURE_MARKET_DATA)
@@ -136,7 +136,7 @@ void MatchingEngine::Start()
 	}
 	else
 	{
-		m_thread.join();
+		m_threadProcessIncommingOrders.join();
 	}
 	// Should not reach here...
 }
@@ -152,7 +152,7 @@ void MatchingEngine::Stop()
 		m_marketData->UnRegisterDataListener(m_rtMarketSpotParticipant);
 	}
 	m_isRunning.store(false);
-	m_thread.join();
+	m_threadProcessIncommingOrders.join();
 }
 
 void MatchingEngine::ProcessIncommingOrders()
