@@ -15,7 +15,7 @@
 #include <memory>
 
 class TradingStrategyBase;
-class StrategyControler;
+class StrategyController;
 
 namespace LibraryUtils {
     class Logger;
@@ -36,7 +36,7 @@ namespace TradingStrategies {
         bool m_threadStarted {false};
         std::mutex m_threadSafeMutex;
         std::thread m_strategyThread;
-        std::unique_ptr<StrategyControler> m_strategyControler;
+        std::unique_ptr<StrategyController> m_strategyController;
         std::unique_ptr<LibraryUtils::Logger> m_logger;
     };
 };

@@ -14,9 +14,9 @@
 #include "../SettingNConfig/tinyxml2.h"
 #include "../PythonPlugin/PythonClientConnectivity.h"
 
-#include "MarketDataJSONTags.h"
 #include "MarketDataListener.h"
 #include "MarketDataFileWriter.h"
+#include "MarketDataToJsonConverter.h"
 
 #include <type_traits>
 #include <filesystem>
@@ -65,14 +65,9 @@ bool MarketDataListener::OnIndividualBookTickerChange(
 			m_fileWriter->Write((syncedData->m_individualBookTickerData).ToString());
         }
         else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
-            MiddlewareMQ::BqtJsonMessage message;
-			message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
-            message.AddTag(FieldLabels::Header::MessageType, "IndividualBookTicker");
-            const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
-            if (!result.m_result) {
-                LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
-                    << symbol << ", reason=" << result.m_errMsg);
-            }
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::IndividualBookTickerToJsonMessage(
+				syncedData->m_individualBookTickerData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
         }
         return true;
     }
@@ -96,14 +91,9 @@ bool MarketDataListener::OnTradeChange(
 			m_fileWriter->Write((syncedData->m_tradeData).ToString());
 		}
 		else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
-			MiddlewareMQ::BqtJsonMessage message;
-            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
-			message.AddTag(FieldLabels::Header::MessageType, "Trade");
-			const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
-			if (!result.m_result) {
-				LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
-					<< symbol << ", reason=" << result.m_errMsg);
-			}
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::TradeToJsonMessage(
+				syncedData->m_tradeData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
 		}
         return true;
     }
@@ -126,14 +116,9 @@ bool MarketDataListener::OnIndividualMarketTickerChange(MarketDataSubject* marke
 			m_fileWriter->Write((syncedData->m_individualMarketTickerData).ToString());
 		}
 		else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
-			MiddlewareMQ::BqtJsonMessage message;
-            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
-			message.AddTag(FieldLabels::Header::MessageType, "IndividualMarketTicker");
-			const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
-			if (!result.m_result) {
-				LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
-					<< symbol << ", reason=" << result.m_errMsg);
-			}
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::IndividualMarketTickerToJsonMessage(
+				syncedData->m_individualMarketTickerData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
 		}
 		return true;
 	}
@@ -156,14 +141,9 @@ bool MarketDataListener::OnMiniTickerChange(MarketDataSubject* marketData, const
 			m_fileWriter->Write((syncedData->m_individualMiniTickerData).ToString());
 		}
         else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
-            MiddlewareMQ::BqtJsonMessage message;
-            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
-			message.AddTag(FieldLabels::Header::MessageType, "MiniTicker");
-            const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
-            if (!result.m_result) {
-                LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
-                    << symbol << ", reason=" << result.m_errMsg);
-            }
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::IndividualMiniTickerToJsonMessage(
+				syncedData->m_individualMiniTickerData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
         }
         return true;
     }
@@ -186,14 +166,9 @@ bool MarketDataListener::OnAggregateTradeChange(MarketDataSubject* marketData, c
 			m_fileWriter->Write((syncedData->m_aggregateTradeData).ToString());
 		}
         else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
-            MiddlewareMQ::BqtJsonMessage message;
-            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
-			message.AddTag(FieldLabels::Header::MessageType, "AggregateTrade");
-            const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
-            if (!result.m_result) {
-                LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
-                    << symbol << ", reason=" << result.m_errMsg);
-            }
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::AggregateTradeToJsonMessage(
+				syncedData->m_aggregateTradeData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
         }
         return true;
     }
@@ -216,14 +191,9 @@ bool MarketDataListener::OnKlineCandleStickChange(MarketDataSubject* marketData,
 			m_fileWriter->Write((syncedData->m_klineCandleStickData).ToString());
 		}
         else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
-            MiddlewareMQ::BqtJsonMessage message;
-            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
-			message.AddTag(FieldLabels::Header::MessageType, "KlineCandleStick");
-            const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
-            if (!result.m_result) {
-                LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
-                    << symbol << ", reason=" << result.m_errMsg);
-            }
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::KlineCandleStickToJsonMessage(
+				syncedData->m_klineCandleStickData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
         }
 		return true;
 	}
@@ -246,14 +216,9 @@ bool MarketDataListener::OnAllMarketTickersChange(MarketDataSubject* marketData,
 			m_fileWriter->Write((syncedData->m_allMarketTickerData).ToString());
 		}
         else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
-            MiddlewareMQ::BqtJsonMessage message;
-            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
-			message.AddTag(FieldLabels::Header::MessageType, "AllMarketTickers");
-            const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
-            if (!result.m_result) {
-                LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
-                    << symbol << ", reason=" << result.m_errMsg);
-            }
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::AllMarketTickersToJsonMessage(
+				syncedData->m_allMarketTickerData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
         }
 		return true;
     }
@@ -276,14 +241,9 @@ bool MarketDataListener::OnAllMiniTickersChange(MarketDataSubject* marketData, c
 			m_fileWriter->Write((syncedData->m_allMiniTickerData).ToString());
 		}
         else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
-            MiddlewareMQ::BqtJsonMessage message;
-            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
-			message.AddTag(FieldLabels::Header::MessageType, "AllMiniTickers");
-            const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
-            if (!result.m_result) {
-                LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
-                    << symbol << ", reason=" << result.m_errMsg);
-            }
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::IndividualBookTickerToJsonMessage(
+				syncedData->m_individualBookTickerData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
         }
 		return true;
     }
@@ -306,14 +266,9 @@ bool MarketDataListener::OnAllDiffDepthChange(MarketDataSubject* marketData, con
 			m_fileWriter->Write((syncedData->m_allDiffDepthData).ToString());
 		}
         else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
-            MiddlewareMQ::BqtJsonMessage message;
-            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
-			message.AddTag(FieldLabels::Header::MessageType, "AllDiffDepth");
-            const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
-            if (!result.m_result) {
-                LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
-                    << symbol << ", reason=" << result.m_errMsg);
-            }
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::AllDiffDepthToJsonMessage(
+				syncedData->m_allDiffDepthData, syncedData->GetSymbol());   
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
         }
 		return true;
     }
@@ -336,14 +291,9 @@ bool MarketDataListener::OnAllPartDepthChange(MarketDataSubject* marketData, con
 			m_fileWriter->Write((syncedData->m_allPartDepthData).ToString());
 		}
         else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
-            MiddlewareMQ::BqtJsonMessage message;
-            message.AddTag(FieldLabels::Header::Symbol, syncedData->GetSymbol());
-			message.AddTag(FieldLabels::Header::MessageType, "AllPartDepth");
-            const auto result = PythonClientGateWay->SendBqtJsonMessage(message);
-            if (!result.m_result) {
-                LOG_ERROR_STREAM(m_logger, "Failed to send market data update to Python client for symbol="
-                    << symbol << ", reason=" << result.m_errMsg);
-            }
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::AllPartDepthDataToJsonMessage(
+				syncedData->m_allPartDepthData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
         }
 		return true;
     }

@@ -75,9 +75,9 @@ namespace TradingStrategies {
 
 		void InitializeParameters(const std::string& strategyCfgPath) override;
 
-		void StartLive() override;
+		void StartTrade() override;
 
-		void StopLive() override;
+		void StopTrade() override;
 	private:
 		void CreateTradingSignalServices();
 		void SubscribeTargetSymbols();

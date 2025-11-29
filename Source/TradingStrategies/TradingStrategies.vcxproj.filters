@@ -82,6 +82,9 @@
     <Filter Include="Auto Strategies\Market Maker">
       <UniqueIdentifier>{761b3200-790c-4e3e-b60e-4aaa07282e07}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External Controller\Admin Request">
+      <UniqueIdentifier>{d21996cc-80a7-467a-a195-90df2b0ad4e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -103,9 +106,6 @@
       <Filter>Base Strategy</Filter>
     </ClInclude>
     <ClInclude Include="SingleStrategyHost.h">
-      <Filter>Strategy Host</Filter>
-    </ClInclude>
-    <ClInclude Include="StrategyControler.h">
       <Filter>Strategy Host</Filter>
     </ClInclude>
     <ClInclude Include="StrategyManager.h">
@@ -171,6 +171,18 @@
     <ClInclude Include="InstrumentQuoter.h">
       <Filter>Auto Strategies\Market Maker</Filter>
     </ClInclude>
+    <ClInclude Include="ExternalRequestReceiver.h">
+      <Filter>External Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternalAdminRequest.h">
+      <Filter>External Controller\Admin Request</Filter>
+    </ClInclude>
+    <ClInclude Include="StrategyControler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StrategyController.h">
+      <Filter>Strategy Host</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -189,9 +201,6 @@
       <Filter>Base Strategy</Filter>
     </ClCompile>
     <ClCompile Include="SingleStrategyHost.cpp">
-      <Filter>Strategy Host</Filter>
-    </ClCompile>
-    <ClCompile Include="StrategyControler.cpp">
       <Filter>Strategy Host</Filter>
     </ClCompile>
     <ClCompile Include="StrategyManager.cpp">
@@ -253,6 +262,12 @@
     </ClCompile>
     <ClCompile Include="InstrumentQuoter.cpp">
       <Filter>Auto Strategies\Market Maker</Filter>
+    </ClCompile>
+    <ClCompile Include="StrategyControler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StrategyController.cpp">
+      <Filter>Strategy Host</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

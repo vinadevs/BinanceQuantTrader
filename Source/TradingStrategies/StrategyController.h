@@ -16,10 +16,10 @@ namespace TradingStrategies {
 // for trading strategy/algo
 
 namespace TradingStrategies {
-    class StrategyControler {
+    class StrategyController {
     public:
-        StrategyControler(TradingStrategyBase* strategy);
-        ~StrategyControler();
+        StrategyController(TradingStrategyBase* strategy);
+        ~StrategyController();
 
         void StartStrategy();
 

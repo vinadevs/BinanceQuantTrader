@@ -33,7 +33,7 @@ std::unique_ptr<Trader> TraderFactory::CreateSmartTrader(
 	assert(traderXmlCfg);
 	const auto* usingTraderXml = traderXmlCfg->FirstChildElement("UsingTrader");
 	assert(usingTraderXml);
-	if (StringUtils::IsConfigAttributeMatched(usingTraderXml->Attribute("Type"), "BinanceTrader"))
+	if (StringUtils::IsConfigAttributeMatched(usingTraderXml->Attribute("Type"), "SpotTrader"))
 	{
 		const auto* reportXml = traderXmlCfg->FirstChildElement("Report");
 		assert(reportXml);

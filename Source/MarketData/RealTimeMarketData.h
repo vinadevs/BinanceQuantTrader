@@ -80,7 +80,7 @@ public:
 
 	void StartStreamingData();
 	// This function must be called after subscribing symbols
-	// usually we called it in strategy StartLive() function to create an ansync wait
+	// usually we called it in strategy StartTrade() function to create an ansync wait
 	void StartIOContext();
 	bool SubscribeSymbol(const std::string& symbol);
 	bool UnsubscribeSymbol(const std::string& symbol);

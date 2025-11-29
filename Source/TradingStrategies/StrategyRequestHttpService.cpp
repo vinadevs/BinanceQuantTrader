@@ -12,6 +12,11 @@ StrategyRequestHttpService::~StrategyRequestHttpService()
 {
 }
 
+void StrategyRequestHttpService::AddTargetAdminRequestHandler(ExternalRequestReceiver* receiver)
+{
+	m_targetAdminRequestHandler = receiver;
+}
+
 grpc::Status StrategyRequestHttpService::ControlStrategy(grpc::ServerContext* context, const strategy::StrategyRequest* request, strategy::StrategyResponse* response)
 {
     return grpc::Status();

@@ -110,7 +110,7 @@ void SmartLongShortStrategy::SetupOrderScheduler()
 	m_strategyOrderScheduler = StrategyOrderScheduler::ALARM_BASED;
 }
 
-void SmartLongShortStrategy::StartLive()
+void SmartLongShortStrategy::StartTrade()
 {
 	// Change Strategy state to live
 	m_strategyRunStatus = StrategyRunStatus::LIVE;
@@ -137,7 +137,7 @@ void SmartLongShortStrategy::StartLive()
 	AlarmSystem::Start();
 }
 
-void SmartLongShortStrategy::StopLive()
+void SmartLongShortStrategy::StopTrade()
 {
 	m_strategyRunStatus = StrategyRunStatus::STOP;
 	// Unsubscribe target symbols to stop receiving real time market data
@@ -148,6 +148,8 @@ void SmartLongShortStrategy::StopLive()
 void SmartLongShortStrategy::OnAlarmTriggered(const int passToDerived)
 {
 	BEGIN_STRATEGY_TRADING_ACTIVITY
+
+	m_logger->Info("Alarm triggered, start sending future orders based on market data signals...");
 
 	for (const auto& symbol : m_targetFutureTradeSymbols)
 	{
@@ -181,7 +183,6 @@ void SmartLongShortStrategy::OnAlarmTriggered(const int passToDerived)
 		}
 		else
 		{
-			m_logger->Warning("No valid price ticker trend for symbol=" + symbol + ", skipping order creation.");
 			continue; // skip this symbol if no valid trend
 		}		
 

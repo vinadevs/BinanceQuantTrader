@@ -43,7 +43,7 @@ PythonClientConnectivity::SendBqtJsonMessage(const MiddlewareMQ::BqtJsonMessage&
     }
     else
     {
-        LOG_INFO_STREAM(m_logger, "successfully placed a messager=" << message);
+        //LOG_DEBUG_STREAM(m_logger, "successfully placed a messager=" << message);
     }
     return newOrderResult;
 }

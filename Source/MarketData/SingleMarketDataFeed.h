@@ -39,7 +39,12 @@ public:
     bool GetBooleanData() const;
     binapi::double_type GetDoubleMultiprecisionData() const;
     double GetDoubleData() const;
-    std::string GetStringData() const;
+    std::string GetStringDataFromStdDouble() const;
+	std::string GetStringDataFromBoostDouble() const;
+	std::string GetStringDataFromStdUnsignedIntData() const;
+	std::string GetStringDataFromStdBoolData() const;
+	std::string GetStringData();
+	std::string GetStringDataVariant();
     MarketDataFeedStatus GetDataStatus() const;
 
 	inline friend std::ostream& operator<<(std::ostream& os, const SingleMarketDataFeed& o)

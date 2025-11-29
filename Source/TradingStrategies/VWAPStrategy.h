@@ -36,6 +36,18 @@ namespace QuantitativeModel {
 	class MarketDataAnalyzer;
 }
 
+namespace OrderManagement {
+	// Internal orders
+	class BinanceNewOrder;
+	class BinanceCancelOrder;
+	class BinanceReplaceOrder;
+	class BinanceQueryOrder;
+	// External parent orders
+	class NewExternalParentOrder;
+	class CancelExternalParentOrder;
+	class AmendExternalParentOrder;
+}
+
 /**
  * @class VWAPStrategy
  * @brief Implements a Volume Weighted Average Price (VWAP) trading strategy.
@@ -78,9 +90,19 @@ namespace TradingStrategies {
 
 		void InitializeParameters(const std::string& strategyCfgPath) override;
 
-		void StartLive() override;
+		void StartTrade() override;
 
-		void StopLive() override;
+		void StopTrade() override;
+
+		// external callback for parent order event handling
+		void OnNewExternalParentOrder(
+			const OrderManagement::NewExternalParentOrder* newOrder) override;
+
+		void OnCancelExternalParentOrder(
+			const OrderManagement::CancelExternalParentOrder* cancelOrder) override;
+
+		void OnAmendExternalParentOrder(
+			const OrderManagement::AmendExternalParentOrder* amendOrder) override;
 
 		// - This function is called when the alarm is triggered, which is used to send orders
 		void OnAlarmTriggered(const int passToDerived = 0) override;

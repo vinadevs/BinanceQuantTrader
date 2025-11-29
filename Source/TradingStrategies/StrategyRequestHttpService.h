@@ -22,14 +22,21 @@ namespace LibraryUtils {
 
 namespace TradingStrategies {
 
+	class ExternalRequestReceiver;
+
     class StrategyRequestHttpService final
         : public strategy::StrategyRequestService::Service {
 	public:
         StrategyRequestHttpService();
         ~StrategyRequestHttpService() override;
+
+		void AddTargetAdminRequestHandler(ExternalRequestReceiver* receiver);
+
     private:
         grpc::Status ControlStrategy(grpc::ServerContext* context,
             const strategy::StrategyRequest* request,
             strategy::StrategyResponse* response) override;
+
+		ExternalRequestReceiver* m_targetAdminRequestHandler{ nullptr };
     };
 };

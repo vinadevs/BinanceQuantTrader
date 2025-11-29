@@ -4,6 +4,7 @@
 // Protobuf C++ Version: 5.29.2
 
 #include "pch.h"
+
 #include "strategy_control_request.pb.h"
 
 #include <algorithm>

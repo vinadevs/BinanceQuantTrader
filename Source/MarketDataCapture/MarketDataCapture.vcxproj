@@ -149,6 +149,7 @@
     <ClInclude Include="MarketDataJSONTags.h" />
     <ClInclude Include="MarketDataListener.h" />
     <ClInclude Include="MarketDataService.h" />
+    <ClInclude Include="MarketDataToJsonConverter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

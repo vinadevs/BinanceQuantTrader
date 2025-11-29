@@ -7,12 +7,12 @@
 #*******************************************************************************/
 
 #include "pch.h"
-#include "OrderEventHandler.h"
+#include "OrderAckEventHandler.h"
 
 #include "../SettingNConfig/tinyxml2.h"
 
 using namespace OrderRouting;
 
-OrderEventHandler::OrderEventHandler(const tinyxml2::XMLDocument* orderEventHandlerCfgXml)
+OrderAckEventHandler::OrderAckEventHandler(const tinyxml2::XMLDocument* orderEventHandlerCfgXml)
 {
 }

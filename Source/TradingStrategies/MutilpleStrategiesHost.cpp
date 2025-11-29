@@ -7,7 +7,7 @@
 #*******************************************************************************/ 
 
 #include "pch.h"
-#include "StrategyControler.h"
+#include "StrategyController.h"
 #include "MutilpleStrategiesHost.h"
 
 #include "../LibraryUtils/Logger.h"
@@ -30,10 +30,10 @@ void MutilpleStrategiesHost::StartStrategyThread(TradingStrategyBase* strategy)
         return;
     }
     m_threadStarted = true;
-    m_strategyControler = std::make_unique<StrategyControler>(strategy);
+    m_strategyController = std::make_unique<StrategyController>(strategy);
     m_strategyThread = std::thread([this]
     {
-        m_strategyControler->StartStrategy();
+        m_strategyController->StartStrategy();
     });
     m_logger->Info("Strategy thread started.");
 }
@@ -45,6 +45,6 @@ void MutilpleStrategiesHost::StopStrategyThread()
         m_logger->Info("Strategy thread has not started yet.");
         return;
     }
-    m_strategyControler->StopStrategy();
+    m_strategyController->StopStrategy();
     m_logger->Info("Strategy thread stopped.");
 }

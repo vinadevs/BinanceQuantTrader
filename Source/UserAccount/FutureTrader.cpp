@@ -54,14 +54,12 @@ FutureTrader::FutureTrader(
 	PortfolioInvestmentBinance* portfolio,
 	BinanceTradingRules* tradingRules,
 	RiskManager* riskManager)
-	: m_portfolio(portfolio),
-	m_tradingRules(tradingRules),
-	m_riskManager(riskManager)
+	: Trader(portfolio, tradingRules, riskManager)
 {
+	m_traderType = TraderType::FUTURE_TRADER;
 	m_logger = std::make_unique<LibraryUtils::Logger>("FutureTrader");
 	m_logger->Info("using FutureTrader.");
 	m_binanceAccountInfo = std::make_unique<KernelTrading::UserFutureAccount>();
-	m_positionManager = std::make_unique<PositionManager>();
 #if USE_BACK_TEST_TRADING
 	m_futureExchangeReporter = std::make_unique<FutureBackTestReporter>(
 		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_positionManager.get());

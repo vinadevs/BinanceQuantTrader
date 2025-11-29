@@ -8,27 +8,27 @@
 
 #include "pch.h"
 #include "TradingStrategyBase.h"
-#include "StrategyControler.h"
+#include "StrategyController.h"
 
 using namespace TradingStrategies;
 
-StrategyControler::StrategyControler(TradingStrategyBase* strategy)
+StrategyController::StrategyController(TradingStrategyBase* strategy)
 	: m_strategy(strategy) {}
 
-StrategyControler::~StrategyControler() {}
+StrategyController::~StrategyController() {}
 
-void StrategyControler::StartStrategy()
+void StrategyController::StartStrategy()
 {
 	if (m_strategy)
 	{
-		m_strategy->StartLive();
+		m_strategy->StartTrade();
 	}
 }
 
-void StrategyControler::StopStrategy()
+void StrategyController::StopStrategy()
 {
 	if (m_strategy)
 	{
-		m_strategy->StopLive();
+		m_strategy->StopTrade();
 	}
 }

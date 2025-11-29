@@ -3,6 +3,7 @@
 // source: strategy_control_request.proto
 
 #include "pch.h"
+
 #include "strategy_control_request.pb.h"
 #include "strategy_control_request.grpc.pb.h"
 

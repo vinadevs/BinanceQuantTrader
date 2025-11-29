@@ -22,7 +22,7 @@
 </BinanceFutureApiGateWay>
 
 <TradingStrategy>
-  <UsingStrategy Name="SmartLongShortStrategy" File="[ROOT_BQT_PATH]\Configurations\Strategy\Auto\SmartLongShortStrategy.xml"/>
+  <UsingStrategy Name="VWAPStrategy" File="[ROOT_BQT_PATH]\Configurations\Strategy\SemiAuto\VWAPStrategy.xml"/>
 </TradingStrategy>
 
 <PortfolioInvestment>
@@ -34,7 +34,7 @@
 </TradingModel>
 
 <TraderInfo>
-  <UsingTrader Type="FutureTrader"/>
+  <UsingTrader Type="SpotTrader"/>
   <Report TradeReport="true" OrderReport="true" BalanceReport="true" ExchangerPriceForOrdersReport="true" CalculateLossForOrdersReport="true" ReportToFilePath="[ROOT_BQT_PATH]\AppData\trade_results.txt" ReportChannel="ExternalFile"/>
 </TraderInfo>
 
@@ -68,5 +68,5 @@
 </BinanceTradeProfile>
 
 <ExternalController>
-  <Connection ServerIpAddress="0.0.0.0" ServerPort="12346"/>
+  <Connection ServerIpAddress="0.0.0.0" ServerPort="50061"/>
 </ExternalController>

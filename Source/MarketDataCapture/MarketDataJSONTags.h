@@ -20,6 +20,7 @@ namespace MarketDataCapture {
             const std::string MessageType = "MessageType";
             const std::string Symbol = "Symbol";
             const std::string SendingTime = "SendingTime";
+            const std::string EventTimeMs = "EventTimeMs";
         }
 
         // =============================
@@ -30,7 +31,6 @@ namespace MarketDataCapture {
             const std::string BestBidQuantity = "BestBidQuantity";
             const std::string BestAskPrice = "BestAskPrice";
             const std::string BestAskQuantity = "BestAskQuantity";
-            const std::string EventTimeMs = "EventTimeMs";
         }
 
         // =============================
@@ -44,7 +44,6 @@ namespace MarketDataCapture {
             const std::string SellerOrderId = "SellerOrderId";
             const std::string TradeTime = "TradeTime";
             const std::string IsBuyerMarketMaker = "IsBuyerMarketMaker";
-            const std::string EventTimeMs = "EventTimeMs";
         }
 
         // =============================
@@ -71,7 +70,6 @@ namespace MarketDataCapture {
             const std::string FirstTradeId = "FirstTradeId";
             const std::string LastTradeId = "LastTradeId";
             const std::string TotalNumberOfTrades = "TotalNumberOfTrades";
-            const std::string EventTimeMs = "EventTimeMs";
         }
 
         // =============================
@@ -91,7 +89,6 @@ namespace MarketDataCapture {
             const std::string LowPrice = "LowPrice";
             const std::string TotalTradedBaseAssetVolume = "TotalTradedBaseAssetVolume";
             const std::string TotalTradedQuoteAssetVolume = "TotalTradedQuoteAssetVolume";
-            const std::string EventTimeMs = "EventTimeMs";
         }
 
         // =============================
@@ -112,7 +109,6 @@ namespace MarketDataCapture {
             const std::string LastTradeId = "LastTradeId";
             const std::string TradeTime = "TradeTime";
             const std::string IsBuyerMarketMaker = "IsBuyerMarketMaker";
-            const std::string EventTimeMs = "EventTimeMs";
         }
 
         // =============================
@@ -134,7 +130,6 @@ namespace MarketDataCapture {
             const std::string QuoteAssetVolume = "QuoteAssetVolume";
             const std::string TakerBuyBaseAssetVolume = "TakerBuyBaseAssetVolume";
             const std::string TakerBuyQuoteAssetVolume = "TakerBuyQuoteAssetVolume";
-            const std::string EventTimeMs = "EventTimeMs";
         }
     } // namespace FieldLabels
 } // namespace MarketDataCapture

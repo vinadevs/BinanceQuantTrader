@@ -76,9 +76,9 @@ namespace TradingStrategies {
 
 		void InitializeParameters(const std::string& strategyCfgPath) override;
 
-		void StartLive() override;
+		void StartTrade() override;
 
-		void StopLive() override;
+		void StopTrade() override;
 
 		// - This function is called when the alarm is triggered, which is used to send orders
 		void OnAlarmTriggered(const int passToDerived = 0) override;

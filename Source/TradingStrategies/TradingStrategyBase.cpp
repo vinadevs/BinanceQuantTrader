@@ -47,6 +47,7 @@ TradingStrategyBase::TradingStrategyBase(
 	m_logger->Info("Trading strategy name=" + m_strategyName);
 	m_logger->Info("Trading strategy description=" + m_strategyDescription);
 	InitQuantStrategist();
+	InitParentOrderManager();
 }
 
 TradingStrategyBase::TradingStrategyBase(
@@ -63,6 +64,7 @@ TradingStrategyBase::TradingStrategyBase(
 	m_logger->Info("Trading strategy name=" + m_strategyName);
 	m_logger->Info("Trading strategy description=" + m_strategyDescription);
 	InitQuantStrategist();
+	InitParentOrderManager();
 }
 
 TradingStrategyBase::~TradingStrategyBase() {}
@@ -81,6 +83,10 @@ void TradingStrategyBase::InitQuantStrategist()
 {
 	if (m_trader)
 	{
+		/*if (IsTraderWorkWithCurrentStrategy(m_trader->GetTraderType()) {
+			m_logger->Info("Trader is not set up with this strategy, pls change trader type in config file.");
+			return;
+		}*/
 		if (m_spotTrader = dynamic_cast<UserAccount::BinanceTrader*>(m_trader))
 		{
 			m_logger->Info("SpotTrader is set up successfully.");
@@ -101,6 +107,14 @@ void TradingStrategyBase::InitQuantStrategist()
 	{
 		throw std::runtime_error("TradingStrategyBase: Trader is null.");
 	}
+}
+
+void TradingStrategyBase::InitParentOrderManager()
+{
+	m_parentOrderManager = std::make_unique<OrderManagement::ParentOrderManager>();
+	ExternalRequestReceiver::SetParentOrderManager(m_parentOrderManager.get());
+	ExternalRequestReceiver::SetUpstreamReceiver(m_strategyName);
+	m_logger->Info("Parent order manager is initialized.");
 }
 
 StrategyRunStatus TradingStrategyBase::GetStrategyRunStatus() const

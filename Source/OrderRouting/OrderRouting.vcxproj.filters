@@ -21,10 +21,10 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OrderEventHandler.h">
+    <ClInclude Include="dlldefine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dlldefine.h">
+    <ClInclude Include="OrderAckEventHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -35,7 +35,7 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OrderEventHandler.cpp">
+    <ClCompile Include="OrderAckEventHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

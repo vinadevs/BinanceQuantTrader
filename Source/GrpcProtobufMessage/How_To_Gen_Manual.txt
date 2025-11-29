@@ -1,1 +1,5 @@
+1. Update paths for protoc.exe and grpc_cpp_plugin.exe
+2. Update .\file.proto to target protobuf file
+3. Copy generated cpp files to module want to use protobuf
+
 \BinanceQuantTrader\vcpkg_installed\x64-windows\x64-windows\tools\protobuf\protoc.exe -I . --cpp_out=. --grpc_out=. --plugin=protoc-gen-grpc=\BinanceQuantTrader\vcpkg_installed\x64-windows\x64-windows\tools\grpc\grpc_cpp_plugin.exe .\file.proto

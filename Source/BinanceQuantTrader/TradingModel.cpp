@@ -212,12 +212,15 @@ void TradingModel::PrepareTradingComponents(
 	m_allowMutipleThreadTrade = tradingModelCfg->FirstChildElement("MultipleThreads")->BoolAttribute("Enable");
 	m_allowExternalControlling = tradingModelCfg->FirstChildElement("ExternalControlling")->BoolAttribute("Enable");
 	
+	// External Controller for controlling strategy parameters from external applications
+	// like admin request, parent order,...
 	if (m_allowExternalControlling)
 	{
 		m_logger->Info("Initiating External Controller.");
 		const auto* externalControllerCfg = configBQTXml->FirstChildElement("ExternalController");
 		assert(externalControllerCfg);
 		m_externalController = std::make_unique<ExternalController>(externalControllerCfg);
+		m_externalController->RegisterTargetStrategy(m_strategy.get());
 	}
 }
 
@@ -258,14 +261,14 @@ void TradingModel::RunModel()
 		}
 		else //If Strategies and Trading Services (Market Data,...) want to run in single thread
 		{
-			m_strategy->StartLive();
+			m_strategy->StartTrade();
 		}
 	}
 #else
 	// If Strategies and Trading Services (Market Data,...) want to run in single thread
 	if (m_strategy)
 	{
-		m_strategy->StartLive();
+		m_strategy->StartTrade();
 	}
 #endif
 	// Start market data streaming
