@@ -47,6 +47,7 @@ TradingStrategyBase::TradingStrategyBase(
 	m_logger->Info("Trading strategy name=" + m_strategyName);
 	m_logger->Info("Trading strategy description=" + m_strategyDescription);
 	InitQuantStrategist();
+	InitParentOrderManager();
 }
 
 TradingStrategyBase::TradingStrategyBase(
@@ -63,6 +64,7 @@ TradingStrategyBase::TradingStrategyBase(
 	m_logger->Info("Trading strategy name=" + m_strategyName);
 	m_logger->Info("Trading strategy description=" + m_strategyDescription);
 	InitQuantStrategist();
+	InitParentOrderManager();
 }
 
 TradingStrategyBase::~TradingStrategyBase() {}
@@ -101,6 +103,14 @@ void TradingStrategyBase::InitQuantStrategist()
 	{
 		throw std::runtime_error("TradingStrategyBase: Trader is null.");
 	}
+}
+
+void TradingStrategyBase::InitParentOrderManager()
+{
+	m_parentOrderManager = std::make_unique<OrderManagement::ParentOrderManager>();
+	ExternalRequestReceiver::SetParentOrderManager(m_parentOrderManager.get());
+	ExternalRequestReceiver::SetUpstreamReceiver(m_strategyName);
+	m_logger->Info("Parent order manager is initialized.");
 }
 
 StrategyRunStatus TradingStrategyBase::GetStrategyRunStatus() const

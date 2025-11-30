@@ -66,6 +66,18 @@ void MessageBroker::CreateBrokers(const std::string& configFile)
                 topicNameAlgos,
                 publisherAddressAlgos,
                 subscriberAddressAlgos)));
+    
+	const auto* marketDataCaptureToPythonClient = channelXml->FirstChildElement("MarketDataCaptureToPythonClient");
+	assert(marketDataCaptureToPythonClient);
+	const auto* topicNameMDC = marketDataCaptureToPythonClient->Attribute("TopicName");
+	const auto* publisherAddressMDC = marketDataCaptureToPythonClient->Attribute("PublisherAddress");
+	const auto* subscriberAddressMDC = marketDataCaptureToPythonClient->Attribute("SubscriberAddress");
+	m_threadPools.emplace_back(
+		std::thread(&MessageBroker::CreateCommunicationChannel,
+			this, std::make_shared<ChannelConfig>(
+				topicNameMDC,
+				publisherAddressMDC,
+				subscriberAddressMDC)));
 }
 
 void MessageBroker::Run()

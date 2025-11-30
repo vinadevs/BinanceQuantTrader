@@ -18,6 +18,7 @@
 #include "../RiskManagement/RiskManager.h"
 #include "../TradingStrategies/TradingStrategyBase.h"
 #include "../TradingStrategies/SingleStrategyHost.h"
+#include "../TradingStrategies/StrategyManager.h"
 #include "../TradingStrategies/ExternalController.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../SettingNConfig/BqtXmlUtils.h"
@@ -192,6 +193,9 @@ void TradingModel::PrepareTradingComponents(
 		m_riskManager.get(),
 		traderXmlCfg);
 
+	m_logger->Info("Initiating Strategy Manager.");
+	m_strategyManager = std::make_unique<StrategyManager>();
+
 	m_logger->Info("Initiating Trading Strategy.");
 	const auto* strategyCfg = configBQTXml->FirstChildElement("TradingStrategy");
 	m_strategy = StrategyFactory::CreateTargetStrategy(
@@ -199,6 +203,7 @@ void TradingModel::PrepareTradingComponents(
 		m_marketData.get(),
 		m_trader.get(),
 		m_tradingRules.get());
+	m_strategyManager->AddStrategy(m_strategy.get());
 
 #if USE_BACK_TEST_TRADING
 	m_logger->Info("Initiating Test Message Server.");
@@ -212,12 +217,15 @@ void TradingModel::PrepareTradingComponents(
 	m_allowMutipleThreadTrade = tradingModelCfg->FirstChildElement("MultipleThreads")->BoolAttribute("Enable");
 	m_allowExternalControlling = tradingModelCfg->FirstChildElement("ExternalControlling")->BoolAttribute("Enable");
 	
+	// External Controller for controlling strategy parameters from external applications
+	// like admin request, parent order,...
 	if (m_allowExternalControlling)
 	{
 		m_logger->Info("Initiating External Controller.");
 		const auto* externalControllerCfg = configBQTXml->FirstChildElement("ExternalController");
 		assert(externalControllerCfg);
 		m_externalController = std::make_unique<ExternalController>(externalControllerCfg);
+		m_externalController->RegisterTargetStrategy(m_strategy.get());
 	}
 }
 
@@ -258,14 +266,14 @@ void TradingModel::RunModel()
 		}
 		else //If Strategies and Trading Services (Market Data,...) want to run in single thread
 		{
-			m_strategy->StartLive();
+			m_strategy->StartTrade();
 		}
 	}
 #else
 	// If Strategies and Trading Services (Market Data,...) want to run in single thread
 	if (m_strategy)
 	{
-		m_strategy->StartLive();
+		m_strategy->StartTrade();
 	}
 #endif
 	// Start market data streaming

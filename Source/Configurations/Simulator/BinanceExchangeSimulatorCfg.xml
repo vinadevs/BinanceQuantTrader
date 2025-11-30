@@ -13,6 +13,7 @@
   <RealTimeMarketData>
 	  <UsingMarketData Name="BinanceMarketData" File="[ROOT_BQT_PATH]\Configurations\MarketData\BinanceMarketDataCfg.xml"/>
   </RealTimeMarketData>
+  <OrderProcessing Delay="true" IntervalMilliseconds="1000"/>
 </MatchingEngine>
 
 <StaticData>

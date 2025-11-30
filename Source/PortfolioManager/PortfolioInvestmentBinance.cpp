@@ -115,7 +115,7 @@ void PortfolioInvestmentBinance::UpdateBinanceAccountInfo()
 
 		// OR if you are using simulator then you need to check if the simulator is running
 		// to retrieve the simulation account information
-        throw std::runtime_error("PortfolioInvestmentBinance: failed to update Binance account information.");
+		m_logger->Warning("failed to update Binance account information.");
     }
 }
 
@@ -135,7 +135,7 @@ void PortfolioInvestmentBinance::UpdateBinanceFutureAccountInfo()
 
         // OR if you are using simulator then you need to check if the simulator is running
         // to retrieve the simulation account information
-        throw std::runtime_error("PortfolioInvestmentBinance: failed to update Binance future account information.");
+		m_logger->Warning("failed to update Binance future account information.");
     }
 }
 
@@ -159,7 +159,7 @@ void PortfolioInvestmentBinance::UpdateBinanceTradingPairs()
         }
         else
         {
-            m_logger->Info("Could not update binance asset=" 
+            m_logger->Warning("Could not update binance asset=" 
                 + binanceSymbol + ", there is no asset balance or martket data available.");
         }
     }

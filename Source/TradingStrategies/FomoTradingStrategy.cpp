@@ -182,7 +182,7 @@ void FomoTradingStrategy::ReportTradeResults(const std::string& symbol)
 	m_spotTrader->ReportTradeResults(symbol);
 }
 
-void FomoTradingStrategy::StartLive()
+void FomoTradingStrategy::StartTrade()
 {
 	// Change Strategy state to live
 	m_strategyRunStatus = StrategyRunStatus::LIVE;
@@ -205,7 +205,7 @@ void FomoTradingStrategy::StartLive()
 #endif
 }
 
-void FomoTradingStrategy::StopLive()
+void FomoTradingStrategy::StopTrade()
 {
 #if USE_MULTITHREADING
 	m_isThreadTradeOngoing.store(false); // break while loop

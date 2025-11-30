@@ -35,7 +35,7 @@ namespace MiddlewareMQ {
         BqtJsonMessage(const std::string& rawJsonString);
 
         // Constructs a JSON message from tag-value pairs
-        void AddPair(const std::string& tag, const std::string& value);
+        void AddTag(const std::string& tag, const std::string& value);
 
         // Retrieves the string value associated with the given key (tag)
         std::string GetStringValueByTag(const std::string& tag) const;

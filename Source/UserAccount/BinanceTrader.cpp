@@ -55,14 +55,12 @@ BinanceTrader::BinanceTrader(
 	PortfolioInvestmentBinance* portfolio,
 	BinanceTradingRules* tradingRules,
 	RiskManager* riskManager)
-    : m_portfolio(portfolio),
-	  m_tradingRules(tradingRules),
-	  m_riskManager(riskManager)
+	: Trader(portfolio, tradingRules, riskManager)
 {
+	m_traderType = TraderType::SPOT_TRADER;
     m_logger = std::make_unique<LibraryUtils::Logger>("BinanceTrader");
     m_logger->Info("using BinanceTrader.");
 	m_binanceAccountInfo = std::make_unique<binapi::rest::account_info_t>();
-	m_positionManager = std::make_unique<PositionManager>();
 #if USE_BACK_TEST_TRADING
 	m_exchangeReporter = std::make_unique<BackTestReporter>(
 		reportCfg, m_binanceAccountInfo.get(), m_tradingRules->GetExchangeProfileMgr(), m_positionManager.get());

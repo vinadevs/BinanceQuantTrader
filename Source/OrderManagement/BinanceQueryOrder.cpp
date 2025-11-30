@@ -91,27 +91,27 @@ std::string BinanceQueryOrder::ToStringAck() const
 BqtJsonMessage BinanceQueryOrder::ToBqtJsonMessageOrder() const
 {
 	BqtJsonMessage message;
-	message.AddPair(FieldLabels::MessageType, "BinanceQueryOrder");
-	message.AddPair(FieldLabels::UserAccountID, m_userAccountID);
-	message.AddPair(FieldLabels::Symbol, m_symbol);
-	message.AddPair(FieldLabels::OrderId, TypeToStringUtils::ToString(m_orderId));
-	message.AddPair(FieldLabels::OrigClientOrderId, m_origClientOrderId);
-	message.AddPair(FieldLabels::ClientOrderId, m_clientOrderId);
-	message.AddPair(FieldLabels::OrderStatus, GetOrderStatusStr());
-	message.AddPair(FieldLabels::UpdateTime, GetUpdateTimeStr());
+	message.AddTag(FieldLabels::MessageType, "BinanceQueryOrder");
+	message.AddTag(FieldLabels::UserAccountID, m_userAccountID);
+	message.AddTag(FieldLabels::Symbol, m_symbol);
+	message.AddTag(FieldLabels::OrderId, TypeToStringUtils::ToString(m_orderId));
+	message.AddTag(FieldLabels::OrigClientOrderId, m_origClientOrderId);
+	message.AddTag(FieldLabels::ClientOrderId, m_clientOrderId);
+	message.AddTag(FieldLabels::OrderStatus, GetOrderStatusStr());
+	message.AddTag(FieldLabels::UpdateTime, GetUpdateTimeStr());
 	return message;
 }
 
 BqtJsonMessage BinanceQueryOrder::ToBqtJsonMessageOrderAck() const
 {
 	BqtJsonMessage message;
-	message.AddPair(FieldLabels::MessageType, "BinanceQueryOrderAck");
-	message.AddPair(FieldLabels::UserAccountID, m_userAccountID);
-	message.AddPair(FieldLabels::Symbol, m_symbol);
-	message.AddPair(FieldLabels::OrderId, TypeToStringUtils::ToString(m_orderId));
-	message.AddPair(FieldLabels::OrigClientOrderId, m_origClientOrderId);
-	message.AddPair(FieldLabels::ClientOrderId, m_clientOrderId);
-	message.AddPair(FieldLabels::OrderStatus, GetOrderStatusStr());
-	message.AddPair(FieldLabels::UpdateTime, GetUpdateTimeStr());
+	message.AddTag(FieldLabels::MessageType, "BinanceQueryOrderAck");
+	message.AddTag(FieldLabels::UserAccountID, m_userAccountID);
+	message.AddTag(FieldLabels::Symbol, m_symbol);
+	message.AddTag(FieldLabels::OrderId, TypeToStringUtils::ToString(m_orderId));
+	message.AddTag(FieldLabels::OrigClientOrderId, m_origClientOrderId);
+	message.AddTag(FieldLabels::ClientOrderId, m_clientOrderId);
+	message.AddTag(FieldLabels::OrderStatus, GetOrderStatusStr());
+	message.AddTag(FieldLabels::UpdateTime, GetUpdateTimeStr());
 	return message;
 }

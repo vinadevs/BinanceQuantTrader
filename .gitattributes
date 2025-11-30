@@ -3,6 +3,7 @@
 ###############################
 
 * text=auto eol=lf
+*.sh text eol=lf
 *.{cmd,[cC][mM][dD]} text eol=crlf
 *.{bat,[bB][aA][tT]} text eol=crlf
 *.{vcxproj,vcxproj.filters} text eol=crlf

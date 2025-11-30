@@ -31,7 +31,7 @@ BqtJsonMessage::BqtJsonMessage(const std::string& rawJsonString)
     }
 }
 
-void BqtJsonMessage::AddPair(const std::string& tag, const std::string& value)
+void BqtJsonMessage::AddTag(const std::string& tag, const std::string& value)
 {
     // Add the key-value pair to the JSON object
     m_message[tag] = value;

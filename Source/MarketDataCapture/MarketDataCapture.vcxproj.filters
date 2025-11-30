@@ -36,5 +36,11 @@
     <ClInclude Include="MarketDataFileWriter.h">
       <Filter>Market Data Listener</Filter>
     </ClInclude>
+    <ClInclude Include="MarketDataJSONTags.h">
+      <Filter>Market Data Listener</Filter>
+    </ClInclude>
+    <ClInclude Include="MarketDataToJsonConverter.h">
+      <Filter>Market Data Listener</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

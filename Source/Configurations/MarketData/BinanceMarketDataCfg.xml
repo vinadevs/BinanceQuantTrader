@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <RealTimeMarketData>
   <Connection StreamBinanceCom="stream.binance.com" StreamConnectionPort="9443"/>
-  <SubscriptionData IndividualBookTickerData="true" TradeData="true" IndividualMarketTickerData="true" AllMarketTickersData="false" IndividualMiniTickerData="true" AllMiniTickersData="false" AggregateTradeData="true" KlineCandleStickData="true" PartDepthData="true" DiffDepthData="true"/>
+  <SubscriptionData IndividualBookTickerData="true" TradeData="true" IndividualMarketTickerData="true" AllMarketTickersData="true" IndividualMiniTickerData="true" AllMiniTickersData="true" AggregateTradeData="true" KlineCandleStickData="true" PartDepthData="true" DiffDepthData="true"/>
 </RealTimeMarketData>
 
 <MarketDataCapture>
-  <DataCaptureMode Mode="LocalFile"/>
+  <DataCaptureMode Mode="PythonServer"/>
   <LocalFilePath Path="LocalFile"/>
 </MarketDataCapture>
 
@@ -13,7 +13,10 @@
   <MatchingForSymbols List="BTCUSDT,ETHUSDT,BNBUSDT"/>
 </ExchangeSimulatorMarketData>
 
-<MarketDataCapture>
-  <SubscribingSymbols List="BTCUSDT,ETHUSDT,BNBUSDT"/>
-</MarketDataCapture>
-  
+<SubscribingSymbol>
+  <Symbols List="BTCUSDT,ETHUSDT,BNBUSDT"/>
+</SubscribingSymbol>
+
+<MessageTransporter>
+  <CommunicationChannel TopicName="AlgosToPythonClient" PublisherAddress="tcp://localhost:5555"/>
+</MessageTransporter>

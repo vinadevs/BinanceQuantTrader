@@ -46,7 +46,7 @@ namespace ExchangeConnectivity {
 		bool UpdateUserTradeProfileData(
 			const std::string& userId,
 			const double leverageRate,
-			std::string& resultMessage);
+			std::string& errorMessage);
 	private:
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
 		UserTradeProfileGrpcConnection m_grpcConnection;

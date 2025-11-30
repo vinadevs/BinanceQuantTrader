@@ -47,6 +47,7 @@ namespace TradingStrategies {
 #if USE_BACK_TEST_TRADING
 	class StrategyMessageServer;
 #endif
+	class StrategyManager;
 };
 
 namespace BinanceQuantTrader {
@@ -92,5 +93,6 @@ namespace BinanceQuantTrader {
 #endif
 		bool m_allowMutipleThreadTrade{ false };
 		bool m_allowExternalControlling{ false };
+		std::unique_ptr<TradingStrategies::StrategyManager> m_strategyManager{ nullptr };
 	};
 };

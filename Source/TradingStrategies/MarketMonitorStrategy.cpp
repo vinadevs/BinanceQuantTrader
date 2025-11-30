@@ -231,7 +231,7 @@ void MarketMonitorStrategy::InitializeParameters(const std::string& strategyCfgP
 	SetupStrategyLifeTime(m_strategyCfgXml.get());
 }
 
-void MarketMonitorStrategy::StartLive()
+void MarketMonitorStrategy::StartTrade()
 {
 	// Change Strategy state to live
 	m_strategyRunStatus = StrategyRunStatus::LIVE;
@@ -246,7 +246,7 @@ void MarketMonitorStrategy::StartLive()
 	SubscribeTargetSymbols();
 }
 
-void MarketMonitorStrategy::StopLive()
+void MarketMonitorStrategy::StopTrade()
 {
 	m_strategyRunStatus = StrategyRunStatus::STOP;
 	// Unsubscribe target symbols to stop receiving real time market data

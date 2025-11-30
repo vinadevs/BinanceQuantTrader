@@ -124,7 +124,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>OrderRoutingD.lib;QuantitativeModelD.lib;KernelTradingD.lib;MiddlewareMQD.lib;ComplianceNRegulatoryD.lib;RiskManagementD.lib;StaticDataD.lib;LibraryUtilsD.lib;SettingNConfigD.lib;IndicatorNSignalsD.lib;UserAccountD.lib;MarketDataD.lib;OrderManagementD.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>RestAPID.lib;OrderRoutingD.lib;QuantitativeModelD.lib;KernelTradingD.lib;MiddlewareMQD.lib;ComplianceNRegulatoryD.lib;RiskManagementD.lib;StaticDataD.lib;LibraryUtilsD.lib;SettingNConfigD.lib;IndicatorNSignalsD.lib;UserAccountD.lib;MarketDataD.lib;OrderManagementD.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -147,14 +147,16 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>OrderRouting.lib;QuantitativeModel.lib;KernelTrading.lib;MiddlewareMQ.lib;ComplianceNRegulatory.lib;RiskManagement.lib;StaticData.lib;LibraryUtils.lib;SettingNConfig.lib;IndicatorNSignals.lib;UserAccount.lib;MarketData.lib;OrderManagement.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>RestAPI.lib;OrderRouting.lib;QuantitativeModel.lib;KernelTrading.lib;MiddlewareMQ.lib;ComplianceNRegulatory.lib;RiskManagement.lib;StaticData.lib;LibraryUtils.lib;SettingNConfig.lib;IndicatorNSignals.lib;UserAccount.lib;MarketData.lib;OrderManagement.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ChildOrder.h" />
+    <ClInclude Include="ExternalAdminRequest.h" />
     <ClInclude Include="ExternalController.h" />
+    <ClInclude Include="ExternalRequestReceiver.h" />
     <ClInclude Include="InstrumentQuoter.h" />
     <ClInclude Include="ISStrategy.h" />
     <ClInclude Include="MarketMonitorStrategy.h" />
@@ -165,6 +167,7 @@
     <ClInclude Include="protobuf\strategy_parent_order.pb.h" />
     <ClInclude Include="SmartLongShortStrategy.h" />
     <ClInclude Include="StopLossStrategy.h" />
+    <ClInclude Include="StrategyController.h" />
     <ClInclude Include="StrategyMessageServer.h" />
     <ClInclude Include="CompilanceChecker.h" />
     <ClInclude Include="dlldefine.h" />
@@ -172,7 +175,6 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="MutilpleStrategiesHost.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="StrategyControler.h" />
     <ClInclude Include="SingleStrategyHost.h" />
     <ClInclude Include="StrategyManager.h" />
     <ClInclude Include="StrategyParentOrderHttpService.h" />
@@ -197,6 +199,7 @@
     <ClCompile Include="protobuf\strategy_parent_order.pb.cc" />
     <ClCompile Include="SmartLongShortStrategy.cpp" />
     <ClCompile Include="StopLossStrategy.cpp" />
+    <ClCompile Include="StrategyController.cpp" />
     <ClCompile Include="StrategyMessageServer.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FomoTradingStrategy.cpp" />
@@ -207,7 +210,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="StrategyControler.cpp" />
     <ClCompile Include="SingleStrategyHost.cpp" />
     <ClCompile Include="StrategyManager.cpp" />
     <ClCompile Include="StrategyParentOrderHttpService.cpp" />

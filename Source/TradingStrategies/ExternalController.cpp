@@ -35,7 +35,6 @@ void ExternalController::Start()
 {
 	m_grpcThread = std::thread(&ExternalController::WaitForIncomingMessage, this);
 	m_grpcThread.detach();
-	m_logger->Info("ExternalController listening on " + m_serverConnection);
 }
 
 void ExternalController::Stop()
@@ -50,6 +49,16 @@ void ExternalController::Stop()
 	}
 }
 
+void ExternalController::RegisterTargetStrategy(ExternalRequestReceiver* recevier)
+{
+	m_strategyParentOrderHttpService->AddTargetStrategy(recevier);
+}
+
+void ExternalController::RegisterTargetAdminRequestHandler(ExternalRequestReceiver* recevier)
+{
+	m_strategyRequestHttpService->AddTargetAdminRequestHandler(recevier);
+}
+
 void ExternalController::WaitForIncomingMessage()
 {
 	grpc::ServerBuilder builder;
@@ -57,6 +66,6 @@ void ExternalController::WaitForIncomingMessage()
 	builder.RegisterService(m_strategyRequestHttpService.get());
 	builder.RegisterService(m_strategyParentOrderHttpService.get());
 	m_grpcServer = builder.BuildAndStart();
-	m_logger->Info("ExternalController listening on " + m_serverConnection);
+	m_logger->Info("Strategy is listening external parent order on " + m_serverConnection);
 	m_grpcServer->Wait(); // wait call
 }

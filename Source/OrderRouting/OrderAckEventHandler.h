@@ -11,10 +11,13 @@
 #include "dlldefine.h"
 
 namespace OrderManagement {
+	// Internal order types
 	class BinanceNewOrder;
 	class BinanceCancelOrder;
 	class BinanceReplaceOrder;
 	class BinanceQueryOrder;
+	// External parent order
+	class ExternalParentOrder;
 }
 
 namespace tinyxml2 {
@@ -25,10 +28,10 @@ namespace OrderRouting {
 	
 	// -An order event handler is responsible for managing and responding to various events
 	// related to order processing and execution from internal or external sources.
-	class DLL_CLASS_ORDER_ROUTING_EXPORTS OrderEventHandler
+	class DLL_CLASS_ORDER_ROUTING_EXPORTS OrderAckEventHandler
 	{
 	public:
-		OrderEventHandler(const tinyxml2::XMLDocument* orderEventHandlerCfgXml = nullptr);
+		OrderAckEventHandler(const tinyxml2::XMLDocument* orderEventHandlerCfgXml = nullptr);
 
 		////-----------------------------------------------------------------------------------------------------------
 		/* -List of post trade callbacks for derived class to implement to handle exchange/simulator acks

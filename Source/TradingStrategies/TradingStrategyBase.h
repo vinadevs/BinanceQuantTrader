@@ -10,15 +10,14 @@
 
 #include "dlldefine.h"
 
-#include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/SourceBuildFlags.h"
-#include "../OrderRouting/OrderEventHandler.h"
+#include "../OrderRouting/OrderAckEventHandler.h"
 #if USE_BACK_TEST_TRADING
 #include "../MiddlewareMQ/MessageHandler.h"
 #include "../MiddlewareMQ/BqtJsonMessage.h"
 #endif
 #include "CompilanceChecker.h"
-
+#include "ExternalRequestReceiver.h"
 #include <memory>
 #include <string>
 #if USE_MULTITHREADING
@@ -41,6 +40,10 @@ namespace ComplianceNRegulatory {
 
 namespace tinyxml2 {
 	class XMLDocument;
+}
+
+namespace OrderManagement {
+	class ParentOrderManager;
 }
 
 // -All Algos, Strategies should follow this base class
@@ -96,9 +99,10 @@ namespace TradingStrategies {
 	class DLL_CLASS_TRADING_TRATEGIES_EXPORTS
 		TradingStrategyBase :
 #if USE_BACK_TEST_TRADING
-		public MiddlewareMQ::MessageHandler,
+		public MiddlewareMQ::MessageHandler, // to receive messages from exchange simulator
 #endif
-		public OrderRouting::OrderEventHandler
+		public OrderRouting::OrderAckEventHandler, // to receive order acks from trader
+		public TradingStrategies::ExternalRequestReceiver // to receive external parent orders
 	{
 	public:
 		// This construcor is used for strategies that needs to send order to exchange
@@ -125,12 +129,12 @@ namespace TradingStrategies {
 		// -We should create all necessary components for the strategy inside this function
 		// -We will not add any specific logic, just make it as a pure method
 		// and let derived class implement the detail.
-		virtual void StartLive() = 0;
+		virtual void StartTrade() = 0;
 		// Shutdown strategy or stop trading
 		// We need to set these variables to unlive, m_strategyRunStatus,
 		// m_isThreadTradeOngoing (in case we use mutiple threads)
 		// We should also unsubscribe all symbols to stop receiving market data
-		virtual void StopLive() = 0;
+		virtual void StopTrade() = 0;
 
 		// Report PNL, trades, ...
 		virtual void ReportTradeResults(const std::string& symbol) = 0;
@@ -160,14 +164,19 @@ namespace TradingStrategies {
 		// -Increases the counter for REST API requests made to the exchange for compliance tracking.
 		// This helps monitor and limit the number of requests to avoid exceeding API rate limits.
 		void IncreaseComplianceRestAPIRequestCounter(const size_t noOfRequests);
+		// -Get parent order manager to manage all parent orders for this strategy
+		OrderManagement::ParentOrderManager* GetParentOrderManager() const {
+			return m_parentOrderManager.get();
+		}
 
-		
 protected:
 		// -Logs the hard limits for trading, such as maximum orders or API requests allowed.
 		// This is useful for debugging and ensuring the strategy operates within defined constraints.
 		void LogTradingHardLimits();
 		// -Sets up the quantitative strategist for the trading strategy.
 		void InitQuantStrategist();
+		// -Init parent order manager to manage all parent orders for this strategy
+		void InitParentOrderManager();
 #if USE_BACK_TEST_TRADING
 		// -Handles messages received from the exchange simulator during backtesting.
 		// This function processes simulated market data or order responses for testing purposes.
@@ -201,6 +210,8 @@ protected:
 #endif
 		// -Config for strategy, we will use it to setup strategy parameters
 		std::unique_ptr<tinyxml2::XMLDocument> m_strategyCfgXml;
+		// -Parent order manager to manage all parent orders for this strategy
+		std::unique_ptr<OrderManagement::ParentOrderManager> m_parentOrderManager;
 	};
 };
 

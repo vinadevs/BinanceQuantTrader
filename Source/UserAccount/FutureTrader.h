@@ -44,7 +44,7 @@ namespace UserAccount {
 	// This class will manage binance future trade activities like buy/sell/report...
 	// It will also manage the portfolio, trading rules, and risk management.
 	class DLL_CLASS_USERACCOUNT_EXPORTS
-		FutureTrader : public Trader
+		FutureTrader final : public Trader
 	{
 	public:
 		FutureTrader(const tinyxml2::XMLElement* reportCfg,
@@ -68,14 +68,6 @@ namespace UserAccount {
 
 		void CreatePortfolioManagement(const std::vector<std::string>& targetTradeSymbols) override;
 
-		PortfolioManager::PortfolioInvestmentBinance* GetPortfolio() const { return m_portfolio; }
-
-		OrderManagement::PositionManager* GetPositionManager() const { return m_positionManager.get(); }
-
-		ComplianceNRegulatory::BinanceTradingRules* GetTradingRules() const { return m_tradingRules; }
-
-		RiskManagement::RiskManager* GetRiskManager() const { return m_riskManager; }
-
 		KernelTrading::UserFutureAccount* GetBinanceAccountInfo() const { return m_binanceAccountInfo.get(); }
 
 		////////////// DOWNSTREAM PROCESSING /////////////////////////////
@@ -87,11 +79,7 @@ namespace UserAccount {
 			const double quality,
 			const double refPrice);
 
-		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr }; // list of assets to trade
-		ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr }; // exchange compliance and regulatory
-		RiskManagement::RiskManager* m_riskManager{ nullptr };  // stop loss
 		std::unique_ptr<KernelTrading::UserFutureAccount> m_binanceAccountInfo; // future account info
-		std::unique_ptr<OrderManagement::PositionManager> m_positionManager;
-		std::unique_ptr<FutureTradeReporter> m_futureExchangeReporter;
+		std::unique_ptr<FutureTradeReporter> m_futureExchangeReporter; // trade result reporter
 	};
 };

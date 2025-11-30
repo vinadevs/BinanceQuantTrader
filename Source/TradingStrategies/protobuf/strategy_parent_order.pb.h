@@ -460,6 +460,14 @@ class StrategyParentOrderRequest final : public ::google::protobuf::Message
   // accessors -------------------------------------------------------
   enum : int {
     kSymbolFieldNumber = 1,
+    kStrategyFieldNumber = 4,
+    kStartTimeFieldNumber = 5,
+    kEndTimeFieldNumber = 6,
+    kSideFieldNumber = 7,
+    kChildOrderTypeFieldNumber = 8,
+    kParentOrderTypeFieldNumber = 9,
+    kParentOrderIdFieldNumber = 10,
+    kOriginalParentOrderIdFieldNumber = 11,
     kPriceFieldNumber = 2,
     kQuantityFieldNumber = 3,
   };
@@ -477,6 +485,134 @@ class StrategyParentOrderRequest final : public ::google::protobuf::Message
   inline PROTOBUF_ALWAYS_INLINE void _internal_set_symbol(
       const std::string& value);
   std::string* _internal_mutable_symbol();
+
+  public:
+  // string strategy = 4;
+  void clear_strategy() ;
+  const std::string& strategy() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_strategy(Arg_&& arg, Args_... args);
+  std::string* mutable_strategy();
+  PROTOBUF_NODISCARD std::string* release_strategy();
+  void set_allocated_strategy(std::string* value);
+
+  private:
+  const std::string& _internal_strategy() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_strategy(
+      const std::string& value);
+  std::string* _internal_mutable_strategy();
+
+  public:
+  // string start_time = 5;
+  void clear_start_time() ;
+  const std::string& start_time() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_start_time(Arg_&& arg, Args_... args);
+  std::string* mutable_start_time();
+  PROTOBUF_NODISCARD std::string* release_start_time();
+  void set_allocated_start_time(std::string* value);
+
+  private:
+  const std::string& _internal_start_time() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_start_time(
+      const std::string& value);
+  std::string* _internal_mutable_start_time();
+
+  public:
+  // string end_time = 6;
+  void clear_end_time() ;
+  const std::string& end_time() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_end_time(Arg_&& arg, Args_... args);
+  std::string* mutable_end_time();
+  PROTOBUF_NODISCARD std::string* release_end_time();
+  void set_allocated_end_time(std::string* value);
+
+  private:
+  const std::string& _internal_end_time() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_end_time(
+      const std::string& value);
+  std::string* _internal_mutable_end_time();
+
+  public:
+  // string side = 7;
+  void clear_side() ;
+  const std::string& side() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_side(Arg_&& arg, Args_... args);
+  std::string* mutable_side();
+  PROTOBUF_NODISCARD std::string* release_side();
+  void set_allocated_side(std::string* value);
+
+  private:
+  const std::string& _internal_side() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_side(
+      const std::string& value);
+  std::string* _internal_mutable_side();
+
+  public:
+  // string child_order_type = 8;
+  void clear_child_order_type() ;
+  const std::string& child_order_type() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_child_order_type(Arg_&& arg, Args_... args);
+  std::string* mutable_child_order_type();
+  PROTOBUF_NODISCARD std::string* release_child_order_type();
+  void set_allocated_child_order_type(std::string* value);
+
+  private:
+  const std::string& _internal_child_order_type() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_child_order_type(
+      const std::string& value);
+  std::string* _internal_mutable_child_order_type();
+
+  public:
+  // string parent_order_type = 9;
+  void clear_parent_order_type() ;
+  const std::string& parent_order_type() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_parent_order_type(Arg_&& arg, Args_... args);
+  std::string* mutable_parent_order_type();
+  PROTOBUF_NODISCARD std::string* release_parent_order_type();
+  void set_allocated_parent_order_type(std::string* value);
+
+  private:
+  const std::string& _internal_parent_order_type() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_parent_order_type(
+      const std::string& value);
+  std::string* _internal_mutable_parent_order_type();
+
+  public:
+  // string parent_order_id = 10;
+  void clear_parent_order_id() ;
+  const std::string& parent_order_id() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_parent_order_id(Arg_&& arg, Args_... args);
+  std::string* mutable_parent_order_id();
+  PROTOBUF_NODISCARD std::string* release_parent_order_id();
+  void set_allocated_parent_order_id(std::string* value);
+
+  private:
+  const std::string& _internal_parent_order_id() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_parent_order_id(
+      const std::string& value);
+  std::string* _internal_mutable_parent_order_id();
+
+  public:
+  // string original_parent_order_id = 11;
+  void clear_original_parent_order_id() ;
+  const std::string& original_parent_order_id() const;
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_original_parent_order_id(Arg_&& arg, Args_... args);
+  std::string* mutable_original_parent_order_id();
+  PROTOBUF_NODISCARD std::string* release_original_parent_order_id();
+  void set_allocated_original_parent_order_id(std::string* value);
+
+  private:
+  const std::string& _internal_original_parent_order_id() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_original_parent_order_id(
+      const std::string& value);
+  std::string* _internal_mutable_original_parent_order_id();
 
   public:
   // double price = 2;
@@ -504,8 +640,8 @@ class StrategyParentOrderRequest final : public ::google::protobuf::Message
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      2, 3, 0,
-      50, 2>
+      4, 11, 0,
+      160, 2>
       _table_;
 
   friend class ::google::protobuf::MessageLite;
@@ -523,6 +659,14 @@ class StrategyParentOrderRequest final : public ::google::protobuf::Message
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const StrategyParentOrderRequest& from_msg);
     ::google::protobuf::internal::ArenaStringPtr symbol_;
+    ::google::protobuf::internal::ArenaStringPtr strategy_;
+    ::google::protobuf::internal::ArenaStringPtr start_time_;
+    ::google::protobuf::internal::ArenaStringPtr end_time_;
+    ::google::protobuf::internal::ArenaStringPtr side_;
+    ::google::protobuf::internal::ArenaStringPtr child_order_type_;
+    ::google::protobuf::internal::ArenaStringPtr parent_order_type_;
+    ::google::protobuf::internal::ArenaStringPtr parent_order_id_;
+    ::google::protobuf::internal::ArenaStringPtr original_parent_order_id_;
     double price_;
     double quantity_;
     ::google::protobuf::internal::CachedSize _cached_size_;
@@ -638,6 +782,390 @@ inline double StrategyParentOrderRequest::_internal_quantity() const {
 inline void StrategyParentOrderRequest::_internal_set_quantity(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.quantity_ = value;
+}
+
+// string strategy = 4;
+inline void StrategyParentOrderRequest::clear_strategy() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.strategy_.ClearToEmpty();
+}
+inline const std::string& StrategyParentOrderRequest::strategy() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:strategy.StrategyParentOrderRequest.strategy)
+  return _internal_strategy();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void StrategyParentOrderRequest::set_strategy(Arg_&& arg,
+                                                     Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.strategy_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:strategy.StrategyParentOrderRequest.strategy)
+}
+inline std::string* StrategyParentOrderRequest::mutable_strategy() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_strategy();
+  // @@protoc_insertion_point(field_mutable:strategy.StrategyParentOrderRequest.strategy)
+  return _s;
+}
+inline const std::string& StrategyParentOrderRequest::_internal_strategy() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.strategy_.Get();
+}
+inline void StrategyParentOrderRequest::_internal_set_strategy(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.strategy_.Set(value, GetArena());
+}
+inline std::string* StrategyParentOrderRequest::_internal_mutable_strategy() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.strategy_.Mutable( GetArena());
+}
+inline std::string* StrategyParentOrderRequest::release_strategy() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:strategy.StrategyParentOrderRequest.strategy)
+  return _impl_.strategy_.Release();
+}
+inline void StrategyParentOrderRequest::set_allocated_strategy(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.strategy_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.strategy_.IsDefault()) {
+    _impl_.strategy_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:strategy.StrategyParentOrderRequest.strategy)
+}
+
+// string start_time = 5;
+inline void StrategyParentOrderRequest::clear_start_time() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.start_time_.ClearToEmpty();
+}
+inline const std::string& StrategyParentOrderRequest::start_time() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:strategy.StrategyParentOrderRequest.start_time)
+  return _internal_start_time();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void StrategyParentOrderRequest::set_start_time(Arg_&& arg,
+                                                     Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.start_time_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:strategy.StrategyParentOrderRequest.start_time)
+}
+inline std::string* StrategyParentOrderRequest::mutable_start_time() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_start_time();
+  // @@protoc_insertion_point(field_mutable:strategy.StrategyParentOrderRequest.start_time)
+  return _s;
+}
+inline const std::string& StrategyParentOrderRequest::_internal_start_time() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.start_time_.Get();
+}
+inline void StrategyParentOrderRequest::_internal_set_start_time(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.start_time_.Set(value, GetArena());
+}
+inline std::string* StrategyParentOrderRequest::_internal_mutable_start_time() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.start_time_.Mutable( GetArena());
+}
+inline std::string* StrategyParentOrderRequest::release_start_time() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:strategy.StrategyParentOrderRequest.start_time)
+  return _impl_.start_time_.Release();
+}
+inline void StrategyParentOrderRequest::set_allocated_start_time(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.start_time_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.start_time_.IsDefault()) {
+    _impl_.start_time_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:strategy.StrategyParentOrderRequest.start_time)
+}
+
+// string end_time = 6;
+inline void StrategyParentOrderRequest::clear_end_time() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.end_time_.ClearToEmpty();
+}
+inline const std::string& StrategyParentOrderRequest::end_time() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:strategy.StrategyParentOrderRequest.end_time)
+  return _internal_end_time();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void StrategyParentOrderRequest::set_end_time(Arg_&& arg,
+                                                     Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.end_time_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:strategy.StrategyParentOrderRequest.end_time)
+}
+inline std::string* StrategyParentOrderRequest::mutable_end_time() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_end_time();
+  // @@protoc_insertion_point(field_mutable:strategy.StrategyParentOrderRequest.end_time)
+  return _s;
+}
+inline const std::string& StrategyParentOrderRequest::_internal_end_time() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.end_time_.Get();
+}
+inline void StrategyParentOrderRequest::_internal_set_end_time(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.end_time_.Set(value, GetArena());
+}
+inline std::string* StrategyParentOrderRequest::_internal_mutable_end_time() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.end_time_.Mutable( GetArena());
+}
+inline std::string* StrategyParentOrderRequest::release_end_time() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:strategy.StrategyParentOrderRequest.end_time)
+  return _impl_.end_time_.Release();
+}
+inline void StrategyParentOrderRequest::set_allocated_end_time(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.end_time_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.end_time_.IsDefault()) {
+    _impl_.end_time_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:strategy.StrategyParentOrderRequest.end_time)
+}
+
+// string side = 7;
+inline void StrategyParentOrderRequest::clear_side() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.side_.ClearToEmpty();
+}
+inline const std::string& StrategyParentOrderRequest::side() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:strategy.StrategyParentOrderRequest.side)
+  return _internal_side();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void StrategyParentOrderRequest::set_side(Arg_&& arg,
+                                                     Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.side_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:strategy.StrategyParentOrderRequest.side)
+}
+inline std::string* StrategyParentOrderRequest::mutable_side() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_side();
+  // @@protoc_insertion_point(field_mutable:strategy.StrategyParentOrderRequest.side)
+  return _s;
+}
+inline const std::string& StrategyParentOrderRequest::_internal_side() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.side_.Get();
+}
+inline void StrategyParentOrderRequest::_internal_set_side(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.side_.Set(value, GetArena());
+}
+inline std::string* StrategyParentOrderRequest::_internal_mutable_side() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.side_.Mutable( GetArena());
+}
+inline std::string* StrategyParentOrderRequest::release_side() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:strategy.StrategyParentOrderRequest.side)
+  return _impl_.side_.Release();
+}
+inline void StrategyParentOrderRequest::set_allocated_side(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.side_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.side_.IsDefault()) {
+    _impl_.side_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:strategy.StrategyParentOrderRequest.side)
+}
+
+// string child_order_type = 8;
+inline void StrategyParentOrderRequest::clear_child_order_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.child_order_type_.ClearToEmpty();
+}
+inline const std::string& StrategyParentOrderRequest::child_order_type() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:strategy.StrategyParentOrderRequest.child_order_type)
+  return _internal_child_order_type();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void StrategyParentOrderRequest::set_child_order_type(Arg_&& arg,
+                                                     Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.child_order_type_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:strategy.StrategyParentOrderRequest.child_order_type)
+}
+inline std::string* StrategyParentOrderRequest::mutable_child_order_type() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_child_order_type();
+  // @@protoc_insertion_point(field_mutable:strategy.StrategyParentOrderRequest.child_order_type)
+  return _s;
+}
+inline const std::string& StrategyParentOrderRequest::_internal_child_order_type() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.child_order_type_.Get();
+}
+inline void StrategyParentOrderRequest::_internal_set_child_order_type(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.child_order_type_.Set(value, GetArena());
+}
+inline std::string* StrategyParentOrderRequest::_internal_mutable_child_order_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.child_order_type_.Mutable( GetArena());
+}
+inline std::string* StrategyParentOrderRequest::release_child_order_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:strategy.StrategyParentOrderRequest.child_order_type)
+  return _impl_.child_order_type_.Release();
+}
+inline void StrategyParentOrderRequest::set_allocated_child_order_type(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.child_order_type_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.child_order_type_.IsDefault()) {
+    _impl_.child_order_type_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:strategy.StrategyParentOrderRequest.child_order_type)
+}
+
+// string parent_order_type = 9;
+inline void StrategyParentOrderRequest::clear_parent_order_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.parent_order_type_.ClearToEmpty();
+}
+inline const std::string& StrategyParentOrderRequest::parent_order_type() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:strategy.StrategyParentOrderRequest.parent_order_type)
+  return _internal_parent_order_type();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void StrategyParentOrderRequest::set_parent_order_type(Arg_&& arg,
+                                                     Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.parent_order_type_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:strategy.StrategyParentOrderRequest.parent_order_type)
+}
+inline std::string* StrategyParentOrderRequest::mutable_parent_order_type() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_parent_order_type();
+  // @@protoc_insertion_point(field_mutable:strategy.StrategyParentOrderRequest.parent_order_type)
+  return _s;
+}
+inline const std::string& StrategyParentOrderRequest::_internal_parent_order_type() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.parent_order_type_.Get();
+}
+inline void StrategyParentOrderRequest::_internal_set_parent_order_type(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.parent_order_type_.Set(value, GetArena());
+}
+inline std::string* StrategyParentOrderRequest::_internal_mutable_parent_order_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.parent_order_type_.Mutable( GetArena());
+}
+inline std::string* StrategyParentOrderRequest::release_parent_order_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:strategy.StrategyParentOrderRequest.parent_order_type)
+  return _impl_.parent_order_type_.Release();
+}
+inline void StrategyParentOrderRequest::set_allocated_parent_order_type(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.parent_order_type_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.parent_order_type_.IsDefault()) {
+    _impl_.parent_order_type_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:strategy.StrategyParentOrderRequest.parent_order_type)
+}
+
+// string parent_order_id = 10;
+inline void StrategyParentOrderRequest::clear_parent_order_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.parent_order_id_.ClearToEmpty();
+}
+inline const std::string& StrategyParentOrderRequest::parent_order_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:strategy.StrategyParentOrderRequest.parent_order_id)
+  return _internal_parent_order_id();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void StrategyParentOrderRequest::set_parent_order_id(Arg_&& arg,
+                                                     Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.parent_order_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:strategy.StrategyParentOrderRequest.parent_order_id)
+}
+inline std::string* StrategyParentOrderRequest::mutable_parent_order_id() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_parent_order_id();
+  // @@protoc_insertion_point(field_mutable:strategy.StrategyParentOrderRequest.parent_order_id)
+  return _s;
+}
+inline const std::string& StrategyParentOrderRequest::_internal_parent_order_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.parent_order_id_.Get();
+}
+inline void StrategyParentOrderRequest::_internal_set_parent_order_id(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.parent_order_id_.Set(value, GetArena());
+}
+inline std::string* StrategyParentOrderRequest::_internal_mutable_parent_order_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.parent_order_id_.Mutable( GetArena());
+}
+inline std::string* StrategyParentOrderRequest::release_parent_order_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:strategy.StrategyParentOrderRequest.parent_order_id)
+  return _impl_.parent_order_id_.Release();
+}
+inline void StrategyParentOrderRequest::set_allocated_parent_order_id(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.parent_order_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.parent_order_id_.IsDefault()) {
+    _impl_.parent_order_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:strategy.StrategyParentOrderRequest.parent_order_id)
+}
+
+// string original_parent_order_id = 11;
+inline void StrategyParentOrderRequest::clear_original_parent_order_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.original_parent_order_id_.ClearToEmpty();
+}
+inline const std::string& StrategyParentOrderRequest::original_parent_order_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:strategy.StrategyParentOrderRequest.original_parent_order_id)
+  return _internal_original_parent_order_id();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void StrategyParentOrderRequest::set_original_parent_order_id(Arg_&& arg,
+                                                     Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.original_parent_order_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:strategy.StrategyParentOrderRequest.original_parent_order_id)
+}
+inline std::string* StrategyParentOrderRequest::mutable_original_parent_order_id() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::string* _s = _internal_mutable_original_parent_order_id();
+  // @@protoc_insertion_point(field_mutable:strategy.StrategyParentOrderRequest.original_parent_order_id)
+  return _s;
+}
+inline const std::string& StrategyParentOrderRequest::_internal_original_parent_order_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.original_parent_order_id_.Get();
+}
+inline void StrategyParentOrderRequest::_internal_set_original_parent_order_id(const std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.original_parent_order_id_.Set(value, GetArena());
+}
+inline std::string* StrategyParentOrderRequest::_internal_mutable_original_parent_order_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.original_parent_order_id_.Mutable( GetArena());
+}
+inline std::string* StrategyParentOrderRequest::release_original_parent_order_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:strategy.StrategyParentOrderRequest.original_parent_order_id)
+  return _impl_.original_parent_order_id_.Release();
+}
+inline void StrategyParentOrderRequest::set_allocated_original_parent_order_id(std::string* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.original_parent_order_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.original_parent_order_id_.IsDefault()) {
+    _impl_.original_parent_order_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:strategy.StrategyParentOrderRequest.original_parent_order_id)
 }
 
 // -------------------------------------------------------------------

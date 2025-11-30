@@ -30,6 +30,7 @@ namespace TradingStrategies {
 
     class StrategyRequestHttpService;
     class StrategyParentOrderHttpService;
+    class ExternalRequestReceiver;
 
     class DLL_CLASS_TRADING_TRATEGIES_EXPORTS ExternalController final
     {
@@ -39,6 +40,11 @@ namespace TradingStrategies {
 
         void Start();
         void Stop();
+
+        void RegisterTargetStrategy(ExternalRequestReceiver* recevier);
+
+		void RegisterTargetAdminRequestHandler(ExternalRequestReceiver* recevier);
+
     private:
         void WaitForIncomingMessage();
 
@@ -52,5 +58,7 @@ namespace TradingStrategies {
         std::string m_serverIpAddress;
         std::string m_serverPort;
         std::string m_serverConnection;
+		ExternalRequestReceiver* m_targetStrategy{ nullptr };
+        ExternalRequestReceiver* m_targetAdminRequestHandler{ nullptr };
     };
 };

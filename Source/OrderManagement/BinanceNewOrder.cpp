@@ -184,25 +184,25 @@ std::string BinanceNewOrder::ToStringAck() const
 BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrder() const
 {
     BqtJsonMessage message;
-    message.AddPair(FieldLabels::MessageType, "BinanceNewOrder");
-    message.AddPair(FieldLabels::UserAccountID, m_userAccountID);
-    message.AddPair(FieldLabels::Symbol, m_symbol);
-    message.AddPair(FieldLabels::Side, TypeToStringUtils::ToString(m_side));
-    message.AddPair(FieldLabels::Type, TypeToStringUtils::ToString(m_type));
-    message.AddPair(FieldLabels::TimeInForce, TypeToStringUtils::ToString(m_timeInForce));
-    message.AddPair(FieldLabels::Amount, GetAmountStr());
-    message.AddPair(FieldLabels::LimitPrice, GetPriceStr());
-    message.AddPair(FieldLabels::ClientOrderId, m_clientOrderId);
-    message.AddPair(FieldLabels::StopPrice, GetStopPriceStr());
-    message.AddPair(FieldLabels::IcebergAmount, GetIcebergAmountStr());
-    message.AddPair(FieldLabels::OrderStatus, GetOrderStatusStr());
-    message.AddPair(FieldLabels::TradingType, GetOrderTradingTypeStr());
-	message.AddPair(FieldLabels::StableCurrency, m_stableCurrency);
-    message.AddPair(FieldLabels::UpdateTime, GetUpdateTimeStr());
+    message.AddTag(FieldLabels::MessageType, "BinanceNewOrder");
+    message.AddTag(FieldLabels::UserAccountID, m_userAccountID);
+    message.AddTag(FieldLabels::Symbol, m_symbol);
+    message.AddTag(FieldLabels::Side, TypeToStringUtils::ToString(m_side));
+    message.AddTag(FieldLabels::Type, TypeToStringUtils::ToString(m_type));
+    message.AddTag(FieldLabels::TimeInForce, TypeToStringUtils::ToString(m_timeInForce));
+    message.AddTag(FieldLabels::Amount, GetAmountStr());
+    message.AddTag(FieldLabels::LimitPrice, GetPriceStr());
+    message.AddTag(FieldLabels::ClientOrderId, m_clientOrderId);
+    message.AddTag(FieldLabels::StopPrice, GetStopPriceStr());
+    message.AddTag(FieldLabels::IcebergAmount, GetIcebergAmountStr());
+    message.AddTag(FieldLabels::OrderStatus, GetOrderStatusStr());
+    message.AddTag(FieldLabels::TradingType, GetOrderTradingTypeStr());
+	message.AddTag(FieldLabels::StableCurrency, m_stableCurrency);
+    message.AddTag(FieldLabels::UpdateTime, GetUpdateTimeStr());
     if (m_orderTradingType == BinanceNewOrderTradingType::FUTURE)
     {
-        message.AddPair(FieldLabels::FutureLeverageRatio, GetFutureLeverageRatioStr());
-		message.AddPair(FieldLabels::FutureIsolatedMargin, GetIsolatedMarginStr());
+        message.AddTag(FieldLabels::FutureLeverageRatio, GetFutureLeverageRatioStr());
+		message.AddTag(FieldLabels::FutureIsolatedMargin, GetIsolatedMarginStr());
     }
     return message;
 }
@@ -210,33 +210,33 @@ BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrder() const
 BqtJsonMessage BinanceNewOrder::ToBqtJsonMessageOrderAck() const
 {
     BqtJsonMessage message;
-    message.AddPair(FieldLabels::MessageType, "BinanceNewOrderAck");
-    message.AddPair(FieldLabels::UserAccountID, m_userAccountID);
-    message.AddPair(FieldLabels::Symbol, m_symbol);
-    message.AddPair(FieldLabels::Side, TypeToStringUtils::ToString(m_side));
-    message.AddPair(FieldLabels::Type, TypeToStringUtils::ToString(m_type));
-    message.AddPair(FieldLabels::TimeInForce, TypeToStringUtils::ToString(m_timeInForce));
-    message.AddPair(FieldLabels::Amount, GetAmountStr());
-    message.AddPair(FieldLabels::LimitPrice, GetPriceStr());
-    message.AddPair(FieldLabels::ClientOrderId, m_clientOrderId);
-    message.AddPair(FieldLabels::StopPrice, GetStopPriceStr());
-    message.AddPair(FieldLabels::IcebergAmount, GetIcebergAmountStr());
-    message.AddPair(FieldLabels::OrderStatus, GetOrderStatusStr());
-	message.AddPair(FieldLabels::TradingType, GetOrderTradingTypeStr());
-    message.AddPair(FieldLabels::FilledAmount, GetFilledAmountStr());
-    message.AddPair(FieldLabels::FilledPrice, GetFilledPriceStr());
-    message.AddPair(FieldLabels::RemainingAmount, GetRemainingAmountStr());
-    message.AddPair(FieldLabels::OrigQuoteOrderQuantity, GetOrigQuoteOrderQuantityStr());
-    message.AddPair(FieldLabels::CummulativeQuoteQty, GetCumulativeQuoteQuantityStr());
-	message.AddPair(FieldLabels::StableCurrency, m_stableCurrency);
-    message.AddPair(FieldLabels::UpdateTime, GetUpdateTimeStr());
+    message.AddTag(FieldLabels::MessageType, "BinanceNewOrderAck");
+    message.AddTag(FieldLabels::UserAccountID, m_userAccountID);
+    message.AddTag(FieldLabels::Symbol, m_symbol);
+    message.AddTag(FieldLabels::Side, TypeToStringUtils::ToString(m_side));
+    message.AddTag(FieldLabels::Type, TypeToStringUtils::ToString(m_type));
+    message.AddTag(FieldLabels::TimeInForce, TypeToStringUtils::ToString(m_timeInForce));
+    message.AddTag(FieldLabels::Amount, GetAmountStr());
+    message.AddTag(FieldLabels::LimitPrice, GetPriceStr());
+    message.AddTag(FieldLabels::ClientOrderId, m_clientOrderId);
+    message.AddTag(FieldLabels::StopPrice, GetStopPriceStr());
+    message.AddTag(FieldLabels::IcebergAmount, GetIcebergAmountStr());
+    message.AddTag(FieldLabels::OrderStatus, GetOrderStatusStr());
+	message.AddTag(FieldLabels::TradingType, GetOrderTradingTypeStr());
+    message.AddTag(FieldLabels::FilledAmount, GetFilledAmountStr());
+    message.AddTag(FieldLabels::FilledPrice, GetFilledPriceStr());
+    message.AddTag(FieldLabels::RemainingAmount, GetRemainingAmountStr());
+    message.AddTag(FieldLabels::OrigQuoteOrderQuantity, GetOrigQuoteOrderQuantityStr());
+    message.AddTag(FieldLabels::CummulativeQuoteQty, GetCumulativeQuoteQuantityStr());
+	message.AddTag(FieldLabels::StableCurrency, m_stableCurrency);
+    message.AddTag(FieldLabels::UpdateTime, GetUpdateTimeStr());
 	if (m_orderTradingType == BinanceNewOrderTradingType::FUTURE)
 	{
-		message.AddPair(FieldLabels::FutureLeverageRatio, GetFutureLeverageRatioStr());
-		message.AddPair(FieldLabels::FutureInitialMarginPrice, GetFutureInitialMarginPriceStr());
-		message.AddPair(FieldLabels::FutureMaintainingMarginPrice, GetFutureMaintainingMarginPriceStr());
-		message.AddPair(FieldLabels::FutureLiquidationPrice, GetFutureLiquidationPriceStr());
-		message.AddPair(FieldLabels::FutureIsolatedMargin, GetIsolatedMarginStr());
+		message.AddTag(FieldLabels::FutureLeverageRatio, GetFutureLeverageRatioStr());
+		message.AddTag(FieldLabels::FutureInitialMarginPrice, GetFutureInitialMarginPriceStr());
+		message.AddTag(FieldLabels::FutureMaintainingMarginPrice, GetFutureMaintainingMarginPriceStr());
+		message.AddTag(FieldLabels::FutureLiquidationPrice, GetFutureLiquidationPriceStr());
+		message.AddTag(FieldLabels::FutureIsolatedMargin, GetIsolatedMarginStr());
 	}
     return message;
 }

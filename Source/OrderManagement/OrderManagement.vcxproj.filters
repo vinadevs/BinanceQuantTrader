@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Binance Order">
+      <UniqueIdentifier>{91797e0f-cb73-4795-8930-d06d90799825}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parent Order">
+      <UniqueIdentifier>{c9b37db7-e57c-4166-815e-a1cd9a1c6213}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -24,38 +30,47 @@
     <ClInclude Include="dlldefine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OrderCreator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Order.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PositionManager.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="BinanceCancelOrder.h">
+      <Filter>Binance Order</Filter>
     </ClInclude>
     <ClInclude Include="BinanceNewOrder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BinanceCancelOrder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BinanceReplaceOrder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FieldLabels.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TypeToStringUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BinanceQueryOrder.h">
-      <Filter>Header Files</Filter>
+      <Filter>Binance Order</Filter>
     </ClInclude>
     <ClInclude Include="BinanceOrderManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Binance Order</Filter>
+    </ClInclude>
+    <ClInclude Include="BinanceQueryOrder.h">
+      <Filter>Binance Order</Filter>
+    </ClInclude>
+    <ClInclude Include="BinanceReplaceOrder.h">
+      <Filter>Binance Order</Filter>
+    </ClInclude>
+    <ClInclude Include="Order.h">
+      <Filter>Binance Order</Filter>
+    </ClInclude>
+    <ClInclude Include="OrderCreator.h">
+      <Filter>Binance Order</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionManager.h">
+      <Filter>Binance Order</Filter>
     </ClInclude>
     <ClInclude Include="OrderDefinitions.h">
-      <Filter>Header Files</Filter>
+      <Filter>Binance Order</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeToStringUtils.h">
+      <Filter>Binance Order</Filter>
+    </ClInclude>
+    <ClInclude Include="FieldLabels.h">
+      <Filter>Binance Order</Filter>
+    </ClInclude>
+    <ClInclude Include="ParentOrder.h">
+      <Filter>Parent Order</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternalParentOrder.h">
+      <Filter>Parent Order</Filter>
+    </ClInclude>
+    <ClInclude Include="ParentOrderManager.h">
+      <Filter>Parent Order</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -65,26 +80,26 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OrderCreator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PositionManager.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="BinanceCancelOrder.cpp">
+      <Filter>Binance Order</Filter>
     </ClCompile>
     <ClCompile Include="BinanceNewOrder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BinanceCancelOrder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BinanceReplaceOrder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BinanceQueryOrder.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Binance Order</Filter>
     </ClCompile>
     <ClCompile Include="BinanceOrderManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Binance Order</Filter>
+    </ClCompile>
+    <ClCompile Include="BinanceQueryOrder.cpp">
+      <Filter>Binance Order</Filter>
+    </ClCompile>
+    <ClCompile Include="BinanceReplaceOrder.cpp">
+      <Filter>Binance Order</Filter>
+    </ClCompile>
+    <ClCompile Include="OrderCreator.cpp">
+      <Filter>Binance Order</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionManager.cpp">
+      <Filter>Binance Order</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

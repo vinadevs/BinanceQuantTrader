@@ -11,6 +11,7 @@
 #include "dlldefine.h"
 #include "../LibraryUtils/Logger.h"
 #include "../QuantitativeModel/QuantOrderParammeter.h"
+#include "../OrderManagement/PositionManager.h"
 
 #include <string>
 #include <memory>
@@ -29,6 +30,18 @@ namespace TradingStrategies {
 	class TradingStrategyBase;
 };
 
+namespace PortfolioManager {
+	class PortfolioInvestmentBinance;
+}
+
+namespace RiskManagement {
+	class RiskManager;
+}
+
+namespace ComplianceNRegulatory {
+	class BinanceTradingRules;
+}
+
 namespace UserAccount {
 
 	// -In the context of financial markets, a trader is an individual 
@@ -43,10 +56,25 @@ namespace UserAccount {
 	// - second element is a string that can be an client order ID
 	using WorkedOrderIdentification = std::pair<bool, std::string>;
 
+	enum class TraderType : unsigned
+	{
+		SPOT_TRADER = 0,
+		FUTURE_TRADER = 1
+	};
+
 	class DLL_CLASS_USERACCOUNT_EXPORTS Trader
 	{
 	public:
-		Trader() {};
+		Trader(PortfolioManager::PortfolioInvestmentBinance* portfolio,
+			ComplianceNRegulatory::BinanceTradingRules* tradingRules,
+			RiskManagement::RiskManager* riskManager)
+			: m_portfolio(portfolio),
+			m_tradingRules(tradingRules),
+			m_riskManager(riskManager)
+		{
+			m_positionManager = std::make_unique<OrderManagement::PositionManager>();
+		}
+
 		virtual ~Trader();
 
 		// Create new position based on the provided quantitative parameters.
@@ -69,13 +97,28 @@ namespace UserAccount {
 		// This method has to be called at strategy initialization time.
 		virtual void UseThisStrategyToTrade(TradingStrategies::TradingStrategyBase* strategy) = 0;
 
+		PortfolioManager::PortfolioInvestmentBinance* GetPortfolio() const { return m_portfolio; }
+
+		OrderManagement::PositionManager* GetPositionManager() const { return m_positionManager.get(); }
+
+		ComplianceNRegulatory::BinanceTradingRules* GetTradingRules() const { return m_tradingRules; }
+
+		RiskManagement::RiskManager* GetRiskManager() const { return m_riskManager; }
+
+		TraderType GetTraderType() const { return m_traderType; }
+
 #if USE_BACK_TEST_TRADING  
 		// Handle downstream acknowledgment messages from the simulator.
 		virtual void HandleDownstreamAckMessage(
 			const MiddlewareMQ::BqtJsonMessage& message) = 0;
 #endif
 	protected:
-		std::unique_ptr<LibraryUtils::Logger> m_logger;
-		TradingStrategies::TradingStrategyBase* m_tradingStrategy{ nullptr };
+		TraderType m_traderType{ TraderType::SPOT_TRADER }; // type of trader
+		std::unique_ptr<LibraryUtils::Logger> m_logger; // log message
+		TradingStrategies::TradingStrategyBase* m_tradingStrategy{ nullptr }; // trading strategy to use
+		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr }; // list of assets to trade
+		ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr }; // exchange compliance and regulatory
+		RiskManagement::RiskManager* m_riskManager{ nullptr };  // manage trading risks
+		std::unique_ptr<OrderManagement::PositionManager> m_positionManager; // manage worked trading positions
 	};
 };

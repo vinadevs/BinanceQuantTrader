@@ -35,7 +35,7 @@ BinanceTradeProfile::~BinanceTradeProfile() {}
 bool BinanceTradeProfile::UpdateUserTradeProfileData(
     const std::string& userId,
     const double leverageRate,
-    std::string& resultMessage)
+    std::string& errorMessage)
 {
     m_logger->Info("Sending request UserTradeProfile data for user account id=" + userId);
 
@@ -47,6 +47,13 @@ bool BinanceTradeProfile::UpdateUserTradeProfileData(
     grpc::ClientContext context;
 
     const grpc::Status status = m_grpcConnection.m_grpcStub->UpdateUserTradeProfile(&context, request, &response);
-    resultMessage = response.message();
+    if (status.ok())
+    {
+		m_logger->Info("Successfully updated UserTradeProfile data for user account id=" + userId);
+	}
+	else
+	{
+        errorMessage = status.error_message();
+	}
     return (status.ok() && response.success());
 }

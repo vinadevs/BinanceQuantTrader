@@ -10,10 +10,13 @@
 #include "../MarketData/SynchronousMarketData.h"
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/TimeUtils.h"
+#include "../LibraryUtils/StringUtils.h"
 #include "../SettingNConfig/tinyxml2.h"
+#include "../PythonPlugin/PythonClientConnectivity.h"
 
 #include "MarketDataListener.h"
 #include "MarketDataFileWriter.h"
+#include "MarketDataToJsonConverter.h"
 
 #include <type_traits>
 #include <filesystem>
@@ -26,8 +29,7 @@ MarketDataListener::MarketDataListener(const tinyxml2::XMLElement* dataCaptureCf
 {
     const auto* dataCaptureModeXml = dataCaptureCfg->FirstChildElement("DataCaptureMode");
     assert(dataCaptureModeXml);
-    const auto mode = dataCaptureModeXml->Attribute("Mode");
-    if (mode == "LocalFile") {
+    if (StringUtils::IsConfigAttributeMatched(dataCaptureModeXml->Attribute("Mode"), "LocalFile")) {
 		m_dataCaptureMode = DataCaptureMode::LocalFile;
         const auto* localFilePathXml = dataCaptureCfg->FirstChildElement("LocalFilePath");
         assert(localFilePathXml);
@@ -37,11 +39,14 @@ MarketDataListener::MarketDataListener(const tinyxml2::XMLElement* dataCaptureCf
         }
         m_fileWriter = std::make_unique<MarketDataFileWriter>(m_localFilePath, MarketDataFileWriter::DataSourceType::TextFile);
     }
-    else if (mode == "ConsoleLog") {
+    else if (StringUtils::IsConfigAttributeMatched(dataCaptureModeXml->Attribute("Mode"), "ConsoleLog")) {
 		m_dataCaptureMode = DataCaptureMode::ConsoleLog;
     }
+    else if (StringUtils::IsConfigAttributeMatched(dataCaptureModeXml->Attribute("Mode"), "PythonServer")) {
+        m_dataCaptureMode = DataCaptureMode::PythonServer;
+    }
     else {
-		throw std::runtime_error("Unsupported data capture mode: " + std::string(mode));
+		throw std::runtime_error("Unsupported data capture mode: " + std::string(dataCaptureModeXml->Attribute("Mode")));
     }
 }
 
@@ -58,6 +63,11 @@ bool MarketDataListener::OnIndividualBookTickerChange(
         }
         else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_individualBookTickerData).ToString());
+        }
+        else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::IndividualBookTickerToJsonMessage(
+				syncedData->m_individualBookTickerData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
         }
         return true;
     }
@@ -80,6 +90,11 @@ bool MarketDataListener::OnTradeChange(
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_tradeData).ToString());
 		}
+		else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::TradeToJsonMessage(
+				syncedData->m_tradeData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
+		}
         return true;
     }
     else
@@ -99,6 +114,11 @@ bool MarketDataListener::OnIndividualMarketTickerChange(MarketDataSubject* marke
         }
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_individualMarketTickerData).ToString());
+		}
+		else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::IndividualMarketTickerToJsonMessage(
+				syncedData->m_individualMarketTickerData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
 		}
 		return true;
 	}
@@ -120,6 +140,11 @@ bool MarketDataListener::OnMiniTickerChange(MarketDataSubject* marketData, const
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_individualMiniTickerData).ToString());
 		}
+        else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::IndividualMiniTickerToJsonMessage(
+				syncedData->m_individualMiniTickerData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
+        }
         return true;
     }
     else
@@ -140,6 +165,11 @@ bool MarketDataListener::OnAggregateTradeChange(MarketDataSubject* marketData, c
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_aggregateTradeData).ToString());
 		}
+        else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::AggregateTradeToJsonMessage(
+				syncedData->m_aggregateTradeData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
+        }
         return true;
     }
     else
@@ -160,6 +190,11 @@ bool MarketDataListener::OnKlineCandleStickChange(MarketDataSubject* marketData,
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_klineCandleStickData).ToString());
 		}
+        else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::KlineCandleStickToJsonMessage(
+				syncedData->m_klineCandleStickData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
+        }
 		return true;
 	}
 	else
@@ -180,6 +215,11 @@ bool MarketDataListener::OnAllMarketTickersChange(MarketDataSubject* marketData,
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_allMarketTickerData).ToString());
 		}
+        else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::AllMarketTickersToJsonMessage(
+				syncedData->m_allMarketTickerData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
+        }
 		return true;
     }
     else
@@ -200,6 +240,11 @@ bool MarketDataListener::OnAllMiniTickersChange(MarketDataSubject* marketData, c
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_allMiniTickerData).ToString());
 		}
+        else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::IndividualBookTickerToJsonMessage(
+				syncedData->m_individualBookTickerData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
+        }
 		return true;
     }
     else
@@ -220,6 +265,11 @@ bool MarketDataListener::OnAllDiffDepthChange(MarketDataSubject* marketData, con
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_allDiffDepthData).ToString());
 		}
+        else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::AllDiffDepthToJsonMessage(
+				syncedData->m_allDiffDepthData, syncedData->GetSymbol());   
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
+        }
 		return true;
     }
     else
@@ -240,6 +290,11 @@ bool MarketDataListener::OnAllPartDepthChange(MarketDataSubject* marketData, con
 		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
 			m_fileWriter->Write((syncedData->m_allPartDepthData).ToString());
 		}
+        else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
+			MiddlewareMQ::BqtJsonMessage message = PythonMessage::AllPartDepthDataToJsonMessage(
+				syncedData->m_allPartDepthData, syncedData->GetSymbol());
+            return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
+        }
 		return true;
     }
     else

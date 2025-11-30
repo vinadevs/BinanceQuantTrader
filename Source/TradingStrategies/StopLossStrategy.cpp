@@ -169,7 +169,7 @@ void StopLossStrategy::ReportTradeResults(const std::string& symbol)
 	m_spotTrader->ReportTradeResults(symbol);
 }
 
-void StopLossStrategy::StartLive()
+void StopLossStrategy::StartTrade()
 {
 	// Change Strategy state to live
 	m_strategyRunStatus = StrategyRunStatus::LIVE;
@@ -192,7 +192,7 @@ void StopLossStrategy::StartLive()
 #endif
 }
 
-void StopLossStrategy::StopLive()
+void StopLossStrategy::StopTrade()
 {
 #if USE_MULTITHREADING
 	m_isThreadTradeOngoing.store(false); // break while loop

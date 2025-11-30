@@ -159,11 +159,14 @@
     <ClInclude Include="BinanceReplaceOrder.h" />
     <ClInclude Include="BinanceOrderManager.h" />
     <ClInclude Include="dlldefine.h" />
+    <ClInclude Include="ExternalParentOrder.h" />
     <ClInclude Include="FieldLabels.h" />
     <ClInclude Include="Order.h" />
     <ClInclude Include="OrderCreator.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="OrderDefinitions.h" />
+    <ClInclude Include="ParentOrder.h" />
+    <ClInclude Include="ParentOrderManager.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PositionManager.h" />
     <ClInclude Include="TypeToStringUtils.h" />
