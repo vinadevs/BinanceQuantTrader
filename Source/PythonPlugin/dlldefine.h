@@ -20,5 +20,5 @@
 #endif
 #endif  // PYTHONPLUGIN_EXPORTS
 #else
-#define DLL_CLASS_EXCHANGECONNECTIVITY_EXPORTS
+#define DLL_CLASS_PYTHONPLUGIN_EXPORTS __attribute__((visibility("default")))
 #endif  // _MSC_VER

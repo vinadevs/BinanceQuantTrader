@@ -81,7 +81,7 @@ std::string SingleMarketDataFeed::GetStringDataVariant()
             return value ? "true" : "false";
         }
         else if constexpr (std::is_same_v<T, binapi::double_type>) {
-            return value.convert_to<std::string>();
+            return value.template convert_to<std::string>();
         }
         else if constexpr (std::is_same_v<T, std::string>) {
             return value;

@@ -11,7 +11,8 @@
 		"ghcr.io/devcontainers/features/git-lfs:1": {},
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/devcontainers/features/sshd:1": {},
-		"ghcr.io/devcontainers-extra/features/ninja-asdf:2": {}
+		"ghcr.io/devcontainers-extra/features/ninja-asdf:2": {},
+		"ghcr.io/devcontainers-extra/features/fzf:1": {}
 	},
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
