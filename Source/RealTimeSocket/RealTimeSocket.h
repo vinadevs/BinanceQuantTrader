@@ -117,7 +117,7 @@ struct DLL_CLASS_REALTIMESOCKET_EXPORTS websockets final {
     using on_balance_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::balance_update_t msg)>;
     using on_order_update_cb = std::function<bool(const char *fl, int ec, std::string errmsg, userdata::order_update_t msg)>;
     handle userdata(
-         const char *lkey
+         const char *lkey // Subscribe via the WebSocket API using an API Key
         ,on_account_update_cb account_update
         ,on_balance_update_cb balance_update
         ,on_order_update_cb order_update

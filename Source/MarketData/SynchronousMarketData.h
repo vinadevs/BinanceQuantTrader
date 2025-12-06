@@ -44,6 +44,9 @@ namespace MarketData {
 		KlineCandleStickData m_klineCandleStickData;
 		AllPartDepthData m_allPartDepthData;
 		AllDiffDepthData m_allDiffDepthData;
+		UserDataAccount m_userDataAccount;
+		UserDataBalance m_userDataBalance;
+		UserDataOrder m_userDataOrder;
 
 		template <typename FeedType>
 		SingleMarketDataFeed* GetSingleFeed(const FeedType id) const;

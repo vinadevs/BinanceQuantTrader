@@ -56,6 +56,9 @@ public:
 	virtual int NotifyAllMiniTickersChange(const std::string& symbol);
 	virtual int NotifyAllPartDepthChange(const std::string& symbol);
 	virtual int NotifyAllDiffDepthChange(const std::string& symbol);
+	virtual int NotifyUserDataAccountUpdateChange(const std::string& symbol);
+	virtual int NotifyUserDataBalanceUpdateChange(const std::string& symbol);
+	virtual int NotifyUserDataOrderUpdateChange(const std::string& symbol);
 
 	// get synchronous market data
 	virtual SynchronousMarketData* GetSynchronousMarketData(const std::string& symbol) { return nullptr; }

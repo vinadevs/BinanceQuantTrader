@@ -33,6 +33,9 @@ namespace MarketData {
 		void UpdateKlineCandleStickData(const binapi::ws::kline_t& kline);
 		void UpdateAllPartDepthData(const binapi::ws::part_depths_t& depth);
 		void UpdateAllDiffDepthData(const binapi::ws::diff_depths_t& depth);
+		void UpdateUserDataAccountUpdate(const binapi::userdata::account_update_t& accountUpdate);
+		void UpdateUserDataBalanceUpdate(const binapi::userdata::balance_update_t& balanceUpdate);
+		void UpdateUserDataOrderUpdate(const binapi::userdata::order_update_t& orderUpdate);
 
 		SynchronousMarketData* GetSynchronousData();
 

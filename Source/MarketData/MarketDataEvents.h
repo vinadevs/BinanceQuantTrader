@@ -70,7 +70,7 @@ namespace MarketData {
 		void SubscibeKlineCandleStick(const std::string& symbol, const std::string& interval);
 		void SubscibePartDepth(const std::string& symbol);
 		void SubscibeDiffDepth(const std::string& symbol);
-		void SubscibeUserData(const std::string& symbol);
+		void SubscibeUserData(const std::string& apiKey, const std::string& symbol);
 		// remove what we dont want to receive from exchange
 		void Unsubscribe(const binapi::ws::websockets::handle& h);
 		void AsyncUnsubscribe(const binapi::ws::websockets::handle& h);

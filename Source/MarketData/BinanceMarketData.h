@@ -302,4 +302,47 @@ namespace MarketData {
 
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const AllDiffDepthData& o);
 	};
+
+	class DLL_CLASS_MARKETDATA_EXPORTS UserDataAccount : public BinanceMarketData // account_t
+	{
+		// Rule of 5, for class containing unique pointers
+	public:
+		UserDataAccount();
+		UserDataAccount(const UserDataAccount& other);
+		UserDataAccount& operator=(const UserDataAccount& other);
+		UserDataAccount(UserDataAccount&& other) noexcept = default;
+		UserDataAccount& operator=(UserDataAccount&& other) noexcept = default;
+		~UserDataAccount() = default;
+		std::string ToString() override;
+
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const UserDataAccount& o);
+	};
+
+	class DLL_CLASS_MARKETDATA_EXPORTS UserDataBalance : public BinanceMarketData // balance_t
+	{
+		// Rule of 5, for class containing unique pointers
+	public:
+		UserDataBalance();
+		UserDataBalance(const UserDataBalance& other);
+		UserDataBalance& operator=(const UserDataBalance& other);
+		UserDataBalance(UserDataBalance&& other) noexcept = default;
+		UserDataBalance& operator=(UserDataBalance&& other) noexcept = default;
+		~UserDataBalance() = default;
+		std::string ToString() override;
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const UserDataBalance& o);
+	};
+
+	class DLL_CLASS_MARKETDATA_EXPORTS UserDataOrder : public BinanceMarketData // order_t
+	{
+		// Rule of 5, for class containing unique pointers
+	public:
+		UserDataOrder();
+		UserDataOrder(const UserDataOrder& other);
+		UserDataOrder& operator=(const UserDataOrder& other);
+		UserDataOrder(UserDataOrder&& other) noexcept = default;
+		UserDataOrder& operator=(UserDataOrder&& other) noexcept = default;
+		~UserDataOrder() = default;
+		std::string ToString() override;
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const UserDataOrder& o);
+	};
 };

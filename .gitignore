@@ -86,6 +86,7 @@ Source/CurlAPI/x64
 Source/ApplicationTest/x64
 Source/Configurations/BQT/BinanceAKCfgTest.xml
 Source/Configurations/Simulator/BinanceExchangeSimulatorCfgTest.xml
+Source/ParentOrderOMS/__pycache__
 Source/AppData
 Source/Lib64
 Source/AppData

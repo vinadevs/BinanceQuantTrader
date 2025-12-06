@@ -11,14 +11,15 @@
 #include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/TimeUtils.h"
 #include "../LibraryUtils/StringUtils.h"
+#include "../LibraryUtils/PathUtils.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../PythonPlugin/PythonClientConnectivity.h"
+#include "../HistoricalData/HistoricalDataManager.h"
+#include "../HistoricalData/MarketDataFileWriter.h"
 
 #include "MarketDataListener.h"
-#include "MarketDataFileWriter.h"
 #include "MarketDataToJsonConverter.h"
 
-#include <type_traits>
 #include <filesystem>
 
 using namespace MarketDataCapture;
@@ -29,21 +30,30 @@ MarketDataListener::MarketDataListener(const tinyxml2::XMLElement* dataCaptureCf
 {
     const auto* dataCaptureModeXml = dataCaptureCfg->FirstChildElement("DataCaptureMode");
     assert(dataCaptureModeXml);
-    if (StringUtils::IsConfigAttributeMatched(dataCaptureModeXml->Attribute("Mode"), "LocalFile")) {
+    if (StringUtils::IsConfigAttributeMatched(dataCaptureModeXml->Attribute("Mode"), "HistoricalData")) {
 		m_dataCaptureMode = DataCaptureMode::LocalFile;
-        const auto* localFilePathXml = dataCaptureCfg->FirstChildElement("LocalFilePath");
+        const auto* localFilePathXml = dataCaptureCfg->FirstChildElement("DataRepository");
         assert(localFilePathXml);
-        m_localFilePath = localFilePathXml->Attribute("Path");
-        if (std::filesystem::exists(m_localFilePath) == false) {
+        std::string dataPath = localFilePathXml->Attribute("Path");
+        PathUtils::ReplaceSubString(dataPath, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
+        if (std::filesystem::exists(dataPath) == false) {
             throw std::runtime_error("MarketDataListener: local file path does not exist: " + m_localFilePath);
         }
-        m_fileWriter = std::make_unique<MarketDataFileWriter>(m_localFilePath, MarketDataFileWriter::DataSourceType::TextFile);
+		m_localFilePath = dataPath + TimeUtils::GetCurrentTimestampStringPath() + "_MarketData.txt";
+		m_fileWriter = HistoricalDataMgr->GetHistoricalDataWriter(
+            m_localFilePath, HistoricalData::MarketDataFileWriter::DataSourceType::TextFile);
+		if (!m_fileWriter) {
+			throw std::runtime_error("MarketDataListener: could not create MarketDataFileWriter for file: " + m_localFilePath);
+		}
+		m_logger->Info("storing market data to local file: " + m_localFilePath);
     }
     else if (StringUtils::IsConfigAttributeMatched(dataCaptureModeXml->Attribute("Mode"), "ConsoleLog")) {
 		m_dataCaptureMode = DataCaptureMode::ConsoleLog;
+		m_logger->Info("logging market data to console");
     }
     else if (StringUtils::IsConfigAttributeMatched(dataCaptureModeXml->Attribute("Mode"), "PythonServer")) {
         m_dataCaptureMode = DataCaptureMode::PythonServer;
+		m_logger->Info("sending market data to Python server via MQ");
     }
     else {
 		throw std::runtime_error("Unsupported data capture mode: " + std::string(dataCaptureModeXml->Attribute("Mode")));
@@ -254,23 +264,24 @@ bool MarketDataListener::OnAllMiniTickersChange(MarketDataSubject* marketData, c
     return false;
 }
 
+#if 0 // Not interested for now
 bool MarketDataListener::OnAllDiffDepthChange(MarketDataSubject* marketData, const std::string& symbol)
 {
     if (auto* syncedData = marketData->GetSynchronousMarketData(symbol))
     {
         if (m_dataCaptureMode == DataCaptureMode::ConsoleLog) {
-		LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << "|"
-			<< syncedData->m_allDiffDepthData);
-		}
-		else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
-			m_fileWriter->Write((syncedData->m_allDiffDepthData).ToString());
-		}
+            LOG_INFO_STREAM(m_logger, "[Level2] Symbol=" << syncedData->GetSymbol() << "|"
+                << syncedData->m_allDiffDepthData);
+        }
+        else if (m_dataCaptureMode == DataCaptureMode::LocalFile) {
+            m_fileWriter->Write((syncedData->m_allDiffDepthData).ToString());
+        }
         else if (m_dataCaptureMode == DataCaptureMode::PythonServer) {
-			MiddlewareMQ::BqtJsonMessage message = PythonMessage::AllDiffDepthToJsonMessage(
-				syncedData->m_allDiffDepthData, syncedData->GetSymbol());   
+            MiddlewareMQ::BqtJsonMessage message = PythonMessage::AllDiffDepthToJsonMessage(
+                syncedData->m_allDiffDepthData, syncedData->GetSymbol());
             return PythonClientGateWay->SendBqtJsonMessage(message).m_result;
         }
-		return true;
+        return true;
     }
     else
     {
@@ -278,7 +289,9 @@ bool MarketDataListener::OnAllDiffDepthChange(MarketDataSubject* marketData, con
     }
     return false;
 }
+#endif // 0
 
+#if 0 // Not interested for now
 bool MarketDataListener::OnAllPartDepthChange(MarketDataSubject* marketData, const std::string& symbol)
 {
     if (auto* syncedData = marketData->GetSynchronousMarketData(symbol))
@@ -303,3 +316,4 @@ bool MarketDataListener::OnAllPartDepthChange(MarketDataSubject* marketData, con
     }
     return false;
 }
+#endif // 0

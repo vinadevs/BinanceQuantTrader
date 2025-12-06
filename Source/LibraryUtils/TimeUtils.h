@@ -28,6 +28,7 @@ namespace TimeUtils {
     }
 
     std::string DLL_CLASS_LIBRARYUTILS_EXPORTS GetCurrentTimestampString();
+    std::string DLL_CLASS_LIBRARYUTILS_EXPORTS GetCurrentTimestampStringPath();
     std::size_t DLL_CLASS_LIBRARYUTILS_EXPORTS GetCurrentTimeChrono(const TimeUnit unit);
     std::string DLL_CLASS_LIBRARYUTILS_EXPORTS GetTimestampString(const std::size_t ms);
     std::string DLL_CLASS_LIBRARYUTILS_EXPORTS ConvertEpochTickToTimeString(std::size_t epochTick);

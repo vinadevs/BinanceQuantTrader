@@ -8,6 +8,7 @@
     { "name": "boost-multiprecision"},
     { "name": "boost-test"},
     { "name": "boost-variant"},
+       { "name": "boost-format"},
     { "name": "grpc"},
     { "name": "nlohmann-json"},
     { "name": "protobuf"},

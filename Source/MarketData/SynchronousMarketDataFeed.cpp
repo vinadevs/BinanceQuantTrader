@@ -93,7 +93,6 @@ void SynchronousMarketDataFeed::UpdateAllPartDepthData(const binapi::ws::part_de
 
 	m_syncMarketData->m_allPartDepthData.m_bids->SetData(bids);
 	m_syncMarketData->m_allPartDepthData.m_asks->SetData(asks);
-
 }
 
 void SynchronousMarketDataFeed::UpdateAllDiffDepthData(const binapi::ws::diff_depths_t& depth)
@@ -123,6 +122,18 @@ void SynchronousMarketDataFeed::UpdateAllDiffDepthData(const binapi::ws::diff_de
 	m_syncMarketData->m_allDiffDepthData.m_finalUpdateID->SetData(depth.u);
 	m_syncMarketData->m_allDiffDepthData.m_bids->SetData(bids);
 	m_syncMarketData->m_allDiffDepthData.m_asks->SetData(asks);
+}
+
+void SynchronousMarketDataFeed::UpdateUserDataAccountUpdate(const binapi::userdata::account_update_t& accountUpdate)
+{
+}
+
+void SynchronousMarketDataFeed::UpdateUserDataBalanceUpdate(const binapi::userdata::balance_update_t& balanceUpdate)
+{
+}
+
+void SynchronousMarketDataFeed::UpdateUserDataOrderUpdate(const binapi::userdata::order_update_t& orderUpdate)
+{
 }
 
 void SynchronousMarketDataFeed::UpdateMiniTickerData(const binapi::ws::mini_ticker_t& mini)

@@ -51,6 +51,9 @@ namespace MarketData {
 		bool HandleAllMarketTickersData(const char* fl, int ec, std::string emsg, binapi::ws::markets_tickers_t market);
 		bool HandlePartDepthData(const char* fl, int ec, std::string emsg, binapi::ws::part_depths_t depth);
 		bool HandleDiffDepthData(const char* fl, int ec, std::string emsg, binapi::ws::diff_depths_t depth);
+		bool HandleUserDataAccountUpdate(const char* fl, int ec, std::string emsg, binapi::userdata::account_update_t accountUpdate);
+		bool HandleUserDataBalanceUpdate(const char* fl, int ec, std::string emsg, binapi::userdata::balance_update_t balanceUpdate);
+		bool HandleUserDataOrderUpdate(const char* fl, int ec, std::string emsg, binapi::userdata::order_update_t orderUpdate);
 
 		// Set and get part diff symbol, this is used to store the symbol of part diff depth data
 		void SetPartDiffSymbol(const std::string& symbol) { m_partDiffSymbol = symbol; }

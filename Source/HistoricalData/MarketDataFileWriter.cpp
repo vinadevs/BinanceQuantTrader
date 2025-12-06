@@ -6,15 +6,18 @@
 # This source code can be used, distributed or modified under Apache license
 #*******************************************************************************/
 
+#include "pch.h"
 #include "MarketDataFileWriter.h"
 #include <sqlite3.h> // Requires SQLite3 library
 
-namespace MarketDataCapture
-{
-
+namespace HistoricalData {
     MarketDataFileWriter::MarketDataFileWriter(const std::string& filePath, DataSourceType sourceType)
         : m_filePath(filePath), m_sourceType(sourceType)
     {
+		m_fileStream.open(m_filePath, std::ios::out | std::ios::app);
+        if (!m_fileStream.is_open()) {
+            throw std::runtime_error("Cannot open file: " + m_filePath);
+        }
     }
 
     // ======================= PUBLIC =======================
@@ -48,11 +51,7 @@ namespace MarketDataCapture
     {
         if (m_sourceType == DataSourceType::TextFile)
         {
-            std::ofstream file(m_filePath, std::ios::out | std::ios::trunc);
-            if (!file.is_open())
-                throw std::runtime_error("Cannot open file: " + m_filePath);
-
-            file << line << "\n";
+            m_fileStream << line << "\n";
         }
     }
 

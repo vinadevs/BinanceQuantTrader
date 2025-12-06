@@ -153,6 +153,13 @@ bool MarketDataEvents::Subscribe(const std::string& symbol)
         {
             SubscibeDiffDepth(symbol);
         }
+		if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("UserData"), "true"))
+		{
+			const auto* userDataXml = m_marketDataConfigXml->FirstChildElement("UserData");
+			assert(userDataXml);
+			const auto apiKey = userDataXml->Attribute("ApiKey");
+			SubscibeUserData(apiKey, symbol);
+		}
         // stores subscribed symbol
         m_subscribedSymbols.emplace(symbol);
         return true;
@@ -382,8 +389,30 @@ void MarketDataEvents::SubscibeDiffDepth(const std::string& symbol)
 		SubscriptionHandleType::DIFF_DEPTH);
 }
 
-void MarketDataEvents::SubscibeUserData(const std::string& symbol)
+void MarketDataEvents::SubscibeUserData(const std::string& apiKey, const std::string& symbol)
 {
+	const auto handle = m_webSocketRealTime->userdata(
+		apiKey.c_str(),
+		std::bind(&MarketDataFeedHandler::HandleUserDataAccountUpdate,
+			m_feedHandler,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4),
+		std::bind(&MarketDataFeedHandler::HandleUserDataBalanceUpdate,
+			m_feedHandler,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4),
+		std::bind(&MarketDataFeedHandler::HandleUserDataOrderUpdate,
+			m_feedHandler,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4));
+	VerifySubscriptionHandle(symbol, "user data", handle,
+		SubscriptionHandleType::USER_DATA);
 }
 
 void MarketDataEvents::Unsubscribe(const binapi::ws::websockets::handle& h)

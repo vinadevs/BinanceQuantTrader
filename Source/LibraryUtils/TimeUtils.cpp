@@ -23,6 +23,16 @@ std::string TimeUtils::GetCurrentTimestampString()
     return ss.str();
 }
 
+std::string TimeUtils::GetCurrentTimestampStringPath()
+{
+    const auto now = std::chrono::system_clock::now();
+    const auto time = std::chrono::system_clock::to_time_t(now);
+    std::stringstream ss;
+#pragma warning(disable : 4996)
+    ss << std::put_time(std::localtime(&time), "%Y-%m-%d_%H-%M-%S");
+    return ss.str();
+}
+
 std::size_t TimeUtils::GetCurrentTimeChrono(const TimeUnit unit) {
     // Get the current time as a time point
     const auto now = std::chrono::system_clock::now();

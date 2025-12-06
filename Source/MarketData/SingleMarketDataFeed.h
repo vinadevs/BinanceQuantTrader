@@ -45,6 +45,7 @@ public:
 	std::string GetStringDataFromStdBoolData() const;
 	std::string GetStringData();
 	std::string GetStringDataVariant();
+	std::string GetStringDataFromEventTimeMs() const;
     MarketDataFeedStatus GetDataStatus() const;
 
 	inline friend std::ostream& operator<<(std::ostream& os, const SingleMarketDataFeed& o)

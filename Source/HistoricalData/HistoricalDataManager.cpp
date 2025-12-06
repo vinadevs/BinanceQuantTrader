@@ -10,6 +10,7 @@
 #include "../SettingNConfig/tinyxml2.h"
 
 #include "HistoricalDataManager.h"
+
 #include <cassert>
 
 using namespace HistoricalData;
@@ -26,4 +27,20 @@ HistoricalDataManager* HistoricalDataManager::GetInstance()
 void HistoricalDataManager::LoadHistoricalDatabase(const XMLElement* historicalDataConfigXml)
 {
     assert(historicalDataConfigXml);
+}
+
+MarketDataFileWriter* HistoricalDataManager::GetHistoricalDataWriter(
+	const std::filesystem::path& filePath,
+	const MarketDataFileWriter::DataSourceType sourceType)
+{
+	auto it = m_historicalDataWriters.find(filePath.string());
+	if (it != m_historicalDataWriters.end()) {
+		return it->second.get();
+	}
+	auto writer = std::make_unique<MarketDataFileWriter>(
+		filePath.string(),
+		sourceType);
+	MarketDataFileWriter* writerPtr = writer.get();
+	m_historicalDataWriters[filePath.string()] = std::move(writer);
+	return writerPtr;
 }

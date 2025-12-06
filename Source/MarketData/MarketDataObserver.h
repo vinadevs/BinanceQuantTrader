@@ -46,6 +46,9 @@ public:
 	virtual bool OnAllMiniTickersChange(MarketDataSubject* marketData, const std::string& symbol);
 	virtual bool OnAllPartDepthChange(MarketDataSubject* marketData, const std::string& symbol);
 	virtual bool OnAllDiffDepthChange(MarketDataSubject* marketData, const std::string& symbol);
+	virtual bool OnUserDataAccountUpdateChange(MarketDataSubject* marketData, const std::string& symbol);
+	virtual bool OnUserDataBalanceUpdateChange(MarketDataSubject* marketData, const std::string& symbol);
+	virtual bool OnUserDataOrderUpdateChange(MarketDataSubject* marketData, const std::string& symbol);
 };
 
 };

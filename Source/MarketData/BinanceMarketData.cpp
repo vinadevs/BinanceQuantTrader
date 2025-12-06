@@ -86,7 +86,7 @@ namespace MarketData {
 			<< "BEST_BID_QTY=" << *o.m_bestBidQty << "|"
 			<< "BEST_ASK_PRICE=" << *o.m_bestAskPrice << "|"
 			<< "BEST_ASK_QTY=" << *o.m_bestAskQty << "|"
-			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs();
 		return os;
 	}
 
@@ -151,9 +151,9 @@ namespace MarketData {
 			<< "QUANTITY=" << *o.m_quantity << "|"
 			<< "BUYER_ORDER_ID=" << *o.m_buyerOrderID << "|"
 			<< "SELLER_ORDER_ID=" << *o.m_sellerOrderID << "|"
-			<< "TRADE_TIME=" << *o.m_tradeTime << "|"
+			<< "TRADE_TIME=" << o.m_tradeTime->GetStringDataFromEventTimeMs() << "|"
 			<< "IS_BUYER_MARKET_MAKER=" << *o.m_isBuyerTheMarketMaker << "|"
-			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs();
 		return os;
 	}
 
@@ -266,12 +266,12 @@ namespace MarketData {
 			<< "LOW_PRICE=" << *o.m_lowPrice << "|"
 			<< "TOTAL_TRADED_BASE_ASSET_VOLUME=" << *o.m_totalTradedBaseAssetVolume << "|"
 			<< "TOTAL_TRADED_QUOTE_ASSET_VOLUME=" << *o.m_totalTradedQuoteAssetVolume << "|"
-			<< "STATISTICS_OPEN_TIME=" << *o.m_statisticsOpenTimeMs << "|"
-			<< "STATISTICS_CLOSE_TIME=" << *o.m_statisticsCloseTimeMs << "|"
+			<< "STATISTICS_OPEN_TIME=" << o.m_statisticsOpenTimeMs->GetStringDataFromEventTimeMs() << "|"
+			<< "STATISTICS_CLOSE_TIME=" << o.m_statisticsCloseTimeMs->GetStringDataFromEventTimeMs() << "|"
 			<< "FIRST_TRADE_ID=" << *o.m_firstTradeId << "|"
 			<< "LAST_TRADE_ID=" << *o.m_lastTradeId << "|"
 			<< "TOTAL_NUMBER_OF_TRADES=" << *o.m_totalNumberOfTrades << "|"
-			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs();
 		return os;
 	}
 
@@ -324,7 +324,7 @@ namespace MarketData {
 		}
 
 		os << "],\n";
-		os << "\"eventTimeMs\": \"" << *o.m_eventTimeMs << "\"\n";
+		os << "\"eventTimeMs\": \"" << o.m_eventTimeMs->GetStringDataFromEventTimeMs() << "\"\n";
 		os << "}";
 
 		return os;
@@ -387,7 +387,7 @@ namespace MarketData {
 			<< "LOW_PRICE=" << *o.m_lowPrice << "|"
 			<< "TOTAL_TRADED_BASE_ASSET_VOLUME=" << *o.m_totalTradedBaseAssetVolume << "|"
 			<< "TOTAL_TRADED_QUOTE_ASSET_VOLUME=" << *o.m_totalTradedQuoteAssetVolume << "|"
-			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs();
 		return os;
 	}
 
@@ -436,7 +436,7 @@ namespace MarketData {
 			}
 		}
 		os << "],\n";
-		os << "\"eventTimeMs\": \"" << *o.m_eventTimeMs << "\"\n";
+		os << "\"eventTimeMs\": \"" << o.m_eventTimeMs->GetStringDataFromEventTimeMs() << "\"\n";
 		os << "}";
 		return os;
 	}
@@ -504,9 +504,9 @@ namespace MarketData {
 			<< "FIRST_TRADE_ID=" << *o.m_firstTradeId << "|"
 			<< "LAST_TRADE_ID=" << *o.m_lastTradeId << "|"
 			<< "TOTAL_NUMBER_OF_TRADES=" << *o.m_totalNumberOfTrades << "|"
-			<< "TRADE_TIME_MS=" << *o.m_tradeTimeMs << "|"
+			<< "TRADE_TIME_MS=" << o.m_tradeTimeMs->GetStringDataFromEventTimeMs() << "|"
 			<< "IS_BUYER_MARKET_MAKER=" << *o.m_isBuyerMarketMaker << "|"
-			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs();
 		return os;
 	}
 
@@ -588,8 +588,8 @@ namespace MarketData {
 	{
 		os
 			<< "DATA_NAME=" << o.m_dataName << "|"
-			<< "KLINE_START_TIME=" << *o.m_klineStartTime << "|"
-			<< "KLINE_CLOSE_TIME=" << *o.m_klineCloseTime << "|"
+			<< "KLINE_START_TIME=" << o.m_klineStartTime->GetStringDataFromEventTimeMs() << "|"
+			<< "KLINE_CLOSE_TIME=" << o.m_klineCloseTime->GetStringDataFromEventTimeMs() << "|"
 			<< "INTERVAL=" << *o.m_interval << "|"
 			<< "FIRST_TRADE_ID=" << *o.m_firstTradeId << "|"
 			<< "LAST_TRADE_ID=" << *o.m_lastTradeId << "|"
@@ -603,7 +603,7 @@ namespace MarketData {
 			<< "QUOTE_ASSET_VOLUME=" << *o.m_quoteAssetVolume << "|"
 			<< "TAKER_BUY_BASE_ASSET_VOLUME=" << *o.m_takerBuyBaseAssetVolume << "|"
 			<< "TAKER_BUY_QUOTE_ASSET_VOLUME=" << *o.m_takerBuyQuoteAssetVolume << "|"
-			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs();
 		return os;
 	}
 
@@ -648,7 +648,7 @@ namespace MarketData {
 		os
 			<< "PRICE=" << *o.m_price << "|"
 			<< "AMOUNT=" << *o.m_amount << "|"
-			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs();
 
 		return os;
 	}
@@ -705,7 +705,7 @@ namespace MarketData {
 		PrintArrayMarktData(o.m_asks.get(), os);
 		os << ",\n";
 
-		os << "\"eventTimeMs\": \"" << *o.m_eventTimeMs << "\"\n";
+		os << "\"eventTimeMs\": \"" << o.m_eventTimeMs->GetStringDataFromEventTimeMs() << "\"\n";
 		os << "}";
 
 		return os;
@@ -772,13 +772,118 @@ namespace MarketData {
 		PrintArrayMarktData(o.m_asks.get(), os);
 		os << ",\n";
 
-		os << "\"eventTimeMs\": \"" << *o.m_eventTimeMs << "\"\n";
+		os << "\"eventTimeMs\": \"" << o.m_eventTimeMs->GetStringDataFromEventTimeMs() << "\"\n";
 		os << "}";
 
 		return os;
 	}
 
 	std::string AllDiffDepthData::ToString() {
+		std::ostringstream oss;
+		oss << *this;
+		return oss.str();
+	}
+
+	/********************************************************************************/
+	// UserDataAccount
+	/********************************************************************************/
+
+	UserDataAccount::UserDataAccount()
+	{
+		m_dataName = "UserDataAccount";
+	}
+
+	UserDataAccount::UserDataAccount(const UserDataAccount& other)
+	{
+		m_dataName = other.m_dataName;
+	}
+
+	UserDataAccount& UserDataAccount::operator=(const UserDataAccount& other)
+	{
+		if (this != &other)
+		{
+			m_dataName = other.m_dataName;
+		}
+		return *this;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const UserDataAccount& o)
+	{
+		os << "DATA_NAME=" << o.m_dataName;
+		return os;
+	}
+
+	std::string UserDataAccount::ToString() {
+		std::ostringstream oss;
+		oss << *this;
+		return oss.str();
+	}
+
+	/********************************************************************************/
+	// UserDataBalance
+	/********************************************************************************/
+
+	UserDataBalance::UserDataBalance()
+	{
+		m_dataName = "UserDataBalance";
+	}
+
+	UserDataBalance::UserDataBalance(const UserDataBalance& other)
+	{
+		m_dataName = other.m_dataName;
+	}
+
+	UserDataBalance& UserDataBalance::operator=(const UserDataBalance& other)
+	{
+		if (this != &other)
+		{
+			m_dataName = other.m_dataName;
+		}
+		return *this;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const UserDataBalance& o)
+	{
+		os << "DATA_NAME=" << o.m_dataName;
+		return os;
+	}
+
+	std::string UserDataBalance::ToString() {
+		std::ostringstream oss;
+		oss << *this;
+		return oss.str();
+	}
+
+	/********************************************************************************/
+	// UserDataOrder
+	/********************************************************************************/
+
+	UserDataOrder::UserDataOrder()
+	{
+		m_dataName = "UserDataOrder";
+	}
+
+	UserDataOrder::UserDataOrder(const UserDataOrder& other)
+	{
+		m_dataName = other.m_dataName;
+	}
+
+	UserDataOrder& UserDataOrder::operator=(const UserDataOrder& other)
+	{
+		if (this != &other)
+		{
+			m_dataName = other.m_dataName;
+		}
+		return *this;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const UserDataOrder& o)
+	{
+		os << "DATA_NAME=" << o.m_dataName;
+		return os;
+	}
+
+	std::string UserDataOrder::ToString() {
 		std::ostringstream oss;
 		oss << *this;
 		return oss.str();

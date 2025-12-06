@@ -8,6 +8,7 @@
 
 #include "pch.h"
 #include "SingleMarketDataFeed.h"
+#include "../LibraryUtils/TimeUtils.h"
 
 #include <type_traits>
 
@@ -89,4 +90,9 @@ std::string SingleMarketDataFeed::GetStringDataVariant()
             return "";
         }
         }, m_data);
+}
+
+std::string SingleMarketDataFeed::GetStringDataFromEventTimeMs() const
+{
+	return TimeUtils::GetTimestampString(std::get<std::size_t>(m_data));
 }

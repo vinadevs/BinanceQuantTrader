@@ -5,8 +5,8 @@
 </RealTimeMarketData>
 
 <MarketDataCapture>
-  <DataCaptureMode Mode="PythonServer"/>
-  <LocalFilePath Path="LocalFile"/>
+  <DataCaptureMode Mode="HistoricalData"/>
+  <DataRepository Path="[ROOT_BQT_PATH]\AppData\"/>
 </MarketDataCapture>
 
 <ExchangeSimulatorMarketData>

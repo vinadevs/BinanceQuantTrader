@@ -281,6 +281,59 @@ bool MarketDataFeedHandler::HandleDiffDepthData(const char* fl, int ec, std::str
 	return false;
 }
 
+bool MarketDataFeedHandler::HandleUserDataAccountUpdate(const char* fl, int ec, std::string emsg, binapi::userdata::account_update_t accountUpdate)
+{
+	if (ec)
+	{
+		std::cerr << "subscribe user data account update error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		return false;
+	}
+	for (const auto& symbol : accountUpdate.B)
+	{
+		if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(symbol.second.a))
+		{
+			feed->UpdateUserDataAccountUpdate(accountUpdate);
+			MarketDataSubject::NotifyUserDataAccountUpdateChange(symbol.second.a);
+		}
+	}
+	return true;
+}
+
+bool MarketDataFeedHandler::HandleUserDataBalanceUpdate(const char* fl, int ec, std::string emsg, binapi::userdata::balance_update_t balanceUpdate)
+{
+	if (ec)
+	{
+		std::cerr << "subscribe user data balance update error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		return false;
+	}
+	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(balanceUpdate.a))
+	{
+		feed->UpdateUserDataBalanceUpdate(balanceUpdate);
+		MarketDataSubject::NotifyUserDataBalanceUpdateChange(balanceUpdate.a);
+	}
+	return true;
+}
+
+bool MarketDataFeedHandler::HandleUserDataOrderUpdate(const char* fl, int ec, std::string emsg, binapi::userdata::order_update_t orderUpdate)
+{
+	if (ec)
+	{
+		std::cerr << "subscribe user data order update error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		return false;
+	}
+	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(orderUpdate.s))
+	{
+		feed->UpdateUserDataOrderUpdate(orderUpdate);
+		MarketDataSubject::NotifyUserDataOrderUpdateChange(orderUpdate.s);
+		return true;
+	}
+	else
+	{
+		throw std::runtime_error("MarketDataFeedHandler: sycnchronous feed could not found with symbol=" + orderUpdate.s);
+	}
+	return false;
+}
+
 
 SynchronousMarketData* MarketDataFeedHandler::GetSynchronousMarketData(const std::string& symbol)
 {

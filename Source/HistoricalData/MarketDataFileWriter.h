@@ -1,5 +1,7 @@
 #pragma once
 
+#include "dlldefine.h"
+
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -8,15 +10,15 @@
 #include <stdexcept>
 #include <iostream>
 
-namespace MarketDataCapture
-{
+namespace HistoricalData {
 	// This class handles reading and writing market data to/from files or SQLite databases.
-    class MarketDataFileWriter
+    class DLL_CLASS_HISTORICALDATA_EXPORTS MarketDataFileWriter final
     {
     public:
         // Enum for data source type
         enum class DataSourceType : unsigned
         {
+			Undefined = 0,
             TextFile,
             SQLite
         };
@@ -32,7 +34,8 @@ namespace MarketDataCapture
 
     private:
         std::string m_filePath;
-        DataSourceType m_sourceType;
+		std::ofstream m_fileStream;
+		DataSourceType m_sourceType{ DataSourceType::Undefined };
 
         // Internal helpers
         std::unordered_map<std::string, std::string> ParseLine(const std::string& line);
