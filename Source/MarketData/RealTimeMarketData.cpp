@@ -18,53 +18,53 @@ using namespace tinyxml2;
 RealTimeMarketData::RealTimeMarketData(
 	const XMLElement* mkDataConfigXml)
 {
-	m_feedHandler = std::make_unique<MarketDataFeedHandler>();
-	m_dataEvents = std::make_unique<MarketDataEvents>(mkDataConfigXml, m_feedHandler.get());
+	m_binanceFeedHandler = std::make_unique<BinanceMarketDataFeedHandler>();
+	m_binanceDataEvents = std::make_unique<BinanceMarketDataEvents>(mkDataConfigXml, m_binanceFeedHandler.get());
 }
 
 RealTimeMarketData::~RealTimeMarketData() {}
 
 void RealTimeMarketData::RegisterDataListener(MarketDataObserver* observer)
 {
-	m_feedHandler->RegisterObserver(observer);
+	m_binanceFeedHandler->RegisterObserver(observer);
 }
 
 void RealTimeMarketData::UnRegisterDataListener(MarketDataObserver* observer)
 {
-	m_feedHandler->UnregisterObserver(observer);
+	m_binanceFeedHandler->UnregisterObserver(observer);
 }
 
 void RealTimeMarketData::StartStreamingData()
 {
-	m_dataEvents->Wait();
+	m_binanceDataEvents->Wait();
 }
 
 void RealTimeMarketData::StartIOContext()
 {
-	m_dataEvents->StartIOContext();
+	m_binanceDataEvents->StartIOContext();
 }
 
 bool RealTimeMarketData::SubscribeSymbol(const std::string& symbol)
 {
-	return m_dataEvents->Subscribe(symbol);
+	return m_binanceDataEvents->Subscribe(symbol);
 }
 
 bool RealTimeMarketData::UnsubscribeSymbol(const std::string& symbol)
 {
-	return m_dataEvents->Unsubscribe(symbol);
+	return m_binanceDataEvents->Unsubscribe(symbol);
 }
 
 bool RealTimeMarketData::IsSubscribedSymbol(const std::string& symbol)
 {
-	return m_dataEvents->IsSubscribed(symbol);
+	return m_binanceDataEvents->IsSubscribed(symbol);
 }
 
 const std::unordered_set<std::string>& RealTimeMarketData::GetSubscribingSymbols() const
 {
-	return m_dataEvents->GetSubscribingSymbols();
+	return m_binanceDataEvents->GetSubscribingSymbols();
 }
 
-MarketDataFeedHandler* RealTimeMarketData::GetFeedHandler() const
+BinanceMarketDataFeedHandler* RealTimeMarketData::GetFeedHandler() const
 {
-	return m_feedHandler.get();
+	return m_binanceFeedHandler.get();
 }

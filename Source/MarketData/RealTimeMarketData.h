@@ -17,8 +17,11 @@
 #include <memory>
 #include <unordered_set>
 
-#include "MarketDataFeedHandler.h"
-#include "MarketDataEvents.h"
+#include "BinanceMarketDataFeedHandler.h"
+// For real time market data
+#include "BinanceMarketDataEvents.h"
+// For historical back test
+#include "HistoricalMarketDataEvents.h"
 
 namespace tinyxml2 {
 	class XMLElement;
@@ -86,9 +89,10 @@ public:
 	bool UnsubscribeSymbol(const std::string& symbol);
 	bool IsSubscribedSymbol(const std::string& symbol);
 	const std::unordered_set<std::string>& GetSubscribingSymbols() const;
-	MarketDataFeedHandler* GetFeedHandler() const;
+	BinanceMarketDataFeedHandler* GetFeedHandler() const;
 private:
-	std::unique_ptr<MarketDataFeedHandler> m_feedHandler;
-	std::unique_ptr<MarketDataEvents> m_dataEvents;
+	std::unique_ptr<BinanceMarketDataFeedHandler> m_binanceFeedHandler;
+	std::unique_ptr<BinanceMarketDataEvents> m_binanceDataEvents;
+	std::unique_ptr<HistoricalMarketDataEvents> m_historicalDataEvents;
 };
 };

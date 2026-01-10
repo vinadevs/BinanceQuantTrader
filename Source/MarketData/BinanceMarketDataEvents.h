@@ -19,17 +19,13 @@
 #include <memory>
 #include <vector>
 #include <string>
-#include <unordered_set>
 #include <mutex>
 #include <condition_variable>
 
+#include "MarketDataEventBase.h"
+
 namespace tinyxml2 {
 	class XMLElement;
-	class XMLDocument;
-};
-
-namespace LibraryUtils {
-	class Logger;
 };
 
 // In trading, market data events refer to the dissemination of real - time
@@ -39,24 +35,25 @@ namespace LibraryUtils {
 // and other significant information that impacts trading decisions.
 
 namespace MarketData {
-	class MarketDataFeedHandler;
-	class MarketDataEvents
+	class BinanceMarketDataFeedHandler;
+	class BinanceMarketDataEvents : public MarketDataEventBase
 	{
 	public:
-		MarketDataEvents(
+		BinanceMarketDataEvents(
 			const tinyxml2::XMLElement* marketDataConfigXml,
-			MarketDataFeedHandler* feedHandler);
-		~MarketDataEvents();
+			BinanceMarketDataFeedHandler* feedHandler);
+		~BinanceMarketDataEvents();
 
 		void StartIOContext();
-		bool Subscribe(const std::string& symbol);
+
+		bool Subscribe(const std::string& symbol) override;
+		bool Unsubscribe(const std::string& symbol) override;
+		bool IsSubscribed(const std::string& symbol) override;
+
 		// Special case for subscribing part depth data
 		bool SubscribePartDepth(const std::string& symbol);
-		bool Unsubscribe(const std::string& symbol);
-		bool IsSubscribed(const std::string& symbol);
 		// NOTE: we must always subscribe symbols before calling this function!
 		void Wait();
-		const std::unordered_set<std::string>& GetSubscribingSymbols() const;
 
 	private:
 		// choose what we want to receive from exchange
@@ -86,14 +83,11 @@ namespace MarketData {
 		// load static symbols to subscribe
 		void LoadInterestingDataSymbols(const char* filePath);
 
-		std::unordered_set<std::string> m_subscribedSymbols;
 		std::unordered_set<std::string> m_staticSymbols;
 		boost::asio::io_context m_ioContext;
 		std::unique_ptr<binapi::ws::websockets> m_webSocketRealTime;
 		std::unique_ptr<MarketDataSubscriptionManager> m_mdSubscriptionMgr;
-		MarketDataFeedHandler* m_feedHandler{ nullptr };
-		std::unique_ptr<LibraryUtils::Logger> m_logger;
-		const tinyxml2::XMLElement* m_marketDataConfigXml{ nullptr };
+		BinanceMarketDataFeedHandler* m_feedHandler{ nullptr };
 		// mutil threads
 		std::mutex m_marketDataMutex; // this class need to be thread safe!
 		std::condition_variable m_marketDataCond; // avoid polling thread

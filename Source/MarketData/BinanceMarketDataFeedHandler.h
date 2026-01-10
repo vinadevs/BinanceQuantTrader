@@ -24,10 +24,10 @@
 
 namespace MarketData {
 	class SynchronousMarketDataFeed;
-	class MarketDataFeedHandler : public MarketDataSubject
+	class BinanceMarketDataFeedHandler : public MarketDataSubject
 	{
 	public:
-		MarketDataFeedHandler();
+		BinanceMarketDataFeedHandler();
 
 		// register data listeners
 		void RegisterObserver(MarketDataObserver* observer);
