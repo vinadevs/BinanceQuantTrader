@@ -1,4 +1,9 @@
 <?xml version="1.0"?>
+
+<MarketDataSource>
+  <Source Type="RealTimeData"/>
+</MarketDataSource>
+
 <RealTimeMarketData>
   <Connection StreamBinanceCom="stream.binance.com" StreamConnectionPort="9443"/>
   <SubscriptionData IndividualBookTickerData="true" TradeData="true" IndividualMarketTickerData="true" AllMarketTickersData="true" IndividualMiniTickerData="true" AllMiniTickersData="false" AggregateTradeData="false" KlineCandleStickData="false" PartDepthData="false" DiffDepthData="false" UserData="false"/>

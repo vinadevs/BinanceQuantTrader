@@ -4,7 +4,7 @@
 </GlobalSettings>
 
 <RealTimeMarketData>
-  <UsingMarketData Name="BinanceMarketData" File="[ROOT_BQT_PATH]\Configurations\MarketData\BinanceMarketDataCfg.xml"/>
+  <UsingMarketData Name="RealTimeData" File="[ROOT_BQT_PATH]\Configurations\MarketData\BinanceMarketDataCfg.xml"/>
 </RealTimeMarketData>
 
 <StaticData>

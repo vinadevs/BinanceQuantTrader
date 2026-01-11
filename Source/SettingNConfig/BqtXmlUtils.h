@@ -11,6 +11,8 @@
 #include "dlldefine.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
 namespace tinyxml2 {
 	class XMLDocument;
@@ -18,10 +20,11 @@ namespace tinyxml2 {
 };
 
 namespace SettingNConfig {
+
 	namespace BqtXmlUtils {
 		// Using to load market data config from Algo/Simulator applications
-		std::unique_ptr<tinyxml2::XMLDocument>
+		std::pair<std::string, std::unique_ptr<tinyxml2::XMLDocument>>
 			DLL_CLASS_SETTINGS_AND_CONFIGS_EXPORTS 
-			GetBinanceMarketDataConfig(const tinyxml2::XMLElement* rootConfigXml);
+			GetMarketDataConfig(const tinyxml2::XMLElement* realTimeMarketDataCfg);
 	};
 };

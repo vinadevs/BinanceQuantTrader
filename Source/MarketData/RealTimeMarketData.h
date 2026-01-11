@@ -15,16 +15,19 @@
 #include "dlldefine.h"
 
 #include <memory>
+#include <string>
 #include <unordered_set>
 
+// Feed handlers
 #include "BinanceMarketDataFeedHandler.h"
+#include "HistoricalMarketDataFeedHandler.h"
 // For real time market data
 #include "BinanceMarketDataEvents.h"
 // For historical back test
 #include "HistoricalMarketDataEvents.h"
 
 namespace tinyxml2 {
-	class XMLElement;
+	class XMLDocument;
 };
 
 namespace MarketData {
@@ -73,7 +76,9 @@ class MarketDataObserver;
 class DLL_CLASS_MARKETDATA_EXPORTS RealTimeMarketData
 {
 public:
-	RealTimeMarketData(const tinyxml2::XMLElement* mkDataConfigXml);
+	RealTimeMarketData(
+		const tinyxml2::XMLDocument* mkDataConfigXml,
+		const std::string& mkDataTypeName);
 	~RealTimeMarketData();
 
 	// These 2 functions must be called at the class
@@ -93,6 +98,7 @@ public:
 private:
 	std::unique_ptr<BinanceMarketDataFeedHandler> m_binanceFeedHandler;
 	std::unique_ptr<BinanceMarketDataEvents> m_binanceDataEvents;
+	std::unique_ptr<HistoricalMarketDataFeedHandler> m_historicalFeedHandler;
 	std::unique_ptr<HistoricalMarketDataEvents> m_historicalDataEvents;
 };
 };

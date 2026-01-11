@@ -16,10 +16,31 @@ using namespace MarketData;
 using namespace tinyxml2;
 
 RealTimeMarketData::RealTimeMarketData(
-	const XMLElement* mkDataConfigXml)
+	const XMLDocument* mkDataConfigXml,
+	const std::string& mkDataTypeName)
 {
-	m_binanceFeedHandler = std::make_unique<BinanceMarketDataFeedHandler>();
-	m_binanceDataEvents = std::make_unique<BinanceMarketDataEvents>(mkDataConfigXml, m_binanceFeedHandler.get());
+	if (mkDataTypeName == "RealTimeData")
+	{
+		m_binanceFeedHandler = std::make_unique<BinanceMarketDataFeedHandler>();
+		const auto* binanceRealTimeMarketDataCfg = mkDataConfigXml->FirstChildElement("RealTimeMarketData");
+		assert(binanceRealTimeMarketDataCfg);
+		m_binanceDataEvents = std::make_unique<BinanceMarketDataEvents>(
+			binanceRealTimeMarketDataCfg,
+			m_binanceFeedHandler.get());
+	}
+	else if (mkDataTypeName == "HistoricalMarketData")
+	{
+		m_historicalFeedHandler = std::make_unique<HistoricalMarketDataFeedHandler>();
+		const auto* historicalMarketDataCfg = mkDataConfigXml->FirstChildElement("HistoricalMarketData");
+		assert(historicalMarketDataCfg);
+		m_historicalDataEvents = std::make_unique<HistoricalMarketDataEvents>(
+			historicalMarketDataCfg,
+			m_historicalFeedHandler.get());
+	}
+	else
+	{
+		throw std::runtime_error("RealTimeMarketData: unsupported MarketData type");
+	}
 }
 
 RealTimeMarketData::~RealTimeMarketData() {}
