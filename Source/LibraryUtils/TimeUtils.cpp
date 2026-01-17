@@ -116,3 +116,20 @@ std::chrono::system_clock::time_point TimeUtils::EpochToTimePoint(
         throw std::invalid_argument("Unsupported TimeUnit");
     }
 }
+
+std::size_t TimeUtils::StringDateTimeToEpochSeconds(const std::string& datetime)
+{
+    std::tm tm{};
+    std::istringstream ss(datetime);
+
+    ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
+    if (ss.fail())
+        throw std::runtime_error("Invalid datetime format");
+
+    // Interpret as LOCAL time
+    std::time_t epoch = std::mktime(&tm);
+    if (epoch == -1)
+        throw std::runtime_error("mktime failed");
+
+    return static_cast<std::size_t>(epoch);
+}

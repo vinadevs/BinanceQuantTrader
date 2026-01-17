@@ -32,6 +32,7 @@ namespace TimeUtils {
     std::size_t DLL_CLASS_LIBRARYUTILS_EXPORTS GetCurrentTimeChrono(const TimeUnit unit);
     std::string DLL_CLASS_LIBRARYUTILS_EXPORTS GetTimestampString(const std::size_t ms);
     std::string DLL_CLASS_LIBRARYUTILS_EXPORTS ConvertEpochTickToTimeString(std::size_t epochTick);
+    std::size_t DLL_CLASS_LIBRARYUTILS_EXPORTS StringDateTimeToEpochSeconds(const std::string& datetime);
     std::chrono::system_clock::time_point DLL_CLASS_LIBRARYUTILS_EXPORTS EpochToTimePoint(
         const long long epochTickValue, const TimeUnit unit);
 };

@@ -102,7 +102,10 @@ MatchingEngine::MatchingEngine(
 	m_intervalMilliseconds = orderProcessingXml->IntAttribute("IntervalMilliseconds");
 }
 
-MatchingEngine::~MatchingEngine() {}
+MatchingEngine::~MatchingEngine() 
+{
+	m_logger->Info("Shutdown MatchingEngine...");
+}
 
 void MatchingEngine::SubscribeTargetSymbols(const tinyxml2::XMLDocument* realTimeMarketDataCfg)
 {
@@ -149,7 +152,14 @@ void MatchingEngine::Stop()
 		&& m_marketData) // if using RTMarketParticipant
 	{
 		// Start receive real time market data
-		m_marketData->UnRegisterDataListener(m_rtMarketSpotParticipant);
+		if (m_participant->GetParticipantType() == ParticipantType::REAL_TIME_SPOT_MARKET_DATA)
+		{
+			m_marketData->UnRegisterDataListener(m_rtMarketSpotParticipant);
+		}
+		else if (m_participant->GetParticipantType() == ParticipantType::REAL_TIME_FUTURE_MARKET_DATA)
+		{
+			m_marketData->UnRegisterDataListener(m_rtMarketFutureParticipant);
+		}
 	}
 	m_isRunning.store(false);
 	m_threadProcessIncommingOrders.join();

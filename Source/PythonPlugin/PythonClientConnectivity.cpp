@@ -32,6 +32,15 @@ void PythonClientConnectivity::InitMessageTransporter(const XMLElement* messageD
     m_messageDelivery = std::make_unique<MiddlewareMQ::MessageDelivery>(messageDeliveryCfg);
 }
 
+void PythonClientConnectivity::StopMessageTransporter()
+{
+    if (m_messageDelivery)
+    {
+        m_messageDelivery->GetCommunicationChannel()->StopChannel();
+    }
+}
+
+
 MiddlewareMQ::MiddlewareMQResult
 PythonClientConnectivity::SendBqtJsonMessage(const MiddlewareMQ::BqtJsonMessage& message)
 {

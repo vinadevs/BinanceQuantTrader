@@ -86,6 +86,10 @@ TradingModel::~TradingModel()
 	// This can lead to larger binary sizes because the destructor is essentially 
 	// copied across all translation units that use the class, rather than having 
 	// a single implementation in one translation unit.
+
+#if USE_BACK_TEST_TRADING
+	ExchangeSimulatorGateWay->StopMessageTransporter();
+#endif
 }
 
 void TradingModel::PrepareTradingComponents(

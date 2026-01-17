@@ -42,6 +42,14 @@ void ExchangeSimulatorConnectivity::InitMessageTransporter(const XMLElement* mes
     m_messageDelivery = std::make_unique<MiddlewareMQ::MessageDelivery>(messageDeliveryCfg);
 }
 
+void ExchangeSimulatorConnectivity::StopMessageTransporter()
+{
+    if (m_messageDelivery)
+    {
+        m_messageDelivery->GetCommunicationChannel()->StopChannel();
+    }
+}
+
 void ExchangeSimulatorConnectivity::InitBinanceWalletClient(const XMLElement* binanceWalletClientXmlCfg)
 {
     m_binanceWalletClient = std::make_unique<BinanceWalletClient>(binanceWalletClientXmlCfg);

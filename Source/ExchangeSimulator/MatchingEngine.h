@@ -87,7 +87,7 @@ namespace ExchangeSimulator {
         MatchingEngine(const tinyxml2::XMLElement* matchingEngineXmlCfg,
                        UserAccountManager* userAccountManager,
                        UserTradeProfileManager* userTradeProfileManager);
-        ~MatchingEngine();
+        ~MatchingEngine() override;
 
         void Start() override;
         void Stop() override;

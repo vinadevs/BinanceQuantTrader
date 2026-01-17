@@ -41,6 +41,14 @@ void AlgosConnectivity::InitMessageTransporter(const XMLElement* messageDelivery
     m_messageDelivery = std::make_unique<MessageDelivery>(messageDeliveryCfg);
 }
 
+void AlgosConnectivity::StopMessageTransporter()
+{
+    if (m_messageDelivery)
+    {
+        m_messageDelivery->GetCommunicationChannel()->StopChannel();
+    }
+}
+
 MiddlewareMQResult AlgosConnectivity::SendDownstreamOrderAck(const DownstreamOrderAck& ack)
 {
     const auto newOrderResult = m_messageDelivery->DeliveryMessage(ack);
