@@ -105,7 +105,7 @@ namespace TradingStrategies {
 		public TradingStrategies::ExternalRequestReceiver // to receive external parent orders
 	{
 	public:
-		// This construcor is used for strategies that needs to send order to exchange
+		// This construtcor is used for strategies that needs to send order to exchange
 		TradingStrategyBase(
 			const std::string& strategyName,
 			const std::string& strategyDescription,
