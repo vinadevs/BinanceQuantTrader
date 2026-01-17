@@ -31,7 +31,7 @@ void HistoricalDataManager::LoadHistoricalDatabase(const XMLElement* historicalD
 
 MarketDataFileWriter* HistoricalDataManager::GetHistoricalDataWriter(
 	const std::filesystem::path& filePath,
-	const MarketDataFileWriter::DataSourceType sourceType)
+	const DataSourceType sourceType)
 {
 	auto it = m_historicalDataWriters.find(filePath.string());
 	if (it != m_historicalDataWriters.end()) {
@@ -43,4 +43,20 @@ MarketDataFileWriter* HistoricalDataManager::GetHistoricalDataWriter(
 	MarketDataFileWriter* writerPtr = writer.get();
 	m_historicalDataWriters[filePath.string()] = std::move(writer);
 	return writerPtr;
+}
+
+MarketDataFileReader* HistoricalDataManager::GetHistoricalDataReader(
+	const std::filesystem::path& filePath,
+	const DataSourceType sourceType)
+{
+	auto it = m_historicalDataReaders.find(filePath.string());
+	if (it != m_historicalDataReaders.end()) {
+		return it->second.get();
+	}
+	auto reader = std::make_unique<MarketDataFileReader>(
+		filePath.string(),
+		sourceType);
+	MarketDataFileReader* readerPtr = reader.get();
+	m_historicalDataReaders[filePath.string()] = std::move(reader);
+	return readerPtr;
 }

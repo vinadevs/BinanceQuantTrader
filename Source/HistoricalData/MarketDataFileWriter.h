@@ -1,6 +1,15 @@
+/*#*******************************************************************************
+# COPYRIGHT NOTES
+# ---------------
+# This is a part of Binance Quant Trader Project
+# Copyright(C) - vinadevs
+# This source code can be used, distributed or modified under Apache license
+#*******************************************************************************/
+
 #pragma once
 
 #include "dlldefine.h"
+#include "HistoricalDataDef.h"
 
 #include <string>
 #include <unordered_map>
@@ -11,22 +20,12 @@
 #include <iostream>
 
 namespace HistoricalData {
-	// This class handles reading and writing market data to/from files or SQLite databases.
+	// This class handles writing market data to files or SQLite databases.
     class DLL_CLASS_HISTORICALDATA_EXPORTS MarketDataFileWriter final
     {
     public:
-        // Enum for data source type
-        enum class DataSourceType : unsigned
-        {
-			Undefined = 0,
-            TextFile,
-            SQLite
-        };
 
-        explicit MarketDataFileWriter(const std::string& filePath, DataSourceType sourceType);
-
-        // Read market data into memory (key-value pairs)
-        std::vector<std::unordered_map<std::string, std::string>> Read();
+        MarketDataFileWriter(const std::string& filePath, DataSourceType sourceType);
 
         // Write market data to file or database
         void Write(const std::string& line);
@@ -41,8 +40,7 @@ namespace HistoricalData {
         std::unordered_map<std::string, std::string> ParseLine(const std::string& line);
         std::string SerializeLine(const std::unordered_map<std::string, std::string>& record);
 
-        // SQLite helpers (if needed)
-        void ReadFromSQLite(std::vector<std::unordered_map<std::string, std::string>>& records);
+        // SQLite helper
         void WriteToSQLite(const std::vector<std::unordered_map<std::string, std::string>>& records);
     };
 
