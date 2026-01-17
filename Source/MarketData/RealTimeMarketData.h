@@ -73,6 +73,8 @@ class MarketDataObserver;
 // it would handle the continuous flow of real - time data and notify
 // registered strategies or a TradingModel to react accordingly.
 
+using MarketDataFeedHanlder = MarketDataSubject;
+
 class DLL_CLASS_MARKETDATA_EXPORTS RealTimeMarketData
 {
 public:
@@ -87,18 +89,17 @@ public:
 	void UnRegisterDataListener(MarketDataObserver* observer);
 
 	void StartStreamingData();
-	// This function must be called after subscribing symbols
+	// This function must be called after subscribing symbols (NOT APPLY FOR HISTORICAL DATA REPLAY)
 	// usually we called it in strategy StartTrade() function to create an ansync wait
 	void StartIOContext();
 	bool SubscribeSymbol(const std::string& symbol);
 	bool UnsubscribeSymbol(const std::string& symbol);
 	bool IsSubscribedSymbol(const std::string& symbol);
 	const std::unordered_set<std::string>& GetSubscribingSymbols() const;
-	BinanceMarketDataFeedHandler* GetFeedHandler() const;
+	MarketDataFeedHanlder* GetFeedHandler() const;
 private:
-	std::unique_ptr<BinanceMarketDataFeedHandler> m_binanceFeedHandler;
-	std::unique_ptr<BinanceMarketDataEvents> m_binanceDataEvents;
-	std::unique_ptr<HistoricalMarketDataFeedHandler> m_historicalFeedHandler;
-	std::unique_ptr<HistoricalMarketDataEvents> m_historicalDataEvents;
+	std::unique_ptr<MarketDataEventBase> m_marketDataEvents;
+	std::unique_ptr<MarketDataFeedHanlder> m_marketDataFeedHandler;
+	const std::string m_mkDataTypeName;
 };
 };

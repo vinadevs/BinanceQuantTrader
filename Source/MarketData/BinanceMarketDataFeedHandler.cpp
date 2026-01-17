@@ -17,16 +17,6 @@ using namespace MarketData;
 BinanceMarketDataFeedHandler::BinanceMarketDataFeedHandler()
     : m_synchronousFeedMgr{ std::make_unique<MarketDataFeedManager>() } {}
 
-void BinanceMarketDataFeedHandler::RegisterObserver(MarketDataObserver* observer)
-{
-    MarketDataSubject::AttachMarketDataObserver(observer);
-}
-
-void BinanceMarketDataFeedHandler::UnregisterObserver(MarketDataObserver* observer)
-{
-    MarketDataSubject::DettachMarketDataObserver(observer);
-}
-
 bool BinanceMarketDataFeedHandler::CreateNewMarketDataFeed(const std::string& symbol)
 {
     return m_synchronousFeedMgr->CreateNewSynchronousFeed(symbol);

@@ -18,24 +18,25 @@ using namespace tinyxml2;
 RealTimeMarketData::RealTimeMarketData(
 	const XMLDocument* mkDataConfigXml,
 	const std::string& mkDataTypeName)
+	: m_mkDataTypeName(mkDataTypeName)
 {
-	if (mkDataTypeName == "RealTimeData")
+	if (m_mkDataTypeName == "RealTimeData")
 	{
-		m_binanceFeedHandler = std::make_unique<BinanceMarketDataFeedHandler>();
+		m_marketDataFeedHandler = std::make_unique<BinanceMarketDataFeedHandler>();
 		const auto* binanceRealTimeMarketDataCfg = mkDataConfigXml->FirstChildElement("RealTimeMarketData");
 		assert(binanceRealTimeMarketDataCfg);
-		m_binanceDataEvents = std::make_unique<BinanceMarketDataEvents>(
+		m_marketDataEvents = std::make_unique<BinanceMarketDataEvents>(
 			binanceRealTimeMarketDataCfg,
-			m_binanceFeedHandler.get());
+			m_marketDataFeedHandler.get());
 	}
-	else if (mkDataTypeName == "HistoricalMarketData")
+	else if (m_mkDataTypeName == "HistoricalMarketData")
 	{
-		m_historicalFeedHandler = std::make_unique<HistoricalMarketDataFeedHandler>();
+		m_marketDataFeedHandler = std::make_unique<HistoricalMarketDataFeedHandler>();
 		const auto* historicalMarketDataCfg = mkDataConfigXml->FirstChildElement("HistoricalMarketData");
 		assert(historicalMarketDataCfg);
-		m_historicalDataEvents = std::make_unique<HistoricalMarketDataEvents>(
+		m_marketDataEvents = std::make_unique<HistoricalMarketDataEvents>(
 			historicalMarketDataCfg,
-			m_historicalFeedHandler.get());
+			m_marketDataFeedHandler.get());
 	}
 	else
 	{
@@ -47,45 +48,45 @@ RealTimeMarketData::~RealTimeMarketData() {}
 
 void RealTimeMarketData::RegisterDataListener(MarketDataObserver* observer)
 {
-	m_binanceFeedHandler->RegisterObserver(observer);
+	m_marketDataFeedHandler->AttachMarketDataObserver(observer);
 }
 
 void RealTimeMarketData::UnRegisterDataListener(MarketDataObserver* observer)
 {
-	m_binanceFeedHandler->UnregisterObserver(observer);
+	m_marketDataFeedHandler->DettachMarketDataObserver(observer);
 }
 
 void RealTimeMarketData::StartStreamingData()
 {
-	m_binanceDataEvents->Wait();
+	m_marketDataEvents->Wait();
 }
 
 void RealTimeMarketData::StartIOContext()
 {
-	m_binanceDataEvents->StartIOContext();
+	m_marketDataEvents->StartIOContext();
 }
 
 bool RealTimeMarketData::SubscribeSymbol(const std::string& symbol)
 {
-	return m_binanceDataEvents->Subscribe(symbol);
+	return m_marketDataEvents->Subscribe(symbol);
 }
 
 bool RealTimeMarketData::UnsubscribeSymbol(const std::string& symbol)
 {
-	return m_binanceDataEvents->Unsubscribe(symbol);
+	return m_marketDataEvents->Unsubscribe(symbol);
 }
 
 bool RealTimeMarketData::IsSubscribedSymbol(const std::string& symbol)
 {
-	return m_binanceDataEvents->IsSubscribed(symbol);
+	return m_marketDataEvents->IsSubscribed(symbol);
 }
 
 const std::unordered_set<std::string>& RealTimeMarketData::GetSubscribingSymbols() const
 {
-	return m_binanceDataEvents->GetSubscribingSymbols();
+	return m_marketDataEvents->GetSubscribingSymbols();
 }
 
-BinanceMarketDataFeedHandler* RealTimeMarketData::GetFeedHandler() const
+MarketDataFeedHanlder* RealTimeMarketData::GetFeedHandler() const
 {
-	return m_binanceFeedHandler.get();
+	return m_marketDataFeedHandler.get();
 }

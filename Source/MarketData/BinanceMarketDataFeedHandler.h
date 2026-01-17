@@ -29,9 +29,6 @@ namespace MarketData {
 	public:
 		BinanceMarketDataFeedHandler();
 
-		// register data listeners
-		void RegisterObserver(MarketDataObserver* observer);
-		void UnregisterObserver(MarketDataObserver* observer);
 		// market data feed access
 		bool CreateNewMarketDataFeed(const std::string& symbol);
 		void RemoveMarketDataFeed(const std::string& symbol);

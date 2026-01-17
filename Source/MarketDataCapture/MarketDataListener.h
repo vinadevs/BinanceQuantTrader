@@ -46,7 +46,7 @@ namespace MarketDataCapture {
 	enum class DataCaptureMode : unsigned
 	{
 		Undefined = 0,
-		LocalFile, // store to local file
+        SaveHistoricalData, // store to local file
 		ConsoleLog, // log to console
 		PythonServer, // send to python client via MQ
 	};
@@ -80,6 +80,8 @@ namespace MarketDataCapture {
 		// all diff depth for downstream orders
         bool OnAllDiffDepthChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
 #endif
+
+		DataCaptureMode GetDataCaptureMode() const { return m_dataCaptureMode; }
     private:
         std::unique_ptr<LibraryUtils::Logger> m_logger;
         DataCaptureMode m_dataCaptureMode{ DataCaptureMode::Undefined };

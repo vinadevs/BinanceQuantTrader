@@ -11,7 +11,7 @@
 <MatchingEngine>
   <UsingParticipant Name="RTMarketSpotParticipant" MaximumDownstreamOrderBookSize="10"/>
   <RealTimeMarketData>
-	  <UsingMarketData Name="RealTimeData" File="[ROOT_BQT_PATH]\Configurations\MarketData\BinanceMarketDataCfg.xml"/>
+	  <UsingMarketData Name="HistoricalMarketData" File="[ROOT_BQT_PATH]\Configurations\MarketData\BinanceMarketDataCfg.xml"/>
   </RealTimeMarketData>
   <OrderProcessing Delay="true" IntervalMilliseconds="1000"/>
 </MatchingEngine>

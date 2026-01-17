@@ -35,13 +35,14 @@ namespace tinyxml2 {
 // and other significant information that impacts trading decisions.
 
 namespace MarketData {
+	class MarketDataSubject;
 	class BinanceMarketDataFeedHandler;
 	class BinanceMarketDataEvents : public MarketDataEventBase
 	{
 	public:
 		BinanceMarketDataEvents(
 			const tinyxml2::XMLElement* marketDataConfigXml,
-			BinanceMarketDataFeedHandler* feedHandler);
+			MarketDataSubject* feedHandler);
 		~BinanceMarketDataEvents();
 
 		void StartIOContext();
@@ -53,7 +54,7 @@ namespace MarketData {
 		// Special case for subscribing part depth data
 		bool SubscribePartDepth(const std::string& symbol);
 		// NOTE: we must always subscribe symbols before calling this function!
-		void Wait();
+		void Wait() override;
 
 	private:
 		// choose what we want to receive from exchange

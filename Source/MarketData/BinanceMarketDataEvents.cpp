@@ -29,11 +29,12 @@ using namespace LibraryUtils;
 
 BinanceMarketDataEvents::BinanceMarketDataEvents(
     const XMLElement* marketDataConfigXml,
-    BinanceMarketDataFeedHandler* feedHandler)
-    : MarketDataEventBase(marketDataConfigXml),
-      m_feedHandler(feedHandler),
+    MarketDataSubject* feedHandler)
+    : MarketDataEventBase(marketDataConfigXml, feedHandler),
       m_mdSubscriptionMgr(std::make_unique<MarketDataSubscriptionManager>())
 {
+    m_feedHandler = dynamic_cast<BinanceMarketDataFeedHandler*>(feedHandler);
+    assert(m_feedHandler);
     assert(m_marketDataConfigXml);
 	m_logger = std::make_unique<Logger>("BinanceMarketDataEvents");
     CreateWebSocketConnection();
@@ -190,6 +191,8 @@ bool BinanceMarketDataEvents::SubscribePartDepth(const std::string& symbol)
 bool BinanceMarketDataEvents::Unsubscribe(const std::string& symbol)
 {
     std::lock_guard<std::mutex> lock(m_marketDataMutex);
+	m_logger->Info("Starting unsubscribing real time market data for symbol=" + symbol);
+	m_feedHandler->RemoveMarketDataFeed(symbol);
     FOR_LOOP_ENUM(iter, SubscriptionHandleType)
     {
         auto h = m_mdSubscriptionMgr->GetHandle(symbol, iter);
@@ -223,7 +226,7 @@ void BinanceMarketDataEvents::Wait()
     // If there is any bloclking call at our side then Binance side will disconnect websocket 
     // connection with the error: ec=10053, emsg=An established connection was aborted 
     // by the software in your host machine, so please carefully to use lock stuffs within this class
-    m_logger->Info("Starting market data feed events...");
+	m_logger->Info("Starting real time market data event processing...");
     m_ioContext.run(); // never return!!!
 	assert(false); // alert if we reach here, maybe missing call StartIOContext()
 }
