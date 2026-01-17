@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "dlldefine.h"
+
 #include <string>
 #include <unordered_map>
 
@@ -15,7 +17,7 @@ namespace TradingStrategies {
 
 	class TradingStrategyBase;
 
-	class StrategyManager final {
+	class DLL_CLASS_TRADING_TRATEGIES_EXPORTS StrategyManager final {
 	public:
 		void AddStrategy(TradingStrategyBase* strategy);
 

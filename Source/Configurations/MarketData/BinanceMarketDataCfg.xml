@@ -1,12 +1,23 @@
 <?xml version="1.0"?>
+
+<MarketDataCaptureSource>
+  <Source Type="HistoricalMarketData"/>
+</MarketDataCaptureSource>
+
 <RealTimeMarketData>
   <Connection StreamBinanceCom="stream.binance.com" StreamConnectionPort="9443"/>
-  <SubscriptionData IndividualBookTickerData="true" TradeData="true" IndividualMarketTickerData="true" AllMarketTickersData="true" IndividualMiniTickerData="true" AllMiniTickersData="true" AggregateTradeData="true" KlineCandleStickData="true" PartDepthData="true" DiffDepthData="true"/>
+  <SubscriptionData IndividualBookTickerData="true" TradeData="true" IndividualMarketTickerData="true" AllMarketTickersData="true" IndividualMiniTickerData="true" AllMiniTickersData="false" AggregateTradeData="false" KlineCandleStickData="false" PartDepthData="false" DiffDepthData="false" UserData="false"/>
 </RealTimeMarketData>
 
+<HistoricalMarketData>
+  <ReplayData FilePath="[ROOT_BQT_PATH]\AppData\2026-01-12_12-42-44_MarketData.txt" DataType="TextFile" AllowRepeat="true"/>
+  <LoadEvent Type="TickByTick" IntervalSeconds="1"/>
+  <SubscriptionData IndividualBookTickerData="true" TradeData="true" IndividualMiniTickerData="true" AggregateTradeData="true"/>
+</HistoricalMarketData>
+
 <MarketDataCapture>
-  <DataCaptureMode Mode="PythonServer"/>
-  <LocalFilePath Path="LocalFile"/>
+  <DataCaptureMode Mode="ConsoleLog"/>
+  <DataRepository Path="[ROOT_BQT_PATH]\AppData\"/>
 </MarketDataCapture>
 
 <ExchangeSimulatorMarketData>

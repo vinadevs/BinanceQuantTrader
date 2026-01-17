@@ -58,10 +58,10 @@ MatchingEngine::MatchingEngine(
 		m_participant = std::make_unique<RTMarketSpotParticipant>(maxDownstreamOrderBookSize, userAccountManager);
 		m_logger->Info("Initiating Real Time Market Data.");
 		const auto* realTimeMarketDataCfg = matchingEngineXmlCfg->FirstChildElement("RealTimeMarketData");
-		m_binanceMarketDataConfig = SettingNConfig::BqtXmlUtils::GetBinanceMarketDataConfig(realTimeMarketDataCfg);
-		const auto* exchangeSimulatorMarketDataCfg = m_binanceMarketDataConfig->FirstChildElement("RealTimeMarketData");
-		m_marketData = std::make_unique<RealTimeMarketData>(exchangeSimulatorMarketDataCfg);
-		SubscribeTargetSymbols(m_binanceMarketDataConfig.get());
+		auto [mkDataTypeName, mkDataConfigXml] = SettingNConfig::BqtXmlUtils::GetMarketDataConfig(realTimeMarketDataCfg);
+		m_marketDataConfig = std::move(mkDataConfigXml);
+		m_marketData = std::make_unique<RealTimeMarketData>(m_marketDataConfig.get(), mkDataTypeName);
+		SubscribeTargetSymbols(m_marketDataConfig.get());
 		m_rtMarketSpotParticipant = dynamic_cast<RTMarketSpotParticipant*>(m_participant.get());
 		assert(m_rtMarketSpotParticipant);
 		m_rtMarketSpotParticipant->CreateDownstreamOrderBooks(m_marketData->GetSubscribingSymbols());
@@ -73,10 +73,10 @@ MatchingEngine::MatchingEngine(
 		m_participant = std::make_unique<RTMarketFutureParticipant>(userAccountManager, userTradeProfileManager);
 		m_logger->Info("Initiating Real Time Market Data.");
 		const auto* realTimeMarketDataCfg = matchingEngineXmlCfg->FirstChildElement("RealTimeMarketData");
-		m_binanceMarketDataConfig = SettingNConfig::BqtXmlUtils::GetBinanceMarketDataConfig(realTimeMarketDataCfg);
-		const auto* exchangeSimulatorMarketDataCfg = m_binanceMarketDataConfig->FirstChildElement("RealTimeMarketData");
-		m_marketData = std::make_unique<RealTimeMarketData>(exchangeSimulatorMarketDataCfg);
-		SubscribeTargetSymbols(m_binanceMarketDataConfig.get());
+		auto [mkDataTypeName, mkDataConfigXml] = SettingNConfig::BqtXmlUtils::GetMarketDataConfig(realTimeMarketDataCfg);
+		m_marketDataConfig = std::move(mkDataConfigXml);
+		m_marketData = std::make_unique<RealTimeMarketData>(m_marketDataConfig.get(), mkDataTypeName);
+		SubscribeTargetSymbols(m_marketDataConfig.get());
 		m_rtMarketFutureParticipant = dynamic_cast<RTMarketFutureParticipant*>(m_participant.get());
 		assert(m_rtMarketFutureParticipant);
 		m_rtMarketFutureParticipant->CreateDownstreamFuturePriceManagers(m_marketData->GetSubscribingSymbols());
@@ -102,7 +102,10 @@ MatchingEngine::MatchingEngine(
 	m_intervalMilliseconds = orderProcessingXml->IntAttribute("IntervalMilliseconds");
 }
 
-MatchingEngine::~MatchingEngine() {}
+MatchingEngine::~MatchingEngine() 
+{
+	m_logger->Info("Shutdown MatchingEngine...");
+}
 
 void MatchingEngine::SubscribeTargetSymbols(const tinyxml2::XMLDocument* realTimeMarketDataCfg)
 {
@@ -149,7 +152,14 @@ void MatchingEngine::Stop()
 		&& m_marketData) // if using RTMarketParticipant
 	{
 		// Start receive real time market data
-		m_marketData->UnRegisterDataListener(m_rtMarketSpotParticipant);
+		if (m_participant->GetParticipantType() == ParticipantType::REAL_TIME_SPOT_MARKET_DATA)
+		{
+			m_marketData->UnRegisterDataListener(m_rtMarketSpotParticipant);
+		}
+		else if (m_participant->GetParticipantType() == ParticipantType::REAL_TIME_FUTURE_MARKET_DATA)
+		{
+			m_marketData->UnRegisterDataListener(m_rtMarketFutureParticipant);
+		}
 	}
 	m_isRunning.store(false);
 	m_threadProcessIncommingOrders.join();

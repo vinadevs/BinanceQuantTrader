@@ -34,26 +34,34 @@ BrokerCommunicationChannel::BrokerCommunicationChannel(
 
 BrokerCommunicationChannel::~BrokerCommunicationChannel()
 {
-	Cleanup();
-}
-
-void BrokerCommunicationChannel::Cleanup()
-{
-	std::lock_guard<std::mutex> lock(m_mutex);
-	if (m_publisherSocket)
-		zmq_close(m_publisherSocket);
-	if (m_subscriberSocket)
-		zmq_close(m_subscriberSocket);
-	if (m_zeroMQContext)
-		zmq_ctx_destroy(m_zeroMQContext);
+	StopChannel();
 }
 
 void BrokerCommunicationChannel::StopChannel()
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
-	zmq_unbind(m_publisherSocket, m_publisherAddress.c_str());
-	zmq_unbind(m_subscriberSocket, m_subscriberAddress.c_str());
-	Cleanup();
+
+	if (m_publisherSocket)
+	{
+		zmq_unbind(m_publisherSocket, m_publisherAddress.c_str());
+
+		zmq_close(m_publisherSocket);
+		m_publisherSocket = nullptr;
+	}
+
+	if (m_subscriberSocket)
+	{
+		zmq_disconnect(m_subscriberSocket, m_subscriberAddress.c_str());
+
+		zmq_close(m_subscriberSocket);
+		m_subscriberSocket = nullptr;
+	}
+
+	if (m_zeroMQContext)
+	{
+		zmq_ctx_term(m_zeroMQContext);
+		m_zeroMQContext = nullptr;
+	}
 }
 
 void BrokerCommunicationChannel::StartChannel()
@@ -76,7 +84,7 @@ void BrokerCommunicationChannel::StartChannel()
 	// Use ZeroMQ's built-in proxy function to relay messages
 	zmq_proxy(m_subscriberSocket, m_publisherSocket, NULL);
 	// Clean up (This code should never be reached)
-	Cleanup();
+	StopChannel();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -93,24 +101,26 @@ PublisherCommunicationChannel::PublisherCommunicationChannel(
 
 PublisherCommunicationChannel::~PublisherCommunicationChannel()
 {
-	Cleanup();
-}
-
-void PublisherCommunicationChannel::Cleanup()
-{
-	std::lock_guard<std::mutex> lock(m_mutex);
-	// TODO: use TranslateResult to check api call result
-	if (m_publisherSocket)
-		zmq_close(m_publisherSocket);
-	if (m_zeroMQContext)
-		zmq_ctx_destroy(m_zeroMQContext);
+	StopChannel();
 }
 
 void PublisherCommunicationChannel::StopChannel()
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
-	zmq_unbind(m_publisherSocket, m_publisherAddress.c_str());
-	Cleanup();
+
+	if (m_publisherSocket)
+	{
+		zmq_unbind(m_publisherSocket, m_publisherAddress.c_str());
+
+		zmq_close(m_publisherSocket);
+		m_publisherSocket = nullptr;
+	}
+
+	if (m_zeroMQContext)
+	{
+		zmq_ctx_term(m_zeroMQContext); // prefer term over destroy
+		m_zeroMQContext = nullptr;
+	}
 }
 
 void PublisherCommunicationChannel::StartChannel()
@@ -141,23 +151,26 @@ SubcriberCommunicationChannel::SubcriberCommunicationChannel(
 
 SubcriberCommunicationChannel::~SubcriberCommunicationChannel()
 {
-	Cleanup();
-}
-
-void SubcriberCommunicationChannel::Cleanup()
-{
-	std::lock_guard<std::mutex> lock(m_mutex);
-	if (m_subscriberSocket)
-		zmq_close(m_subscriberSocket);
-	if (m_zeroMQContext)
-		zmq_ctx_destroy(m_zeroMQContext);
+	StopChannel();
 }
 
 void SubcriberCommunicationChannel::StopChannel()
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
-	zmq_unbind(m_subscriberSocket, m_subscriberAddress.c_str());
-	Cleanup();
+
+	if (m_subscriberSocket)
+	{
+		zmq_disconnect(m_subscriberSocket, m_subscriberAddress.c_str());
+
+		zmq_close(m_subscriberSocket);
+		m_subscriberSocket = nullptr;
+	}
+
+	if (m_zeroMQContext)
+	{
+		zmq_ctx_term(m_zeroMQContext);
+		m_zeroMQContext = nullptr;
+	}
 }
 
 void SubcriberCommunicationChannel::StartChannel()

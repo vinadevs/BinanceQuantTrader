@@ -32,7 +32,7 @@ namespace MarketDataCapture {
 			message.AddTag(MarketDataCapture::FieldLabels::IndividualBookTicker::BestAskQuantity,
 				bookTickerData.m_bestAskQty->GetStringDataFromBoostDouble());
 			message.AddTag(MarketDataCapture::FieldLabels::Header::EventTimeMs,
-				bookTickerData.m_eventTimeMs->GetStringDataFromStdUnsignedIntData());
+				bookTickerData.m_eventTimeMs->GetStringDataFromEventTimeMs());
 			return message;
 		}
 
@@ -52,11 +52,11 @@ namespace MarketDataCapture {
 			message.AddTag(MarketDataCapture::FieldLabels::Trade::SellerOrderId,
 				tradeData.m_sellerOrderID->GetStringDataFromStdUnsignedIntData());
 			message.AddTag(MarketDataCapture::FieldLabels::Trade::TradeTime,
-				tradeData.m_tradeTime->GetStringDataFromStdUnsignedIntData());
+				tradeData.m_tradeTime->GetStringDataFromEventTimeMs());
 			message.AddTag(MarketDataCapture::FieldLabels::Trade::IsBuyerMarketMaker,
 				tradeData.m_isBuyerTheMarketMaker->GetStringDataFromStdBoolData());
 			message.AddTag(MarketDataCapture::FieldLabels::Header::EventTimeMs,
-				tradeData.m_eventTimeMs->GetStringDataFromStdUnsignedIntData());
+				tradeData.m_eventTimeMs->GetStringDataFromEventTimeMs());
 			return message;
 		}
 
@@ -92,7 +92,7 @@ namespace MarketDataCapture {
 			message.AddTag(MarketDataCapture::FieldLabels::IndividualMarketTicker::LowPrice,
 				marketTickerData.m_lowPrice->GetStringDataFromBoostDouble());
 			message.AddTag(MarketDataCapture::FieldLabels::Header::EventTimeMs,
-				marketTickerData.m_eventTimeMs->GetStringDataFromStdUnsignedIntData());
+				marketTickerData.m_eventTimeMs->GetStringDataFromEventTimeMs());
 			return message;
 		}
 
@@ -114,7 +114,7 @@ namespace MarketDataCapture {
 			message.AddTag(MarketDataCapture::FieldLabels::IndividualMiniTicker::TotalTradedQuoteAssetVolume,
 				miniTickerData.m_totalTradedQuoteAssetVolume->GetStringDataFromBoostDouble());
 			message.AddTag(MarketDataCapture::FieldLabels::Header::EventTimeMs,
-				miniTickerData.m_eventTimeMs->GetStringDataFromStdUnsignedIntData());
+				miniTickerData.m_eventTimeMs->GetStringDataFromEventTimeMs());
 			return message;
 		}
 
@@ -134,11 +134,11 @@ namespace MarketDataCapture {
 			message.AddTag(MarketDataCapture::FieldLabels::AggregateTrade::LastTradeId,
 				aggregateTradeData.m_lastTradeId->GetStringDataFromStdUnsignedIntData());
 			message.AddTag(MarketDataCapture::FieldLabels::AggregateTrade::TradeTime,
-				aggregateTradeData.m_tradeTimeMs->GetStringDataFromStdUnsignedIntData());
+				aggregateTradeData.m_tradeTimeMs->GetStringDataFromEventTimeMs());
 			message.AddTag(MarketDataCapture::FieldLabels::AggregateTrade::IsBuyerMarketMaker,
 				aggregateTradeData.m_isBuyerMarketMaker->GetStringDataFromStdBoolData());
 			message.AddTag(MarketDataCapture::FieldLabels::Header::EventTimeMs,
-				aggregateTradeData.m_eventTimeMs->GetStringDataFromStdUnsignedIntData());
+				aggregateTradeData.m_eventTimeMs->GetStringDataFromEventTimeMs());
 			return message;
 		}
 
@@ -158,7 +158,7 @@ namespace MarketDataCapture {
 			message.AddTag(MarketDataCapture::FieldLabels::Header::MessageType, "AllMiniTickers");
 			message.AddTag(MarketDataCapture::FieldLabels::AllMiniTicker::Tickers, "[]");
 			message.AddTag(MarketDataCapture::FieldLabels::Header::SendingTime,
-				allMiniTickerData.m_eventTimeMs->GetStringDataFromStdUnsignedIntData());
+				allMiniTickerData.m_eventTimeMs->GetStringDataFromEventTimeMs());
 			return message;
 		}
 
@@ -168,7 +168,7 @@ namespace MarketDataCapture {
 			message.AddTag(MarketDataCapture::FieldLabels::Header::Symbol, symbol);
 			message.AddTag(MarketDataCapture::FieldLabels::Header::MessageType, "DiffDepth");
 			message.AddTag(MarketDataCapture::FieldLabels::Header::EventTimeMs,
-				allDiffDepthData.m_eventTimeMs->GetStringDataFromStdUnsignedIntData());
+				allDiffDepthData.m_eventTimeMs->GetStringDataFromEventTimeMs());
 			return message;
 		}
 
@@ -178,7 +178,7 @@ namespace MarketDataCapture {
 			message.AddTag(MarketDataCapture::FieldLabels::Header::Symbol, symbol);
 			message.AddTag(MarketDataCapture::FieldLabels::Header::MessageType, "PartDepth");
 			message.AddTag(MarketDataCapture::FieldLabels::Header::EventTimeMs,
-				allPartDepthData.m_eventTimeMs->GetStringDataFromStdUnsignedIntData());
+				allPartDepthData.m_eventTimeMs->GetStringDataFromEventTimeMs());
 			return message;
 		}
 
@@ -188,11 +188,11 @@ namespace MarketDataCapture {
 			message.AddTag(MarketDataCapture::FieldLabels::Header::Symbol, symbol);
 			message.AddTag(MarketDataCapture::FieldLabels::Header::MessageType, "KlineCandleStick");
 			message.AddTag(MarketDataCapture::FieldLabels::Header::EventTimeMs,
-				klineCandleStickData.m_eventTimeMs->GetStringDataFromStdUnsignedIntData());
+				klineCandleStickData.m_eventTimeMs->GetStringDataFromEventTimeMs());
 			message.AddTag(MarketDataCapture::FieldLabels::KlineCandleStick::KlineStartTime,
-				klineCandleStickData.m_klineStartTime->GetStringDataFromStdUnsignedIntData());
+				klineCandleStickData.m_klineStartTime->GetStringDataFromEventTimeMs());
 			message.AddTag(MarketDataCapture::FieldLabels::KlineCandleStick::KlineCloseTime,
-				klineCandleStickData.m_klineCloseTime->GetStringDataFromStdUnsignedIntData());
+				klineCandleStickData.m_klineCloseTime->GetStringDataFromEventTimeMs());
 			message.AddTag(MarketDataCapture::FieldLabels::KlineCandleStick::Interval,
 				klineCandleStickData.m_interval->GetStringData());
 			message.AddTag(MarketDataCapture::FieldLabels::KlineCandleStick::FirstTradeId,

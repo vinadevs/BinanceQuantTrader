@@ -31,17 +31,21 @@ MarketDataService::MarketDataService(const std::string& configFile)
 			+ std::string(tinyxml2::XMLDocument::ErrorIDToName(errMBXml)) + ", error path:" + configFile);
 	}
 	m_logger->Info("Initiating Market Data Listener.");
+	const auto* marketDataSourceCfg = m_rootConfigXml->FirstChildElement("MarketDataCaptureSource");
+	assert(marketDataSourceCfg);
+	const auto* mkDataTypeName = marketDataSourceCfg->FirstChildElement("Source")->Attribute("Type");
 	const auto* dataCaptureCfg = m_rootConfigXml->FirstChildElement("MarketDataCapture");
 	assert(dataCaptureCfg);
 	m_marketDataListener = std::make_unique<MarketDataListener>(dataCaptureCfg);
 	m_logger->Info("Initiating Real Time Market Data.");
-	const auto* realTimeMarketDataCfg = m_rootConfigXml->FirstChildElement("RealTimeMarketData");
-	assert(realTimeMarketDataCfg);
-	m_marketData = std::make_unique<RealTimeMarketData>(realTimeMarketDataCfg);
+	m_marketData = std::make_unique<RealTimeMarketData>(m_rootConfigXml.get(), mkDataTypeName);
 	m_marketData->RegisterDataListener(m_marketDataListener.get());
-	m_logger->Info("Initiating Test Message Transporter.");
-	const auto* messageTransporterCfg = m_rootConfigXml->FirstChildElement("MessageTransporter");
-	PythonClientGateWay->InitMessageTransporter(messageTransporterCfg);
+	if (m_marketDataListener->GetDataCaptureMode() == DataCaptureMode::PythonServer) // init MQ transporter
+	{
+		m_logger->Info("Initiating Test Message Transporter.");
+		const auto* messageTransporterCfg = m_rootConfigXml->FirstChildElement("MessageTransporter");
+		PythonClientGateWay->InitMessageTransporter(messageTransporterCfg);
+	}
 }
 
 void MarketDataService::SubscribeTargetSymbols()
@@ -64,6 +68,10 @@ void MarketDataService::SubscribeTargetSymbols()
 
 MarketDataService::~MarketDataService()
 {
+	if (m_marketDataListener->GetDataCaptureMode() == DataCaptureMode::PythonServer) // init MQ transporter
+	{
+		PythonClientGateWay->StopMessageTransporter();
+	}
 	m_marketData->UnRegisterDataListener(m_marketDataListener.get());
 }
 

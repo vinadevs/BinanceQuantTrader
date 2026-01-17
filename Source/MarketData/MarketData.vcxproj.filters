@@ -30,10 +30,7 @@
     <ClInclude Include="SingleMarketDataFeed.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MarketDataFeedHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MarketDataEvents.h">
+    <ClInclude Include="BinanceMarketDataFeedHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dlldefine.h">
@@ -69,6 +66,15 @@
     <ClInclude Include="HistoricalMarketDataEvents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MarketDataEventBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BinanceMarketDataEvents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HistoricalMarketDataFeedHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -86,10 +92,7 @@
     <ClCompile Include="SingleMarketDataFeed.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MarketDataFeedHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MarketDataEvents.cpp">
+    <ClCompile Include="BinanceMarketDataFeedHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SynchronousMarketData.cpp">
@@ -108,6 +111,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HistoricalMarketDataEvents.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BinanceMarketDataEvents.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HistoricalMarketDataFeedHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

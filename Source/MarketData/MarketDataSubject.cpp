@@ -110,3 +110,18 @@ int MarketDataSubject::NotifyAllDiffDepthChange(const std::string& symbol)
 {
 	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnAllDiffDepthChange);
 }
+
+int MarketDataSubject::NotifyUserDataAccountUpdateChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnUserDataAccountUpdateChange);
+}
+
+int MarketDataSubject::NotifyUserDataBalanceUpdateChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnUserDataBalanceUpdateChange);
+}
+
+int MarketDataSubject::NotifyUserDataOrderUpdateChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnUserDataOrderUpdateChange);
+}

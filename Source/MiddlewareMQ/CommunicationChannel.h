@@ -36,6 +36,13 @@ namespace MiddlewareMQ {
     /* A chanel is the definition of the network connection
     between broker and clients, NOTE: ports should be unique! */
 
+    //-------------------------------------------------------------
+    // IMPORTANT NOTE: Never make ZMQ sockets global/static/singleton objects.
+	// Static destruction order is undefined and may lead to crashes.
+	// If you use static/global/singleton ZMQ sockets, pls make sure 
+	// call StopChannel(); before program exits to close ZMQ sockets properly.
+	//-------------------------------------------------------------
+
     using ZeroMQHandle = void*;
 
     struct DLL_CLASS_MIDDLEWAREMQ_EXPORTS CommunicationChannel
@@ -48,7 +55,6 @@ namespace MiddlewareMQ {
               m_appType(appType) {}
         virtual ~CommunicationChannel() {}
 
-        virtual void Cleanup() = 0;
         virtual void StartChannel() = 0;
         virtual void StopChannel() = 0;
 
@@ -70,7 +76,6 @@ namespace MiddlewareMQ {
             const std::string& subscriberAddress);
         ~BrokerCommunicationChannel();
 
-        void Cleanup() override;
         void StartChannel() override;
         void StopChannel() override;
 
@@ -90,7 +95,6 @@ namespace MiddlewareMQ {
             const std::string & publisherAddress);
         ~PublisherCommunicationChannel();
 
-        void Cleanup() override;
         void StartChannel() override;
         void StopChannel() override;
 
@@ -108,7 +112,6 @@ namespace MiddlewareMQ {
             const std::string & subscriberAddress);
         ~SubcriberCommunicationChannel();
 
-        void Cleanup() override;
         void StartChannel() override;
         void StopChannel() override;
 

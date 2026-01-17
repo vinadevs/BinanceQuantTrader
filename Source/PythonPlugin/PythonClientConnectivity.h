@@ -38,6 +38,8 @@ namespace PythonPlugin {
 
 		void InitMessageTransporter(const tinyxml2::XMLElement* messageDeliveryCfg);
 
+		void StopMessageTransporter();
+
 		MiddlewareMQ::MiddlewareMQResult SendBqtJsonMessage(const MiddlewareMQ::BqtJsonMessage& message);
 
 	private:

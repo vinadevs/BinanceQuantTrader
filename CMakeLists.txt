@@ -32,19 +32,6 @@ if (MSVC)
     add_compile_options(/bigobj)
 endif()
 
-# Set default runtime output folder for all targets
-set(OUTPUT_DIR ${CMAKE_BINARY_DIR}/Debug)
-set(OUTPUT_DIR_RELEASE ${CMAKE_BINARY_DIR}/Release)
-
-# For multi-config generators (Visual Studio)
-foreach(CONFIG ${CMAKE_CONFIGURATION_TYPES})
-    string(TOUPPER ${CONFIG} CONFIG_UPPER)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIG_UPPER} ${CMAKE_BINARY_DIR}/${CONFIG})
-endforeach()
-
-# For single-config generators (Linux Makefiles, Ninja)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Debug)
-
 # Add subdirectories
 add_subdirectory(Source/RiskManagement)
 add_subdirectory(Source/UnitTest)
@@ -54,3 +41,5 @@ add_subdirectory(Source/KernelTrading)
 add_subdirectory(Source/RealTimeSocket)
 add_subdirectory(Source/MarketData)
 add_subdirectory(Source/MarketDataCapture)
+add_subdirectory(Source/PythonPlugin)
+add_subdirectory(Source/MiddlewareMQ)

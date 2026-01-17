@@ -19,17 +19,13 @@
 #include <memory>
 #include <vector>
 #include <string>
-#include <unordered_set>
 #include <mutex>
 #include <condition_variable>
 
+#include "MarketDataEventBase.h"
+
 namespace tinyxml2 {
 	class XMLElement;
-	class XMLDocument;
-};
-
-namespace LibraryUtils {
-	class Logger;
 };
 
 // In trading, market data events refer to the dissemination of real - time
@@ -39,24 +35,26 @@ namespace LibraryUtils {
 // and other significant information that impacts trading decisions.
 
 namespace MarketData {
-	class MarketDataFeedHandler;
-	class MarketDataEvents
+	class MarketDataSubject;
+	class BinanceMarketDataFeedHandler;
+	class BinanceMarketDataEvents : public MarketDataEventBase
 	{
 	public:
-		MarketDataEvents(
+		BinanceMarketDataEvents(
 			const tinyxml2::XMLElement* marketDataConfigXml,
-			MarketDataFeedHandler* feedHandler);
-		~MarketDataEvents();
+			MarketDataSubject* feedHandler);
+		~BinanceMarketDataEvents();
 
 		void StartIOContext();
-		bool Subscribe(const std::string& symbol);
+
+		bool Subscribe(const std::string& symbol) override;
+		bool Unsubscribe(const std::string& symbol) override;
+		bool IsSubscribed(const std::string& symbol) override;
+
 		// Special case for subscribing part depth data
 		bool SubscribePartDepth(const std::string& symbol);
-		bool Unsubscribe(const std::string& symbol);
-		bool IsSubscribed(const std::string& symbol);
 		// NOTE: we must always subscribe symbols before calling this function!
-		void Wait();
-		const std::unordered_set<std::string>& GetSubscribingSymbols() const;
+		void Wait() override;
 
 	private:
 		// choose what we want to receive from exchange
@@ -70,7 +68,7 @@ namespace MarketData {
 		void SubscibeKlineCandleStick(const std::string& symbol, const std::string& interval);
 		void SubscibePartDepth(const std::string& symbol);
 		void SubscibeDiffDepth(const std::string& symbol);
-		void SubscibeUserData(const std::string& symbol);
+		void SubscibeUserData(const std::string& apiKey, const std::string& symbol);
 		// remove what we dont want to receive from exchange
 		void Unsubscribe(const binapi::ws::websockets::handle& h);
 		void AsyncUnsubscribe(const binapi::ws::websockets::handle& h);
@@ -86,14 +84,11 @@ namespace MarketData {
 		// load static symbols to subscribe
 		void LoadInterestingDataSymbols(const char* filePath);
 
-		std::unordered_set<std::string> m_subscribedSymbols;
 		std::unordered_set<std::string> m_staticSymbols;
 		boost::asio::io_context m_ioContext;
 		std::unique_ptr<binapi::ws::websockets> m_webSocketRealTime;
 		std::unique_ptr<MarketDataSubscriptionManager> m_mdSubscriptionMgr;
-		MarketDataFeedHandler* m_feedHandler{ nullptr };
-		std::unique_ptr<LibraryUtils::Logger> m_logger;
-		const tinyxml2::XMLElement* m_marketDataConfigXml{ nullptr };
+		BinanceMarketDataFeedHandler* m_feedHandler{ nullptr };
 		// mutil threads
 		std::mutex m_marketDataMutex; // this class need to be thread safe!
 		std::condition_variable m_marketDataCond; // avoid polling thread

@@ -60,3 +60,18 @@ bool MarketDataObserver::OnAllDiffDepthChange(MarketDataSubject* marketData, con
 {
 	return true;
 }
+
+bool MarketDataObserver::OnUserDataAccountUpdateChange(MarketDataSubject* marketData, const std::string& symbol)
+{
+	return false;
+}
+
+bool MarketDataObserver::OnUserDataBalanceUpdateChange(MarketDataSubject* marketData, const std::string& symbol)
+{
+	return false;
+}
+
+bool MarketDataObserver::OnUserDataOrderUpdateChange(MarketDataSubject* marketData, const std::string& symbol)
+{
+	return false;
+}

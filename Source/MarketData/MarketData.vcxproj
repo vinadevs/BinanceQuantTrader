@@ -124,7 +124,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>LibraryUtilsD.lib;SettingNConfigD.lib;KernelTradingD.lib;RealTimeSocketD.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>HistoricalDataD.lib;LibraryUtilsD.lib;SettingNConfigD.lib;KernelTradingD.lib;RealTimeSocketD.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -147,7 +147,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>LibraryUtils.lib;SettingNConfig.lib;KernelTrading.lib;RealTimeSocket.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>HistoricalData.lib;LibraryUtils.lib;SettingNConfig.lib;KernelTrading.lib;RealTimeSocket.lib;crypt32.lib;bcrypt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Lib$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <ImportLibrary>$(SolutionDir)\Lib$(PlatformArchitecture)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -159,12 +159,14 @@
     <ClInclude Include="FeedIdentification.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="HistoricalMarketDataEvents.h" />
+    <ClInclude Include="HistoricalMarketDataFeedHandler.h" />
+    <ClInclude Include="MarketDataEventBase.h" />
     <ClInclude Include="MarketDataNotifyMessage.h" />
     <ClInclude Include="MarketDataObserver.h" />
     <ClInclude Include="MarketDataSubscriptionManager.h" />
     <ClInclude Include="RealTimeMarketData.h" />
-    <ClInclude Include="MarketDataEvents.h" />
-    <ClInclude Include="MarketDataFeedHandler.h" />
+    <ClInclude Include="BinanceMarketDataEvents.h" />
+    <ClInclude Include="BinanceMarketDataFeedHandler.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SingleMarketDataFeed.h" />
     <ClInclude Include="MarketDataSubject.h" />
@@ -176,10 +178,11 @@
     <ClCompile Include="BinanceMarketData.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="HistoricalMarketDataEvents.cpp" />
+    <ClCompile Include="HistoricalMarketDataFeedHandler.cpp" />
     <ClCompile Include="MarketDataObserver.cpp" />
     <ClCompile Include="MarketDataSubscriptionManager.cpp" />
     <ClCompile Include="RealTimeMarketData.cpp" />
-    <ClCompile Include="MarketDataFeedHandler.cpp" />
+    <ClCompile Include="BinanceMarketDataFeedHandler.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -189,7 +192,7 @@
     <ClCompile Include="SingleMarketDataFeed.cpp" />
     <ClCompile Include="MarketDataSubject.cpp" />
     <ClCompile Include="SynchronousMarketDataFeed.cpp" />
-    <ClCompile Include="MarketDataEvents.cpp" />
+    <ClCompile Include="BinanceMarketDataEvents.cpp" />
     <ClCompile Include="SynchronousMarketData.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

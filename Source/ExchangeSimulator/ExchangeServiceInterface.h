@@ -20,6 +20,7 @@ namespace ExchangeSimulator {
     class ExchangeServiceInterface
     {
     public:
+        virtual ~ExchangeServiceInterface() = default; // deleted via base-class pointers
         virtual void Start() = 0;
         virtual void Stop() = 0;
     };

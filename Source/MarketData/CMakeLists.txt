@@ -9,7 +9,7 @@ list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/dllmain.cpp")
 get_filename_component(library_name "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
 
 # Find packages
-find_package(Boost REQUIRED COMPONENTS asio)
+find_package(Boost REQUIRED COMPONENTS asio multiprecision)
 
 # Create the library
 add_library(${library_name} SHARED ${SOURCE_FILES})
@@ -29,6 +29,7 @@ PRIVATE
     KernelTrading
     RealTimeSocket
     Boost::asio
+    Boost::multiprecision
 )
 
 # Export symbols when compiling this library

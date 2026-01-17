@@ -54,6 +54,7 @@ void BinanceExchangeSimulator::Run()
 
 void BinanceExchangeSimulator::Shutdown()
 {
+	UpstreamGateWay->StopMessageTransporter();
 	m_bqtJsonMessageServer->Stop();
 	m_matchingEngine->Stop();
 	m_binanceRestAPIServer->Stop();

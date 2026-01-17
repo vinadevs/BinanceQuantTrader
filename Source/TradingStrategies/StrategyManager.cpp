@@ -15,7 +15,7 @@ void TradingStrategies::StrategyManager::AddStrategy(TradingStrategyBase* strate
 	m_strategies[strategy->GetStrategyID()] = strategy;
 }
 
-TradingStrategyBase* TradingStrategies::StrategyManager::GetStrategyByID(const std::string& strategyID)
+TradingStrategies::TradingStrategyBase* TradingStrategies::StrategyManager::GetStrategyByID(const std::string& strategyID)
 {
 	auto it = m_strategies.find(strategyID);
 	if (it != m_strategies.end())

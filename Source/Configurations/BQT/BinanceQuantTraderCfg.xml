@@ -4,7 +4,7 @@
 </GlobalSettings>
 
 <RealTimeMarketData>
-  <UsingMarketData Name="BinanceMarketData" File="[ROOT_BQT_PATH]\Configurations\MarketData\BinanceMarketDataCfg.xml"/>
+  <UsingMarketData Name="RealTimeData" File="[ROOT_BQT_PATH]\Configurations\MarketData\BinanceMarketDataCfg.xml"/>
 </RealTimeMarketData>
 
 <StaticData>
@@ -22,7 +22,7 @@
 </BinanceFutureApiGateWay>
 
 <TradingStrategy>
-  <UsingStrategy Name="VWAPStrategy" File="[ROOT_BQT_PATH]\Configurations\Strategy\SemiAuto\VWAPStrategy.xml"/>
+  <UsingStrategy Name="SmartLongShortStrategy" File="[ROOT_BQT_PATH]\Configurations\Strategy\Auto\SmartLongShortStrategy.xml"/>
 </TradingStrategy>
 
 <PortfolioInvestment>
@@ -34,7 +34,7 @@
 </TradingModel>
 
 <TraderInfo>
-  <UsingTrader Type="SpotTrader"/>
+  <UsingTrader Type="FutureTrader"/>
   <Report TradeReport="true" OrderReport="true" BalanceReport="true" ExchangerPriceForOrdersReport="true" CalculateLossForOrdersReport="true" ReportToFilePath="[ROOT_BQT_PATH]\AppData\trade_results.txt" ReportChannel="ExternalFile"/>
 </TraderInfo>
 

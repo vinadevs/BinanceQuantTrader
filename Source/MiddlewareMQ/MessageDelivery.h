@@ -39,6 +39,11 @@ namespace MiddlewareMQ {
         MessageDelivery(const tinyxml2::XMLElement* messageDeliveryCfg);
         // Deliver Message APIs
         MiddlewareMQResult DeliveryMessage(const BqtJsonMessage& message);
+
+		PublisherCommunicationChannel* GetCommunicationChannel() const
+		{
+			return m_chanel.get();
+		}
     private:
         void CreateCommunicationChannel(
             const std::string& topicName,

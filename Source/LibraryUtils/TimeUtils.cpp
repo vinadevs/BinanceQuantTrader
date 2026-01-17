@@ -23,6 +23,16 @@ std::string TimeUtils::GetCurrentTimestampString()
     return ss.str();
 }
 
+std::string TimeUtils::GetCurrentTimestampStringPath()
+{
+    const auto now = std::chrono::system_clock::now();
+    const auto time = std::chrono::system_clock::to_time_t(now);
+    std::stringstream ss;
+#pragma warning(disable : 4996)
+    ss << std::put_time(std::localtime(&time), "%Y-%m-%d_%H-%M-%S");
+    return ss.str();
+}
+
 std::size_t TimeUtils::GetCurrentTimeChrono(const TimeUnit unit) {
     // Get the current time as a time point
     const auto now = std::chrono::system_clock::now();
@@ -105,4 +115,21 @@ std::chrono::system_clock::time_point TimeUtils::EpochToTimePoint(
     default:
         throw std::invalid_argument("Unsupported TimeUnit");
     }
+}
+
+std::size_t TimeUtils::StringDateTimeToEpochSeconds(const std::string& datetime)
+{
+    std::tm tm{};
+    std::istringstream ss(datetime);
+
+    ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
+    if (ss.fail())
+        throw std::runtime_error("Invalid datetime format");
+
+    // Interpret as LOCAL time
+    std::time_t epoch = std::mktime(&tm);
+    if (epoch == -1)
+        throw std::runtime_error("mktime failed");
+
+    return static_cast<std::size_t>(epoch);
 }

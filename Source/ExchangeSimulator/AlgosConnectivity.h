@@ -56,6 +56,8 @@ namespace ExchangeSimulator {
 
 		void InitMessageTransporter(const tinyxml2::XMLElement* messageDeliveryCfg);
 
+		void StopMessageTransporter();
+
 		////////////////////// UPSTREAM SIMULATOR APIS ///////////////////
 
 		MiddlewareMQ::MiddlewareMQResult

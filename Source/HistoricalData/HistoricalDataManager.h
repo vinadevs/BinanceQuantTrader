@@ -12,7 +12,13 @@
 
 #include "../LibraryUtils/MacroUtils.h"
 
+#include "MarketDataFileWriter.h"
+#include "MarketDataFileReader.h"
+
 #include <string>
+#include <memory>
+#include <unordered_map>
+#include <filesystem>
 
 /**
  * @class HistoricalDataManager
@@ -39,22 +45,6 @@ namespace tinyxml2 {
 
 namespace HistoricalData {
 
-	enum class HistoricalDataSource : unsigned
-	{
-		UNDEF,
-		CSV_FILE, // historical data source is CSV file
-		DATABASE, // historical data source is data base
-	};
-
-	enum class HistoricalDataType : unsigned
-	{
-		OHLCV, // Open High Low Close Volume data
-		TICK_BY_TICK, // tick by tick data
-		LAST_TRADE, // last trade data
-		ORDER_BOOK, // order book data
-		FULL, // full historical data
-	};
-
 	class DLL_CLASS_HISTORICALDATA_EXPORTS HistoricalDataManager final
 	{
 	public:
@@ -66,6 +56,18 @@ namespace HistoricalData {
 		static HistoricalDataManager* GetInstance();
 
 		void LoadHistoricalDatabase(const tinyxml2::XMLElement* historicalDataConfigXml);
+
+		MarketDataFileWriter* GetHistoricalDataWriter(
+			const std::filesystem::path& filePath,
+			const DataSourceType sourceType);
+
+		MarketDataFileReader* GetHistoricalDataReader(
+			const std::filesystem::path& filePath,
+			const DataSourceType sourceType);
+
+	private:
+		std::unordered_map<std::filesystem::path, std::unique_ptr<MarketDataFileWriter>> m_historicalDataWriters;
+		std::unordered_map<std::filesystem::path, std::unique_ptr<MarketDataFileReader>> m_historicalDataReaders;
 	};
 };
 // Lets shorten the code line!

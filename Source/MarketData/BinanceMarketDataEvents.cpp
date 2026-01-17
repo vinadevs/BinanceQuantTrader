@@ -7,12 +7,11 @@
 #*******************************************************************************/ 
 
 #include "pch.h"
-#include "MarketDataEvents.h"
-#include "MarketDataFeedHandler.h"
+#include "BinanceMarketDataEvents.h"
+#include "BinanceMarketDataFeedHandler.h"
 
 #include "../SettingNConfig/tinyxml2.h"
 
-#include "../LibraryUtils/Logger.h"
 #include "../LibraryUtils/StringUtils.h"
 #include "../LibraryUtils/PathUtils.h"
 #include "../LibraryUtils/EnumIteration.h"
@@ -28,25 +27,26 @@ using namespace MarketData;
 using namespace tinyxml2;
 using namespace LibraryUtils;
 
-MarketDataEvents::MarketDataEvents(
+BinanceMarketDataEvents::BinanceMarketDataEvents(
     const XMLElement* marketDataConfigXml,
-    MarketDataFeedHandler* feedHandler)
-    : m_marketDataConfigXml(marketDataConfigXml),
-    m_feedHandler(feedHandler),
-    m_mdSubscriptionMgr(std::make_unique<MarketDataSubscriptionManager>()),
-    m_logger(std::make_unique<Logger>("MarketDataEvents"))
+    MarketDataSubject* feedHandler)
+    : MarketDataEventBase(marketDataConfigXml, feedHandler),
+      m_mdSubscriptionMgr(std::make_unique<MarketDataSubscriptionManager>())
 {
+    m_feedHandler = dynamic_cast<BinanceMarketDataFeedHandler*>(feedHandler);
+    assert(m_feedHandler);
     assert(m_marketDataConfigXml);
+	m_logger = std::make_unique<Logger>("BinanceMarketDataEvents");
     CreateWebSocketConnection();
 }
 
-MarketDataEvents::~MarketDataEvents()
+BinanceMarketDataEvents::~BinanceMarketDataEvents()
 {
     m_logger->Info("Shutdown update events and unsubscribe all symbols.");
     AsyncUnsubscribeAll();
 }
 
-void MarketDataEvents::CreateWebSocketConnection()
+void BinanceMarketDataEvents::CreateWebSocketConnection()
 {
     const auto* connectionXml = m_marketDataConfigXml->FirstChildElement("Connection");
     assert(connectionXml);
@@ -59,7 +59,7 @@ void MarketDataEvents::CreateWebSocketConnection()
     m_logger->Info("Binance web socket created.");
 }
 
-void MarketDataEvents::LoadInterestingDataSymbols(const char* filePath)
+void BinanceMarketDataEvents::LoadInterestingDataSymbols(const char* filePath)
 {
     std::string assetFilePath(filePath);
     PathUtils::ReplaceSubString(assetFilePath, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
@@ -91,24 +91,24 @@ void MarketDataEvents::LoadInterestingDataSymbols(const char* filePath)
         }
         else
         {
-            throw std::runtime_error("MarketDataEvents: error opening file=" + assetFilePath);
+            throw std::runtime_error("BinanceMarketDataEvents: error opening file=" + assetFilePath);
         }
     }
     else
     {
-        throw std::runtime_error("MarketDataEvents: file does not exist=" + assetFilePath);
+        throw std::runtime_error("BinanceMarketDataEvents: file does not exist=" + assetFilePath);
     }
 }
 
-void MarketDataEvents::StartIOContext()
+void BinanceMarketDataEvents::StartIOContext()
 {
     // Set the atomic flag to true, indicating that the IO context should start.
     m_startIOContext.store(true);
-    // Notify MarketDataEvents::Wait() that the condition variable has been triggered.
+    // Notify BinanceMarketDataEvents::Wait() that the condition variable has been triggered.
     m_marketDataCond.notify_one();
 }
 
-bool MarketDataEvents::Subscribe(const std::string& symbol)
+bool BinanceMarketDataEvents::Subscribe(const std::string& symbol)
 {
     std::lock_guard<std::mutex> lock(m_marketDataMutex);
     m_logger->Info("Starting subscribing real time market data for symbol=" + symbol);
@@ -153,6 +153,13 @@ bool MarketDataEvents::Subscribe(const std::string& symbol)
         {
             SubscibeDiffDepth(symbol);
         }
+		if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("UserData"), "true"))
+		{
+			const auto* userDataXml = m_marketDataConfigXml->FirstChildElement("UserData");
+			assert(userDataXml);
+			const auto apiKey = userDataXml->Attribute("ApiKey");
+			SubscibeUserData(apiKey, symbol);
+		}
         // stores subscribed symbol
         m_subscribedSymbols.emplace(symbol);
         return true;
@@ -164,7 +171,7 @@ bool MarketDataEvents::Subscribe(const std::string& symbol)
     }
 }
 
-bool MarketDataEvents::SubscribePartDepth(const std::string& symbol)
+bool BinanceMarketDataEvents::SubscribePartDepth(const std::string& symbol)
 {
 	std::lock_guard<std::mutex> lock(m_marketDataMutex);
 	m_logger->Info("Starting subscribing part depth for symbol=" + symbol);
@@ -181,9 +188,11 @@ bool MarketDataEvents::SubscribePartDepth(const std::string& symbol)
 	}
 }
 
-bool MarketDataEvents::Unsubscribe(const std::string& symbol)
+bool BinanceMarketDataEvents::Unsubscribe(const std::string& symbol)
 {
     std::lock_guard<std::mutex> lock(m_marketDataMutex);
+	m_logger->Info("Starting unsubscribing real time market data for symbol=" + symbol);
+	m_feedHandler->RemoveMarketDataFeed(symbol);
     FOR_LOOP_ENUM(iter, SubscriptionHandleType)
     {
         auto h = m_mdSubscriptionMgr->GetHandle(symbol, iter);
@@ -199,13 +208,13 @@ bool MarketDataEvents::Unsubscribe(const std::string& symbol)
     return true;
 }
 
-bool MarketDataEvents::IsSubscribed(const std::string& symbol)
+bool BinanceMarketDataEvents::IsSubscribed(const std::string& symbol)
 {
     std::lock_guard<std::mutex> lock(m_marketDataMutex);
     return m_subscribedSymbols.find(symbol) != m_subscribedSymbols.end();
 }
 
-void MarketDataEvents::Wait()
+void BinanceMarketDataEvents::Wait()
 {
 	// Wait for the condition variable to be notified
     m_logger->Info("Wait for subscription setup completed...");
@@ -217,17 +226,12 @@ void MarketDataEvents::Wait()
     // If there is any bloclking call at our side then Binance side will disconnect websocket 
     // connection with the error: ec=10053, emsg=An established connection was aborted 
     // by the software in your host machine, so please carefully to use lock stuffs within this class
-    m_logger->Info("Starting market data feed events...");
+	m_logger->Info("Starting real time market data event processing...");
     m_ioContext.run(); // never return!!!
 	assert(false); // alert if we reach here, maybe missing call StartIOContext()
 }
 
-const std::unordered_set<std::string>& MarketDataEvents::GetSubscribingSymbols() const
-{
-    return m_subscribedSymbols;
-}
-
-void MarketDataEvents::VerifySubscriptionHandle(
+void BinanceMarketDataEvents::VerifySubscriptionHandle(
     const std::string& symbol,
     const std::string& dataName,
     binapi::ws::websockets::handle h,
@@ -246,10 +250,10 @@ void MarketDataEvents::VerifySubscriptionHandle(
     }
 }
 
-void MarketDataEvents::SubscibeIndividualBookTicker(const std::string& symbol)
+void BinanceMarketDataEvents::SubscibeIndividualBookTicker(const std::string& symbol)
 {
     const auto handle = m_webSocketRealTime->book(symbol.c_str(),
-        std::bind(&MarketDataFeedHandler::HandleIndividualBookTickerData,
+        std::bind(&BinanceMarketDataFeedHandler::HandleIndividualBookTickerData,
             m_feedHandler,
             std::placeholders::_1,
             std::placeholders::_2,
@@ -259,10 +263,10 @@ void MarketDataEvents::SubscibeIndividualBookTicker(const std::string& symbol)
         SubscriptionHandleType::INDIVIDUAL_BOOK_TICKER);
 }
 
-void MarketDataEvents::SubscibeTrade(const std::string& symbol)
+void BinanceMarketDataEvents::SubscibeTrade(const std::string& symbol)
 {
     const auto handle = m_webSocketRealTime->trade(symbol.c_str(),
-        std::bind(&MarketDataFeedHandler::HandleTradeData,
+        std::bind(&BinanceMarketDataFeedHandler::HandleTradeData,
             m_feedHandler,
             std::placeholders::_1,
             std::placeholders::_2,
@@ -272,10 +276,10 @@ void MarketDataEvents::SubscibeTrade(const std::string& symbol)
         SubscriptionHandleType::TRADE);
 }
 
-void MarketDataEvents::SubscibeIndividualMarketTicker(const std::string& symbol)
+void BinanceMarketDataEvents::SubscibeIndividualMarketTicker(const std::string& symbol)
 {
 	const auto handle = m_webSocketRealTime->market(symbol.c_str(),
-		std::bind(&MarketDataFeedHandler::HandleIndividualMarketTickerData,
+		std::bind(&BinanceMarketDataFeedHandler::HandleIndividualMarketTickerData,
 			m_feedHandler,
 			std::placeholders::_1,
 			std::placeholders::_2,
@@ -285,10 +289,10 @@ void MarketDataEvents::SubscibeIndividualMarketTicker(const std::string& symbol)
 		SubscriptionHandleType::INDIVIDUAL_MARKET_TICKER);
 }
 
-void MarketDataEvents::SubscibeAllMarketTickers(const std::string& symbol)
+void BinanceMarketDataEvents::SubscibeAllMarketTickers(const std::string& symbol)
 {
 	const auto handle = m_webSocketRealTime->markets(
-		std::bind(&MarketDataFeedHandler::HandleAllMarketTickersData,
+		std::bind(&BinanceMarketDataFeedHandler::HandleAllMarketTickersData,
 			m_feedHandler,
 			std::placeholders::_1,
 			std::placeholders::_2,
@@ -298,10 +302,10 @@ void MarketDataEvents::SubscibeAllMarketTickers(const std::string& symbol)
 		SubscriptionHandleType::ALL_MARKET_TICKERS);
 }
 
-void MarketDataEvents::SubscibeIndividualMiniTicker(const std::string& symbol)
+void BinanceMarketDataEvents::SubscibeIndividualMiniTicker(const std::string& symbol)
 {
 	const auto handle = m_webSocketRealTime->mini_ticker(symbol.c_str(),
-		std::bind(&MarketDataFeedHandler::HandleMiniTickerData,
+		std::bind(&BinanceMarketDataFeedHandler::HandleMiniTickerData,
 			m_feedHandler,
 			std::placeholders::_1,
 			std::placeholders::_2,
@@ -311,10 +315,10 @@ void MarketDataEvents::SubscibeIndividualMiniTicker(const std::string& symbol)
 		SubscriptionHandleType::INDIVIDUAL_MINI_TICKER);
 }
 
-void MarketDataEvents::SubscibeAllMiniTickers(const std::string& symbol)
+void BinanceMarketDataEvents::SubscibeAllMiniTickers(const std::string& symbol)
 {
 	const auto handle = m_webSocketRealTime->mini_tickers(
-		std::bind(&MarketDataFeedHandler::HandleAllMiniTickerData,
+		std::bind(&BinanceMarketDataFeedHandler::HandleAllMiniTickerData,
 			m_feedHandler,
 			std::placeholders::_1,
 			std::placeholders::_2,
@@ -324,10 +328,10 @@ void MarketDataEvents::SubscibeAllMiniTickers(const std::string& symbol)
 		SubscriptionHandleType::ALL_MINI_TICKERS);
 }
 
-void MarketDataEvents::SubscibeAggregateTrade(const std::string& symbol)
+void BinanceMarketDataEvents::SubscibeAggregateTrade(const std::string& symbol)
 {
 	const auto handle = m_webSocketRealTime->agg_trade(symbol.c_str(),
-		std::bind(&MarketDataFeedHandler::HandleAggregateTradeData,
+		std::bind(&BinanceMarketDataFeedHandler::HandleAggregateTradeData,
 			m_feedHandler,
 			std::placeholders::_1,
 			std::placeholders::_2,
@@ -337,11 +341,11 @@ void MarketDataEvents::SubscibeAggregateTrade(const std::string& symbol)
 		SubscriptionHandleType::AGGREGATE_TRADE);
 }
 
-void MarketDataEvents::SubscibeKlineCandleStick(const std::string& symbol, const std::string& interval)
+void BinanceMarketDataEvents::SubscibeKlineCandleStick(const std::string& symbol, const std::string& interval)
 {
 	const auto handle = m_webSocketRealTime->klines(symbol.c_str(),
 		interval.c_str(),
-		std::bind(&MarketDataFeedHandler::HandleKlineCandleStickData,
+		std::bind(&BinanceMarketDataFeedHandler::HandleKlineCandleStickData,
 			m_feedHandler,
 			std::placeholders::_1,
 			std::placeholders::_2,
@@ -352,13 +356,13 @@ void MarketDataEvents::SubscibeKlineCandleStick(const std::string& symbol, const
 }
 
 // We can only subscribe to part depth data for one symbol at a time
-void MarketDataEvents::SubscibePartDepth(const std::string& symbol)
+void BinanceMarketDataEvents::SubscibePartDepth(const std::string& symbol)
 {
 	m_feedHandler->SetPartDiffSymbol(symbol); // set part diff symbol to feed handler
 	const auto handle = m_webSocketRealTime->part_depth(symbol.c_str(),
         binapi::e_levels::_20, // default level 20
         binapi::e_freq::_100ms, // default frequency 100ms
-		std::bind(&MarketDataFeedHandler::HandlePartDepthData,
+		std::bind(&BinanceMarketDataFeedHandler::HandlePartDepthData,
 			m_feedHandler,
 			std::placeholders::_1,
 			std::placeholders::_2,
@@ -368,11 +372,11 @@ void MarketDataEvents::SubscibePartDepth(const std::string& symbol)
 		SubscriptionHandleType::PART_DEPTH);
 }
 
-void MarketDataEvents::SubscibeDiffDepth(const std::string& symbol)
+void BinanceMarketDataEvents::SubscibeDiffDepth(const std::string& symbol)
 {
 	const auto handle = m_webSocketRealTime->diff_depth(symbol.c_str(),
 		binapi::e_freq::_100ms, // default frequency 100ms
-		std::bind(&MarketDataFeedHandler::HandleDiffDepthData,
+		std::bind(&BinanceMarketDataFeedHandler::HandleDiffDepthData,
 			m_feedHandler,
 			std::placeholders::_1,
 			std::placeholders::_2,
@@ -382,26 +386,48 @@ void MarketDataEvents::SubscibeDiffDepth(const std::string& symbol)
 		SubscriptionHandleType::DIFF_DEPTH);
 }
 
-void MarketDataEvents::SubscibeUserData(const std::string& symbol)
+void BinanceMarketDataEvents::SubscibeUserData(const std::string& apiKey, const std::string& symbol)
 {
+	const auto handle = m_webSocketRealTime->userdata(
+		apiKey.c_str(),
+		std::bind(&BinanceMarketDataFeedHandler::HandleUserDataAccountUpdate,
+			m_feedHandler,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4),
+		std::bind(&BinanceMarketDataFeedHandler::HandleUserDataBalanceUpdate,
+			m_feedHandler,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4),
+		std::bind(&BinanceMarketDataFeedHandler::HandleUserDataOrderUpdate,
+			m_feedHandler,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4));
+	VerifySubscriptionHandle(symbol, "user data", handle,
+		SubscriptionHandleType::USER_DATA);
 }
 
-void MarketDataEvents::Unsubscribe(const binapi::ws::websockets::handle& h)
+void BinanceMarketDataEvents::Unsubscribe(const binapi::ws::websockets::handle& h)
 {
     m_webSocketRealTime->unsubscribe(h);
 }
 
-void MarketDataEvents::AsyncUnsubscribe(const binapi::ws::websockets::handle& h)
+void BinanceMarketDataEvents::AsyncUnsubscribe(const binapi::ws::websockets::handle& h)
 {
     m_webSocketRealTime->async_unsubscribe(h);
 }
 
-void MarketDataEvents::UnsubscribeAll()
+void BinanceMarketDataEvents::UnsubscribeAll()
 {
     m_webSocketRealTime->unsubscribe_all();
 }
 
-void MarketDataEvents::AsyncUnsubscribeAll()
+void BinanceMarketDataEvents::AsyncUnsubscribeAll()
 {
     m_webSocketRealTime->async_unsubscribe_all();
 }

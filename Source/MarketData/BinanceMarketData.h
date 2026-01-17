@@ -302,4 +302,166 @@ namespace MarketData {
 
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const AllDiffDepthData& o);
 	};
+
+	class DLL_CLASS_MARKETDATA_EXPORTS UserDataAccount : public BinanceMarketData // account_t
+	{
+		// Rule of 5, for class containing unique pointers
+	public:
+		UserDataAccount();
+		UserDataAccount(const UserDataAccount& other);
+		UserDataAccount& operator=(const UserDataAccount& other);
+		UserDataAccount(UserDataAccount&& other) noexcept = default;
+		UserDataAccount& operator=(UserDataAccount&& other) noexcept = default;
+		~UserDataAccount() = default;
+		std::string ToString() override;
+
+		//{
+		//	"subscriptionId": 0,
+		//		"event" : {
+		//		"e": "outboundAccountPosition", // Event type
+		//			"E" : 1564034571105,        // Event Time
+		//			"u" : 1564034571073,        // Time of last account update
+		//			"B" :                       // Balances Array
+		//			[
+				//		{
+				//			"a": "ETH",             // Asset
+				//			"f" : "10000.000000",   // Free
+				//			"l" : "0.000000"        // Locked
+				//		}
+		//			]
+		//	}
+		//}
+
+		std::unique_ptr<SingleMarketDataFeed> m_asset;
+		std::unique_ptr<SingleMarketDataFeed> m_free;
+		std::unique_ptr<SingleMarketDataFeed> m_locked;
+		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
+		std::unique_ptr<SingleMarketDataFeed> m_eventType;
+		std::unique_ptr<SingleMarketDataFeed> m_timeOfLastAccountUpdateMs;
+
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const UserDataAccount& o);
+	};
+
+	class DLL_CLASS_MARKETDATA_EXPORTS UserDataBalance : public BinanceMarketData // balance_t
+	{
+		// Rule of 5, for class containing unique pointers
+	public:
+		UserDataBalance();
+		UserDataBalance(const UserDataBalance& other);
+		UserDataBalance& operator=(const UserDataBalance& other);
+		UserDataBalance(UserDataBalance&& other) noexcept = default;
+		UserDataBalance& operator=(UserDataBalance&& other) noexcept = default;
+		~UserDataBalance() = default;
+		std::string ToString() override;
+
+		//{
+		//	"subscriptionId": 0,
+		//		"event" : {
+		//		"e": "balanceUpdate",         // Event Type
+		//			"E" : 1573200697110,      // Event Time
+		//			"a" : "BTC",              // Asset
+		//			"d" : "100.00000000",     // Balance Delta
+		//			"T" : 1573200697068       // Clear Time
+		//	}
+		//}
+
+		std::unique_ptr<SingleMarketDataFeed> m_asset;
+		std::unique_ptr<SingleMarketDataFeed> m_balanceDelta;
+		std::unique_ptr<SingleMarketDataFeed> m_clearTimeMs;
+		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
+		std::unique_ptr<SingleMarketDataFeed> m_eventType;
+
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const UserDataBalance& o);
+	};
+
+	class DLL_CLASS_MARKETDATA_EXPORTS UserDataOrder : public BinanceMarketData // order_t
+	{
+		// Rule of 5, for class containing unique pointers
+	public:
+		UserDataOrder();
+		UserDataOrder(const UserDataOrder& other);
+		UserDataOrder& operator=(const UserDataOrder& other);
+		UserDataOrder(UserDataOrder&& other) noexcept = default;
+		UserDataOrder& operator=(UserDataOrder&& other) noexcept = default;
+		~UserDataOrder() = default;
+		std::string ToString() override;
+
+		//{
+		//	"subscriptionId": 0,
+		//		"event" : {
+		//		"e": "executionReport",         // Event type
+		//			"E" : 1499405658658,             // Event time
+		//			"s" : "ETHBTC",                  // Symbol
+		//			"c" : "mUvoqJxFIILMdfAW5iGSOW",  // Client order ID
+		//			"S" : "BUY",                     // Side
+		//			"o" : "LIMIT",                   // Order type
+		//			"f" : "GTC",                     // Time in force
+		//			"q" : "1.00000000",              // Order quantity
+		//			"p" : "0.10264410",              // Order price
+		//			"P" : "0.00000000",              // Stop price
+		//			"F" : "0.00000000",              // Iceberg quantity
+		//			"g" : -1,                        // OrderListId
+		//			"C" : "",                        // Original client order ID; This is the ID of the order being canceled
+		//			"x" : "NEW",                     // Current execution type
+		//			"X" : "NEW",                     // Current order status
+		//			"r" : "NONE",                    // Order reject reason; Please see Order Reject Reason (below) for more information.
+		//			"i" : 4293153,                   // Order ID
+		//			"l" : "0.00000000",              // Last executed quantity
+		//			"z" : "0.00000000",              // Cumulative filled quantity
+		//			"L" : "0.00000000",              // Last executed price
+		//			"n" : "0",                       // Commission amount
+		//			"N" : null,                      // Commission asset
+		//			"T" : 1499405658657,             // Transaction time
+		//			"t" : -1,                        // Trade ID
+		//			"v" : 3,                         // Prevented Match Id; This is only visible if the order expired due to STP
+		//			"I" : 8641984,                   // Execution Id
+		//			"w" : true,                      // Is the order on the book?
+		//			"m" : false,                     // Is this trade the maker side?
+		//			"M" : false,                     // Ignore
+		//			"O" : 1499405658657,             // Order creation time
+		//			"Z" : "0.00000000",              // Cumulative quote asset transacted quantity
+		//			"Y" : "0.00000000",              // Last quote asset transacted quantity (i.e. lastPrice * lastQty)
+		//			"Q" : "0.00000000",              // Quote Order Quantity
+		//			"W" : 1499405658657,             // Working Time; This is only visible if the order has been placed on the book.
+		//			"V" : "NONE"                     // SelfTradePreventionMode
+		//	}
+
+        std::unique_ptr<SingleMarketDataFeed> m_eventType;                // "e": Event type
+        std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;              // "E": Event time
+        std::unique_ptr<SingleMarketDataFeed> m_symbol;                   // "s": Symbol
+        std::unique_ptr<SingleMarketDataFeed> m_clientOrderId;            // "c": Client order ID
+        std::unique_ptr<SingleMarketDataFeed> m_side;                     // "S": Side
+        std::unique_ptr<SingleMarketDataFeed> m_orderType;                // "o": Order type
+        std::unique_ptr<SingleMarketDataFeed> m_timeInForce;              // "f": Time in force
+        std::unique_ptr<SingleMarketDataFeed> m_orderQuantity;            // "q": Order quantity
+        std::unique_ptr<SingleMarketDataFeed> m_orderPrice;               // "p": Order price
+        std::unique_ptr<SingleMarketDataFeed> m_stopPrice;                // "P": Stop price
+        std::unique_ptr<SingleMarketDataFeed> m_icebergQuantity;          // "F": Iceberg quantity
+        std::unique_ptr<SingleMarketDataFeed> m_orderListId;              // "g": OrderListId
+        std::unique_ptr<SingleMarketDataFeed> m_originalClientOrderId;    // "C": Original client order ID
+        std::unique_ptr<SingleMarketDataFeed> m_currentExecutionType;     // "x": Current execution type
+        std::unique_ptr<SingleMarketDataFeed> m_currentOrderStatus;       // "X": Current order status
+        std::unique_ptr<SingleMarketDataFeed> m_orderRejectReason;        // "r": Order reject reason
+        std::unique_ptr<SingleMarketDataFeed> m_orderId;                  // "i": Order ID
+        std::unique_ptr<SingleMarketDataFeed> m_lastExecutedQuantity;     // "l": Last executed quantity
+        std::unique_ptr<SingleMarketDataFeed> m_cumulativeFilledQuantity; // "z": Cumulative filled quantity
+        std::unique_ptr<SingleMarketDataFeed> m_lastExecutedPrice;        // "L": Last executed price
+        std::unique_ptr<SingleMarketDataFeed> m_commissionAmount;         // "n": Commission amount
+        std::unique_ptr<SingleMarketDataFeed> m_commissionAsset;          // "N": Commission asset
+        std::unique_ptr<SingleMarketDataFeed> m_transactionTimeMs;        // "T": Transaction time
+        std::unique_ptr<SingleMarketDataFeed> m_tradeId;                  // "t": Trade ID
+        std::unique_ptr<SingleMarketDataFeed> m_preventedMatchId;         // "v": Prevented Match Id
+        std::unique_ptr<SingleMarketDataFeed> m_executionId;              // "I": Execution Id
+        std::unique_ptr<SingleMarketDataFeed> m_isOrderOnBook;            // "w": Is the order on the book?
+        std::unique_ptr<SingleMarketDataFeed> m_isMakerSide;              // "m": Is this trade the maker side?
+        std::unique_ptr<SingleMarketDataFeed> m_ignore;                   // "M": Ignore
+        std::unique_ptr<SingleMarketDataFeed> m_orderCreationTimeMs;      // "O": Order creation time
+        std::unique_ptr<SingleMarketDataFeed> m_cumulativeQuoteAssetQty;  // "Z": Cumulative quote asset transacted quantity
+        std::unique_ptr<SingleMarketDataFeed> m_lastQuoteAssetQty;        // "Y": Last quote asset transacted quantity
+        std::unique_ptr<SingleMarketDataFeed> m_quoteOrderQuantity;       // "Q": Quote Order Quantity
+        std::unique_ptr<SingleMarketDataFeed> m_workingTimeMs;            // "W": Working Time
+        std::unique_ptr<SingleMarketDataFeed> m_selfTradePreventionMode;  // "V": SelfTradePreventionMode
+
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const UserDataOrder& o);
+	};
 };

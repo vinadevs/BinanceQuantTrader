@@ -39,6 +39,7 @@
 #include "TradingModel.h"
 
 #include <string>
+#include <utility>
 
 using namespace BinanceQuantTrader;
 using namespace PortfolioManager;
@@ -85,6 +86,10 @@ TradingModel::~TradingModel()
 	// This can lead to larger binary sizes because the destructor is essentially 
 	// copied across all translation units that use the class, rather than having 
 	// a single implementation in one translation unit.
+
+#if USE_BACK_TEST_TRADING
+	ExchangeSimulatorGateWay->StopMessageTransporter();
+#endif
 }
 
 void TradingModel::PrepareTradingComponents(
@@ -169,9 +174,9 @@ void TradingModel::PrepareTradingComponents(
 
 	m_logger->Info("Initiating Real Time Market Data.");
 	const auto* realTimeMarketDataCfg = configBQTXml->FirstChildElement("RealTimeMarketData");
-	m_binanceMarketDataConfig = BqtXmlUtils::GetBinanceMarketDataConfig(realTimeMarketDataCfg);
-	const auto* binanceRealTimeMarketDataCfg = m_binanceMarketDataConfig->FirstChildElement("RealTimeMarketData");
-	m_marketData = std::make_unique<RealTimeMarketData>(binanceRealTimeMarketDataCfg);
+	auto [ mkDataTypeName, mkDataConfigXml ] = BqtXmlUtils::GetMarketDataConfig(realTimeMarketDataCfg);
+	m_marketDataConfig = std::move(mkDataConfigXml);
+	m_marketData = std::make_unique<RealTimeMarketData>(m_marketDataConfig.get(), mkDataTypeName);
 
 	m_logger->Info("Initiating Portfolio Investment.");
 	const auto* portfolioCfg = configBQTXml->FirstChildElement("PortfolioInvestment");

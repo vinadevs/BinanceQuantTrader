@@ -51,7 +51,7 @@ namespace ExchangeSimulator {
             UserAccountManager* userAccountManager,
             ExchangeInfoManager* exchangeInfoManager,
             UserTradeProfileManager* userTradeProfileManager);
-        ~BinanceRestAPIServer();
+        ~BinanceRestAPIServer() override;
 
         void Start() override;
         void Stop() override;

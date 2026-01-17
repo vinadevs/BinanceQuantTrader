@@ -16,55 +16,77 @@ using namespace MarketData;
 using namespace tinyxml2;
 
 RealTimeMarketData::RealTimeMarketData(
-	const XMLElement* mkDataConfigXml)
+	const XMLDocument* mkDataConfigXml,
+	const std::string& mkDataTypeName)
+	: m_mkDataTypeName(mkDataTypeName)
 {
-	m_feedHandler = std::make_unique<MarketDataFeedHandler>();
-	m_dataEvents = std::make_unique<MarketDataEvents>(mkDataConfigXml, m_feedHandler.get());
+	if (m_mkDataTypeName == "RealTimeData")
+	{
+		m_marketDataFeedHandler = std::make_unique<BinanceMarketDataFeedHandler>();
+		const auto* binanceRealTimeMarketDataCfg = mkDataConfigXml->FirstChildElement("RealTimeMarketData");
+		assert(binanceRealTimeMarketDataCfg);
+		m_marketDataEvents = std::make_unique<BinanceMarketDataEvents>(
+			binanceRealTimeMarketDataCfg,
+			m_marketDataFeedHandler.get());
+	}
+	else if (m_mkDataTypeName == "HistoricalMarketData")
+	{
+		m_marketDataFeedHandler = std::make_unique<HistoricalMarketDataFeedHandler>();
+		const auto* historicalMarketDataCfg = mkDataConfigXml->FirstChildElement("HistoricalMarketData");
+		assert(historicalMarketDataCfg);
+		m_marketDataEvents = std::make_unique<HistoricalMarketDataEvents>(
+			historicalMarketDataCfg,
+			m_marketDataFeedHandler.get());
+	}
+	else
+	{
+		throw std::runtime_error("RealTimeMarketData: unsupported MarketData type");
+	}
 }
 
 RealTimeMarketData::~RealTimeMarketData() {}
 
 void RealTimeMarketData::RegisterDataListener(MarketDataObserver* observer)
 {
-	m_feedHandler->RegisterObserver(observer);
+	m_marketDataFeedHandler->AttachMarketDataObserver(observer);
 }
 
 void RealTimeMarketData::UnRegisterDataListener(MarketDataObserver* observer)
 {
-	m_feedHandler->UnregisterObserver(observer);
+	m_marketDataFeedHandler->DettachMarketDataObserver(observer);
 }
 
 void RealTimeMarketData::StartStreamingData()
 {
-	m_dataEvents->Wait();
+	m_marketDataEvents->Wait();
 }
 
 void RealTimeMarketData::StartIOContext()
 {
-	m_dataEvents->StartIOContext();
+	m_marketDataEvents->StartIOContext();
 }
 
 bool RealTimeMarketData::SubscribeSymbol(const std::string& symbol)
 {
-	return m_dataEvents->Subscribe(symbol);
+	return m_marketDataEvents->Subscribe(symbol);
 }
 
 bool RealTimeMarketData::UnsubscribeSymbol(const std::string& symbol)
 {
-	return m_dataEvents->Unsubscribe(symbol);
+	return m_marketDataEvents->Unsubscribe(symbol);
 }
 
 bool RealTimeMarketData::IsSubscribedSymbol(const std::string& symbol)
 {
-	return m_dataEvents->IsSubscribed(symbol);
+	return m_marketDataEvents->IsSubscribed(symbol);
 }
 
 const std::unordered_set<std::string>& RealTimeMarketData::GetSubscribingSymbols() const
 {
-	return m_dataEvents->GetSubscribingSymbols();
+	return m_marketDataEvents->GetSubscribingSymbols();
 }
 
-MarketDataFeedHandler* RealTimeMarketData::GetFeedHandler() const
+MarketDataFeedHanlder* RealTimeMarketData::GetFeedHandler() const
 {
-	return m_feedHandler.get();
+	return m_marketDataFeedHandler.get();
 }

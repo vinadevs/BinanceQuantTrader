@@ -18,6 +18,10 @@ namespace tinyxml2 {
     class XMLElement;
 };
 
+namespace HistoricalData {
+	class MarketDataFileWriter;
+};
+
 namespace MarketDataCapture {
 
  /**
@@ -42,12 +46,10 @@ namespace MarketDataCapture {
 	enum class DataCaptureMode : unsigned
 	{
 		Undefined = 0,
-		LocalFile, // store to local file
+        SaveHistoricalData, // store to local file
 		ConsoleLog, // log to console
 		PythonServer, // send to python client via MQ
 	};
-
-    class MarketDataFileWriter;
 
     class MarketDataListener final
         : public MarketData::MarketDataObserver
@@ -72,14 +74,18 @@ namespace MarketDataCapture {
         bool OnAllMarketTickersChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
 		// all mini tickers for downstream orders
         bool OnAllMiniTickersChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
-		// all part depth for downstream orders
+#if 0 // Not interested for now
+        // all part depth for downstream orders
         bool OnAllPartDepthChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
 		// all diff depth for downstream orders
         bool OnAllDiffDepthChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+#endif
+
+		DataCaptureMode GetDataCaptureMode() const { return m_dataCaptureMode; }
     private:
         std::unique_ptr<LibraryUtils::Logger> m_logger;
         DataCaptureMode m_dataCaptureMode{ DataCaptureMode::Undefined };
 		std::string m_localFilePath;
-		std::unique_ptr<MarketDataFileWriter> m_fileWriter;
+        HistoricalData::MarketDataFileWriter* m_fileWriter{ nullptr };
     };
 };

@@ -86,7 +86,7 @@ namespace MarketData {
 			<< "BEST_BID_QTY=" << *o.m_bestBidQty << "|"
 			<< "BEST_ASK_PRICE=" << *o.m_bestAskPrice << "|"
 			<< "BEST_ASK_QTY=" << *o.m_bestAskQty << "|"
-			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs();
 		return os;
 	}
 
@@ -151,9 +151,9 @@ namespace MarketData {
 			<< "QUANTITY=" << *o.m_quantity << "|"
 			<< "BUYER_ORDER_ID=" << *o.m_buyerOrderID << "|"
 			<< "SELLER_ORDER_ID=" << *o.m_sellerOrderID << "|"
-			<< "TRADE_TIME=" << *o.m_tradeTime << "|"
+			<< "TRADE_TIME=" << o.m_tradeTime->GetStringDataFromEventTimeMs() << "|"
 			<< "IS_BUYER_MARKET_MAKER=" << *o.m_isBuyerTheMarketMaker << "|"
-			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs();
 		return os;
 	}
 
@@ -266,12 +266,12 @@ namespace MarketData {
 			<< "LOW_PRICE=" << *o.m_lowPrice << "|"
 			<< "TOTAL_TRADED_BASE_ASSET_VOLUME=" << *o.m_totalTradedBaseAssetVolume << "|"
 			<< "TOTAL_TRADED_QUOTE_ASSET_VOLUME=" << *o.m_totalTradedQuoteAssetVolume << "|"
-			<< "STATISTICS_OPEN_TIME=" << *o.m_statisticsOpenTimeMs << "|"
-			<< "STATISTICS_CLOSE_TIME=" << *o.m_statisticsCloseTimeMs << "|"
+			<< "STATISTICS_OPEN_TIME=" << o.m_statisticsOpenTimeMs->GetStringDataFromEventTimeMs() << "|"
+			<< "STATISTICS_CLOSE_TIME=" << o.m_statisticsCloseTimeMs->GetStringDataFromEventTimeMs() << "|"
 			<< "FIRST_TRADE_ID=" << *o.m_firstTradeId << "|"
 			<< "LAST_TRADE_ID=" << *o.m_lastTradeId << "|"
 			<< "TOTAL_NUMBER_OF_TRADES=" << *o.m_totalNumberOfTrades << "|"
-			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs();
 		return os;
 	}
 
@@ -324,7 +324,7 @@ namespace MarketData {
 		}
 
 		os << "],\n";
-		os << "\"eventTimeMs\": \"" << *o.m_eventTimeMs << "\"\n";
+		os << "\"eventTimeMs\": \"" << o.m_eventTimeMs->GetStringDataFromEventTimeMs() << "\"\n";
 		os << "}";
 
 		return os;
@@ -387,7 +387,7 @@ namespace MarketData {
 			<< "LOW_PRICE=" << *o.m_lowPrice << "|"
 			<< "TOTAL_TRADED_BASE_ASSET_VOLUME=" << *o.m_totalTradedBaseAssetVolume << "|"
 			<< "TOTAL_TRADED_QUOTE_ASSET_VOLUME=" << *o.m_totalTradedQuoteAssetVolume << "|"
-			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs();
 		return os;
 	}
 
@@ -436,7 +436,7 @@ namespace MarketData {
 			}
 		}
 		os << "],\n";
-		os << "\"eventTimeMs\": \"" << *o.m_eventTimeMs << "\"\n";
+		os << "\"eventTimeMs\": \"" << o.m_eventTimeMs->GetStringDataFromEventTimeMs() << "\"\n";
 		os << "}";
 		return os;
 	}
@@ -504,9 +504,9 @@ namespace MarketData {
 			<< "FIRST_TRADE_ID=" << *o.m_firstTradeId << "|"
 			<< "LAST_TRADE_ID=" << *o.m_lastTradeId << "|"
 			<< "TOTAL_NUMBER_OF_TRADES=" << *o.m_totalNumberOfTrades << "|"
-			<< "TRADE_TIME_MS=" << *o.m_tradeTimeMs << "|"
+			<< "TRADE_TIME_MS=" << o.m_tradeTimeMs->GetStringDataFromEventTimeMs() << "|"
 			<< "IS_BUYER_MARKET_MAKER=" << *o.m_isBuyerMarketMaker << "|"
-			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs();
 		return os;
 	}
 
@@ -588,8 +588,8 @@ namespace MarketData {
 	{
 		os
 			<< "DATA_NAME=" << o.m_dataName << "|"
-			<< "KLINE_START_TIME=" << *o.m_klineStartTime << "|"
-			<< "KLINE_CLOSE_TIME=" << *o.m_klineCloseTime << "|"
+			<< "KLINE_START_TIME=" << o.m_klineStartTime->GetStringDataFromEventTimeMs() << "|"
+			<< "KLINE_CLOSE_TIME=" << o.m_klineCloseTime->GetStringDataFromEventTimeMs() << "|"
 			<< "INTERVAL=" << *o.m_interval << "|"
 			<< "FIRST_TRADE_ID=" << *o.m_firstTradeId << "|"
 			<< "LAST_TRADE_ID=" << *o.m_lastTradeId << "|"
@@ -603,7 +603,7 @@ namespace MarketData {
 			<< "QUOTE_ASSET_VOLUME=" << *o.m_quoteAssetVolume << "|"
 			<< "TAKER_BUY_BASE_ASSET_VOLUME=" << *o.m_takerBuyBaseAssetVolume << "|"
 			<< "TAKER_BUY_QUOTE_ASSET_VOLUME=" << *o.m_takerBuyQuoteAssetVolume << "|"
-			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs();
 		return os;
 	}
 
@@ -648,7 +648,7 @@ namespace MarketData {
 		os
 			<< "PRICE=" << *o.m_price << "|"
 			<< "AMOUNT=" << *o.m_amount << "|"
-			<< "EVENT_TIME_MS=" << *o.m_eventTimeMs;
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs();
 
 		return os;
 	}
@@ -705,7 +705,7 @@ namespace MarketData {
 		PrintArrayMarktData(o.m_asks.get(), os);
 		os << ",\n";
 
-		os << "\"eventTimeMs\": \"" << *o.m_eventTimeMs << "\"\n";
+		os << "\"eventTimeMs\": \"" << o.m_eventTimeMs->GetStringDataFromEventTimeMs() << "\"\n";
 		os << "}";
 
 		return os;
@@ -772,7 +772,7 @@ namespace MarketData {
 		PrintArrayMarktData(o.m_asks.get(), os);
 		os << ",\n";
 
-		os << "\"eventTimeMs\": \"" << *o.m_eventTimeMs << "\"\n";
+		os << "\"eventTimeMs\": \"" << o.m_eventTimeMs->GetStringDataFromEventTimeMs() << "\"\n";
 		os << "}";
 
 		return os;
@@ -783,4 +783,290 @@ namespace MarketData {
 		oss << *this;
 		return oss.str();
 	}
-}
+
+	/********************************************************************************/
+	// UserDataAccount
+	/********************************************************************************/
+	
+	UserDataAccount::UserDataAccount()
+		: m_asset{ std::make_unique<SingleMarketDataFeed>() },
+		m_free{ std::make_unique<SingleMarketDataFeed>() },
+		m_locked{ std::make_unique<SingleMarketDataFeed>() },
+		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>() },
+		m_eventType{ std::make_unique<SingleMarketDataFeed>() },
+		m_timeOfLastAccountUpdateMs{ std::make_unique<SingleMarketDataFeed>() }
+	{
+		m_dataName = "UserDataAccount";
+	}
+
+	UserDataAccount::UserDataAccount(const UserDataAccount& other)
+		: m_asset{ std::make_unique<SingleMarketDataFeed>(*other.m_asset) },
+		m_free{ std::make_unique<SingleMarketDataFeed>(*other.m_free) },
+		m_locked{ std::make_unique<SingleMarketDataFeed>(*other.m_locked) },
+		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>(*other.m_eventTimeMs) },
+		m_eventType{ std::make_unique<SingleMarketDataFeed>(*other.m_eventType) },
+		m_timeOfLastAccountUpdateMs{ std::make_unique<SingleMarketDataFeed>(*other.m_timeOfLastAccountUpdateMs) }
+	{
+	}
+
+	UserDataAccount& UserDataAccount::operator=(const UserDataAccount& other)
+	{
+		if (this != &other)
+		{
+			m_asset = std::make_unique<SingleMarketDataFeed>(*other.m_asset);
+			m_free = std::make_unique<SingleMarketDataFeed>(*other.m_free);
+			m_locked = std::make_unique<SingleMarketDataFeed>(*other.m_locked);
+			m_eventTimeMs = std::make_unique<SingleMarketDataFeed>(*other.m_eventTimeMs);
+			m_eventType = std::make_unique<SingleMarketDataFeed>(*other.m_eventType);
+			m_timeOfLastAccountUpdateMs = std::make_unique<SingleMarketDataFeed>(*other.m_timeOfLastAccountUpdateMs);
+		}
+		return *this;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const UserDataAccount& o)
+	{
+		os
+			<< "DATA_NAME=" << o.m_dataName << "|"
+			<< "ASSET=" << *o.m_asset << "|"
+			<< "FREE=" << *o.m_free << "|"
+			<< "LOCKED=" << *o.m_locked << "|"
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs() << "|"
+			<< "EVENT_TYPE=" << *o.m_eventType << "|"
+			<< "TIME_OF_LAST_ACCOUNT_UPDATE_MS=" << o.m_timeOfLastAccountUpdateMs->GetStringDataFromEventTimeMs();
+		return os;
+	}
+
+	std::string UserDataAccount::ToString() {
+		std::ostringstream oss;
+		oss << *this;
+		return oss.str();
+	}
+
+	/********************************************************************************/
+	// UserDataBalance
+	/********************************************************************************/
+
+	UserDataBalance::UserDataBalance()
+		: m_asset{ std::make_unique<SingleMarketDataFeed>() },
+		m_balanceDelta{ std::make_unique<SingleMarketDataFeed>() },
+		m_clearTimeMs{ std::make_unique<SingleMarketDataFeed>() },
+		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>() },
+		m_eventType{ std::make_unique<SingleMarketDataFeed>() }
+	{
+		m_dataName = "UserDataBalance";
+	}
+
+	UserDataBalance::UserDataBalance(const UserDataBalance& other)
+		: m_asset{ std::make_unique<SingleMarketDataFeed>(*other.m_asset) },
+		m_balanceDelta{ std::make_unique<SingleMarketDataFeed>(*other.m_balanceDelta) },
+		m_clearTimeMs{ std::make_unique<SingleMarketDataFeed>(*other.m_clearTimeMs) },
+		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>(*other.m_eventTimeMs) },
+		m_eventType{ std::make_unique<SingleMarketDataFeed>(*other.m_eventType) }
+	{
+	}
+
+	UserDataBalance& UserDataBalance::operator=(const UserDataBalance& other)
+	{
+		if (this != &other)
+		{
+			m_asset = std::make_unique<SingleMarketDataFeed>(*other.m_asset);
+			m_balanceDelta = std::make_unique<SingleMarketDataFeed>(*other.m_balanceDelta);
+			m_clearTimeMs = std::make_unique<SingleMarketDataFeed>(*other.m_clearTimeMs);
+			m_eventTimeMs = std::make_unique<SingleMarketDataFeed>(*other.m_eventTimeMs);
+			m_eventType = std::make_unique<SingleMarketDataFeed>(*other.m_eventType);
+		}
+		return *this;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const UserDataBalance& o)
+	{
+		os
+			<< "DATA_NAME=" << o.m_dataName << "|"
+			<< "ASSET=" << *o.m_asset << "|"
+			<< "BALANCE_DELTA=" << *o.m_balanceDelta << "|"
+			<< "CLEAR_TIME_MS=" << o.m_clearTimeMs->GetStringDataFromEventTimeMs() << "|"
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs() << "|"
+			<< "EVENT_TYPE=" << *o.m_eventType;
+		return os;
+	}
+
+	std::string UserDataBalance::ToString() {
+		std::ostringstream oss;
+		oss << *this;
+		return oss.str();
+	}
+
+	/********************************************************************************/
+	// UserDataOrder
+	/********************************************************************************/
+
+	UserDataOrder::UserDataOrder()
+		: m_eventType{ std::make_unique<SingleMarketDataFeed>() },
+		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>() },
+		m_symbol{ std::make_unique<SingleMarketDataFeed>() },
+		m_clientOrderId{ std::make_unique<SingleMarketDataFeed>() },
+		m_side{ std::make_unique<SingleMarketDataFeed>() },
+		m_orderType{ std::make_unique<SingleMarketDataFeed>() },
+		m_timeInForce{ std::make_unique<SingleMarketDataFeed>() },
+		m_orderQuantity{ std::make_unique<SingleMarketDataFeed>() },
+		m_orderPrice{ std::make_unique<SingleMarketDataFeed>() },
+		m_stopPrice{ std::make_unique<SingleMarketDataFeed>() },
+		m_icebergQuantity{ std::make_unique<SingleMarketDataFeed>() },
+		m_orderListId{ std::make_unique<SingleMarketDataFeed>() },
+		m_originalClientOrderId{ std::make_unique<SingleMarketDataFeed>() },
+		m_currentExecutionType{ std::make_unique<SingleMarketDataFeed>() },
+		m_currentOrderStatus{ std::make_unique<SingleMarketDataFeed>() },
+		m_orderRejectReason{ std::make_unique<SingleMarketDataFeed>() },
+		m_orderId{ std::make_unique<SingleMarketDataFeed>() },
+		m_lastExecutedQuantity{ std::make_unique<SingleMarketDataFeed>() },
+		m_cumulativeFilledQuantity{ std::make_unique<SingleMarketDataFeed>() },
+		m_lastExecutedPrice{ std::make_unique<SingleMarketDataFeed>() },
+		m_commissionAmount{ std::make_unique<SingleMarketDataFeed>() },
+		m_commissionAsset{ std::make_unique<SingleMarketDataFeed>() },
+		m_transactionTimeMs{ std::make_unique<SingleMarketDataFeed>() },
+		m_tradeId{ std::make_unique<SingleMarketDataFeed>() },
+		m_preventedMatchId{ std::make_unique<SingleMarketDataFeed>() },
+		m_executionId{ std::make_unique<SingleMarketDataFeed>() },
+		m_isOrderOnBook{ std::make_unique<SingleMarketDataFeed>() },
+		m_isMakerSide{ std::make_unique<SingleMarketDataFeed>() },
+		m_ignore{ std::make_unique<SingleMarketDataFeed>() },
+		m_orderCreationTimeMs{ std::make_unique<SingleMarketDataFeed>() },
+		m_cumulativeQuoteAssetQty{ std::make_unique<SingleMarketDataFeed>() },
+		m_lastQuoteAssetQty{ std::make_unique<SingleMarketDataFeed>() },
+		m_quoteOrderQuantity{ std::make_unique<SingleMarketDataFeed>() },
+		m_workingTimeMs{ std::make_unique<SingleMarketDataFeed>() },
+		m_selfTradePreventionMode{ std::make_unique<SingleMarketDataFeed>() }
+	{
+		m_dataName = "UserDataOrder";
+	}
+
+	UserDataOrder::UserDataOrder(const UserDataOrder& other)
+		: m_eventType{ std::make_unique<SingleMarketDataFeed>(*other.m_eventType) },
+		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>(*other.m_eventTimeMs) },
+		m_symbol{ std::make_unique<SingleMarketDataFeed>(*other.m_symbol) },
+		m_clientOrderId{ std::make_unique<SingleMarketDataFeed>(*other.m_clientOrderId) },
+		m_side{ std::make_unique<SingleMarketDataFeed>(*other.m_side) },
+		m_orderType{ std::make_unique<SingleMarketDataFeed>(*other.m_orderType) },
+		m_timeInForce{ std::make_unique<SingleMarketDataFeed>(*other.m_timeInForce) },
+		m_orderQuantity{ std::make_unique<SingleMarketDataFeed>(*other.m_orderQuantity) },
+		m_orderPrice{ std::make_unique<SingleMarketDataFeed>(*other.m_orderPrice) },
+		m_stopPrice{ std::make_unique<SingleMarketDataFeed>(*other.m_stopPrice) },
+		m_icebergQuantity{ std::make_unique<SingleMarketDataFeed>(*other.m_icebergQuantity) },
+		m_orderListId{ std::make_unique<SingleMarketDataFeed>(*other.m_orderListId) },
+		m_originalClientOrderId{ std::make_unique<SingleMarketDataFeed>(*other.m_originalClientOrderId) },
+		m_currentExecutionType{ std::make_unique<SingleMarketDataFeed>(*other.m_currentExecutionType) },
+		m_currentOrderStatus{ std::make_unique<SingleMarketDataFeed>(*other.m_currentOrderStatus) },
+		m_orderRejectReason{ std::make_unique<SingleMarketDataFeed>(*other.m_orderRejectReason) },
+		m_orderId{ std::make_unique<SingleMarketDataFeed>(*other.m_orderId) },
+		m_lastExecutedQuantity{ std::make_unique<SingleMarketDataFeed>(*other.m_lastExecutedQuantity) },
+		m_cumulativeFilledQuantity{ std::make_unique<SingleMarketDataFeed>(*other.m_cumulativeFilledQuantity) },
+		m_lastExecutedPrice{ std::make_unique<SingleMarketDataFeed>(*other.m_lastExecutedPrice) },
+		m_commissionAmount{ std::make_unique<SingleMarketDataFeed>(*other.m_commissionAmount) },
+		m_commissionAsset{ std::make_unique<SingleMarketDataFeed>(*other.m_commissionAsset) },
+		m_transactionTimeMs{ std::make_unique<SingleMarketDataFeed>(*other.m_transactionTimeMs) },
+		m_tradeId{ std::make_unique<SingleMarketDataFeed>(*other.m_tradeId) },
+		m_preventedMatchId{ std::make_unique<SingleMarketDataFeed>(*other.m_preventedMatchId) },
+		m_executionId{ std::make_unique<SingleMarketDataFeed>(*other.m_executionId) },
+		m_isOrderOnBook{ std::make_unique<SingleMarketDataFeed>(*other.m_isOrderOnBook) },
+		m_isMakerSide{ std::make_unique<SingleMarketDataFeed>(*other.m_isMakerSide) },
+		m_ignore{ std::make_unique<SingleMarketDataFeed>(*other.m_ignore) },
+		m_orderCreationTimeMs{ std::make_unique<SingleMarketDataFeed>(*other.m_orderCreationTimeMs) },
+		m_cumulativeQuoteAssetQty{ std::make_unique<SingleMarketDataFeed>(*other.m_cumulativeQuoteAssetQty) },
+		m_lastQuoteAssetQty{ std::make_unique<SingleMarketDataFeed>(*other.m_lastQuoteAssetQty) },
+		m_quoteOrderQuantity{ std::make_unique<SingleMarketDataFeed>(*other.m_quoteOrderQuantity) },
+		m_workingTimeMs{ std::make_unique<SingleMarketDataFeed>(*other.m_workingTimeMs) },
+		m_selfTradePreventionMode{ std::make_unique<SingleMarketDataFeed>(*other.m_selfTradePreventionMode) }
+	{
+	}
+
+	UserDataOrder& UserDataOrder::operator=(const UserDataOrder& other)
+	{
+		if (this != &other)
+		{
+			m_eventType = std::make_unique<SingleMarketDataFeed>(*other.m_eventType);
+			m_eventTimeMs = std::make_unique<SingleMarketDataFeed>(*other.m_eventTimeMs);
+			m_symbol = std::make_unique<SingleMarketDataFeed>(*other.m_symbol);
+			m_clientOrderId = std::make_unique<SingleMarketDataFeed>(*other.m_clientOrderId);
+			m_side = std::make_unique<SingleMarketDataFeed>(*other.m_side);
+			m_orderType = std::make_unique<SingleMarketDataFeed>(*other.m_orderType);
+			m_timeInForce = std::make_unique<SingleMarketDataFeed>(*other.m_timeInForce);
+			m_orderQuantity = std::make_unique<SingleMarketDataFeed>(*other.m_orderQuantity);
+			m_orderPrice = std::make_unique<SingleMarketDataFeed>(*other.m_orderPrice);
+			m_stopPrice = std::make_unique<SingleMarketDataFeed>(*other.m_stopPrice);
+			m_icebergQuantity = std::make_unique<SingleMarketDataFeed>(*other.m_icebergQuantity);
+			m_orderListId = std::make_unique<SingleMarketDataFeed>(*other.m_orderListId);
+			m_originalClientOrderId = std::make_unique<SingleMarketDataFeed>(*other.m_originalClientOrderId);
+			m_currentExecutionType = std::make_unique<SingleMarketDataFeed>(*other.m_currentExecutionType);
+			m_currentOrderStatus = std::make_unique<SingleMarketDataFeed>(*other.m_currentOrderStatus);
+			m_orderRejectReason = std::make_unique<SingleMarketDataFeed>(*other.m_orderRejectReason);
+			m_orderId = std::make_unique<SingleMarketDataFeed>(*other.m_orderId);
+			m_lastExecutedQuantity = std::make_unique<SingleMarketDataFeed>(*other.m_lastExecutedQuantity);
+			m_cumulativeFilledQuantity = std::make_unique<SingleMarketDataFeed>(*other.m_cumulativeFilledQuantity);
+			m_lastExecutedPrice = std::make_unique<SingleMarketDataFeed>(*other.m_lastExecutedPrice);
+			m_commissionAmount = std::make_unique<SingleMarketDataFeed>(*other.m_commissionAmount);
+			m_commissionAsset = std::make_unique<SingleMarketDataFeed>(*other.m_commissionAsset);
+			m_transactionTimeMs = std::make_unique<SingleMarketDataFeed>(*other.m_transactionTimeMs);
+			m_tradeId = std::make_unique<SingleMarketDataFeed>(*other.m_tradeId);
+			m_preventedMatchId = std::make_unique<SingleMarketDataFeed>(*other.m_preventedMatchId);
+			m_executionId = std::make_unique<SingleMarketDataFeed>(*other.m_executionId);
+			m_isOrderOnBook = std::make_unique<SingleMarketDataFeed>(*other.m_isOrderOnBook);
+			m_isMakerSide = std::make_unique<SingleMarketDataFeed>(*other.m_isMakerSide);
+			m_ignore = std::make_unique<SingleMarketDataFeed>(*other.m_ignore);
+			m_orderCreationTimeMs = std::make_unique<SingleMarketDataFeed>(*other.m_orderCreationTimeMs);
+			m_cumulativeQuoteAssetQty = std::make_unique<SingleMarketDataFeed>(*other.m_cumulativeQuoteAssetQty);
+			m_lastQuoteAssetQty = std::make_unique<SingleMarketDataFeed>(*other.m_lastQuoteAssetQty);
+			m_quoteOrderQuantity = std::make_unique<SingleMarketDataFeed>(*other.m_quoteOrderQuantity);
+			m_workingTimeMs = std::make_unique<SingleMarketDataFeed>(*other.m_workingTimeMs);
+			m_selfTradePreventionMode = std::make_unique<SingleMarketDataFeed>(*other.m_selfTradePreventionMode);
+		}
+		return *this;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const UserDataOrder& o)
+	{
+		os
+			<< "DATA_NAME=" << o.m_dataName << "|"
+			<< "EVENT_TYPE=" << *o.m_eventType << "|"
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs() << "|"
+			<< "SYMBOL=" << *o.m_symbol << "|"
+			<< "CLIENT_ORDER_ID=" << *o.m_clientOrderId << "|"
+			<< "SIDE=" << *o.m_side << "|"
+			<< "ORDER_TYPE=" << *o.m_orderType << "|"
+			<< "TIME_IN_FORCE=" << *o.m_timeInForce << "|"
+			<< "ORDER_QUANTITY=" << *o.m_orderQuantity << "|"
+			<< "ORDER_PRICE=" << *o.m_orderPrice << "|"
+			<< "STOP_PRICE=" << *o.m_stopPrice << "|"
+			<< "ICEBERG_QUANTITY=" << *o.m_icebergQuantity << "|"
+			<< "ORDER_LIST_ID=" << *o.m_orderListId << "|"
+			<< "ORIGINAL_CLIENT_ORDER_ID=" << *o.m_originalClientOrderId << "|"
+			<< "CURRENT_EXECUTION_TYPE=" << *o.m_currentExecutionType << "|"
+			<< "CURRENT_ORDER_STATUS=" << *o.m_currentOrderStatus << "|"
+			<< "ORDER_REJECT_REASON=" << *o.m_orderRejectReason << "|"
+			<< "ORDER_ID=" << *o.m_orderId << "|"
+			<< "LAST_EXECUTED_QUANTITY=" << *o.m_lastExecutedQuantity << "|"
+			<< "CUMULATIVE_FILLED_QUANTITY=" << *o.m_cumulativeFilledQuantity << "|"
+			<< "LAST_EXECUTED_PRICE=" << *o.m_lastExecutedPrice << "|"
+			<< "COMMISSION_AMOUNT=" << *o.m_commissionAmount << "|"
+			<< "COMMISSION_ASSET=" << *o.m_commissionAsset << "|"
+			<< "TRANSACTION_TIME_MS=" << o.m_transactionTimeMs->GetStringDataFromEventTimeMs() << "|"
+			<< "TRADE_ID=" << *o.m_tradeId << "|"
+			<< "PREVENTED_MATCH_ID=" << *o.m_preventedMatchId << "|"
+			<< "EXECUTION_ID=" << *o.m_executionId << "|"
+			<< "IS_ORDER_ON_BOOK=" << *o.m_isOrderOnBook << "|"
+			<< "IS_MAKER_SIDE=" << *o.m_isMakerSide << "|"
+			<< "IGNORE=" << *o.m_ignore << "|"
+			<< "ORDER_CREATION_TIME_MS=" << o.m_orderCreationTimeMs->GetStringDataFromEventTimeMs() << "|"
+			<< "CUMULATIVE_QUOTE_ASSET_QTY=" << *o.m_cumulativeQuoteAssetQty << "|"
+			<< "LAST_QUOTE_ASSET_QTY=" << *o.m_lastQuoteAssetQty << "|"
+			<< "QUOTE_ORDER_QUANTITY=" << *o.m_quoteOrderQuantity << "|"
+			<< "WORKING_TIME_MS=" << o.m_workingTimeMs->GetStringDataFromEventTimeMs() << "|"
+			<< "SELF_TRADE_PREVENTION_MODE=" << *o.m_selfTradePreventionMode;
+		return os;
+	}
+
+	std::string UserDataOrder::ToString() {
+		std::ostringstream oss;
+		oss << *this;
+		return oss.str();
+	}
+} // namespace MarketData

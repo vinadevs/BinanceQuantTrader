@@ -155,12 +155,17 @@
   <ItemGroup>
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="HistoricalDataDef.h" />
     <ClInclude Include="HistoricalDataManager.h" />
+    <ClInclude Include="MarketDataFileReader.h" />
+    <ClInclude Include="MarketDataFileWriter.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="HistoricalDataManager.cpp" />
+    <ClCompile Include="MarketDataFileReader.cpp" />
+    <ClCompile Include="MarketDataFileWriter.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

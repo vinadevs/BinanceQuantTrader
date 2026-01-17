@@ -15,13 +15,19 @@
 #include "dlldefine.h"
 
 #include <memory>
+#include <string>
 #include <unordered_set>
 
-#include "MarketDataFeedHandler.h"
-#include "MarketDataEvents.h"
+// Feed handlers
+#include "BinanceMarketDataFeedHandler.h"
+#include "HistoricalMarketDataFeedHandler.h"
+// For real time market data
+#include "BinanceMarketDataEvents.h"
+// For historical back test
+#include "HistoricalMarketDataEvents.h"
 
 namespace tinyxml2 {
-	class XMLElement;
+	class XMLDocument;
 };
 
 namespace MarketData {
@@ -67,10 +73,14 @@ class MarketDataObserver;
 // it would handle the continuous flow of real - time data and notify
 // registered strategies or a TradingModel to react accordingly.
 
+using MarketDataFeedHanlder = MarketDataSubject;
+
 class DLL_CLASS_MARKETDATA_EXPORTS RealTimeMarketData
 {
 public:
-	RealTimeMarketData(const tinyxml2::XMLElement* mkDataConfigXml);
+	RealTimeMarketData(
+		const tinyxml2::XMLDocument* mkDataConfigXml,
+		const std::string& mkDataTypeName);
 	~RealTimeMarketData();
 
 	// These 2 functions must be called at the class
@@ -79,16 +89,17 @@ public:
 	void UnRegisterDataListener(MarketDataObserver* observer);
 
 	void StartStreamingData();
-	// This function must be called after subscribing symbols
+	// This function must be called after subscribing symbols (NOT APPLY FOR HISTORICAL DATA REPLAY)
 	// usually we called it in strategy StartTrade() function to create an ansync wait
 	void StartIOContext();
 	bool SubscribeSymbol(const std::string& symbol);
 	bool UnsubscribeSymbol(const std::string& symbol);
 	bool IsSubscribedSymbol(const std::string& symbol);
 	const std::unordered_set<std::string>& GetSubscribingSymbols() const;
-	MarketDataFeedHandler* GetFeedHandler() const;
+	MarketDataFeedHanlder* GetFeedHandler() const;
 private:
-	std::unique_ptr<MarketDataFeedHandler> m_feedHandler;
-	std::unique_ptr<MarketDataEvents> m_dataEvents;
+	std::unique_ptr<MarketDataEventBase> m_marketDataEvents;
+	std::unique_ptr<MarketDataFeedHanlder> m_marketDataFeedHandler;
+	const std::string m_mkDataTypeName;
 };
 };

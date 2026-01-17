@@ -59,6 +59,8 @@ namespace ExchangeConnectivity {
 
 		void InitMessageTransporter(const tinyxml2::XMLElement* messageDeliveryCfg);
 
+		void StopMessageTransporter();
+
 		void InitBinanceWalletClient(const tinyxml2::XMLElement* binanceWalletClientXmlCfg);
 		
 		void InitBinanceExchangeClient(const tinyxml2::XMLElement* binanceExchangeClientXmlCfg);

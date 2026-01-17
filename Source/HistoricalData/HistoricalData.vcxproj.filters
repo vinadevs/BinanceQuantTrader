@@ -21,11 +21,20 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HistoricalDataManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="dlldefine.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MarketDataFileWriter.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HistoricalDataManager.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MarketDataFileReader.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HistoricalDataDef.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -36,6 +45,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HistoricalDataManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MarketDataFileWriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MarketDataFileReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

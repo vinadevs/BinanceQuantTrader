@@ -22,6 +22,7 @@
 using namespace ExchangeSimulator;
 
 UserAccountManager::UserAccountManager(const tinyxml2::XMLElement* userAccountManagerCfg)
+	: m_logger{ std::make_unique<LibraryUtils::Logger>("UserAccountManager") }
 {
     assert(userAccountManagerCfg);
     const auto* generalSettingXml = userAccountManagerCfg->FirstChildElement("GeneralSetting");
