@@ -68,7 +68,7 @@ RESET   := \033[0m
 help:
 	@echo ""
 	@echo "$(BOLD)$(CYAN)╔════════════════════════════════════════════════════════════════╗$(RESET)"
-	@echo "$(BOLD)$(CYAN)║          $(PROJECT_NAME) Build System                   ║$(RESET)"
+	@echo "$(BOLD)$(CYAN)║          $(PROJECT_NAME) Build System                       ║$(RESET)"
 	@echo "$(BOLD)$(CYAN)╚════════════════════════════════════════════════════════════════╝$(RESET)"
 	@echo ""
 	@echo "$(BOLD)Usage:$(RESET)"
