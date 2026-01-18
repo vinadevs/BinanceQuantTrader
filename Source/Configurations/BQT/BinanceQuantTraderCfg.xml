@@ -22,7 +22,7 @@
 </BinanceFutureApiGateWay>
 
 <TradingStrategy>
-  <UsingStrategy Name="SmartLongShortStrategy" File="[ROOT_BQT_PATH]\Configurations\Strategy\Auto\SmartLongShortStrategy.xml"/>
+  <UsingStrategy Name="FomoStrategy" File="[ROOT_BQT_PATH]\Configurations\Strategy\Auto\FomoStrategy.xml"/>
 </TradingStrategy>
 
 <PortfolioInvestment>
@@ -34,7 +34,7 @@
 </TradingModel>
 
 <TraderInfo>
-  <UsingTrader Type="FutureTrader"/>
+  <UsingTrader Type="SpotTrader"/>
   <Report TradeReport="true" OrderReport="true" BalanceReport="true" ExchangerPriceForOrdersReport="true" CalculateLossForOrdersReport="true" ReportToFilePath="[ROOT_BQT_PATH]\AppData\trade_results.txt" ReportChannel="ExternalFile"/>
 </TraderInfo>
 
@@ -56,6 +56,7 @@
 </MessageTransporter>
 
 <BinanceWalletClient>
+  <WalletFromMarket Market="Spot"/>
   <Connection ServerIpAddress="localhost" ServerPort="50051"/>
 </BinanceWalletClient>
 

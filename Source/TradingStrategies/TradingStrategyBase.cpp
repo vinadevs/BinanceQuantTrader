@@ -46,8 +46,11 @@ TradingStrategyBase::TradingStrategyBase(
 	m_logger = std::make_unique<Logger>(m_strategyName);
 	m_logger->Info("Trading strategy name=" + m_strategyName);
 	m_logger->Info("Trading strategy description=" + m_strategyDescription);
-	InitQuantStrategist();
-	InitParentOrderManager();
+	if (m_strategyType != StrategyType::ADVISING) // advising strategy does not need trader or parent order manager
+	{
+		InitQuantStrategist();
+		InitParentOrderManager();
+	}
 }
 
 TradingStrategyBase::TradingStrategyBase(
@@ -63,8 +66,6 @@ TradingStrategyBase::TradingStrategyBase(
 	m_logger = std::make_unique<Logger>(m_strategyName);
 	m_logger->Info("Trading strategy name=" + m_strategyName);
 	m_logger->Info("Trading strategy description=" + m_strategyDescription);
-	InitQuantStrategist();
-	InitParentOrderManager();
 }
 
 TradingStrategyBase::~TradingStrategyBase() {}
@@ -183,7 +184,7 @@ void TradingStrategyBase::SetupStrategyLifeTime(tinyxml2::XMLDocument* strategyC
 	}
 	const XMLElement* enableComplianceCheckerXml = generalConfigXml->FirstChildElement("EnableComplianceChecker");
 	assert(enableComplianceCheckerXml);
-	if (enableComplianceCheckerXml->BoolAttribute("Enable"))
+	if (enableComplianceCheckerXml->BoolAttribute("Enable")) // should always enable compliance checker for real trading
 	{
 		LogTradingHardLimits();
 		m_compilanceChecker = std::make_unique<CompilanceChecker>();

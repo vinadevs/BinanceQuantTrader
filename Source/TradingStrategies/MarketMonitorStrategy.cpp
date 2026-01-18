@@ -233,17 +233,28 @@ void MarketMonitorStrategy::InitializeParameters(const std::string& strategyCfgP
 
 void MarketMonitorStrategy::StartTrade()
 {
-	// Change Strategy state to live
-	m_strategyRunStatus = StrategyRunStatus::LIVE;
-	// Prepare target symbols list
-	m_logger->Info("Prepare target symbols list.");
-	PrepareTargetMonitorSymbols();
-	// Create Market Data Analyzer
-	m_logger->Info("Create market data analyzer.");
-	InitializeMarketDataAnalyzer();
-	// Subscribe target symbols to receive real time market data
-	m_logger->Info("Subscribe target symbols.");
-	SubscribeTargetSymbols();
+	try
+	{
+		// Change Strategy state to live
+		m_strategyRunStatus = StrategyRunStatus::LIVE;
+		// Prepare target symbols list
+		m_logger->Info("Prepare target symbols list.");
+		PrepareTargetMonitorSymbols();
+		// Create Market Data Analyzer
+		m_logger->Info("Create market data analyzer.");
+		InitializeMarketDataAnalyzer();
+		// Subscribe target symbols to receive real time market data
+		m_logger->Info("Subscribe target symbols.");
+		SubscribeTargetSymbols();
+	}
+	catch (const std::exception& e)
+	{
+		m_logger->Exception(std::string(e.what()));
+	}
+	catch (...)
+	{
+		m_logger->Exception("Unknown exception occurred.");
+	}
 }
 
 void MarketMonitorStrategy::StopTrade()

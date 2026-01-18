@@ -112,29 +112,40 @@ void SmartLongShortStrategy::SetupOrderScheduler()
 
 void SmartLongShortStrategy::StartTrade()
 {
-	// Change Strategy state to live
-	m_strategyRunStatus = StrategyRunStatus::LIVE;
-	// Prepare target symbols list
-	m_logger->Info("Prepare target symbols list.");
-	PrepareTargetMonitorSymbols();
-	// Create Market Data Analyzer
-	m_logger->Info("Create market data analyzer.");
-	InitializeMarketDataAnalyzer();
-	// Create exchange filter profile
-	m_logger->Info("Create binance exchange profile.");
-	CreateBinanceExchangeProfile();
-	// Create portfolio management
-	m_logger->Info("Create portfolio management.");
-	CreatePortfolioManagement();
-	// Create risk management engine
-	m_logger->Info("Create risk management engine.");
-	CreateRiskManagementEngine();
-	// Subscribe target symbols to receive real time market data
-	m_logger->Info("Subscribe target symbols.");
-	SubscribeTargetSymbols();
-	// Start alarm system to send orders
-	m_logger->Info("Starting live and trade.");
-	AlarmSystem::Start();
+	try
+	{
+		// Change Strategy state to live
+		m_strategyRunStatus = StrategyRunStatus::LIVE;
+		// Prepare target symbols list
+		m_logger->Info("Prepare target symbols list.");
+		PrepareTargetMonitorSymbols();
+		// Create Market Data Analyzer
+		m_logger->Info("Create market data analyzer.");
+		InitializeMarketDataAnalyzer();
+		// Create exchange filter profile
+		m_logger->Info("Create binance exchange profile.");
+		CreateBinanceExchangeProfile();
+		// Create portfolio management
+		m_logger->Info("Create portfolio management.");
+		CreatePortfolioManagement();
+		// Create risk management engine
+		m_logger->Info("Create risk management engine.");
+		CreateRiskManagementEngine();
+		// Subscribe target symbols to receive real time market data
+		m_logger->Info("Subscribe target symbols.");
+		SubscribeTargetSymbols();
+		// Start alarm system to send orders
+		m_logger->Info("Starting live and trade.");
+		AlarmSystem::Start();
+	}
+	catch (const std::exception& e)
+	{
+		m_logger->Exception(std::string(e.what()));
+	}
+	catch (...)
+	{
+		m_logger->Exception("Unknown exception occurred.");
+	}
 }
 
 void SmartLongShortStrategy::StopTrade()
@@ -147,9 +158,9 @@ void SmartLongShortStrategy::StopTrade()
 
 void SmartLongShortStrategy::OnAlarmTriggered(const int passToDerived)
 {
-	BEGIN_STRATEGY_TRADING_ACTIVITY
+	BEGIN_STRATEGY_ORDER_SENDING_ACTIVITY
 
-	m_logger->Info("Alarm triggered, start sending future orders based on market data signals...");
+	m_logger->Info("Alarm triggered, checking oporntunities for future market based on market data signals...");
 
 	for (const auto& symbol : m_targetFutureTradeSymbols)
 	{
@@ -217,7 +228,7 @@ void SmartLongShortStrategy::OnAlarmTriggered(const int passToDerived)
 		}
 	}
 
-	END_STRATEGY_TRADING_ACTIVITY_NO_RETURN
+	END_STRATEGY_ORDER_SENDING_NO_RETURN
 }
 
 void SmartLongShortStrategy::CreateBinanceExchangeProfile()

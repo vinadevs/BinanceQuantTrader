@@ -218,7 +218,7 @@ protected:
 //---------------------------------------------------------------------------------------------
 // This pair of macros should be used to wrap all trading activities
 // start of trading activity macro
-#define BEGIN_STRATEGY_TRADING_ACTIVITY \
+#define BEGIN_STRATEGY_ORDER_SENDING_ACTIVITY \
 try \
 { \
 	if (m_strategyRunStatus == StrategyRunStatus::LIVE) \
@@ -226,7 +226,7 @@ try \
 		if (IsNotIsNotExceededTradingRules()) \
 		{
 // end of trading activity macro with return value
-#define END_STRATEGY_TRADING_ACTIVITY_RETURN \
+#define END_STRATEGY_ORDER_SENDING_RETURN \
 } \
 		else \
 		{ \
@@ -249,7 +249,7 @@ catch (...) \
 	return false; \
 }
 // end of trading activity macro without return value
-#define END_STRATEGY_TRADING_ACTIVITY_NO_RETURN \
+#define END_STRATEGY_ORDER_SENDING_NO_RETURN \
 } \
 		else \
 		{ \

@@ -42,7 +42,7 @@ namespace ExchangeConnectivity {
 
 	struct UserAccountGrpcConnection final
 	{
-		std::unique_ptr<account::UserAccountService::Stub> m_grpcStub;
+		std::unique_ptr<account::UserAccountService::Stub> m_grpcStubSpotAccount;
 		std::unique_ptr<futureaccount::UserAccountService::Stub> m_grpcStubFutureAccount;
 		std::shared_ptr<grpc::Channel> m_grpcChannel;
 		grpc::ClientContext m_context;
@@ -51,6 +51,8 @@ namespace ExchangeConnectivity {
 		std::string m_serverConnection;
 	};
 
+	// This class is responsible for communicating with the Binance Wallet gRPC service
+	// to retrieve spot and future account data from exchange simulator.
 	class BinanceWalletClient final
 	{
 	public:
@@ -68,7 +70,7 @@ namespace ExchangeConnectivity {
 			std::string& errorMessage);
 	private:
 		std::unique_ptr<LibraryUtils::Logger> m_logger;
-		UserAccountGrpcConnection m_grpcConnection;
+		UserAccountGrpcConnection m_grpcConnectionSpotAccount;
 		UserAccountGrpcConnection m_grpcConnectionFutureAccount;
 	};
 };

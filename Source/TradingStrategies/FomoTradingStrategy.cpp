@@ -40,9 +40,6 @@ FomoTradingStrategy::FomoTradingStrategy(
 {
 	SetStrategyType(StrategyType::FULL_AUTO);
 	InitializeParameters(strategyCfgPath);
-	// Subscribe target symbols to receive real time market data
-	m_logger->Info("Subscribe target symbols.");
-	SubscribeTargetSymbols();
 	m_logger->Info("Completed initialization for the strategy.");
 }
 
@@ -85,7 +82,7 @@ void FomoTradingStrategy::CreateTradingSignalServices()
 	m_tradingSignalService->RegisterTradingHintsListener(this);
 }
 
-void FomoTradingStrategy::SubscribeTargetSymbols()
+void FomoTradingStrategy::LoadTargetTradeSymbols()
 {
 	const auto* targetSymbolXml = m_strategyCfgXml->FirstChildElement("TargetSymbol");
 	assert(targetSymbolXml);
@@ -96,6 +93,10 @@ void FomoTradingStrategy::SubscribeTargetSymbols()
 	{
 		throw std::runtime_error("No target symbols to subscribe market data.");
 	}
+}
+
+void FomoTradingStrategy::SubscribeTargetSymbols()
+{
 	// register TradingSignalService class with market data to receive real time data
 	m_marketData->RegisterDataListener(m_tradingSignalService.get());
 	// subscibe all target symbols
@@ -150,7 +151,7 @@ void FomoTradingStrategy::CreateRiskManagementEngine()
 
 bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 {
-	BEGIN_STRATEGY_TRADING_ACTIVITY
+	BEGIN_STRATEGY_ORDER_SENDING_ACTIVITY
 
 	m_logger->Info("Creating order parameters for symbol=" + hints->symbol);
 	const auto orderList = m_orderParammeterGenerator->GenerateFomoOrders(hints);
@@ -172,7 +173,7 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 		}
 	}		
 
-	END_STRATEGY_TRADING_ACTIVITY_RETURN
+	END_STRATEGY_ORDER_SENDING_RETURN
 
 	return true;
 }
@@ -184,25 +185,41 @@ void FomoTradingStrategy::ReportTradeResults(const std::string& symbol)
 
 void FomoTradingStrategy::StartTrade()
 {
-	// Change Strategy state to live
-	m_strategyRunStatus = StrategyRunStatus::LIVE;
-	// Create exchange filter profile
-	m_logger->Info("Create binance exchange profile.");
-	CreateBinanceExchangeProfile();
-	// Create portfolio management
-	m_logger->Info("Create portfolio management.");
-	CreatePortfolioManagement();
-	// Creating trending services
-	m_logger->Info("Creating trending services.");
-	CreateTradingSignalServices();
-	// Create order parammeter generator
-	m_logger->Info("Create order parammeter generator.");
-	CreateOrderParameterGenerator();
-	// Listen on trading hints
-	m_logger->Info("Starting live and trade.");
+	try
+	{
+		// Change Strategy state to live
+		m_strategyRunStatus = StrategyRunStatus::LIVE;
+		// Load target symbols list
+		LoadTargetTradeSymbols();
+		// Create exchange filter profile
+		m_logger->Info("Create binance exchange profile.");
+		CreateBinanceExchangeProfile();
+		// Create portfolio management
+		m_logger->Info("Create portfolio management.");
+		CreatePortfolioManagement();
+		// Creating trending services
+		m_logger->Info("Creating trending services.");
+		CreateTradingSignalServices();
+		// Subscribe target symbols to receive real time market data
+		m_logger->Info("Subscribe target symbols.");
+		SubscribeTargetSymbols();
+		// Create order parammeter generator
+		m_logger->Info("Create order parammeter generator.");
+		CreateOrderParameterGenerator();
+		// Listen on trading hints
+		m_logger->Info("Starting live and trade.");
 #if USE_MULTITHREADING
-	TradingLoop();
+		TradingLoop();
 #endif
+	}
+	catch (const std::exception& e)
+	{
+		m_logger->Exception(std::string(e.what()));
+	}
+	catch (...)
+	{
+		m_logger->Exception("Unknown exception occurred.");
+	}
 }
 
 void FomoTradingStrategy::StopTrade()

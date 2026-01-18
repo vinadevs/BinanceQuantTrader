@@ -1,0 +1,95 @@
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     BINANCE QUANT TRADING MODEL
+StartTime: [2026-01-17 12:31:18]
+ComputerName: ABC
+User: vinadevs
+ExecutablePath: \Source\x64\Debug\BinanceQuantTraderD.exe
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+[2026-01-17 12:31:18] [9108] [BINANCE_QUANT_TRADING_MODEL] [INFO] Loading xml config files.
+[2026-01-17 12:31:18] [9108] [BINANCE_QUANT_TRADING_MODEL] [INFO] Preparing Trading Model.
+[2026-01-17 12:31:18] [9108] [TradingModel] [INFO] Initiating Global Settings.
+[2026-01-17 12:31:18] [9108] [BqtGlobalSettings] [INFO] Using application data folder=\AppData
+[2026-01-17 12:31:18] [9108] [TradingModel] [INFO] Initiating Test Message Transporter.
+[2026-01-17 12:31:18] [9108] [MessageDelivery] [INFO] Publisher running: topicName=AlgosToExchangeSimulator, channelID=AlgosToExchangeSimulator-6488d17445596-11ec3, XPUB bound to address=tcp://localhost:5558
+[2026-01-17 12:31:18] [9108] [TradingModel] [INFO] Initiating Test Binance Wallet Client.
+[2026-01-17 12:31:18] [9108] [BinanceWalletClient] [INFO] Creating new Http connection...
+[2026-01-17 12:31:18] [9108] [TradingModel] [INFO] Initiating Test Binance Exchange Client.
+[2026-01-17 12:31:18] [9108] [BinanceExchangeClient] [INFO] Creating new Http connection...
+[2026-01-17 12:31:18] [9108] [TradingModel] [INFO] Initiating Test Binance Trade Profile.
+[2026-01-17 12:31:18] [9108] [BinanceTradeProfile] [INFO] Creating new Http connection...
+[2026-01-17 12:31:18] [9108] [TradingModel] [INFO] Initiating Static Data.
+[2026-01-17 12:31:18] [9108] [TradingModel] [INFO] Initiating Historical Data.
+[2026-01-17 12:31:18] [9108] [TradingModel] [INFO] Initiating Real Time Market Data.
+[2026-01-17 12:31:18] [9108] [BinanceMarketDataEvents] [INFO] Binance web socket created.
+[2026-01-17 12:31:18] [9108] [TradingModel] [INFO] Initiating Portfolio Investment.
+[2026-01-17 12:31:18] [9108] [TradingModel] [INFO] Initiating Compliance And Regulatory.
+[2026-01-17 12:31:18] [9108] [TradingModel] [INFO] Initiating Risk Management.
+[2026-01-17 12:31:18] [9108] [TradingModel] [INFO] Initiating Trader.
+[2026-01-17 12:31:18] [9108] [FutureTrader] [INFO] using FutureTrader.
+[2026-01-17 12:31:18] [9108] [FutureBackTestReporter] [INFO] setting up trading reporter finished.
+[2026-01-17 12:31:18] [9108] [TradingModel] [INFO] Initiating Strategy Manager.
+[2026-01-17 12:31:18] [9108] [TradingModel] [INFO] Initiating Trading Strategy.
+[2026-01-17 12:31:18] [9108] [MarketMonitorStrategy] [INFO] Trading strategy name=MarketMonitorStrategy
+[2026-01-17 12:31:18] [9108] [MarketMonitorStrategy] [INFO] Trading strategy description=analysis real time market data and generate trading signals...
+[2026-01-17 12:31:18] [9108] [MarketMonitorStrategy] [INFO] Strategy type=ADVISING
+[2026-01-17 12:31:18] [9108] [MarketMonitorStrategy] [INFO] Completed initialization for the strategy.
+[2026-01-17 12:31:18] [9108] [TradingModel] [INFO] Initiating Test Message Server.
+[2026-01-17 12:31:18] [9108] [MessageReceiver] [INFO] Subcriber running: topicName=ExchangeSimulatorToAlgos, channelID=ExchangeSimulatorToAlgos-6488d1744ced3-0ee16, XSUB bound to address=tcp://localhost:5556
+[2026-01-17 12:31:22] [9108] [TradingModel] [INFO] Initiating Trading Model.
+[2026-01-17 12:31:22] [9108] [TradingModel] [INFO] Initiating External Controller.
+[2026-01-17 12:31:22] [9108] [BINANCE_QUANT_TRADING_MODEL] [INFO] Starting Trading Model.
+[2026-01-17 12:31:22] [9108] [TradingModel] [INFO] Using back test trading mode.
+[2026-01-17 12:31:22] [9108] [TradingModel] [INFO] Using Multiple threads trading mode.
+[2026-01-17 12:31:22] [9108] [SingleStrategyHost] [INFO] Strategy thread started.
+[2026-01-17 12:31:26] [33492] [MarketMonitorStrategy] [INFO] Prepare target symbols list.
+[2026-01-17 12:31:26] [9108] [BinanceMarketDataEvents] [INFO] Wait for subscription setup completed...
+[2026-01-17 12:31:26] [33492] [MarketMonitorStrategy] [INFO] Querying remote binance exchange listing symbols info...
+[2026-01-17 12:31:26] [33492] [MarketMonitorStrategy] [INFO] Create market data analyzer.
+[2026-01-17 12:31:26] [33492] [MarketMonitorStrategy] [INFO] Subscribe target symbols.
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Starting subscribing real time market data for symbol=BTCUSDT
+[2026-01-17 12:31:26] [33396] [ExternalController] [INFO] Strategy is listening external parent order on 0.0.0.0:50061
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Subscibed individual book ticker for symbol=BTCUSDT
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Subscibed trade for symbol=BTCUSDT
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Subscibed individual market ticker for symbol=BTCUSDT
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Subscibed all market tickers for symbol=BTCUSDT
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Subscibed individual mini ticker for symbol=BTCUSDT
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Starting subscribing real time market data for symbol=ETHUSDT
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Subscibed individual book ticker for symbol=ETHUSDT
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Subscibed trade for symbol=ETHUSDT
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Subscibed individual market ticker for symbol=ETHUSDT
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Subscibed all market tickers for symbol=ETHUSDT
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Subscibed individual mini ticker for symbol=ETHUSDT
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Starting subscribing real time market data for symbol=BNBUSDT
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Subscibed individual book ticker for symbol=BNBUSDT
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Subscibed trade for symbol=BNBUSDT
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Subscibed individual market ticker for symbol=BNBUSDT
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Subscibed all market tickers for symbol=BNBUSDT
+[2026-01-17 12:31:26] [33492] [BinanceMarketDataEvents] [INFO] Subscibed individual mini ticker for symbol=BNBUSDT
+[2026-01-17 12:31:26] [9108] [BinanceMarketDataEvents] [INFO] Starting real time market data event processing...
+[2026-01-17 12:31:26] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BTCUSDT] reported UP_PERIOD, last best bid price : 0,SMA : 0
+[2026-01-17 12:31:26] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BTCUSDT] reported DOWN_PERIOD, last best bid price: 0,SMA: 0
+[2026-01-17 12:31:26] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[ETHUSDT] reported UP_PERIOD, last best bid price : 0,SMA : 0
+[2026-01-17 12:31:27] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[ETHUSDT] reported DOWN_PERIOD, last best bid price: 0,SMA: 0
+[2026-01-17 12:31:27] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BNBUSDT] reported UP_PERIOD, last best bid price : 0,SMA : 0
+[2026-01-17 12:31:27] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BNBUSDT] reported DOWN_PERIOD, last best bid price: 0,SMA: 0
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BNBUSDT] reported DOWN_TREND, last best bid price: 936.92,SMA: 936.9485
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BNBUSDT] reported DOWN_TREND, last best bid price: 936.92,SMA: 936.941
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BNBUSDT] reported DOWN_TREND, last best bid price: 936.92,SMA: 936.9335
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BNBUSDT] reported DOWN_TREND, last best bid price: 936.9,SMA: 936.921
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BNBUSDT] reported DOWN_TREND, last best bid price: 936.9,SMA: 936.91
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BNBUSDT] reported DOWN_PERIOD, last best bid price: 936.9,SMA: 936.91
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BNBUSDT] reported DOWN_TREND, last best bid price: 936.9,SMA: 936.905
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BNBUSDT] reported DOWN_TREND, last best bid price: 936.89,SMA: 936.8995
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BTCUSDT] reported DOWN_TREND, last best bid price: 95327.46,SMA: 95327.4695
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BNBUSDT] reported DOWN_TREND, last best bid price: 936.88,SMA: 936.896
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BTCUSDT] reported DOWN_TREND, last best bid price: 95327.42,SMA: 95327.457
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BNBUSDT] reported DOWN_TREND, last best bid price: 936.88,SMA: 936.891
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BTCUSDT] reported DOWN_TREND, last best bid price: 95327.42,SMA: 95327.4445
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BNBUSDT] reported DOWN_TREND, last best bid price: 936.88,SMA: 936.886
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BNBUSDT] reported DOWN_PERIOD, last best bid price: 936.88,SMA: 936.886
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BTCUSDT] reported DOWN_TREND, last best bid price: 95326.87,SMA: 95327.2945
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BNBUSDT] reported DOWN_TREND, last best bid price: 936.88,SMA: 936.8815
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BTCUSDT] reported DOWN_TREND, last best bid price: 95326.87,SMA: 95327.145
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BTCUSDT] reported DOWN_PERIOD, last best bid price: 95326.87,SMA: 95327.145
+[2026-01-17 12:31:31] [9108] [QuantMarketDataAnalyzer] [INFO] Symbol[BTCUSDT] reported DOWN_TREND, last best bid price: 95324.24,SMA: 95326.848

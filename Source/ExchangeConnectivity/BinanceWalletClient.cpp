@@ -23,20 +23,32 @@ BinanceWalletClient::BinanceWalletClient(const tinyxml2::XMLElement* binanceWall
     : m_logger{ std::make_unique<LibraryUtils::Logger>("BinanceWalletClient") }
 {
     assert(binanceWalletClientXmlCfg);
+    const auto* walletFromMarketXml = binanceWalletClientXmlCfg->FirstChildElement("WalletFromMarket");
+    assert(walletFromMarketXml);
     const auto* connectionXml = binanceWalletClientXmlCfg->FirstChildElement("Connection");
     assert(connectionXml);
-    m_logger->Info("Creating new Http connection...");
-    m_grpcConnectionFutureAccount.m_serverIpAddress = std::string(connectionXml->Attribute("ServerIpAddress"));
-    m_grpcConnectionFutureAccount.m_serverPort = std::string(connectionXml->Attribute("ServerPort"));
-    m_grpcConnectionFutureAccount.m_serverConnection = m_grpcConnectionFutureAccount.m_serverIpAddress + ":" + m_grpcConnectionFutureAccount.m_serverPort;
-    m_grpcConnectionFutureAccount.m_grpcChannel = grpc::CreateChannel(m_grpcConnectionFutureAccount.m_serverConnection, grpc::InsecureChannelCredentials());
-    m_grpcConnectionFutureAccount.m_grpcStubFutureAccount = futureaccount::UserAccountService::NewStub(m_grpcConnectionFutureAccount.m_grpcChannel);
-
-	/*m_grpcConnectionFutureAccount.m_serverIpAddress = m_grpcConnection.m_serverIpAddress;
-	m_grpcConnectionFutureAccount.m_serverPort = m_grpcConnection.m_serverPort;
-	m_grpcConnectionFutureAccount.m_serverConnection = m_grpcConnection.m_serverConnection;
-	m_grpcConnectionFutureAccount.m_grpcChannel = grpc::CreateChannel(m_grpcConnectionFutureAccount.m_serverConnection, grpc::InsecureChannelCredentials());
-	m_grpcConnectionFutureAccount.m_grpcStubFutureAccount = futureaccount::UserAccountService::NewStub(m_grpcConnectionFutureAccount.m_grpcChannel);*/
+    if (std::string(walletFromMarketXml->Attribute("Market")) == "Spot")
+    {
+		m_logger->Info("Creating spot account gRPC connection to server.");
+        m_grpcConnectionSpotAccount.m_serverIpAddress = std::string(connectionXml->Attribute("ServerIpAddress"));
+        m_grpcConnectionSpotAccount.m_serverPort = std::string(connectionXml->Attribute("ServerPort"));
+        m_grpcConnectionSpotAccount.m_serverConnection = m_grpcConnectionSpotAccount.m_serverIpAddress + ":" + m_grpcConnectionSpotAccount.m_serverPort;
+        m_grpcConnectionSpotAccount.m_grpcChannel = grpc::CreateChannel(m_grpcConnectionSpotAccount.m_serverConnection, grpc::InsecureChannelCredentials());
+        m_grpcConnectionSpotAccount.m_grpcStubSpotAccount = account::UserAccountService::NewStub(m_grpcConnectionSpotAccount.m_grpcChannel);
+    }
+    else if (std::string(walletFromMarketXml->Attribute("Market")) == "Future")
+    {
+		m_logger->Info("Creating future account gRPC connection to server.");
+        m_grpcConnectionFutureAccount.m_serverIpAddress = std::string(connectionXml->Attribute("ServerIpAddress"));
+        m_grpcConnectionFutureAccount.m_serverPort = std::string(connectionXml->Attribute("ServerPort"));
+        m_grpcConnectionFutureAccount.m_serverConnection = m_grpcConnectionFutureAccount.m_serverIpAddress + ":" + m_grpcConnectionFutureAccount.m_serverPort;
+        m_grpcConnectionFutureAccount.m_grpcChannel = grpc::CreateChannel(m_grpcConnectionFutureAccount.m_serverConnection, grpc::InsecureChannelCredentials());
+        m_grpcConnectionFutureAccount.m_grpcStubFutureAccount = futureaccount::UserAccountService::NewStub(m_grpcConnectionFutureAccount.m_grpcChannel);
+    }
+	else
+	{
+		throw std::runtime_error("BinanceWalletClient: Unsupported Market type in WalletFromMarket configuration.");
+	}
 }
 
 BinanceWalletClient::~BinanceWalletClient() {}
@@ -54,7 +66,7 @@ bool BinanceWalletClient::GetUserAccountDataResponse(
     account::UserAccountDataResponse response;
     grpc::ClientContext context;
 
-    const grpc::Status status = m_grpcConnection.m_grpcStub->GetUserAccountData(&context, request, &response);
+    const grpc::Status status = m_grpcConnectionSpotAccount.m_grpcStubSpotAccount->GetUserAccountData(&context, request, &response);
 
     if (status.ok()) 
     {
@@ -117,6 +129,7 @@ bool BinanceWalletClient::GetUserFutureAccountDataResponse(const std::string& us
     // 4. Convert protobuf UserFutureAccount -> your ExchangeSimulator::UserFutureAccount
     try {
         // Set fields directly using setters
+		account->SetUserAccountId(pb.useraccountid());
         account->SetFeeTier(pb.feetier());
         account->SetCanTrade(pb.cantrade());
         account->SetCanDeposit(pb.candeposit());
