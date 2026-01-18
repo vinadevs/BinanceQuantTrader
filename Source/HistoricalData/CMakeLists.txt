@@ -9,33 +9,28 @@ list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/dllmain.cpp")
 get_filename_component(library_name "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
 
 # Find packages
-find_package(Boost REQUIRED COMPONENTS asio multiprecision)
+find_package(SQLite3 REQUIRED)
+
+# Include directories
+include_directories(
+PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/.."
+    ${SQLite3_INCLUDE_DIRS}
+)
 
 # Create the library
 add_library(${library_name} SHARED ${SOURCE_FILES})
 
-# Include directories
-target_include_directories(${library_name}
-PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/.."
-    ${Boost_INCLUDE_DIRS}
-)
-
-# Link JSON
+# Link libraries
 target_link_libraries(${library_name}
 PRIVATE
     LibraryUtils
     SettingNConfig
-    KernelTrading
-    RealTimeSocket
-    HistoricalData
-    Boost::asio
-    Boost::multiprecision
+    SQLite::SQLite3
 )
 
-# Export symbols when compiling this library
+# Compile definitions
 target_compile_definitions(${library_name}
 PRIVATE
-    MARKETDATA_EXPORTS
     BINAPI_HEADER_ONLY
 )

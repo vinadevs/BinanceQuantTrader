@@ -29,6 +29,7 @@ PRIVATE
     SettingNConfig
     MiddlewareMQ
     PythonPlugin
+    HistoricalData
     Boost::multiprecision
     SQLite::SQLite3
 )
