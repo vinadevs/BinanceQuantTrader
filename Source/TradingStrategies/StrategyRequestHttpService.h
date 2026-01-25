@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "Protobuf/strategy_control_request.pb.h"
-#include "Protobuf/strategy_control_request.grpc.pb.h"
+#include "protobuf/strategy_control_request.pb.h"
+#include "protobuf/strategy_control_request.grpc.pb.h"
 
 #undef max
 #undef min

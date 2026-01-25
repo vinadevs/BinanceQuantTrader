@@ -2,6 +2,9 @@
 file(GLOB SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/protobuf/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/protobuf/*.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/protobuf/*.h"
 )
 list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/dllmain.cpp")
 
@@ -9,9 +12,9 @@ list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/dllmain.cpp")
 get_filename_component(library_name "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
 
 # Find packages
-find_package(nlohmann_json CONFIG REQUIRED)
-find_package(unofficial-gumbo CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS multiprecision)
+find_package(Protobuf CONFIG REQUIRED)
+find_package(gRPC CONFIG REQUIRED)
 
 # Create the library
 add_library(${library_name} SHARED ${SOURCE_FILES})
@@ -22,18 +25,19 @@ PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/.."
 )
 
-# Link JSON
+# Link libraries
 target_link_libraries(${library_name}
 PRIVATE
-    nlohmann_json::nlohmann_json
-    Boost::multiprecision
-    unofficial::gumbo::gumbo
     LibraryUtils
+    KernelTrading
+    Boost::multiprecision
+    protobuf::libprotobuf
+    gRPC::grpc++
 )
 
 # Export symbols when compiling this library
 target_compile_definitions(${library_name}
 PRIVATE
-    KERNELTRADING_EXPORTS
+    EXCHANGECONNECTIVITY_EXPORTS
     BINAPI_HEADER_ONLY
 )

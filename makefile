@@ -163,8 +163,8 @@ build:
 	@echo "$(BOLD)$(YELLOW)[CMAKE]$(RESET) Configuring with preset $(CONFIG)..."
 	cmake --preset $(CONFIG)
 	@echo ""
-	@echo "$(BOLD)$(YELLOW)[BUILD]$(RESET) Compiling..."
-	cmake --build $(BUILD_DIR)/$(CONFIG)
+	@echo "$(BOLD)$(YELLOW)[BUILD]$(RESET) Compiling with preset $(CONFIG)..."
+	cmake --build --preset $(CONFIG)
 	@echo ""
 	@echo "$(BOLD)$(GREEN)[SUCCESS]$(RESET) Build completed at $(BUILD_TIMESTAMP)"
 
@@ -193,9 +193,17 @@ configure:
 rebuild: clean init build
 
 # ------------------------------------------------------------
+# Distclean build files
+# ------------------------------------------------------------
+distclean:
+	@echo "$(BOLD)$(RED)[CLEAN]$(RESET) Removing build directory..."
+	rm -rf $(BUILD_DIR)
+	@echo "$(BOLD)$(GREEN)[DONE]$(RESET) Clean complete"
+
+# ------------------------------------------------------------
 # Clean build files
 # ------------------------------------------------------------
 clean:
-	@echo "$(BOLD)$(RED)[CLEAN]$(RESET) Removing build directory..."
-	rm -rf $(BUILD_DIR)
+	@echo "$(BOLD)$(RED)[CLEAN]$(RESET) Removing build artifacts..."
+	cmake --build --preset $(CONFIG) --target clean
 	@echo "$(BOLD)$(GREEN)[DONE]$(RESET) Clean complete"

@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include "../CurlAPI/BinanceFutureApiGateway.h"
+#include "CurlAPI/BinanceFutureApiGateway.h"
 
 using namespace CurlAPI;
 

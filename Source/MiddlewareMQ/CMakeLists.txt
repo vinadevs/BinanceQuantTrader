@@ -28,6 +28,7 @@ PRIVATE
     libzmq
     libzmq-static
     LibraryUtils
+    SettingNConfig
 )
 
 # Export symbols when compiling this library

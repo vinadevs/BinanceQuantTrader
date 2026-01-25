@@ -9,9 +9,7 @@ list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/dllmain.cpp")
 get_filename_component(library_name "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
 
 # Find packages
-find_package(nlohmann_json CONFIG REQUIRED)
-find_package(unofficial-gumbo CONFIG REQUIRED)
-find_package(Boost REQUIRED COMPONENTS multiprecision)
+find_package(unofficial-sqlite3 CONFIG REQUIRED)
 
 # Create the library
 add_library(${library_name} SHARED ${SOURCE_FILES})
@@ -22,18 +20,16 @@ PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/.."
 )
 
-# Link JSON
+# Link libraries
 target_link_libraries(${library_name}
 PRIVATE
-    nlohmann_json::nlohmann_json
-    Boost::multiprecision
-    unofficial::gumbo::gumbo
     LibraryUtils
+    unofficial::sqlite3::sqlite3
 )
 
 # Export symbols when compiling this library
 target_compile_definitions(${library_name}
 PRIVATE
-    KERNELTRADING_EXPORTS
+    SQLDATABASE_EXPORTS
     BINAPI_HEADER_ONLY
 )

@@ -10,6 +10,8 @@
 
 #include "dlldefine.h"
 
+#include <cstddef>
+
 // https://www.binance.com/en/support/faq/frequently-asked-questions-on-api-360004492232
 // Binance Hard - Limits
 // 6,000 request weight per minute(keep in mind that this is not necessarily the same as 6, 000 requests)

@@ -60,6 +60,8 @@ BinanceTradingPair* BinanceTradingPairManager::GetTradingPair(const std::string&
     {
         return it->second.get();
     }
+
+    return nullptr;
 }
 
 const BinanceTradingPairMap& BinanceTradingPairManager::GetTradingPairs() const

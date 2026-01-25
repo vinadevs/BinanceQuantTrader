@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "Protobuf/exchange_info_data.pb.h"
-#include "Protobuf/exchange_info_data.grpc.pb.h"
+#include "protobuf/exchange_info_data.pb.h"
+#include "protobuf/exchange_info_data.grpc.pb.h"
 #undef max
 #undef min
 #include <grpcpp/grpcpp.h>

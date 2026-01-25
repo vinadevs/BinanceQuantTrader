@@ -9,8 +9,6 @@ list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/dllmain.cpp")
 get_filename_component(library_name "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
 
 # Find packages
-find_package(nlohmann_json CONFIG REQUIRED)
-find_package(unofficial-gumbo CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS multiprecision)
 
 # Create the library
@@ -22,18 +20,20 @@ PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/.."
 )
 
-# Link JSON
+# Link libraries
+# Note: OrderManagement headers include QuantitativeModel headers but we avoid
+# circular dependency by not linking at library level - symbols resolved at exe link time
 target_link_libraries(${library_name}
 PRIVATE
-    nlohmann_json::nlohmann_json
     Boost::multiprecision
-    unofficial::gumbo::gumbo
     LibraryUtils
+    KernelTrading
+    RestAPI
 )
 
 # Export symbols when compiling this library
 target_compile_definitions(${library_name}
 PRIVATE
-    KERNELTRADING_EXPORTS
+    ORDERMANAGEMENT_EXPORTS
     BINAPI_HEADER_ONLY
 )

@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "Protobuf/user_trade_profile.pb.h"
-#include "Protobuf/user_trade_profile.grpc.pb.h"
+#include "protobuf/user_trade_profile.pb.h"
+#include "protobuf/user_trade_profile.grpc.pb.h"
 
 #include <grpcpp/grpcpp.h>
 #include <memory>

@@ -20,5 +20,5 @@
 #endif
 #endif  // QUANTITATIVEMODEL_EXPORTS
 #else
-#define DLL_CLASS
+#define DLL_CLASS_QUANTITATIVEMODEL_EXPORTS
 #endif  // _MSC_VER

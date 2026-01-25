@@ -33,14 +33,52 @@ if (MSVC)
 endif()
 
 # Add subdirectories
-add_subdirectory(Source/RiskManagement)
-add_subdirectory(Source/UnitTest)
+# Core utilities (no dependencies)
 add_subdirectory(Source/LibraryUtils)
+
+# Base libraries (depend on LibraryUtils)
 add_subdirectory(Source/SettingNConfig)
 add_subdirectory(Source/KernelTrading)
+
+# Network and API libraries
 add_subdirectory(Source/RealTimeSocket)
+add_subdirectory(Source/CurlAPI)
+add_subdirectory(Source/RestAPI)
+add_subdirectory(Source/MiddlewareMQ)
+
+# Data libraries
+add_subdirectory(Source/SqlDatabase)
+add_subdirectory(Source/HistoricalData)
 add_subdirectory(Source/MarketData)
 add_subdirectory(Source/MarketDataCapture)
+
+# Core trading libraries
+add_subdirectory(Source/StaticData)
+add_subdirectory(Source/ComplianceNRegulatory)
+add_subdirectory(Source/PortfolioManager)
+add_subdirectory(Source/OrderManagement)
+add_subdirectory(Source/RiskManagement)
+add_subdirectory(Source/QuantitativeModel)
+add_subdirectory(Source/IndicatorNSignals)
+add_subdirectory(Source/MacroData)
+
+# Connectivity libraries
+add_subdirectory(Source/ExchangeConnectivity)
+add_subdirectory(Source/ExchangeSimulator)
+add_subdirectory(Source/OrderRouting)
+
+# Account and strategies
+add_subdirectory(Source/UserAccount)
+add_subdirectory(Source/TradingStrategies)
+
+# Python integration
 add_subdirectory(Source/PythonPlugin)
-add_subdirectory(Source/MiddlewareMQ)
-add_subdirectory(Source/HistoricalData)
+
+# Executables
+add_subdirectory(Source/ApplicationTest)
+add_subdirectory(Source/BackTesting)
+add_subdirectory(Source/BinanceQuantTrader)
+add_subdirectory(Source/MessageHubServer)
+
+# Tests
+add_subdirectory(Source/UnitTest)

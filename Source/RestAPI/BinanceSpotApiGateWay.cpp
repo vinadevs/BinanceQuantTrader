@@ -10,10 +10,11 @@
 
 #include "BinanceSpotApiGateWay.h"
 
+#ifdef _MSC_VER
 #pragma warning(disable : 4005)
-
 // This is really a hack to use the class RestAPI within this file lol!
 #define DLL_CLASS_RESTAPI_EXPORTS _declspec(dllimport)
+#endif
 
 #include "RestAPI.h"
 

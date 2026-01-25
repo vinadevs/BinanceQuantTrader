@@ -48,6 +48,8 @@ namespace ExchangeSimulator {
 					<< std::setw(15) << quantity
 					<< '\n';
 			}
+
+			return os;
 		}
 	};
 

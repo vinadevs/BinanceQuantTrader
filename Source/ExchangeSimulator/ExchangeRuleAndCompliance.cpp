@@ -96,7 +96,7 @@ RateCommission ExchangeRuleAndCompliance::GetFutureTakerCommission() const
 	return m_futureTakerCommission;
 }
 
-const CurlAPI::SymbolMarginRateInfo& ExchangeRuleAndCompliance::GetFutureMarginRateInfo(const std::string& symbol) const
+const CurlAPI::SymbolMarginRateInfo ExchangeRuleAndCompliance::GetFutureMarginRateInfo(const std::string& symbol) const
 {
 	auto it = m_symbolMarginRateInfos.find(symbol);
 	if (it != m_symbolMarginRateInfos.end()) {
@@ -112,7 +112,7 @@ const CurlAPI::LeverageBracket& ExchangeRuleAndCompliance::GetFutureLeverageBrac
     const std::string& symbol,
     const double postitionNotional)
 {
-	const auto& marginRateInfo = GetFutureMarginRateInfo(symbol);
+	const auto marginRateInfo = GetFutureMarginRateInfo(symbol);
 	for (const auto& bracket : marginRateInfo.m_Brackets) {
 		if (postitionNotional <= bracket.m_NotionalCap) {
 			return bracket;
