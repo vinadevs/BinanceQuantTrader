@@ -93,6 +93,10 @@ namespace UserAccount {
 		virtual void CreatePortfolioManagement(
 			const std::vector<std::string>& targetTradeSymbols) = 0;
 
+		// Create portfolio management for a specific symbol.
+		virtual void CreatePortfolioManagement(
+			const std::string& symbol) {};
+
 		// Set up the trading strategy to be used for trading.
 		// This method has to be called at strategy initialization time.
 		virtual void UseThisStrategyToTrade(TradingStrategies::TradingStrategyBase* strategy) = 0;

@@ -58,7 +58,7 @@ namespace QuantitativeModel {
         ~OrderParammeterGenerator();
 		// Generate order parammeter based on the trading hints and binance exchange rules
         // https://developers.binance.com/docs/binance-spot-api-docs/filters
-        OrderQuantList GenerateFomoOrders(
+        std::optional<OrderQuantList> GenerateFomoOrders(
             const IndicatorNSignals::TradingHints* hints);
     private:
         const ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr };

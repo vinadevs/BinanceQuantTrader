@@ -261,6 +261,18 @@ void BinanceTrader::CreatePortfolioManagement(const std::vector<std::string>& ta
 	m_logger->Info("querying account info finished.");
 }
 
+void BinanceTrader::CreatePortfolioManagement(const std::string& symbol)
+{
+	m_portfolio->AddNewAssetToManage(symbol);
+	m_logger->Info("querying Binance remote spot account info...");
+	if (!m_portfolio->IsUserSpotAccountInfoAvailable())
+	{
+		m_portfolio->SetUserSpotAccountInfo(m_binanceAccountInfo.get());
+	}
+	m_portfolio->UpdateBinanceAccountInfo();
+	m_logger->Info("querying account info for symbol " + symbol + " finished.");
+}
+
 std::vector<double> BinanceTrader::GetOrderExecutedPrices(const std::string& symbol) const
 {
 	return m_positionManager->GetOrderExecutedPrices(symbol);

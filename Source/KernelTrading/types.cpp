@@ -1094,7 +1094,7 @@ exchange_info_t exchange_info_t::construct(const std::string& nlohmannJson) {
             }
             symbol.filters.emplace_back(filter);
         }
-        result.symbols.emplace(std::move(symbol.symbol), std::move(symbol));
+		result.symbols.emplace(symbol.symbol, std::move(symbol)); // note: std::move will erase symbol string so we can't use it as first argument
     }
     return result;
 }

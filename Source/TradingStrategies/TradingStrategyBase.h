@@ -101,7 +101,7 @@ namespace TradingStrategies {
 #if USE_BACK_TEST_TRADING
 		public MiddlewareMQ::MessageHandler, // to receive messages from exchange simulator
 #endif
-		public OrderRouting::OrderAckEventHandler, // to receive order acks from trader
+		public OrderRouting::OrderAckEventHandler, // to receive order acks for sent orders
 		public TradingStrategies::ExternalRequestReceiver // to receive external parent orders
 	{
 	public:

@@ -66,7 +66,9 @@ namespace PortfolioManager {
 								   MarketData::RealTimeMarketData* marketData);
 		~PortfolioInvestmentBinance() override;
 		
+		bool IsUserSpotAccountInfoAvailable() const;
 		void SetUserSpotAccountInfo(binapi::rest::account_info_t* account);
+		bool IsUserFutureAccountInfoAvailable() const;
 		void SetUserFutureAccountInfo(KernelTrading::UserFutureAccount* account);
 
 		// NOTE: PLEASE DO NOT CALL UPDATES MANY TIMES/SECONDS

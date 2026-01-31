@@ -155,24 +155,26 @@ bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 
 	m_logger->Info("Creating order parameters for symbol=" + hints->symbol);
 	const auto orderList = m_orderParammeterGenerator->GenerateFomoOrders(hints);
-	for (const auto& order : orderList)
+	if (orderList.has_value()) 
 	{
-		if (m_spotTrader->CreateNewPosition(order).first)
+		for (const auto& order : orderList.value())
 		{
-			if (order.m_side == binapi::e_side::buy)
+			if (m_spotTrader->CreateNewPosition(order).first)
 			{
-				m_logger->Info("Created a new [Long Position] for symbol=" + hints->symbol);
+				if (order.m_side == binapi::e_side::buy)
+				{
+					m_logger->Info("Created a new [Long Position] for symbol=" + hints->symbol);
+				}
+				else if (order.m_side == binapi::e_side::sell)
+				{
+					m_logger->Info("Created a new [Short Position] for symbol=" + hints->symbol);
+				}
+				IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
+				ReportTradeResults(hints->symbol);
+				IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::DOUBLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 			}
-			else if (order.m_side == binapi::e_side::sell)
-			{
-				m_logger->Info("Created a new [Short Position] for symbol=" + hints->symbol);
-			}
-			IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
-			ReportTradeResults(hints->symbol);
-			IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::DOUBLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 		}
-	}		
-
+	}
 	END_STRATEGY_ORDER_SENDING_RETURN
 
 	return true;

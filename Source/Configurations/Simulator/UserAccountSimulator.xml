@@ -5,7 +5,7 @@
 </StableCoinUSDTBalance>
 
 <BalanceAssets>
-  <Bitcoin Symbol="BTC" FreeAmount="0" LockAmount="0"/>
-  <Ethereum Symbol="ETH" FreeAmount="0" LockAmount="0"/>
-  <BNB Symbol="BNB" FreeAmount="0" LockAmount="0"/>
+  <Bitcoin Symbol="BTC" FreeAmount="1000" LockAmount="0"/>
+  <Ethereum Symbol="ETH" FreeAmount="1000" LockAmount="0"/>
+  <BNB Symbol="BNB" FreeAmount="1000" LockAmount="0"/>
 </BalanceAssets>

@@ -83,6 +83,8 @@ namespace TradingStrategies {
 
 		virtual ~VWAPStrategy();
 
+		// order book market data from exchange
+		bool OnIndividualBookTickerChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
 		// last trade market data from exchange
 		bool OnTradeChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
 
@@ -110,10 +112,10 @@ namespace TradingStrategies {
 		void InitializeMarketDataAnalyzer();
 		void SetupOrderScheduler();
 		void SetupVWAPVolumeProfile();
-		void CreateBinanceExchangeProfile();
-		void CreatePortfolioManagement();
-		void PrepareTargetMonitorSymbols();
-		void SubscribeTargetSymbols();
+		void CreateBinanceExchangeProfile(const std::string& symbol);
+		void CreatePortfolioManagement(const std::string& symbol);
+		void SubscribeMarketData(const std::string& symbol);
+		void InitMarketData();
 		void UnsubscribeTargetSymbols();
 		double CalculateCurrentVWAP() const;
 		double GetOrderSizeForCurrentBucket(const std::chrono::system_clock::time_point& ts);
@@ -123,7 +125,7 @@ namespace TradingStrategies {
 		void HaltExecution();
 
 		// List of symbols that we will trade in VWAP
-		std::vector<std::string> m_targetFutureTradeSymbols;
+		std::vector<std::string> m_targetVWAPTradeSymbols;
 		std::unique_ptr<QuantitativeModel::MarketDataAnalyzer> m_marketDataAnalyzer;
 		std::unique_ptr<VWAPVolumeProfile> m_vwapVolumeProfilier; // VWAP volume profile calculator
 		std::unordered_map<size_t, double> m_executedVolume;
@@ -135,6 +137,8 @@ namespace TradingStrategies {
 		double m_cumPriceVolume{ 0.0 };
 		double m_totalMarketVolume{ 0.0 };
 		long m_profileBucketSeconds{ 0 };
-
+		std::vector<std::shared_ptr<OrderManagement::NewExternalParentOrder>> m_activeParentOrders;
+		std::vector<std::shared_ptr<OrderManagement::CancelExternalParentOrder>> m_cancellingParentOrders;
+		std::vector<std::shared_ptr<OrderManagement::AmendExternalParentOrder>> m_amendingParentOrders;
 	};
 };

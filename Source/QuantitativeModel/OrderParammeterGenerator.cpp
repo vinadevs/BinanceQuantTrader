@@ -40,7 +40,7 @@ OrderParammeterGenerator::OrderParammeterGenerator(
 
 OrderParammeterGenerator::~OrderParammeterGenerator() {}
 
-OrderQuantList OrderParammeterGenerator::GenerateFomoOrders(
+std::optional<OrderQuantList> OrderParammeterGenerator::GenerateFomoOrders(
 	const TradingHints* hints)
 {
 	OrderQuantList orderList;
@@ -50,6 +50,11 @@ OrderQuantList OrderParammeterGenerator::GenerateFomoOrders(
 		= m_tradingRules->GetExchangeProfileMgr()->AccessRemoteExchangeProfile(hints->symbol);
 	if (symbolProfile)
 	{
+		if (!symbolProfile->is_valid_symbol(hints->symbol))
+		{
+			m_logger->Info("Symbol " + hints->symbol + " is not available in exchange profile.");
+			return std::nullopt;
+		}
 		// Retrieve exchange information for the specific symbol
 		const auto& symbolExchangeInfo = symbolProfile->get_by_symbol(hints->symbol);
 
@@ -224,11 +229,13 @@ OrderQuantList OrderParammeterGenerator::GenerateFomoOrders(
 			else
 			{
 				m_logger->Info("user account has no asset available, could not generate order parameters for symbol=" + hints->symbol);
+				return std::nullopt;
 			}
 		}
 		else
 		{
 			m_logger->Info("unclear opportunity, could not generate order parameters for symbol=" + hints->symbol);
+			return std::nullopt;
 		}
 	}
 	else

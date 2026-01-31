@@ -56,21 +56,43 @@ VWAPStrategy::~VWAPStrategy()
 	m_marketData->UnRegisterDataListener(this); // I earn enough money, leave the market now!
 }
 
+bool VWAPStrategy::OnIndividualBookTickerChange(MarketDataSubject* marketData, const std::string& symbol)
+{
+	if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
+	{
+		if (auto* analyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol))
+		{
+			analyzer->AnalysisIndividualBookTicker(syncedData->m_individualBookTickerData);
+			return true;
+		}
+	}
+	else
+	{
+		m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
+	}
+	return false;
+}
+
 bool VWAPStrategy::OnTradeChange(MarketData::MarketDataSubject* marketData, const std::string& symbol)
 {
-	/*if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
+	if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
 	{
+		if (auto* analyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol))
+		{
+			analyzer->AnalysisTrade(syncedData->m_tradeData);
+		}
 		const auto price = syncedData->GetSingleFeed(TradeID::PRICE)->GetDoubleData();
 		const auto volume = syncedData->GetSingleFeed(TradeID::QUANTITY)->GetDoubleData();
 		const auto time = syncedData->GetSingleFeed(TradeID::TRADE_TIME)->GetUnsignedIntData();
 		m_vwapVolumeProfilier->AddNewBucketVolume(volume, time);
 		m_cumPriceVolume += price * volume;
 		m_totalMarketVolume += volume;
+		return true;
 	}
 	else
 	{
 		m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
-	}*/
+	}
 	return false;
 }
 
@@ -127,13 +149,13 @@ void VWAPStrategy::InitializeParameters(const std::string& strategyCfgPath)
 	}
 	SetupStrategyLifeTime(m_strategyCfgXml.get());
 	// when we use alarm system, we need to set up the order scheduler
-	//SetupOrderScheduler();
-	//SetupVWAPVolumeProfile();
+	SetupOrderScheduler();
+	SetupVWAPVolumeProfile();
 }
 
 void VWAPStrategy::InitializeMarketDataAnalyzer()
 {
-	m_marketDataAnalyzer = std::make_unique<QuantitativeModel::MarketDataAnalyzer>(m_targetFutureTradeSymbols, m_logger.get());
+	m_marketDataAnalyzer = std::make_unique<QuantitativeModel::MarketDataAnalyzer>(m_logger.get());
 }
 
 void VWAPStrategy::SetupOrderScheduler()
@@ -175,21 +197,12 @@ void VWAPStrategy::StartTrade()
 	{
 		// Change Strategy state to live
 		m_strategyRunStatus = StrategyRunStatus::LIVE;
-		// Prepare target symbols list
-		m_logger->Info("Prepare target symbols list.");
-		PrepareTargetMonitorSymbols();
 		// Create Market Data Analyzer
 		m_logger->Info("Create market data analyzer.");
 		InitializeMarketDataAnalyzer();
-		// Create exchange filter profile
-		m_logger->Info("Create binance exchange profile.");
-		//CreateBinanceExchangeProfile();
-		// Create portfolio management
-		m_logger->Info("Create portfolio management.");
-		//CreatePortfolioManagement();
-		// Subscribe target symbols to receive real time market data
-		m_logger->Info("Subscribe target symbols.");
-		SubscribeTargetSymbols();
+		// Initialize market data
+		m_logger->Info("Initialize market data.");
+		InitMarketData();
 		// Start alarm system to send orders
 		m_logger->Info("Starting live and trade.");
 		AlarmSystem::Start();
@@ -218,47 +231,47 @@ void VWAPStrategy::OnAlarmTriggered(const int passToDerived)
 
     m_logger->Info("Alarm triggered, start sending child orders based on Volume Profile...");
 
-	//for (const auto& symbol : m_targetFutureTradeSymbols)
-	//{
-	//	// Calculate next VWAP volume size at current time bucket
-	//	const auto now = std::chrono::system_clock::now();
-	//	const double orderSize = GetOrderSizeForCurrentBucket(now);
-	//	const double marketVWAP = CalculateCurrentVWAP();
+	for (const auto& symbol : m_targetVWAPTradeSymbols)
+	{
+		// Calculate next VWAP volume size at current time bucket
+		const auto now = std::chrono::system_clock::now();
+		const double orderSize = GetOrderSizeForCurrentBucket(now);
+		const double marketVWAP = CalculateCurrentVWAP();
 
-	//	if (orderSize > 0.0) // still not finished the target volume
-	//	{
-	//		auto* marketDataAnalyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol);
-	//		std::unique_lock<std::mutex> lock(marketDataAnalyzer->m_mutex);
+		if (orderSize > 0.0) // still not finished the target volume
+		{
+			auto* marketDataAnalyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol);
+			std::unique_lock<std::mutex> lock(marketDataAnalyzer->m_mutex);
 
-	//		const double limitPrice = marketDataAnalyzer->GetMarketDataSignals().m_lastBestAskPrice.convert_to<double>(); // use last price as default price
-	//		SendOrderToExchange(orderSize, limitPrice);
-	//		RecordTradeExecution(orderSize, now);
-	//		m_executedPrices = m_spotTrader->GetOrderExecutedPrices(symbol);
-	//		m_slippageSeries = m_spotTrader->GetOrderExecutedSlippagePrices(symbol);
-	//		m_pnlSeries = m_spotTrader->GetPnLSeries(symbol);
-	//		m_vwapPrices.emplace_back(marketVWAP);
-	//	}
-	//	else
-	//	{
-	//		m_logger->Info("VWAP target volume completed for symbol=" + symbol);
-	//		HaltExecution();
-	//		return;
-	//	}
+			const double limitPrice = marketDataAnalyzer->GetMarketDataSignals().m_lastBestAskPrice.convert_to<double>(); // use last price as default price
+			SendOrderToExchange(orderSize, limitPrice);
+			RecordTradeExecution(orderSize, now);
+			m_executedPrices = m_spotTrader->GetOrderExecutedPrices(symbol);
+			m_slippageSeries = m_spotTrader->GetOrderExecutedSlippagePrices(symbol);
+			m_pnlSeries = m_spotTrader->GetPnLSeries(symbol);
+			m_vwapPrices.emplace_back(marketVWAP);
+		}
+		else
+		{
+			m_logger->Info("VWAP target volume completed for symbol=" + symbol);
+			HaltExecution();
+			return;
+		}
 
-	//	// Risk management checks
-	//	if (m_executedPrices.size() > 5)
-	//	{
-	//		const double avgSlippage = RiskManagement::VWAPOrderExecutionRiskMetrics::computeAverageSlippage(m_executedPrices, m_vwapPrices);
-	//		const double volSlippage = RiskManagement::VWAPOrderExecutionRiskMetrics::computeStdDevSlippage(m_executedPrices, m_vwapPrices);
-	//		const double maxDrawdown = RiskManagement::VWAPOrderExecutionRiskMetrics::computeMaxDrawdown(m_pnlSeries);
-	//		const double skew = RiskManagement::VWAPOrderExecutionRiskMetrics::computeSkewness(m_slippageSeries);
+		// Risk management checks
+		if (m_executedPrices.size() > 5)
+		{
+			const double avgSlippage = RiskManagement::VWAPOrderExecutionRiskMetrics::computeAverageSlippage(m_executedPrices, m_vwapPrices);
+			const double volSlippage = RiskManagement::VWAPOrderExecutionRiskMetrics::computeStdDevSlippage(m_executedPrices, m_vwapPrices);
+			const double maxDrawdown = RiskManagement::VWAPOrderExecutionRiskMetrics::computeMaxDrawdown(m_pnlSeries);
+			const double skew = RiskManagement::VWAPOrderExecutionRiskMetrics::computeSkewness(m_slippageSeries);
 
-	//		if (avgSlippage > 5.0 || maxDrawdown > 100.0)
-	//		{
-	//			HaltExecution();
-	//		}
-	//	}
-	//}
+			if (avgSlippage > 5.0 || maxDrawdown > 100.0)
+			{
+				HaltExecution();
+			}
+		}
+	}
 
 	END_STRATEGY_ORDER_SENDING_NO_RETURN
 }
@@ -275,67 +288,37 @@ void VWAPStrategy::HaltExecution()
 
 }
 
-void VWAPStrategy::CreateBinanceExchangeProfile()
+void VWAPStrategy::CreateBinanceExchangeProfile(const std::string& symbol)
 {
-	for (const auto& symbol : m_targetFutureTradeSymbols)
-	{
-		m_tradingRules->GetExchangeProfileMgr()->UpdateRemoteExchangeProfiles(symbol, true);
-		IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
-	}
-}
-
-void VWAPStrategy::CreatePortfolioManagement()
-{
-	m_spotTrader->CreatePortfolioManagement(m_targetFutureTradeSymbols);
+	m_tradingRules->GetExchangeProfileMgr()->UpdateRemoteExchangeProfiles(symbol, true);
 	IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 }
 
-void VWAPStrategy::PrepareTargetMonitorSymbols()
+void VWAPStrategy::CreatePortfolioManagement(const std::string& symbol)
 {
-	const auto* targetSymbolXml = m_strategyCfgXml->FirstChildElement("TargetSymbol");
-	assert(targetSymbolXml);
-	const XMLElement* symbolsXml = targetSymbolXml->FirstChildElement("AllSymbols");
-	assert(symbolsXml);
-	const bool useRemoteExchangeList = symbolsXml->BoolAttribute("UseRemoteExchangeList");
-	if (useRemoteExchangeList)
-	{
-		m_logger->Info("Querying remote binance exchange listing symbols info...");
-		//m_targetFutureTradeSymbols = StaticDataMgr->GetAllRemoteListingSymbols(true);
-		m_targetFutureTradeSymbols.emplace_back("BTCUSDT");
-		m_targetFutureTradeSymbols.emplace_back("ETHUSDT");
-		m_targetFutureTradeSymbols.emplace_back("BNBUSDT");
-#ifdef SAVE_BINANCE_LISTINGS // remove this macro to saving binance listings
-		FileUtils::FromVectorStringToFile(m_targetFutureTradeSymbols, PathUtils::GetApplicationFolderPath()
-			+ "\\Configurations\\Common\\BinanceListings.txt");
-#endif // DEBUG
-	}
-	else
-	{
-		std::string localListingFile(symbolsXml->Attribute("LocalListingFile"));
-		PathUtils::ReplaceSubString(localListingFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
-		m_targetFutureTradeSymbols = FileUtils::ReadFileContentToLines(localListingFile, true);
-	}
+	m_spotTrader->CreatePortfolioManagement(symbol);
+	IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 }
 
-void VWAPStrategy::SubscribeTargetSymbols()
+void VWAPStrategy::SubscribeMarketData(const std::string& symbol)
 {
-	if (m_targetFutureTradeSymbols.empty())
+	if (symbol.empty())
 	{
-		throw std::runtime_error("No target symbols to subscribe market data.");
+		throw std::runtime_error("VWAPStrategy: Cannot subscribe empty symbol market data.");
 	}
+	m_marketData->SubscribeSymbol(symbol);
+}
+
+void VWAPStrategy::InitMarketData()
+{
 	// register this class with market data to receive real time data
 	m_marketData->RegisterDataListener(this);
-	// subscibe all target symbols
-	for (const auto& symbol : m_targetFutureTradeSymbols)
-	{
-		m_marketData->SubscribeSymbol(symbol);
-	}
 	m_marketData->StartIOContext();
 }
 
 void VWAPStrategy::UnsubscribeTargetSymbols()
 {
-	for (const auto& symbol : m_targetFutureTradeSymbols)
+	for (const auto& symbol : m_targetVWAPTradeSymbols)
 	{
 		m_marketData->UnsubscribeSymbol(symbol);
 	}
@@ -345,15 +328,18 @@ void VWAPStrategy::UnsubscribeTargetSymbols()
 
 void VWAPStrategy::OnNewExternalParentOrder(const OrderManagement::NewExternalParentOrder* newOrder)
 {
-	m_logger->Info("Test NewExternalParentOrder");
+	m_activeParentOrders.emplace_back(
+		std::make_shared<OrderManagement::NewExternalParentOrder>(*newOrder));
 }
 
 void VWAPStrategy::OnCancelExternalParentOrder(const OrderManagement::CancelExternalParentOrder* cancelOrder)
 {
-	m_logger->Info("Test CancelExternalParentOrder");
+	m_cancellingParentOrders.emplace_back(
+		std::make_shared<OrderManagement::CancelExternalParentOrder>(*cancelOrder));
 }
 
 void VWAPStrategy::OnAmendExternalParentOrder(const OrderManagement::AmendExternalParentOrder* amendOrder)
 {
-	m_logger->Info("Test AmendExternalParentOrder");
+	m_amendingParentOrders.emplace_back( 
+		std::make_shared<OrderManagement::AmendExternalParentOrder>(*amendOrder));
 }

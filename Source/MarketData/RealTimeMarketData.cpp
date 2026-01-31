@@ -20,7 +20,7 @@ RealTimeMarketData::RealTimeMarketData(
 	const std::string& mkDataTypeName)
 	: m_mkDataTypeName(mkDataTypeName)
 {
-	if (m_mkDataTypeName == "RealTimeData")
+	if (m_mkDataTypeName == "RealTimeMarketData")
 	{
 		m_marketDataFeedHandler = std::make_unique<BinanceMarketDataFeedHandler>();
 		const auto* binanceRealTimeMarketDataCfg = mkDataConfigXml->FirstChildElement("RealTimeMarketData");

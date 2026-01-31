@@ -81,10 +81,20 @@ PortfolioInvestmentBinance::PortfolioInvestmentBinance(
 
 PortfolioInvestmentBinance::~PortfolioInvestmentBinance() {}
 
+bool PortfolioInvestmentBinance::IsUserSpotAccountInfoAvailable() const
+{
+	return m_binanceSpotAccountInfo != nullptr;
+}
+
 void PortfolioInvestmentBinance::SetUserSpotAccountInfo(binapi::rest::account_info_t* account)
 {
     assert(account);
     m_binanceSpotAccountInfo = account;
+}
+
+bool PortfolioInvestmentBinance::IsUserFutureAccountInfoAvailable() const
+{
+	return m_binanceFutureAccountInfo != nullptr;
 }
 
 void PortfolioInvestmentBinance::SetUserFutureAccountInfo(KernelTrading::UserFutureAccount* account)
