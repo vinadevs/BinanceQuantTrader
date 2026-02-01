@@ -26,6 +26,7 @@ PRIVATE
     Boost::multiprecision
     LibraryUtils
     KernelTrading
+    CurlAPI
 )
 
 # Export symbols when compiling this library

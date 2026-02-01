@@ -270,8 +270,8 @@ void SmartLongShortStrategy::PrepareTargetMonitorSymbols()
 		m_targetFutureTradeSymbols.emplace_back("ETHUSDT");
 		m_targetFutureTradeSymbols.emplace_back("BNBUSDT");
 #ifdef SAVE_BINANCE_LISTINGS // remove this macro to saving binance listings
-		FileUtils::FromVectorStringToFile(m_targetFutureTradeSymbols, PathUtils::GetApplicationFolderPath()
-			+ "\\Configurations\\Common\\BinanceListings.txt");
+		FileUtils::FromVectorStringToFile(m_targetFutureTradeSymbols, 
+			(std::filesystem::path(PathUtils::GetApplicationFolderPath()) / "Configurations" / "Common" / "BinanceListings.txt").string());
 #endif // DEBUG
 	}
 	else

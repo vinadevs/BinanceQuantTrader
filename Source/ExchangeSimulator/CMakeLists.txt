@@ -14,7 +14,7 @@ get_filename_component(library_name "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
 # Find packages
 find_package(Boost REQUIRED COMPONENTS multiprecision)
 find_package(nlohmann_json CONFIG REQUIRED)
-find_package(Protobuf CONFIG REQUIRED)
+find_package(protobuf CONFIG REQUIRED)
 find_package(gRPC CONFIG REQUIRED)
 
 # Create the library

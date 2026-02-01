@@ -4,7 +4,7 @@
 </GlobalSettings>
 
 <RealTimeMarketData>
-  <UsingMarketData Name="RealTimeMarketData" File="[ROOT_BQT_PATH]/Configurations/MarketData/BinanceMarketDataCfg.xml"/>
+  <UsingMarketData Name="RealTimeMarketData" File="[ROOT_BQT_PATH]/Configurations/MarketData/BinanceMarketDataCfg-US.xml"/>
 </RealTimeMarketData>
 
 <StaticData>
@@ -14,11 +14,11 @@
 </HistoricalData>
 
 <BinanceSpotApiGateWay>
-  <Connection Enable="true" SpotApiBinanceUrl="api.binance.com" ApiBinancePort="443" ConnectionTimeoutMs="10000"/>
+  <Connection Enable="true" SpotApiBinanceUrl="api.binance.us" ApiBinancePort="443" ConnectionTimeoutMs="10000"/>
 </BinanceSpotApiGateWay>
 
 <BinanceFutureApiGateWay>
-  <Connection Enable="false" FutureApiBinanceUrl="fapi.binance.com" ApiBinancePort="443" ConnectionTimeoutMs="10000"/>
+  <Connection Enable="false" FutureApiBinanceUrl="fapi.binance.us" ApiBinancePort="443" ConnectionTimeoutMs="10000"/>
 </BinanceFutureApiGateWay>
 
 <TradingStrategy>

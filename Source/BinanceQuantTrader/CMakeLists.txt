@@ -37,6 +37,7 @@ PRIVATE
     TradingStrategies
     UserAccount
     SettingNConfig
+    CurlAPI
 )
 
 # Compile definitions

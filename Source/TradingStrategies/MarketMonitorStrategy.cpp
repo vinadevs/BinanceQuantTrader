@@ -280,8 +280,8 @@ void MarketMonitorStrategy::PrepareTargetMonitorSymbols()
 		m_targetMonitorSymbols.emplace_back("ETHUSDT");
 		m_targetMonitorSymbols.emplace_back("BNBUSDT");
 #ifdef SAVE_BINANCE_LISTINGS // remove this macro to saving binance listings
-		FileUtils::FromVectorStringToFile(m_targetMonitorSymbols, PathUtils::GetApplicationFolderPath()
-			+ "\\Configurations\\Common\\BinanceListings.txt");
+		FileUtils::FromVectorStringToFile(m_targetMonitorSymbols, 
+			(std::filesystem::path(PathUtils::GetApplicationFolderPath()) / "Configurations" / "Common" / "BinanceListings.txt").string());
 #endif // DEBUG
 	}
 	else
