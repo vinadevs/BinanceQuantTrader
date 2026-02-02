@@ -29,6 +29,8 @@ PRIVATE
     LibraryUtils
     KernelTrading
     PortfolioManager
+    MarketData
+    OrderManagement
     ComplianceNRegulatory
 )
 

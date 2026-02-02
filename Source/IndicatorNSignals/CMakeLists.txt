@@ -26,8 +26,10 @@ PRIVATE
     LibraryUtils
     KernelTrading
     PortfolioManager
-    Boost::multiprecision
+    MarketData
+    StaticData
     SettingNConfig
+    Boost::multiprecision
 )
 
 # Export symbols when compiling this library

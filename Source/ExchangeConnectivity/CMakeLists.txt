@@ -30,6 +30,11 @@ target_link_libraries(${library_name}
 PRIVATE
     LibraryUtils
     KernelTrading
+    OrderManagement
+    RestAPI
+    MiddlewareMQ
+    StaticData
+    SettingNConfig
     Boost::multiprecision
     protobuf::libprotobuf
     gRPC::grpc++

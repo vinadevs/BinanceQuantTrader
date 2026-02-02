@@ -29,6 +29,7 @@ PRIVATE
     LibraryUtils
     KernelTrading
     RestAPI
+    MiddlewareMQ
 )
 
 # Export symbols when compiling this library

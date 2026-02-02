@@ -10,6 +10,7 @@ get_filename_component(library_name "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
 
 # Find packages
 find_package(CURL CONFIG REQUIRED)
+find_package(OpenSSL REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS multiprecision)
 
@@ -28,6 +29,7 @@ PRIVATE
     LibraryUtils
     KernelTrading
     CURL::libcurl
+    OpenSSL::Crypto
     Boost::multiprecision
 PUBLIC
     nlohmann_json::nlohmann_json

@@ -43,7 +43,7 @@ else
 endif
 
 # Default config (Debug, Release, RelWithDebInfo)
-CONFIG ?= Debug
+CONFIG ?= Debug-Linux
 
 # Colors for terminal output
 CYAN    := \033[36m
@@ -156,7 +156,7 @@ init:
 	@echo "$(BOLD)$(GREEN)[DONE]$(RESET) Initialization complete"
 
 # ------------------------------------------------------------
-# Build (default: Debug)
+# Build (default: Debug-Linux)
 # ------------------------------------------------------------
 build:
 	@echo ""
@@ -175,13 +175,13 @@ build:
 
 # Shortcut targets
 debug:
-	@${MAKE} build CONFIG=Debug
+	@${MAKE} build CONFIG=Debug-Linux
 
 release:
-	@${MAKE} build CONFIG=Release
+	@${MAKE} build CONFIG=Release-Linux
 
 relwithdebinfo:
-	@${MAKE} build CONFIG=RelWithDebInfo
+	@${MAKE} build CONFIG=RelWithDebInfo-Linux
 
 # ------------------------------------------------------------
 # Force reconfigure
@@ -190,7 +190,7 @@ configure:
 	@echo "$(BOLD)$(YELLOW)[CONFIGURE]$(RESET) Reconfiguring CMake..."
 	rm -rf $(BUILD_DIR)
 	@${MAKE} init
-	@${MAKE} build
+	@${MAKE} build CONFIG=Debug-Linux
 
 # ------------------------------------------------------------
 # Full rebuild

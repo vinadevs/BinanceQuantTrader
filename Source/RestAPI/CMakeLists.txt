@@ -12,6 +12,7 @@ get_filename_component(library_name "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
 
 # Find packages
 find_package(CURL CONFIG REQUIRED)
+find_package(OpenSSL REQUIRED)
 find_package(Boost REQUIRED COMPONENTS asio multiprecision)
 
 # Create the library
@@ -30,7 +31,10 @@ PRIVATE
     Boost::multiprecision
     LibraryUtils
     KernelTrading
+    SettingNConfig
     CurlAPI
+    OpenSSL::SSL
+    OpenSSL::Crypto
 )
 
 # Export symbols when compiling this library

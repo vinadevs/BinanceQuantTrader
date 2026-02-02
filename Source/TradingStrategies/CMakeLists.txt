@@ -41,6 +41,7 @@ PRIVATE
     ComplianceNRegulatory
     RiskManagement
     IndicatorNSignals
+    UserAccount
     RestAPI
     SettingNConfig
     protobuf::libprotobuf

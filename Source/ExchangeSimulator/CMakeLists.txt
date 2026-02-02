@@ -35,6 +35,7 @@ PRIVATE
     MarketData
     MiddlewareMQ
     StaticData
+    SettingNConfig
     Boost::multiprecision
     nlohmann_json::nlohmann_json
     protobuf::libprotobuf

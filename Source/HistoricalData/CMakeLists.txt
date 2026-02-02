@@ -32,5 +32,6 @@ PRIVATE
 # Compile definitions
 target_compile_definitions(${library_name}
 PRIVATE
+    HISTORICALDATA_EXPORTS
     BINAPI_HEADER_ONLY
 )
