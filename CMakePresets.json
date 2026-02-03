@@ -3,7 +3,7 @@
     "configurePresets": [
         {
             "name": "Debug-Linux",
-            "binaryDir": "Build-Linux/Debug",
+            "binaryDir": "Build/Linux/Debug",
             "generator": "Ninja",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
@@ -13,7 +13,7 @@
         },
         {
             "name": "Release-Linux",
-            "binaryDir": "Build-Linux/Release",
+            "binaryDir": "Build/Linux/Release",
             "generator": "Ninja",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
@@ -23,7 +23,7 @@
         },
         {
             "name": "RelWithDebInfo-Linux",
-            "binaryDir": "Build-Linux/RelWithDebInfo",
+            "binaryDir": "Build/Linux/RelWithDebInfo",
             "generator": "Ninja",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo",
@@ -33,7 +33,7 @@
         },
         {
             "name": "Debug-Windows",
-            "binaryDir": "Build-Windows/Debug",
+            "binaryDir": "Build/Windows/Debug",
             "generator": "Visual Studio 17 2022",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
@@ -42,7 +42,7 @@
         },
         {
             "name": "Release-Windows",
-            "binaryDir": "Build-Windows/Release",
+            "binaryDir": "Build/Windows/Release",
             "generator": "Visual Studio 17 2022",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
@@ -51,7 +51,7 @@
         },
         {
             "name": "RelWithDebInfo-Windows",
-            "binaryDir": "Build-Windows/RelWithDebInfo",
+            "binaryDir": "Build/Windows/RelWithDebInfo",
             "generator": "Visual Studio 17 2022",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo",
@@ -63,17 +63,17 @@
         {
             "name": "Debug-Linux",
             "configurePreset": "Debug-Linux",
-            "jobs": 8
+            "jobs": 2
         },
         {
             "name": "Release-Linux",
             "configurePreset": "Release-Linux",
-            "jobs": 8
+            "jobs": 2
         },
         {
             "name": "RelWithDebInfo-Linux",
             "configurePreset": "RelWithDebInfo-Linux",
-            "jobs": 8
+            "jobs": 2
         },
         {
             "name": "Debug-Windows",

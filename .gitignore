@@ -44,8 +44,8 @@ $RECYCLE.BIN/
 .TemporaryItems
 
 # Makefile generated files
-build-*/
-Build-*/
+build/
+Build/
 
 Source/BackTesting/x64
 Source/BinanceQuantTrader/x64
