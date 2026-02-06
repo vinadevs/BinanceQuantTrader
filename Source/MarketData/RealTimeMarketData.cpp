@@ -61,11 +61,6 @@ void RealTimeMarketData::StartStreamingData()
 	m_marketDataEvents->Wait();
 }
 
-void RealTimeMarketData::StartIOContext()
-{
-	m_marketDataEvents->StartIOContext();
-}
-
 bool RealTimeMarketData::SubscribeSymbol(const std::string& symbol)
 {
 	return m_marketDataEvents->Subscribe(symbol);

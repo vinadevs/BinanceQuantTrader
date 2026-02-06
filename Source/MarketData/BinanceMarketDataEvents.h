@@ -45,8 +45,6 @@ namespace MarketData {
 			MarketDataSubject* feedHandler);
 		~BinanceMarketDataEvents();
 
-		void StartIOContext();
-
 		bool Subscribe(const std::string& symbol) override;
 		bool Unsubscribe(const std::string& symbol) override;
 		bool IsSubscribed(const std::string& symbol) override;
@@ -86,12 +84,12 @@ namespace MarketData {
 
 		std::unordered_set<std::string> m_staticSymbols;
 		boost::asio::io_context m_ioContext;
+		boost::asio::executor_work_guard<
+			boost::asio::io_context::executor_type> m_workGuard; // THIS keeps run() alive
 		std::unique_ptr<binapi::ws::websockets> m_webSocketRealTime;
 		std::unique_ptr<MarketDataSubscriptionManager> m_mdSubscriptionMgr;
 		BinanceMarketDataFeedHandler* m_feedHandler{ nullptr };
 		// mutil threads
 		std::mutex m_marketDataMutex; // this class need to be thread safe!
-		std::condition_variable m_marketDataCond; // avoid polling thread
-		std::atomic<bool> m_startIOContext{ false }; // lock free thread
 	};
 };

@@ -31,7 +31,8 @@ BinanceMarketDataEvents::BinanceMarketDataEvents(
     const XMLElement* marketDataConfigXml,
     MarketDataSubject* feedHandler)
     : MarketDataEventBase(marketDataConfigXml, feedHandler),
-      m_mdSubscriptionMgr(std::make_unique<MarketDataSubscriptionManager>())
+      m_mdSubscriptionMgr(std::make_unique<MarketDataSubscriptionManager>()),
+    m_workGuard(boost::asio::make_work_guard(m_ioContext))
 {
     m_feedHandler = dynamic_cast<BinanceMarketDataFeedHandler*>(feedHandler);
     assert(m_feedHandler);
@@ -44,6 +45,11 @@ BinanceMarketDataEvents::~BinanceMarketDataEvents()
 {
     m_logger->Info("Shutdown update events and unsubscribe all symbols.");
     AsyncUnsubscribeAll();
+	// clean up web socket connection
+    // allow run() to exit
+    m_workGuard.reset();
+    // wake all threads
+    m_ioContext.stop();
 }
 
 void BinanceMarketDataEvents::CreateWebSocketConnection()
@@ -98,14 +104,6 @@ void BinanceMarketDataEvents::LoadInterestingDataSymbols(const char* filePath)
     {
         throw std::runtime_error("BinanceMarketDataEvents: file does not exist=" + assetFilePath);
     }
-}
-
-void BinanceMarketDataEvents::StartIOContext()
-{
-    // Set the atomic flag to true, indicating that the IO context should start.
-    m_startIOContext.store(true);
-    // Notify BinanceMarketDataEvents::Wait() that the condition variable has been triggered.
-    m_marketDataCond.notify_one();
 }
 
 bool BinanceMarketDataEvents::Subscribe(const std::string& symbol)
@@ -216,19 +214,12 @@ bool BinanceMarketDataEvents::IsSubscribed(const std::string& symbol)
 
 void BinanceMarketDataEvents::Wait()
 {
-	// Wait for the condition variable to be notified
-    m_logger->Info("Wait for subscription setup completed...");
-    std::unique_lock<std::mutex> lock(m_marketDataMutex);
-	m_marketDataCond.wait(lock, [&]()
-	{
-		return m_startIOContext.load();
-	});
     // If there is any bloclking call at our side then Binance side will disconnect websocket 
     // connection with the error: ec=10053, emsg=An established connection was aborted 
     // by the software in your host machine, so please carefully to use lock stuffs within this class
 	m_logger->Info("Starting real time market data event processing...");
-    m_ioContext.run(); // never return!!!
-	assert(false); // alert if we reach here, maybe missing call StartIOContext()
+    m_ioContext.run(); // never return as we had work guard!!!
+	assert(false); // alert if we reach here, maybe something wrong!!!
 }
 
 void BinanceMarketDataEvents::VerifySubscriptionHandle(

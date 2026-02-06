@@ -40,8 +40,6 @@ namespace MarketData {
 		virtual bool IsSubscribed(const std::string& symbol) = 0;
 		// Wait for market data events (blocking call), this call has to be called after subscribing symbols
 		virtual void Wait() = 0;
-		// Operate IO context for asynchronous operations, not apply for historical data
-		virtual void StartIOContext() = 0;
 
 		const std::unordered_set<std::string>& GetSubscribingSymbols() const
 		{
