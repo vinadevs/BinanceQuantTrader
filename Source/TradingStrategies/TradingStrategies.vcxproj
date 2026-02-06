@@ -176,6 +176,7 @@
     <ClInclude Include="StrategyRequestHttpService.h" />
     <ClInclude Include="TestTradingStrategy.h" />
     <ClInclude Include="TradingStrategyBase.h" />
+    <ClInclude Include="VWAPParentOrder.h" />
     <ClInclude Include="VWAPStrategy.h" />
     <ClInclude Include="VWAPVolumeProfile.h" />
   </ItemGroup>

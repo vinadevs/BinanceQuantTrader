@@ -11,7 +11,6 @@
 #include "VWAPStrategy.h"
 #include "VWAPVolumeProfile.h"
 
-#include "../RiskManagement/VWAPOrderExecutionRiskMetrics.h"
 #include "../SettingNConfig/tinyxml2.h"
 #include "../LibraryUtils/StringUtils.h"
 #include "../MarketData/RealTimeMarketData.h"
@@ -21,11 +20,14 @@
 #include "../ComplianceNRegulatory/BinanceTradingRules.h"
 #include "../ComplianceNRegulatory/BinanceExchangeProfile.h"
 #include "../QuantitativeModel/QuantOrderParammeter.h"
+#include "../QuantitativeModel/OrderParammeterGenerator.h"
 #include "../QuantitativeModel/MarketDataAnalyzer.h"
 #include "../QuantitativeModel/QuantMarketDataAnalyzer.h"
 #include "../LibraryUtils/PathUtils.h"
 #include "../LibraryUtils/FileUtils.h"
+#include "../LibraryUtils/StringUtils.h"
 #include "../OrderManagement/ExternalParentOrder.h"
+#include "../RiskManagement/VWAPOrderExecutionRiskMetrics.h"
 
 using namespace TradingStrategies;
 using namespace QuantitativeModel;
@@ -42,13 +44,17 @@ VWAPStrategy::VWAPStrategy(
 	RealTimeMarketData* marketData,
 	Trader* trader,
 	BinanceTradingRules* tradingRules)
-	: TradingStrategyBase("VWAPStrategy", "Create future smart orders...",
+	: TradingStrategyBase("VWAPStrategy", "Slicing big order into child orders as VWAP benchmark...",
 		strategyCfgPath, marketData, trader, tradingRules),
 	  AlarmSystem(LibraryUtils::DefaultAlarmInterval, AlarmSystem::AlarmMode::REPEAT)
 {
+	START_STRATEGY_INITIALIZATION_SECTION
+
 	SetStrategyType(StrategyType::FULL_AUTO);
 	InitializeParameters(strategyCfgPath);
 	m_logger->Info("Completed initialization for the strategy.");
+
+	END_STRATEGY_INITIALIZATION_SECTION
 }
 
 VWAPStrategy::~VWAPStrategy()
@@ -83,10 +89,23 @@ bool VWAPStrategy::OnTradeChange(MarketData::MarketDataSubject* marketData, cons
 		}
 		const auto price = syncedData->GetSingleFeed(TradeID::PRICE)->GetDoubleData();
 		const auto volume = syncedData->GetSingleFeed(TradeID::QUANTITY)->GetDoubleData();
-		const auto time = syncedData->GetSingleFeed(TradeID::TRADE_TIME)->GetUnsignedIntData();
-		m_vwapVolumeProfilier->AddNewBucketVolume(volume, time);
-		m_cumPriceVolume += price * volume;
-		m_totalMarketVolume += volume;
+		m_currentExchangeTimePointMs = syncedData->GetSingleFeed(TradeID::TRADE_TIME)->GetUnsignedIntData();
+		// Update VWAP calculation for the symbol
+		std::scoped_lock lock(m_mutex);
+		for (auto& order : m_activeVWAPOrders)
+		{
+			if (order.second.GetParentOrder()->GetSymbol() == symbol)
+			{
+				m_logger->Info("Updating VWAP calculation for symbol=" + symbol
+					+ ", price=" + std::to_string(price)
+					+ ", volume=" + std::to_string(volume)
+					+ ", time=" + std::to_string(m_currentExchangeTimePointMs));
+				order.second.GetVWAPComponents().m_vwapVolumeProfilier->AddNewBucketVolume(volume, m_currentExchangeTimePointMs); // update volume profile
+				order.second.GetVWAPComponents().m_cumPriceVolume += price * volume; // calculate cumulative value
+				order.second.GetVWAPComponents().m_totalMarketVolume += volume; // calculate total market traded volume
+				break;
+			}
+		}
 		return true;
 	}
 	else
@@ -96,15 +115,38 @@ bool VWAPStrategy::OnTradeChange(MarketData::MarketDataSubject* marketData, cons
 	return false;
 }
 
-double VWAPStrategy::CalculateCurrentVWAP() const 
+double VWAPStrategy::CalculateCurrentVWAP(const ParentOrderId& parentOrderId)
 {
-	return (m_totalMarketVolume > 0.0) ? (m_cumPriceVolume / m_totalMarketVolume) : 0.0;
+	double vwap = 0.0;
+	for (auto& order : m_activeVWAPOrders)
+	{
+		if (order.second.GetParentOrder()->GetParentOrderId() == parentOrderId)
+		{
+			const auto& vwapComponents = order.second.GetVWAPComponents();
+			if (vwapComponents.m_totalMarketVolume > 0.0)
+			{
+				vwap = vwapComponents.m_cumPriceVolume / vwapComponents.m_totalMarketVolume;
+			}
+			break;
+		}
+	}
+	return vwap;
 }
 
-double VWAPStrategy::GetOrderSizeForCurrentBucket(const std::chrono::system_clock::time_point& ts)
+double VWAPStrategy::GetOrderSizeForCurrentBucket(const ParentOrderId& parentOrderId, const std::size_t ts)
 {
 	const auto bucketId = GetBucketVWAPId(ts);
-	const auto profile = m_vwapVolumeProfilier->GetVolumeProfiles();
+	auto it = m_activeVWAPOrders.find(parentOrderId);
+	if (it == m_activeVWAPOrders.end())
+	{
+		return -1; // parent order not found
+	}
+	auto& vwapComponents = it->second.GetVWAPComponents();
+	if (vwapComponents.m_vwapVolumeProfilier->HasBucketVolumnes() == false)
+	{
+		return -1; // no volume profile available
+	}
+	const auto& profile = vwapComponents.m_vwapVolumeProfilier->GetVolumeProfiles();
 
 	double pct = 0.0;
 	for (auto& p : profile)
@@ -116,21 +158,28 @@ double VWAPStrategy::GetOrderSizeForCurrentBucket(const std::chrono::system_cloc
 		}
 	}
 
-	const double targetForBucket = m_targetVWAPAmount * pct;
-	const double alreadyBought = m_executedVolume[bucketId];
-	return std::max(0.0, targetForBucket - alreadyBought);
+	const double targetForBucket = vwapComponents.m_targetVWAPAmount * pct;
+	const double alreadyTraded = vwapComponents.m_executedVolume[bucketId];
+	return std::max(0.0, targetForBucket - alreadyTraded);
 }
 
-void VWAPStrategy::RecordTradeExecution(double volume, const std::chrono::system_clock::time_point& ts)
+void VWAPStrategy::RecordTradeExecution(const ParentOrderId& parentOrderId, const double volume, const std::size_t ts)
 {
-	m_executedVolume[GetBucketVWAPId(ts)] += volume;
+	const auto bucketId = GetBucketVWAPId(ts);
+	auto it = m_activeVWAPOrders.find(parentOrderId);
+	if (it == m_activeVWAPOrders.end())
+	{
+		return; // parent order not found
+	}
+	auto& vwapComponents = it->second.GetVWAPComponents();
+	vwapComponents.m_executedVolume[bucketId] += volume;
 }
 
-size_t VWAPStrategy::GetBucketVWAPId(const std::chrono::system_clock::time_point& ts) const
+size_t VWAPStrategy::GetBucketVWAPId(const std::size_t ts) const
 {
-	auto epochSec = std::chrono::duration_cast<std::chrono::seconds>(
-		ts.time_since_epoch()).count();
-	return epochSec / m_profileBucketSeconds;
+	auto epochSec = TimeUtils::EpochToTimePoint(ts,
+		TimeUtils::TimeUnit::Milliseconds).time_since_epoch().count();
+	return epochSec / m_profileBucketMs;
 }
 
 void VWAPStrategy::ReportTradeResults(const std::string& symbol)
@@ -150,7 +199,10 @@ void VWAPStrategy::InitializeParameters(const std::string& strategyCfgPath)
 	SetupStrategyLifeTime(m_strategyCfgXml.get());
 	// when we use alarm system, we need to set up the order scheduler
 	SetupOrderScheduler();
-	SetupVWAPVolumeProfile();
+	// load VWAP profile bucket seconds
+	SetupVWAPProfileBucketSeconds();
+	// setup VWAP risk management metrics
+	SetupVWAPRiskManagements();
 }
 
 void VWAPStrategy::InitializeMarketDataAnalyzer()
@@ -175,20 +227,47 @@ void VWAPStrategy::SetupOrderScheduler()
 	m_strategyOrderScheduler = StrategyOrderScheduler::ALARM_BASED;
 }
 
-void VWAPStrategy::SetupVWAPVolumeProfile()
+void VWAPStrategy::SetupVWAPProfileBucketSeconds()
 {
-	m_logger->Info("Setting up VWAP volume profile.");
+	m_logger->Info("Load VWAP profile bucket milliseconds.");
 	const XMLElement* vwapVolumeProfileXml = m_strategyCfgXml->FirstChildElement("VWAPVolumeProfile");
 	assert(vwapVolumeProfileXml);
 	const auto* bucketTimeXml = vwapVolumeProfileXml->FirstChildElement("BucketTime");
 	assert(bucketTimeXml);
-	const int seconds = vwapVolumeProfileXml->IntAttribute("Seconds");
-	if (seconds <= 0)
+	const int ms = bucketTimeXml->IntAttribute("Milliseconds");
+	if (ms <= 0)
 	{
-		throw std::runtime_error("VWAPStrategy: Invalid bucket seconds="
-			+ std::to_string(seconds) + ", must be greater than 0.");
+		throw std::runtime_error("VWAPStrategy: Invalid bucket ms="
+			+ std::to_string(ms) + ", must be greater than 0.");
 	}
-	m_vwapVolumeProfilier = std::make_unique<VWAPVolumeProfile>(seconds);
+	m_profileBucketMs = ms;
+}
+
+void VWAPStrategy::SetupVWAPRiskManagements()
+{
+	m_logger->Info("Setup VWAP risk management metrics.");
+	const XMLElement* vwapRiskManagementXml = m_strategyCfgXml->FirstChildElement("RiskManagement");
+	assert(vwapRiskManagementXml);
+	const XMLElement* riskMetricsXml = vwapRiskManagementXml->FirstChildElement("Metrics");
+	assert(riskMetricsXml);
+	m_averageSlippageTolerance = riskMetricsXml->DoubleAttribute("AverageSlippageTolerance");
+	if (m_averageSlippageTolerance < 0.0)
+	{
+		throw std::runtime_error("VWAPStrategy: Invalid average slippage tolerance="
+			+ std::to_string(m_averageSlippageTolerance) + ", must be non-negative.");
+	}
+	m_maxDrawdownTolerance = riskMetricsXml->DoubleAttribute("MaxDrawdownTolerance");
+	if (m_maxDrawdownTolerance < 0.0)
+	{
+		throw std::runtime_error("VWAPStrategy: Invalid max drawdown tolerance="
+			+ std::to_string(m_maxDrawdownTolerance) + ", must be non-negative.");
+	}
+	m_maxParticipationRate = riskMetricsXml->DoubleAttribute("ParticipationRate");
+	if (m_maxParticipationRate < 0.0 || m_maxParticipationRate > 1.0)
+	{
+		throw std::runtime_error("VWAPStrategy: Invalid max participation rate="
+			+ std::to_string(m_maxParticipationRate) + ", must be between 0.0 and 1.0.");
+	}
 }
 
 void VWAPStrategy::StartTrade()
@@ -196,13 +275,15 @@ void VWAPStrategy::StartTrade()
 	try
 	{
 		// Change Strategy state to live
-		m_strategyRunStatus = StrategyRunStatus::LIVE;
+		m_strategyRunStatus.store(StrategyRunStatus::LIVE, std::memory_order_release);
 		// Create Market Data Analyzer
 		m_logger->Info("Create market data analyzer.");
 		InitializeMarketDataAnalyzer();
 		// Initialize market data
 		m_logger->Info("Initialize market data.");
 		InitMarketData();
+		// Create order parammeter generator
+		CreateOrderParameterGenerator();
 		// Start alarm system to send orders
 		m_logger->Info("Starting live and trade.");
 		AlarmSystem::Start();
@@ -219,7 +300,7 @@ void VWAPStrategy::StartTrade()
 
 void VWAPStrategy::StopTrade()
 {
-	m_strategyRunStatus = StrategyRunStatus::STOP;
+	m_strategyRunStatus.store(StrategyRunStatus::STOP, std::memory_order_release);
 	// Unsubscribe target symbols to stop receiving real time market data
 	m_logger->Info("Unsubscribe target symbols.");
 	UnsubscribeTargetSymbols();
@@ -229,44 +310,86 @@ void VWAPStrategy::OnAlarmTriggered(const int passToDerived)
 {
 	BEGIN_STRATEGY_ORDER_SENDING_ACTIVITY
 
-    m_logger->Info("Alarm triggered, start sending child orders based on Volume Profile...");
+		m_logger->Info("Alarm triggered, start sending child orders based on Volume Profile...");
 
-	for (const auto& symbol : m_targetVWAPTradeSymbols)
+	if (m_strategyRunStatus.load(std::memory_order_acquire) != StrategyRunStatus::LIVE)
 	{
+		m_logger->Warning("Strategy is not live now, stop sending orders.");
+		return;
+	}
+
+	std::scoped_lock lock(m_mutex); // only lock here and dont add any blocking code inside child functions
+	if (m_activeVWAPOrders.empty())
+	{
+		m_logger->Warning("No active VWAP orders to process, skip this alarm trigger.");
+		return;
+	}
+	for (auto& order : m_activeVWAPOrders)
+	{
+		auto* parentOrder = order.second.GetParentOrder();
+		const ParentOrderId& parentOrderId = parentOrder->GetParentOrderId();
+		const std::string& symbol = parentOrder->GetSymbol();
+		auto& vwapComponents = order.second.GetVWAPComponents();
+
+		if (m_marketData->IsSubscribedSymbol(symbol) == false)
+		{
+			m_logger->Warning("Market data is not subscribed for symbol=" + symbol
+				+ ", skip sending VWAP child order.");
+			continue;
+		}
+
 		// Calculate next VWAP volume size at current time bucket
-		const auto now = std::chrono::system_clock::now();
-		const double orderSize = GetOrderSizeForCurrentBucket(now);
-		const double marketVWAP = CalculateCurrentVWAP();
+		const double orderSize = GetOrderSizeForCurrentBucket(parentOrderId, m_currentExchangeTimePointMs);
+		const double marketVWAP = CalculateCurrentVWAP(parentOrderId);
+
+		if (orderSize < 0.0)
+		{
+			m_logger->Warning("No VWAP volume profile available for parentOrderId =" + parentOrderId
+				+ ", skip sending VWAP child order.");
+			continue;
+		}
 
 		if (orderSize > 0.0) // still not finished the target volume
 		{
-			auto* marketDataAnalyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol);
-			std::unique_lock<std::mutex> lock(marketDataAnalyzer->m_mutex);
+			if (auto* marketDataAnalyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol))
+			{
+				std::unique_lock<std::mutex> lock(marketDataAnalyzer->m_mutex);
 
-			const double limitPrice = marketDataAnalyzer->GetMarketDataSignals().m_lastBestAskPrice.convert_to<double>(); // use last price as default price
-			SendOrderToExchange(orderSize, limitPrice);
-			RecordTradeExecution(orderSize, now);
-			m_executedPrices = m_spotTrader->GetOrderExecutedPrices(symbol);
-			m_slippageSeries = m_spotTrader->GetOrderExecutedSlippagePrices(symbol);
-			m_pnlSeries = m_spotTrader->GetPnLSeries(symbol);
-			m_vwapPrices.emplace_back(marketVWAP);
+				const double limitPrice = parentOrder->GetPrice();
+				SendVWAPChildOrderToExchange(parentOrderId, symbol, orderSize, limitPrice, parentOrder->GetSide());
+				RecordTradeExecution(symbol, orderSize, m_currentExchangeTimePointMs);
+				vwapComponents.m_executedPrices = m_spotTrader->GetOrderExecutedPrices(symbol);
+				vwapComponents.m_slippageSeries = m_spotTrader->GetOrderExecutedSlippagePrices(symbol);
+				vwapComponents.m_pnlSeries = m_spotTrader->GetPnLSeries(symbol);
+				vwapComponents.m_vwapPrices.emplace_back(marketVWAP);
+			}
+			else
+			{
+				m_logger->Warning("No market data analyzer available for symbol=" + symbol
+					+ ", skip sending VWAP child order.");
+			}
 		}
 		else
 		{
-			m_logger->Info("VWAP target volume completed for symbol=" + symbol);
-			HaltExecution();
+			m_logger->Info("VWAP target volume reached for symbol=" + symbol
+				+ ", total executed volume=" + std::to_string(vwapComponents.m_targetVWAPAmount)
+				+ ", stop sending child orders.");
 			return;
 		}
 
 		// Risk management checks
-		if (m_executedPrices.size() > 5)
+		if (vwapComponents.m_executedPrices.size() > 5)
 		{
-			const double avgSlippage = RiskManagement::VWAPOrderExecutionRiskMetrics::computeAverageSlippage(m_executedPrices, m_vwapPrices);
-			const double volSlippage = RiskManagement::VWAPOrderExecutionRiskMetrics::computeStdDevSlippage(m_executedPrices, m_vwapPrices);
-			const double maxDrawdown = RiskManagement::VWAPOrderExecutionRiskMetrics::computeMaxDrawdown(m_pnlSeries);
-			const double skew = RiskManagement::VWAPOrderExecutionRiskMetrics::computeSkewness(m_slippageSeries);
+			const double avgSlippage
+				= RiskManagement::VWAPOrderExecutionRiskMetrics::computeAverageSlippage(vwapComponents.m_executedPrices, vwapComponents.m_vwapPrices);
+			const double volSlippage
+				= RiskManagement::VWAPOrderExecutionRiskMetrics::computeStdDevSlippage(vwapComponents.m_executedPrices, vwapComponents.m_vwapPrices);
+			const double maxDrawdown
+				= RiskManagement::VWAPOrderExecutionRiskMetrics::computeMaxDrawdown(vwapComponents.m_pnlSeries);
+			const double skew
+				= RiskManagement::VWAPOrderExecutionRiskMetrics::computeSkewness(vwapComponents.m_slippageSeries);
 
-			if (avgSlippage > 5.0 || maxDrawdown > 100.0)
+			if (avgSlippage > m_averageSlippageTolerance || maxDrawdown > m_maxDrawdownTolerance)
 			{
 				HaltExecution();
 			}
@@ -276,16 +399,42 @@ void VWAPStrategy::OnAlarmTriggered(const int passToDerived)
 	END_STRATEGY_ORDER_SENDING_NO_RETURN
 }
 
-void VWAPStrategy::SendOrderToExchange(
+void VWAPStrategy::SendVWAPChildOrderToExchange(
+	const ParentOrderId& parentOrderId,
+	const std::string& symbol,
 	const double orderSize,
-	const double limitPrice)
+	const double limitPrice,
+	const OrderManagement::ParentOrderSide side)
 {
+	const binapi::e_side sideChildOrder = (side == OrderManagement::ParentOrderSide::BUY)
+		? binapi::e_side::buy
+		: binapi::e_side::sell;
+	const auto vwapChildOrder = m_orderParammeterGenerator->GenerateVWAPChildOrder(
+		parentOrderId,
+		symbol,
+		limitPrice,
+		orderSize,
+		sideChildOrder);
 
+	if (vwapChildOrder.has_value()) {
+		const auto newOrder = m_spotTrader->CreateNewPosition(vwapChildOrder.value());
+		if (newOrder.first)
+		{
+			m_logger->Info("Created a new VWAP child order for symbol=" + symbol);
+			IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
+		}
+		else
+		{
+			m_logger->Error("Failed to create a new VWAP child order for symbol="
+				+ symbol);
+		}
+	}
 }
 
 void VWAPStrategy::HaltExecution()
 {
-
+	m_logger->Info("Halting strategy execution as risk check.");
+	m_strategyRunStatus.store(StrategyRunStatus::STOP, std::memory_order_release);
 }
 
 void VWAPStrategy::CreateBinanceExchangeProfile(const std::string& symbol)
@@ -298,6 +447,16 @@ void VWAPStrategy::CreatePortfolioManagement(const std::string& symbol)
 {
 	m_spotTrader->CreatePortfolioManagement(symbol);
 	IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
+}
+
+void VWAPStrategy::CreateOrderParameterGenerator()
+{
+	m_orderParammeterGenerator = std::make_unique<QuantitativeModel::OrderParammeterGenerator>(
+		m_tradingRules,
+		m_spotTrader->GetPortfolio(),
+		m_spotTrader->GetRiskManager(),
+		m_spotTrader->GetPositionManager(),
+		m_logger.get());
 }
 
 void VWAPStrategy::SubscribeMarketData(const std::string& symbol)
@@ -313,33 +472,73 @@ void VWAPStrategy::InitMarketData()
 {
 	// register this class with market data to receive real time data
 	m_marketData->RegisterDataListener(this);
-	m_marketData->StartIOContext();
 }
 
 void VWAPStrategy::UnsubscribeTargetSymbols()
 {
-	for (const auto& symbol : m_targetVWAPTradeSymbols)
+	std::scoped_lock lock(m_mutex);
+	for (const auto& order : m_activeVWAPOrders)
 	{
-		m_marketData->UnsubscribeSymbol(symbol);
+		m_marketData->UnsubscribeSymbol(order.second.GetParentOrder()->GetSymbol());
 	}
 }
 
 // external callback for parent order event handling
 
-void VWAPStrategy::OnNewExternalParentOrder(const OrderManagement::NewExternalParentOrder* newOrder)
+void VWAPStrategy::OnNewExternalParentOrder(OrderManagement::NewExternalParentOrder* newOrder)
 {
-	m_activeParentOrders.emplace_back(
-		std::make_shared<OrderManagement::NewExternalParentOrder>(*newOrder));
+	VWAPParentOrder vwapParentOrder;
+	vwapParentOrder.SetParentOrder(newOrder);
+	vwapParentOrder.GetVWAPComponents().m_targetVWAPAmount = newOrder->GetQuantity();
+	vwapParentOrder.GetVWAPComponents().m_vwapVolumeProfilier =
+		std::make_unique<VWAPVolumeProfile>(m_profileBucketMs);
+	std::scoped_lock lock(m_mutex);
+	const auto parentOrderId = vwapParentOrder.GetParentOrder()->GetParentOrderId();
+	m_activeVWAPOrders.emplace(parentOrderId, std::move(vwapParentOrder));
+	// subscribe market data for the symbol from parent order
+	SubscribeMarketData(newOrder->GetSymbol());
+	// create market analyzer for the symbol
+	m_marketDataAnalyzer->AddQuantMarketDataAnalyzer(newOrder->GetSymbol());
 }
 
-void VWAPStrategy::OnCancelExternalParentOrder(const OrderManagement::CancelExternalParentOrder* cancelOrder)
+void VWAPStrategy::OnCancelExternalParentOrder(OrderManagement::CancelExternalParentOrder* cancelOrder)
 {
 	m_cancellingParentOrders.emplace_back(
 		std::make_shared<OrderManagement::CancelExternalParentOrder>(*cancelOrder));
+	std::scoped_lock lock(m_mutex);
+	for (auto it = m_activeVWAPOrders.begin(); it != m_activeVWAPOrders.end(); )
+	{
+		if (it->second.GetParentOrder()->GetParentOrderId() == cancelOrder->GetOriginalParentOrderId())
+		{
+			m_logger->Info("Cancelling VWAP parent order for symbol="
+				+ it->second.GetParentOrder()->GetSymbol());
+			it = m_activeVWAPOrders.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
 }
 
-void VWAPStrategy::OnAmendExternalParentOrder(const OrderManagement::AmendExternalParentOrder* amendOrder)
+void VWAPStrategy::OnAmendExternalParentOrder(OrderManagement::AmendExternalParentOrder* amendOrder)
 {
 	m_amendingParentOrders.emplace_back( 
 		std::make_shared<OrderManagement::AmendExternalParentOrder>(*amendOrder));
+	std::scoped_lock lock(m_mutex);
+	for (auto it = m_activeVWAPOrders.begin(); it != m_activeVWAPOrders.end(); )
+	{
+		if (it->second.GetParentOrder()->GetParentOrderId() == amendOrder->GetOriginalParentOrderId())
+		{
+			m_logger->Info("Amending VWAP parent order for symbol="
+				+ it->second.GetParentOrder()->GetSymbol());
+			// currently we only support amending target VWAP amount
+			it->second.GetParentOrder()->SetQuantity(amendOrder->GetQuantity());
+			++it;
+		}
+		else
+		{
+			++it;
+		}
+	}
 }

@@ -11,42 +11,55 @@
 #include <unordered_map>
 #include <vector>
 #include <chrono>
-#include <utility> // for std::pair
-#include <cstddef> // for size_t
+#include <utility>
+#include <cstddef>
+
 #include "../LibraryUtils/TimeUtils.h"
 
-namespace TradingStrategies {
+namespace TradingStrategies 
+{
 
 // VWAPVolumeProfile class calculates the Volume Weighted Average Price (VWAP) profile
-class VWAPVolumeProfile {
+// m_bucketVolumes can be added with new volume data for specific time buckets
+// or config from external file
+class VWAPVolumeProfile 
+{
 public:
-    VWAPVolumeProfile(int bucketSeconds)
-        : m_bucketSeconds(bucketSeconds) {
-    }
+    VWAPVolumeProfile(int bucketMs)
+        : m_bucketMs(bucketMs) {}
 
-    void AddNewBucketVolume(const double volume, const long long epochTickValue) {
+    void AddNewBucketVolume(const double volume, const long long epochTickValue) 
+    {
         size_t bucketId = GetBucketId(epochTickValue);
         m_bucketVolumes[bucketId] += volume;
         m_totalVolume += volume;
     }
 
-    std::vector<std::pair<size_t, double>> GetVolumeProfiles() const {
+    std::vector<std::pair<size_t, double>> GetVolumeProfiles() const 
+    {
         std::vector<std::pair<size_t, double>> profile;
-        for (auto& kv : m_bucketVolumes) {
-            double pct = (m_totalVolume > 0.0) ? (kv.second / m_totalVolume) : 0.0;
-            profile.push_back({ kv.first, pct });
+        profile.reserve(m_bucketVolumes.size());
+        for (const auto& [id, vol] : m_bucketVolumes)
+        {
+            const double pct = (m_totalVolume > 0.0) ? (vol / m_totalVolume) : 0.0;
+            profile.emplace_back(id, pct);
         }
         return profile;
     }
 
+    bool HasBucketVolumnes() const 
+    {
+        return !m_bucketVolumes.empty();
+    }
 private:
-    size_t GetBucketId(const long long epochTickValue) const {
-		auto epochSec = TimeUtils::EpochToTimePoint(epochTickValue,
-            TimeUtils::TimeUnit::Seconds).time_since_epoch().count();
-        return epochSec / m_bucketSeconds;
+    size_t GetBucketId(const long long epochTickValue) const 
+    {
+        auto epochSec = TimeUtils::EpochToTimePoint(epochTickValue,
+            TimeUtils::TimeUnit::Milliseconds).time_since_epoch().count();
+        return epochSec / m_bucketMs;
     }
 
-    int m_bucketSeconds{ 0 };
+    int m_bucketMs{ 0 };
     double m_totalVolume{ 0.0 };
     std::unordered_map<size_t, double> m_bucketVolumes;
 };

@@ -25,9 +25,13 @@ TestTradingStrategy::TestTradingStrategy(
 	: TradingStrategyBase("TestTradingStrategy", "test market data feed only...",
 		strategyCfgPath, marketData, trader, tradingRules)
 {
+	START_STRATEGY_INITIALIZATION_SECTION
+
 	SetStrategyType(StrategyType::FULL_AUTO);
 	InitializeParameters(strategyCfgPath);
 	marketData->RegisterDataListener(this); // I want receive market data to get fun!
+
+	END_STRATEGY_INITIALIZATION_SECTION
 }
 
 TestTradingStrategy::~TestTradingStrategy()

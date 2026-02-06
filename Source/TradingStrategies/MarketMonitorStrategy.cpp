@@ -34,9 +34,13 @@ MarketMonitorStrategy::MarketMonitorStrategy(
 		"analysis real time market data and generate trading signals...",
 		strategyCfgPath, marketData)
 {
+	START_STRATEGY_INITIALIZATION_SECTION
+
 	SetStrategyType(StrategyType::ADVISING);
 	InitializeParameters(strategyCfgPath);
 	m_logger->Info("Completed initialization for the strategy.");
+
+	END_STRATEGY_INITIALIZATION_SECTION
 }
 
 MarketMonitorStrategy::~MarketMonitorStrategy()
@@ -236,7 +240,7 @@ void MarketMonitorStrategy::StartTrade()
 	try
 	{
 		// Change Strategy state to live
-		m_strategyRunStatus = StrategyRunStatus::LIVE;
+		m_strategyRunStatus.store(StrategyRunStatus::LIVE, std::memory_order_release);
 		// Prepare target symbols list
 		m_logger->Info("Prepare target symbols list.");
 		PrepareTargetMonitorSymbols();
@@ -259,7 +263,7 @@ void MarketMonitorStrategy::StartTrade()
 
 void MarketMonitorStrategy::StopTrade()
 {
-	m_strategyRunStatus = StrategyRunStatus::STOP;
+	m_strategyRunStatus.store(StrategyRunStatus::STOP, std::memory_order_release);
 	// Unsubscribe target symbols to stop receiving real time market data
 	m_logger->Info("Unsubscribe target symbols.");
 	UnsubscribeTargetSymbols();
@@ -305,7 +309,6 @@ void MarketMonitorStrategy::SubscribeTargetSymbols()
 	{
 		m_marketData->SubscribeSymbol(symbol);
 	}
-	m_marketData->StartIOContext();
 }
 
 void MarketMonitorStrategy::UnsubscribeTargetSymbols()

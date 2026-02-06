@@ -38,9 +38,13 @@ FomoTradingStrategy::FomoTradingStrategy(
 	: TradingStrategyBase("FomoTradingStrategy", "The fear of missing out...",
 		strategyCfgPath, marketData, trader, tradingRules)
 {
+	START_STRATEGY_INITIALIZATION_SECTION
+
 	SetStrategyType(StrategyType::FULL_AUTO);
 	InitializeParameters(strategyCfgPath);
 	m_logger->Info("Completed initialization for the strategy.");
+
+	END_STRATEGY_INITIALIZATION_SECTION
 }
 
 void FomoTradingStrategy::InitializeParameters(const std::string& strategyCfgPath)
@@ -104,7 +108,6 @@ void FomoTradingStrategy::SubscribeTargetSymbols()
 	{
 		m_marketData->SubscribeSymbol(symbol);
 	}
-	m_marketData->StartIOContext();
 }
 
 void FomoTradingStrategy::UnsubscribeTargetSymbols()
@@ -190,7 +193,7 @@ void FomoTradingStrategy::StartTrade()
 	try
 	{
 		// Change Strategy state to live
-		m_strategyRunStatus = StrategyRunStatus::LIVE;
+		m_strategyRunStatus.store(StrategyRunStatus::LIVE, std::memory_order_release);
 		// Load target symbols list
 		LoadTargetTradeSymbols();
 		// Create exchange filter profile
@@ -230,7 +233,7 @@ void FomoTradingStrategy::StopTrade()
 	m_isThreadTradeOngoing.store(false); // break while loop
 #endif
 	// Change Strategy state to stop
-	m_strategyRunStatus = StrategyRunStatus::STOP;
+	m_strategyRunStatus.store(StrategyRunStatus::STOP, std::memory_order_release);
 	// Unsubscribe target symbols to stop receiving real time market data
 	m_logger->Info("Unsubscribe target symbols.");
 	UnsubscribeTargetSymbols();

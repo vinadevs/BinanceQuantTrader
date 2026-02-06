@@ -165,10 +165,9 @@ namespace TradingStrategies {
 		// This helps monitor and limit the number of requests to avoid exceeding API rate limits.
 		void IncreaseComplianceRestAPIRequestCounter(const size_t noOfRequests);
 		// -Get parent order manager to manage all parent orders for this strategy
-		OrderManagement::ParentOrderManager* GetParentOrderManager() const {
-			return m_parentOrderManager.get();
-		}
-
+		const OrderManagement::ParentOrderManager* GetParentOrderManager() const;
+		// -Is strategy well initiated and ready to trade
+		bool IsStrategyWellInitiated() const;
 protected:
 		// -Logs the hard limits for trading, such as maximum orders or API requests allowed.
 		// This is useful for debugging and ensuring the strategy operates within defined constraints.
@@ -197,21 +196,24 @@ protected:
 		std::unique_ptr<LibraryUtils::Logger> m_logger; // log message
 		StrategyType m_strategyType { StrategyType::UNDEF};
 		StrategyLifeTime m_StrategyLifeTime { StrategyLifeTime::INTRA_DAY };
-		// -For strategies that run in a same thread with main thread
-		// then we can check this flag to know if the strategy is still live
-		StrategyRunStatus m_strategyRunStatus{ StrategyRunStatus::UNDEF };
 		// Which order scheduler will be used for this strategy
 		StrategyOrderScheduler m_strategyOrderScheduler{ StrategyOrderScheduler::UNDEF };
 		// -For strategies that need to be run in a separated thread
 		// then it will need to maintain a TradingLoop() function to 
 		// keep the thread live, this hack will help to keep the while loop running
 #if USE_MULTITHREADING
+		// -For strategies that run in a same thread with main thread
+		// then we can check this flag to know if the strategy is still live
+		std::atomic<StrategyRunStatus> m_strategyRunStatus{ StrategyRunStatus::UNDEF };
 		std::atomic<bool> m_isThreadTradeOngoing; // non blocking
 #endif
 		// -Config for strategy, we will use it to setup strategy parameters
 		std::unique_ptr<tinyxml2::XMLDocument> m_strategyCfgXml;
 		// -Parent order manager to manage all parent orders for this strategy
 		std::unique_ptr<OrderManagement::ParentOrderManager> m_parentOrderManager;
+		// -Is strategy well initiated and ready to trade, this must be accessed only by strategy thread
+		// so no need to use atomic here
+		bool m_isStrategyWellInitiated{ false };
 	};
 };
 
@@ -221,7 +223,7 @@ protected:
 #define BEGIN_STRATEGY_ORDER_SENDING_ACTIVITY \
 try \
 { \
-	if (m_strategyRunStatus == StrategyRunStatus::LIVE) \
+	if (m_strategyRunStatus.load(std::memory_order_acquire) == StrategyRunStatus::LIVE) \
 	{ \
 		if (IsNotIsNotExceededTradingRules()) \
 		{
@@ -272,3 +274,21 @@ catch (...) \
 	return; \
 }
 //---------------------------------------------------------------------------------------------
+// This pair of macros should be used to wrap all strategy initialization section
+#define START_STRATEGY_INITIALIZATION_SECTION \
+try \
+{
+
+#define END_STRATEGY_INITIALIZATION_SECTION \
+m_isStrategyWellInitiated = true; \
+} \
+catch (const std::exception& e) \
+{ \
+	m_logger->Exception(std::string(e.what())); \
+	m_isStrategyWellInitiated = false; \
+} \
+catch (...) \
+{ \
+	m_logger->Exception("Unknown exception occurred."); \
+	m_isStrategyWellInitiated = false; \
+}

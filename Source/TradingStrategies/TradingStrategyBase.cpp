@@ -116,7 +116,7 @@ void TradingStrategyBase::InitParentOrderManager()
 
 StrategyRunStatus TradingStrategyBase::GetStrategyRunStatus() const
 {
-	return m_strategyRunStatus;
+	return m_strategyRunStatus.load(std::memory_order_acquire);
 }
 
 StrategyType TradingStrategyBase::GetStrategyType() const
@@ -226,6 +226,16 @@ void TradingStrategyBase::IncreaseComplianceRestAPIRequestCounter(const size_t n
 	{
 		m_tradingRules->IncreaseOrdersPerTwentyFourHours(noOfRequests);
 	}
+}
+
+bool TradingStrategyBase::IsStrategyWellInitiated() const
+{
+	return m_isStrategyWellInitiated;
+}
+
+const OrderManagement::ParentOrderManager* TradingStrategyBase::GetParentOrderManager() const
+{
+	return m_parentOrderManager.get();
 }
 
 #if USE_BACK_TEST_TRADING  

@@ -42,9 +42,13 @@ SmartLongShortStrategy::SmartLongShortStrategy(
 		strategyCfgPath, marketData, trader, tradingRules),
 	  AlarmSystem(LibraryUtils::DefaultAlarmInterval, AlarmSystem::AlarmMode::REPEAT)
 {
+	START_STRATEGY_INITIALIZATION_SECTION
+
 	SetStrategyType(StrategyType::FULL_AUTO);
 	InitializeParameters(strategyCfgPath);
 	m_logger->Info("Completed initialization for the strategy.");
+
+	END_STRATEGY_INITIALIZATION_SECTION
 }
 
 SmartLongShortStrategy::~SmartLongShortStrategy()
@@ -115,7 +119,7 @@ void SmartLongShortStrategy::StartTrade()
 	try
 	{
 		// Change Strategy state to live
-		m_strategyRunStatus = StrategyRunStatus::LIVE;
+		m_strategyRunStatus.store(StrategyRunStatus::LIVE, std::memory_order_release);
 		// Prepare target symbols list
 		m_logger->Info("Prepare target symbols list.");
 		PrepareTargetMonitorSymbols();
@@ -150,7 +154,7 @@ void SmartLongShortStrategy::StartTrade()
 
 void SmartLongShortStrategy::StopTrade()
 {
-	m_strategyRunStatus = StrategyRunStatus::STOP;
+	m_strategyRunStatus.store(StrategyRunStatus::STOP, std::memory_order_release);
 	// Unsubscribe target symbols to stop receiving real time market data
 	m_logger->Info("Unsubscribe target symbols.");
 	UnsubscribeTargetSymbols();
@@ -162,6 +166,11 @@ void SmartLongShortStrategy::OnAlarmTriggered(const int passToDerived)
 
 	m_logger->Info("Alarm triggered, checking oporntunities for future market based on market data signals...");
 
+	if (m_targetFutureTradeSymbols.empty())
+	{
+		m_logger->Warning("No symbols to trade.");
+		return;
+	}
 	for (const auto& symbol : m_targetFutureTradeSymbols)
 	{
 		auto* marketDataAnalyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol);
@@ -295,7 +304,6 @@ void SmartLongShortStrategy::SubscribeTargetSymbols()
 	{
 		m_marketData->SubscribeSymbol(symbol);
 	}
-	m_marketData->StartIOContext();
 }
 
 void SmartLongShortStrategy::UnsubscribeTargetSymbols()
