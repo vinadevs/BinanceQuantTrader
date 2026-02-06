@@ -62,9 +62,20 @@ TradingModel::TradingModel(
 	: m_strategyHost{ std::make_unique<SingleStrategyHost>() },
 	  m_logger{ std::make_unique<Logger>("TradingModel") }
 {
-	PrepareTradingComponents(configBQTXml, configAccessKeyXml);
-	// To this point, we have prepared all trading components but
-	// the model is not started yet, we will need to call RunModel()
+	try
+	{
+		m_isModelWellPrepared = PrepareTradingComponents(configBQTXml, configAccessKeyXml);
+		// To this point, we have prepared all trading components but
+		// the model is not started yet, we will need to call RunModel()
+	}
+	catch (const std::exception& e)
+	{
+		m_logger->Exception(std::string(e.what()));
+	}
+	catch (...)
+	{
+		m_logger->Exception("Unknown exception occurred.");
+	}
 }
 
 TradingModel::~TradingModel()
@@ -92,7 +103,7 @@ TradingModel::~TradingModel()
 #endif
 }
 
-void TradingModel::PrepareTradingComponents(
+bool TradingModel::PrepareTradingComponents(
 	const XMLDocument* configBQTXml,
 	const XMLDocument* configAccessKeyXml)
 {
@@ -232,10 +243,17 @@ void TradingModel::PrepareTradingComponents(
 		m_externalController = std::make_unique<ExternalController>(externalControllerCfg);
 		m_externalController->RegisterTargetStrategy(m_strategy.get());
 	}
+
+	return true;
 }
 
 void TradingModel::RunModel()
 {
+	if (!m_isModelWellPrepared)
+	{
+		m_logger->Error("Trading components is not well prepared, cannot run the model.");
+		return;
+	}
 	// Start the external controller,
 	// this is for setup parameter control (admin request, parent order) from external applications
 	if (m_allowExternalControlling)
@@ -260,6 +278,12 @@ void TradingModel::RunModel()
 	m_logger->Info(USE_REAL_TRADING_MESSAGE);
 #endif
 	m_logger->Info(USE_MULTITHREADING_MESSAGE);
+	// Start the strategy trading
+	if (!m_strategy->IsStrategyWellInitiated())
+	{
+		m_logger->Error("Trading Strategy is not well prepared, cannot start trading.");
+		return;
+	}
 #if USE_MULTITHREADING // control from build setup
 	// If Strategies and Trading Services (Market Data,...) want to run in mutiple threads
 	// to avoid stale trading signals but the trade might be slower than single thread mode

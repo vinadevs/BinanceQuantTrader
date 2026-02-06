@@ -10,5 +10,9 @@
 </OrderScheduler>
 
 <VWAPVolumeProfile>
-  <BucketTime Seconds="10"/>
+  <BucketTime Milliseconds="60000"/>
 </VWAPVolumeProfile>
+
+<RiskManagement>
+  <Metrics AverageSlippageTolerance="5" MaxDrawdownTolerance="100" ParticipationRate="0.5"/>
+</RiskManagement>

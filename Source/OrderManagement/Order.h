@@ -68,6 +68,14 @@ namespace OrderManagement {
 
 		std::string GetOrderIdString() const { return std::to_string(m_orderId); }
 
+		void SetParentOrderId(const std::string& parentOrderId) {
+			m_parentOrderId = parentOrderId;
+		}
+
+		const std::string& GetParentOrderId() const {
+			return m_parentOrderId;
+		}
+			
 		void SetUserAccountID(const std::string& userID) {
 			m_userAccountID = userID;
 		}
@@ -139,6 +147,7 @@ namespace OrderManagement {
 		std::string m_symbol;
 		std::size_t m_orderId{ 0 }; // m_orderId is order ID from Binance
 		std::string m_clientOrderId; // m_clientOrderId is new order ID from us
+		std::string m_parentOrderId; // m_parentOrderId is external parent order ID
 		std::string m_binanceMessageTypeStr; // String representation of the message type
 		std::string m_exchangeText; // Text message from the exchange, e.g., "Order accepted", "Order rejected", etc.
 		MessageType m_binanceMessageType{ MessageType::UNDEF };

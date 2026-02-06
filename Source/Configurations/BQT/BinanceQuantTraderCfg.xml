@@ -22,7 +22,7 @@
 </BinanceFutureApiGateWay>
 
 <TradingStrategy>
-  <UsingStrategy Name="FomoStrategy" File="[ROOT_BQT_PATH]\Configurations\Strategy\Auto\FomoStrategy.xml"/>
+  <UsingStrategy Name="VWAPStrategy" File="[ROOT_BQT_PATH]\Configurations\Strategy\SemiAuto\VWAPStrategy.xml"/>
 </TradingStrategy>
 
 <PortfolioInvestment>
