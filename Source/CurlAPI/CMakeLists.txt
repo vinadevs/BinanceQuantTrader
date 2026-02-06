@@ -10,6 +10,7 @@ get_filename_component(library_name "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
 
 # Find packages
 find_package(CURL CONFIG REQUIRED)
+find_package(OpenSSL REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS multiprecision)
 
@@ -18,11 +19,8 @@ add_library(${library_name} SHARED ${SOURCE_FILES})
 
 # Include directories
 target_include_directories(${library_name}
-PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/.."
 PUBLIC
-    ${Boost_INCLUDE_DIRS}
-    ${nlohmann_json_INCLUDE_DIRS}
+    "${CMAKE_CURRENT_SOURCE_DIR}/.."
 )
 
 # Link libraries
@@ -31,8 +29,10 @@ PRIVATE
     LibraryUtils
     KernelTrading
     CURL::libcurl
-    nlohmann_json::nlohmann_json
+    OpenSSL::Crypto
     Boost::multiprecision
+PUBLIC
+    nlohmann_json::nlohmann_json
 )
 
 # Export symbols when compiling this library

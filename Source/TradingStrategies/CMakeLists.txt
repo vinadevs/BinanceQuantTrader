@@ -13,7 +13,7 @@ get_filename_component(library_name "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
 
 # Find packages
 find_package(Boost REQUIRED COMPONENTS multiprecision)
-find_package(Protobuf REQUIRED)
+find_package(protobuf REQUIRED)
 find_package(gRPC CONFIG REQUIRED)
 find_package(absl CONFIG REQUIRED)
 
@@ -41,6 +41,7 @@ PRIVATE
     ComplianceNRegulatory
     RiskManagement
     IndicatorNSignals
+    UserAccount
     RestAPI
     SettingNConfig
     protobuf::libprotobuf

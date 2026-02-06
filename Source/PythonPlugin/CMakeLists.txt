@@ -27,6 +27,7 @@ PRIVATE
     SettingNConfig
     KernelTrading
     RealTimeSocket
+    MiddlewareMQ
     nlohmann_json::nlohmann_json
 )
 

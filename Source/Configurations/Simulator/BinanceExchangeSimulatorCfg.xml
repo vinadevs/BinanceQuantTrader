@@ -11,7 +11,7 @@
 <MatchingEngine>
   <UsingParticipant Name="RTMarketSpotParticipant" MaximumDownstreamOrderBookSize="10"/>
   <RealTimeMarketData>
-	  <UsingMarketData Name="RealTimeMarketData" File="[ROOT_BQT_PATH]\Configurations\MarketData\BinanceMarketDataCfg.xml"/>
+  <UsingMarketData Name="RealTimeMarketData" File="[ROOT_BQT_PATH]/Configurations/MarketData/BinanceMarketDataCfg.xml"/>
   </RealTimeMarketData>
   <OrderProcessing Delay="true" IntervalMilliseconds="1000"/>
 </MatchingEngine>
@@ -25,18 +25,18 @@
 
 <UserAccountManager>
   <GeneralSetting MaximumAccount="1"/>
-  <SpotAccountInfo File="[ROOT_BQT_PATH]\Configurations\StaticData\spot_account_info_t.json"/>
-  <FutureAccountInfo File="[ROOT_BQT_PATH]\Configurations\StaticData\future_account_info_t.json"/>
+  <SpotAccountInfo File="[ROOT_BQT_PATH]/Configurations/StaticData/spot_account_info_t.json"/>
+  <FutureAccountInfo File="[ROOT_BQT_PATH]/Configurations/StaticData/future_account_info_t.json"/>
   <TestUserAccount ListUserID="{user_id,path_to_config};{user_id,path_to_config}"/>
 </UserAccountManager>
 
 <ExchangeRuleAndCompliance>
   <TradeCommissions MakerCommission="0.01" TakerCommission="0.05" BuyerCommission="0" SellerCommission="0"  FutureMakerCommission="0.0002" FutureTakerCommission="0.0004"/>
-  <FutureMarginRateInfo File="[ROOT_BQT_PATH]\Configurations\StaticData\future_trading_margin_t.json"/>
+  <FutureMarginRateInfo File="[ROOT_BQT_PATH]/Configurations/StaticData/future_trading_margin_t.json"/>
 </ExchangeRuleAndCompliance>
 
 <ExchangeInfoManager>
-  <ExchangeInfo File="[ROOT_BQT_PATH]\Configurations\StaticData\exchange_info_t.json"/>
+  <ExchangeInfo File="[ROOT_BQT_PATH]/Configurations/StaticData/exchange_info_t.json"/>
 </ExchangeInfoManager>
 
 <UserTradeProfileManager>

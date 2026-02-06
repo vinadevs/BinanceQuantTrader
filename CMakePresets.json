@@ -2,27 +2,57 @@
     "version": 3,
     "configurePresets": [
         {
-            "name": "Debug",
-            "binaryDir": "Build/Debug",
+            "name": "Debug-Linux",
+            "binaryDir": "Build/Linux/Debug",
             "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+                "CMAKE_CXX_FLAGS_RELEASE": "-O0"
+            }
+        },
+        {
+            "name": "Release-Linux",
+            "binaryDir": "Build/Linux/Release",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+                "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG"
+            }
+        },
+        {
+            "name": "RelWithDebInfo-Linux",
+            "binaryDir": "Build/Linux/RelWithDebInfo",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+                "CMAKE_CXX_FLAGS_RELEASE": "-O2"
+            }
+        },
+        {
+            "name": "Debug-Windows",
+            "binaryDir": "Build/Windows/Debug",
+            "generator": "Visual Studio 17 2022",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
             }
         },
         {
-            "name": "Release",
-            "binaryDir": "Build/Release",
-            "generator": "Ninja",
+            "name": "Release-Windows",
+            "binaryDir": "Build/Windows/Release",
+            "generator": "Visual Studio 17 2022",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
                 "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
             }
         },
         {
-            "name": "RelWithDebInfo",
-            "binaryDir": "Build/RelWithDebInfo",
-            "generator": "Ninja",
+            "name": "RelWithDebInfo-Windows",
+            "binaryDir": "Build/Windows/RelWithDebInfo",
+            "generator": "Visual Studio 17 2022",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo",
                 "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
@@ -31,19 +61,31 @@
     ],
     "buildPresets": [
         {
-            "name": "Debug",
-            "configurePreset": "Debug",
+            "name": "Debug-Linux",
+            "configurePreset": "Debug-Linux",
             "jobs": 2
         },
         {
-            "name": "Release",
-            "configurePreset": "Release",
+            "name": "Release-Linux",
+            "configurePreset": "Release-Linux",
             "jobs": 2
         },
         {
-            "name": "RelWithDebInfo",
-            "configurePreset": "RelWithDebInfo",
+            "name": "RelWithDebInfo-Linux",
+            "configurePreset": "RelWithDebInfo-Linux",
             "jobs": 2
+        },
+        {
+            "name": "Debug-Windows",
+            "configurePreset": "Debug-Windows"
+        },
+        {
+            "name": "Release-Windows",
+            "configurePreset": "Release-Windows"
+        },
+        {
+            "name": "RelWithDebInfo-Windows",
+            "configurePreset": "RelWithDebInfo-Windows"
         }
     ]
 }

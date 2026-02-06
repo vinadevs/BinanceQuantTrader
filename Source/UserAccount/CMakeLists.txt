@@ -33,6 +33,7 @@ PRIVATE
     ComplianceNRegulatory
     ExchangeConnectivity
     RestAPI
+    SettingNConfig
 )
 
 # Export symbols when compiling this library

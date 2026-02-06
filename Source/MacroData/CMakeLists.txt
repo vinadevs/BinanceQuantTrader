@@ -9,6 +9,7 @@ list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/dllmain.cpp")
 get_filename_component(library_name "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
 
 # Find packages
+find_package(CURL CONFIG REQUIRED)
 find_package(unofficial-gumbo CONFIG REQUIRED)
 
 # Create the library
@@ -24,6 +25,7 @@ PRIVATE
 target_link_libraries(${library_name}
 PRIVATE
     LibraryUtils
+    CURL::libcurl
     unofficial::gumbo::gumbo
 )
 

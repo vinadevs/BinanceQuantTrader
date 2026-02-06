@@ -27,6 +27,10 @@ PRIVATE
     LibraryUtils
     KernelTrading
     MarketData
+    RestAPI
+    ExchangeConnectivity
+    StaticData
+    OrderManagement
 )
 
 # Export symbols when compiling this library

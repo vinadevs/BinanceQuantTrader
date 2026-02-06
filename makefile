@@ -37,12 +37,13 @@ ifeq ($(ARCH),x86_64)
     DETECT_MSG := "Detected architecture: x86_64"
 else ifeq ($(ARCH),aarch64)
     DETECT_MSG := "Detected architecture: aarch64"
+    VCPKG_TRIPLET := arm64-linux-dynamic
 else
     $(error Unsupported architecture: $(ARCH))
 endif
 
 # Default config (Debug, Release, RelWithDebInfo)
-CONFIG ?= Debug
+CONFIG ?= Debug-Linux
 
 # Colors for terminal output
 CYAN    := \033[36m
@@ -91,11 +92,15 @@ help:
 	@echo "  $(GREEN)version$(RESET)        Show project version"
 	@echo "  $(GREEN)help$(RESET)           Show this help message"
 	@echo ""
+	@echo "$(BOLD)Run Targets:$(RESET)"
+	@echo "  $(GREEN)run$(RESET)            Run the project"
+	@echo ""
 	@echo "$(BOLD)Examples:$(RESET)"
 	@echo "  make build                  # Build with default config (Debug)"
 	@echo "  make build CONFIG=Release   # Build in Release mode"
 	@echo "  make release                # Shortcut for Release build"
 	@echo "  make clean build            # Clean then build"
+	@echo "  make run                    # Run the project"
 	@echo ""
 
 # ------------------------------------------------------------
@@ -151,7 +156,7 @@ init:
 	@echo "$(BOLD)$(GREEN)[DONE]$(RESET) Initialization complete"
 
 # ------------------------------------------------------------
-# Build (default: Debug)
+# Build (default: Debug-Linux)
 # ------------------------------------------------------------
 build:
 	@echo ""
@@ -161,22 +166,22 @@ build:
 	@echo "$(BOLD)$(CYAN)════════════════════════════════════════════════════════════════$(RESET)"
 	@echo ""
 	@echo "$(BOLD)$(YELLOW)[CMAKE]$(RESET) Configuring with preset $(CONFIG)..."
-	cmake --preset $(CONFIG)
+	cmake --preset $(CONFIG) -DVCPKG_TARGET_TRIPLET=$(VCPKG_TRIPLET)
 	@echo ""
 	@echo "$(BOLD)$(YELLOW)[BUILD]$(RESET) Compiling with preset $(CONFIG)..."
-	cmake --build --preset $(CONFIG)
+	cmake --build --preset $(CONFIG) -DVCPKG_TARGET_TRIPLET=$(VCPKG_TRIPLET)
 	@echo ""
 	@echo "$(BOLD)$(GREEN)[SUCCESS]$(RESET) Build completed at $(BUILD_TIMESTAMP)"
 
 # Shortcut targets
 debug:
-	@${MAKE} build CONFIG=Debug
+	@${MAKE} build CONFIG=Debug-Linux
 
 release:
-	@${MAKE} build CONFIG=Release
+	@${MAKE} build CONFIG=Release-Linux
 
 relwithdebinfo:
-	@${MAKE} build CONFIG=RelWithDebInfo
+	@${MAKE} build CONFIG=RelWithDebInfo-Linux
 
 # ------------------------------------------------------------
 # Force reconfigure
@@ -185,7 +190,7 @@ configure:
 	@echo "$(BOLD)$(YELLOW)[CONFIGURE]$(RESET) Reconfiguring CMake..."
 	rm -rf $(BUILD_DIR)
 	@${MAKE} init
-	@${MAKE} build
+	@${MAKE} build CONFIG=Debug-Linux
 
 # ------------------------------------------------------------
 # Full rebuild
@@ -207,3 +212,21 @@ clean:
 	@echo "$(BOLD)$(RED)[CLEAN]$(RESET) Removing build artifacts..."
 	cmake --build --preset $(CONFIG) --target clean
 	@echo "$(BOLD)$(GREEN)[DONE]$(RESET) Clean complete"
+
+# ------------------------------------------------------------
+# Run
+# ------------------------------------------------------------
+run-app:
+	@echo "$(BOLD)$(YELLOW)[RUN]$(RESET) Running project..."
+	./Build/$(CONFIG)/Bin/BinanceQuantTrader --config_binance_quant_trader_path Source/Configurations/BQT/BinanceQuantTraderCfg-US.xml --config_binance_access_key_path Source/Configurations/BQT/BinanceAKCfg.xml
+	@echo "$(BOLD)$(GREEN)[DONE]$(RESET) Run complete"
+
+run-simulator:
+	@echo "$(BOLD)$(YELLOW)[SIMULATE]$(RESET) Simulating project..."
+	./Build/$(CONFIG)/Bin/BackTesting --config_exchange_simulator_path Source/Configurations/Simulator/BinanceExchangeSimulatorCfg.xml
+	@echo "$(BOLD)$(GREEN)[DONE]$(RESET) Simulate complete"
+
+run-broker:
+	@echo "$(BOLD)$(YELLOW)[MESSAGE_SERVER]$(RESET) Running message server..."
+	./Build/$(CONFIG)/Bin/MessageHubServer --config_message_hub_server_path Source/Configurations/MessageServer/MessageBrokerCfg.xml
+	@echo "$(BOLD)$(GREEN)[DONE]$(RESET) Message server complete"
