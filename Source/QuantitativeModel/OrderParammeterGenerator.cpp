@@ -246,3 +246,27 @@ std::optional<OrderQuantList> OrderParammeterGenerator::GenerateFomoOrders(
 	return orderList;
 }
 
+std::optional<QuantOrderParammeter> OrderParammeterGenerator::GenerateVWAPChildOrder(
+	const std::string& parentOrderId,
+	const std::string& symbol,
+	const double limitPrice,
+	const double orderSize,
+	const binapi::e_side side)
+{
+	QuantOrderParammeter order;
+	// Set order parameters for a buy order
+	order.m_symbol = symbol;
+	order.m_side = side;
+	order.m_type = binapi::e_type::limit;
+	order.m_time = binapi::e_time::IOC;
+	order.m_tradeType = OrderManagement::BinanceNewOrderTradingType::SPOT;
+	order.m_stableCurrency = "USDT"; // Default stable currency, can be changed as needed
+	order.m_price = limitPrice;
+	order.m_amount = orderSize;
+	order.m_parentOrderId = parentOrderId;
+
+	m_logger->Info(order.AsString());
+
+	return order;
+}
+
