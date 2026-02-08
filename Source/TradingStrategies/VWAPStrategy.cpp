@@ -25,7 +25,6 @@
 #include "../QuantitativeModel/QuantMarketDataAnalyzer.h"
 #include "../LibraryUtils/PathUtils.h"
 #include "../LibraryUtils/FileUtils.h"
-#include "../LibraryUtils/StringUtils.h"
 #include "../OrderManagement/ExternalParentOrder.h"
 #include "../RiskManagement/VWAPOrderExecutionRiskMetrics.h"
 

@@ -208,6 +208,7 @@ bool TradingModel::PrepareTradingComponents(
 		m_tradingRules.get(),
 		m_riskManager.get(),
 		traderXmlCfg);
+	m_trader->GetTraderAndStrategyMapping().InitTraderAndStrategy(configBQTXml->FirstChildElement("TraderAndStrategy"));
 
 	m_logger->Info("Initiating Strategy Manager.");
 	m_strategyManager = std::make_unique<StrategyManager>();

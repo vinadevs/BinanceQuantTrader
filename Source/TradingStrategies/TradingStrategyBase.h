@@ -32,6 +32,7 @@ namespace UserAccount {
 	class Trader;
 	class BinanceTrader;
 	class FutureTrader;
+	class HybridTrader;
 }
 
 namespace ComplianceNRegulatory {
@@ -191,6 +192,7 @@ protected:
 		UserAccount::Trader* m_trader{ nullptr }; // user account and trade actions
 		UserAccount::BinanceTrader* m_spotTrader{ nullptr }; // binance spot trader
 		UserAccount::FutureTrader* m_futureTrader{ nullptr }; // binance future trader
+		UserAccount::HybridTrader* m_hybridTrader{ nullptr }; // binance hybrid trader
 		ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr }; // exchange compliance and regulatory
 		std::unique_ptr<CompilanceChecker> m_compilanceChecker; // reset trading hard limits from exchange
 		std::unique_ptr<LibraryUtils::Logger> m_logger; // log message

@@ -17,6 +17,7 @@
 #include "../TradingStrategies/FomoTradingStrategy.h"
 #include "../TradingStrategies/MarketMonitorStrategy.h"
 #include "../TradingStrategies/SmartLongShortStrategy.h"
+#include "../TradingStrategies/DerivativesArbitrageStrategy.h"
 #include "../TradingStrategies/VWAPStrategy.h"
 
 #include "../LibraryUtils/PathUtils.h"
@@ -62,6 +63,10 @@ StrategyFactory::CreateTargetStrategy(
 		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "VWAPStrategy"))
 		{
 			return std::make_unique<VWAPStrategy>(strategyCfgFile, marketData, trader, tradingRules);
+		}
+		else if(StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "DerivativesArbitrageStrategy"))
+		{
+			return std::make_unique<DerivativesArbitrageStrategy>(strategyCfgFile, marketData, trader, tradingRules);
 		}
 		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "TestStrategy"))
 		{

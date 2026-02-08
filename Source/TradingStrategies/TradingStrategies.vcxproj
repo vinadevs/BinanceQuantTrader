@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DerivativesArbitrageStrategy.h" />
     <ClInclude Include="ExternalAdminRequest.h" />
     <ClInclude Include="ExternalController.h" />
     <ClInclude Include="ExternalRequestReceiver.h" />
@@ -182,6 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CompilanceChecker.cpp" />
+    <ClCompile Include="DerivativesArbitrageStrategy.cpp" />
     <ClCompile Include="ExternalController.cpp" />
     <ClCompile Include="MarketMonitorStrategy.cpp" />
     <ClCompile Include="protobuf\strategy_control_request.grpc.pb.cc" />

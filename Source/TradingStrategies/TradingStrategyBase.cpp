@@ -84,17 +84,20 @@ void TradingStrategyBase::InitQuantStrategist()
 {
 	if (m_trader)
 	{
-		if (m_spotTrader = dynamic_cast<UserAccount::BinanceTrader*>(m_trader))
+		if (m_spotTrader = dynamic_cast<UserAccount::BinanceTrader*>(m_trader);
+			m_spotTrader->GetTraderAndStrategyMapping().IsTraderAssociatedWithStrategy(m_strategyName, m_spotTrader->GetTraderType()))
 		{
 			m_logger->Info("SpotTrader is set up successfully.");
 		}
-		else if (m_futureTrader = dynamic_cast<UserAccount::FutureTrader*>(m_trader))
+		else if (m_futureTrader = dynamic_cast<UserAccount::FutureTrader*>(m_trader);
+			m_futureTrader->GetTraderAndStrategyMapping().IsTraderAssociatedWithStrategy(m_strategyName, m_futureTrader->GetTraderType()))
 		{
 			m_logger->Info("FutureTrader is set up successfully.");
 		}
 		else
 		{
-			throw std::runtime_error("TradingStrategyBase: Trader must be spot or future.");
+			const auto trader = m_spotTrader->GetTraderAndStrategyMapping().GetTraderAsString(m_strategyName);
+			throw std::runtime_error("TradingStrategyBase: Trader must be " + trader + " for strategy=" + m_strategyName);
 		}
 		// register this strategy with trader to trade
 		m_logger->Info("Quant trader will use strategy=" + m_strategyName);

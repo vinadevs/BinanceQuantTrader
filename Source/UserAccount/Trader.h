@@ -22,6 +22,8 @@
 #include "../MiddlewareMQ/BqtJsonMessage.h"
 #endif
 
+#include "TraderAndStrategy.h"
+
 namespace tinyxml2 {
 	class XMLElement;
 };
@@ -55,12 +57,6 @@ namespace UserAccount {
 	// - first element is a boolean indicating success or failure of the order creating operation
 	// - second element is a string that can be an client order ID
 	using WorkedOrderIdentification = std::pair<bool, std::string>;
-
-	enum class TraderType : unsigned
-	{
-		SPOT_TRADER = 0,
-		FUTURE_TRADER = 1
-	};
 
 	class DLL_CLASS_USERACCOUNT_EXPORTS Trader
 	{
@@ -111,18 +107,21 @@ namespace UserAccount {
 
 		TraderType GetTraderType() const { return m_traderType; }
 
+		TraderAndStrategy& GetTraderAndStrategyMapping() { return m_traderAndStrategy; }
 #if USE_BACK_TEST_TRADING  
 		// Handle downstream acknowledgment messages from the simulator.
 		virtual void HandleDownstreamAckMessage(
 			const MiddlewareMQ::BqtJsonMessage& message) = 0;
 #endif
 	protected:
-		TraderType m_traderType{ TraderType::SPOT_TRADER }; // type of trader
+		TraderType m_traderType{ TraderType::UNDEFINED_TRADER }; // type of trader
 		std::unique_ptr<LibraryUtils::Logger> m_logger; // log message
 		TradingStrategies::TradingStrategyBase* m_tradingStrategy{ nullptr }; // trading strategy to use
 		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr }; // list of assets to trade
 		ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr }; // exchange compliance and regulatory
 		RiskManagement::RiskManager* m_riskManager{ nullptr };  // manage trading risks
 		std::unique_ptr<OrderManagement::PositionManager> m_positionManager; // manage worked trading positions
+		// trader and strategy mapping
+		TraderAndStrategy m_traderAndStrategy;
 	};
 };

@@ -22,9 +22,6 @@
     <Filter Include="Auto Strategies">
       <UniqueIdentifier>{81002735-9465-4068-a463-788edae95f97}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Auto Strategies\Fomo Strategy">
-      <UniqueIdentifier>{607a619b-4967-4db9-9b41-f46e03302bfe}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Semi-Auto Strategies">
       <UniqueIdentifier>{3c3943fb-8ccd-4cfe-8911-88520f8dd33f}</UniqueIdentifier>
     </Filter>
@@ -58,11 +55,14 @@
     <Filter Include="Derivatives Arbitrage">
       <UniqueIdentifier>{5e143c08-10ef-4b4b-9cb0-bf5049eb8689}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Derivatives Arbitrage\Smart Long Short">
-      <UniqueIdentifier>{d3ad3f24-60cd-481f-9178-8cde15b34cb4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="External Controller\Admin Request">
       <UniqueIdentifier>{d21996cc-80a7-467a-a195-90df2b0ad4e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Auto Strategies\Spot Fomo Strategy">
+      <UniqueIdentifier>{607a619b-4967-4db9-9b41-f46e03302bfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Auto Strategies\Future Smart Long Short">
+      <UniqueIdentifier>{d3ad3f24-60cd-481f-9178-8cde15b34cb4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -76,7 +76,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FomoTradingStrategy.h">
-      <Filter>Auto Strategies\Fomo Strategy</Filter>
+      <Filter>Auto Strategies\Spot Fomo Strategy</Filter>
     </ClInclude>
     <ClInclude Include="TestTradingStrategy.h">
       <Filter>Test Strategy</Filter>
@@ -127,7 +127,7 @@
       <Filter>Semi-Auto Strategies\Benchmarking\VWAP</Filter>
     </ClInclude>
     <ClInclude Include="SmartLongShortStrategy.h">
-      <Filter>Derivatives Arbitrage\Smart Long Short</Filter>
+      <Filter>Auto Strategies\Future Smart Long Short</Filter>
     </ClInclude>
     <ClInclude Include="VWAPVolumeProfile.h">
       <Filter>Semi-Auto Strategies\Benchmarking\VWAP</Filter>
@@ -144,6 +144,9 @@
     <ClInclude Include="VWAPParentOrder.h">
       <Filter>Semi-Auto Strategies\Benchmarking\VWAP</Filter>
     </ClInclude>
+    <ClInclude Include="DerivativesArbitrageStrategy.h">
+      <Filter>Derivatives Arbitrage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -153,7 +156,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FomoTradingStrategy.cpp">
-      <Filter>Auto Strategies\Fomo Strategy</Filter>
+      <Filter>Auto Strategies\Spot Fomo Strategy</Filter>
     </ClCompile>
     <ClCompile Include="TestTradingStrategy.cpp">
       <Filter>Test Strategy</Filter>
@@ -204,10 +207,13 @@
       <Filter>Semi-Auto Strategies\Benchmarking\VWAP</Filter>
     </ClCompile>
     <ClCompile Include="SmartLongShortStrategy.cpp">
-      <Filter>Derivatives Arbitrage\Smart Long Short</Filter>
+      <Filter>Auto Strategies\Future Smart Long Short</Filter>
     </ClCompile>
     <ClCompile Include="StrategyController.cpp">
       <Filter>Strategy Host</Filter>
+    </ClCompile>
+    <ClCompile Include="DerivativesArbitrageStrategy.cpp">
+      <Filter>Derivatives Arbitrage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

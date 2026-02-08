@@ -22,7 +22,7 @@
 </BinanceFutureApiGateWay>
 
 <TradingStrategy>
-  <UsingStrategy Name="FomoStrategy" File="[ROOT_BQT_PATH]/Configurations/Strategy/Auto/FomoStrategy.xml"/>
+  <UsingStrategy Name="DerivativesArbitrageStrategy" File="[ROOT_BQT_PATH]/Configurations/Strategy/Auto/DerivativesArbitrageStrategy.xml"/>
 </TradingStrategy>
 
 <PortfolioInvestment>
@@ -32,6 +32,14 @@
   <MultipleThreads Enable="true"/>
   <ExternalControlling Enable="true"/>
 </TradingModel>
+
+<TraderAndStrategy>
+  <MarketMonitorStrategy Trader="SpotTrader"/>
+  <FomoStrategy Trader="SpotTrader"/>
+  <SmartLongShortStrategy Trader="FutureTrader"/>
+  <VWAPStrategy Trader="SpotTrader"/>
+  <DerivativesArbitrageStrategy Trader="HybridTrader"/>
+</TraderAndStrategy>
 
 <TraderInfo>
   <UsingTrader Type="SpotTrader"/>
