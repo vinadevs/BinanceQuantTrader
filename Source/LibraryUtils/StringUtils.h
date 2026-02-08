@@ -30,4 +30,8 @@ namespace StringUtils {
 		SplitAndTrimString(const std::string& str, char separator);
 	std::vector<std::pair<std::string, std::string>> DLL_CLASS_LIBRARYUTILS_EXPORTS
 		ParseStringPairs(const std::string& input);
+
+	std::string DLL_CLASS_LIBRARYUTILS_EXPORTS JoinVectorElementsToString(
+		const std::vector<std::string>& elements,
+		const std::string& delimiter);
 };

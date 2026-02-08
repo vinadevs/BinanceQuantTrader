@@ -41,9 +41,17 @@ std::string PathUtils::GetApplicationFolderPath()
     std::filesystem::path exePath(szPath);
     
 #ifdef _DEBUG
+
+#ifdef _WIN32
+	// Debug: executable is in Build\Debug\Source\BinanceQuantTrader\
+    // Go up 3 levels to reach project root
+	return exePath.parent_path().parent_path().parent_path().string();
+#else
     // Debug: executable is in Build/Debug/Source/BinanceQuantTrader/
     // Go up 4 levels to reach project root
     return exePath.parent_path().parent_path().parent_path().parent_path().string();
+#endif
+
 #else
     // Release: executable is in bin/ folder
     return exePath.parent_path().string();
