@@ -12,7 +12,9 @@
 
 #include "../OrderManagement/PositionManager.h"
 
-#include "Trader.h"
+#include "BinanceTrader.h"
+#include "FutureTrader.h"
+
 
 #include <string>
 #include <vector>
@@ -34,10 +36,6 @@ namespace tinyxml2 {
 	class XMLElement;
 };
 
-namespace TradingStrategies {
-	class TradingStrategyBase;
-};
-
 namespace UserAccount {
 
 	// This class will manage binance hybrid trade activities for both spot and future like buy/sell/report...
@@ -45,5 +43,32 @@ namespace UserAccount {
 	class DLL_CLASS_USERACCOUNT_EXPORTS
 		HybridTrader final : public Trader
 	{
+	public:
+		HybridTrader() = default;
+
+		HybridTrader(
+			const tinyxml2::XMLElement* reportCfg,
+			PortfolioManager::PortfolioInvestmentBinance* portfolio,
+			ComplianceNRegulatory::BinanceTradingRules* tradingRules,
+			RiskManagement::RiskManager* riskManager);
+
+		bool CreateSpotTrader(
+			const tinyxml2::XMLElement* reportCfg,
+			PortfolioManager::PortfolioInvestmentBinance* portfolio,
+			ComplianceNRegulatory::BinanceTradingRules* tradingRules,
+			RiskManagement::RiskManager* riskManager);
+
+		bool CreateFutureTrader(
+			const tinyxml2::XMLElement* reportCfg,
+			PortfolioManager::PortfolioInvestmentBinance* portfolio,
+			ComplianceNRegulatory::BinanceTradingRules* tradingRules,
+			RiskManagement::RiskManager* riskManager);
+
+		UserAccount::BinanceTrader* GetSpotTrader() const;
+
+		UserAccount::FutureTrader* GetFutureTrader() const;
+	private:
+		std::unique_ptr<UserAccount::BinanceTrader> m_spotTrader; // binance spot trader
+		std::unique_ptr<UserAccount::FutureTrader> m_futureTrader; // binance future trader
 	};
-};
+}; // namespace UserAccount

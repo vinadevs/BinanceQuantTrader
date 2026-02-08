@@ -75,27 +75,31 @@ namespace UserAccount {
 
 		// Create new position based on the provided quantitative parameters.
 		virtual WorkedOrderIdentification CreateNewPosition(
-			const QuantitativeModel::QuantOrderParammeter& param) = 0;
+			const QuantitativeModel::QuantOrderParammeter& param) {
+			return WorkedOrderIdentification();
+		}
 
 		// Cancel all open positions for the given symbol.
 		virtual bool CancelAllOpenPositions(
-			const std::string& symbol) = 0;
+			const std::string& symbol) { return false; }
 
 		// Cancel an open position by its client order ID.
 		virtual WorkedOrderIdentification CancelOpenPosition(
-			const std::string& clientOrderId) = 0;
+			const std::string& clientOrderId) {
+			return WorkedOrderIdentification();
+		}
 
 		// Update account information, such as balances and positions.
 		virtual void CreatePortfolioManagement(
-			const std::vector<std::string>& targetTradeSymbols) = 0;
+			const std::vector<std::string>& targetTradeSymbols) {}
 
 		// Create portfolio management for a specific symbol.
 		virtual void CreatePortfolioManagement(
-			const std::string& symbol) {};
+			const std::string& symbol) {}
 
 		// Set up the trading strategy to be used for trading.
 		// This method has to be called at strategy initialization time.
-		virtual void UseThisStrategyToTrade(TradingStrategies::TradingStrategyBase* strategy) = 0;
+		virtual void UseThisStrategyToTrade(TradingStrategies::TradingStrategyBase* strategy) {}
 
 		PortfolioManager::PortfolioInvestmentBinance* GetPortfolio() const { return m_portfolio; }
 
@@ -111,7 +115,7 @@ namespace UserAccount {
 #if USE_BACK_TEST_TRADING  
 		// Handle downstream acknowledgment messages from the simulator.
 		virtual void HandleDownstreamAckMessage(
-			const MiddlewareMQ::BqtJsonMessage& message) = 0;
+			const MiddlewareMQ::BqtJsonMessage& message) {}
 #endif
 	protected:
 		TraderType m_traderType{ TraderType::UNDEFINED_TRADER }; // type of trader

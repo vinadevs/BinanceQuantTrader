@@ -17,6 +17,7 @@
 #include "../ComplianceNRegulatory/HardTradingLimits.h"
 #include "../UserAccount/BinanceTrader.h"
 #include "../UserAccount/FutureTrader.h"
+#include "../UserAccount/HybridTrader.h"
 
 using namespace TradingStrategies;
 using namespace UserAccount;
@@ -93,6 +94,11 @@ void TradingStrategyBase::InitQuantStrategist()
 			m_futureTrader->GetTraderAndStrategyMapping().IsTraderAssociatedWithStrategy(m_strategyName, m_futureTrader->GetTraderType()))
 		{
 			m_logger->Info("FutureTrader is set up successfully.");
+		}
+		else if (m_hybridTrader = dynamic_cast<UserAccount::HybridTrader*>(m_trader);
+			m_hybridTrader->GetTraderAndStrategyMapping().IsTraderAssociatedWithStrategy(m_strategyName, m_hybridTrader->GetTraderType()))
+		{
+			m_logger->Info("HybridTrader is set up successfully.");
 		}
 		else
 		{

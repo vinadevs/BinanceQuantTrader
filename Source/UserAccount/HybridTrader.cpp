@@ -9,3 +9,44 @@
 #include "pch.h"
 
 #include "HybridTrader.h"
+
+UserAccount::HybridTrader::HybridTrader(const tinyxml2::XMLElement* reportCfg, PortfolioManager::PortfolioInvestmentBinance* portfolio, ComplianceNRegulatory::BinanceTradingRules* tradingRules, RiskManagement::RiskManager* riskManager)
+	: Trader(portfolio, tradingRules, riskManager)
+{
+	if (!reportCfg || !portfolio || !tradingRules || !riskManager)
+	{
+		throw std::runtime_error("HybridTrader: invalid input parameters");
+	}
+	m_spotTrader = std::make_unique<UserAccount::BinanceTrader>(reportCfg, portfolio, tradingRules, riskManager);
+	m_futureTrader = std::make_unique<UserAccount::FutureTrader>(reportCfg, portfolio, tradingRules, riskManager);
+}
+
+bool UserAccount::HybridTrader::CreateSpotTrader(const tinyxml2::XMLElement* reportCfg, PortfolioManager::PortfolioInvestmentBinance* portfolio, ComplianceNRegulatory::BinanceTradingRules* tradingRules, RiskManagement::RiskManager* riskManager)
+{
+	if (!reportCfg || !portfolio || !tradingRules || !riskManager)
+	{
+		return false;
+	}
+	m_spotTrader = std::make_unique<UserAccount::BinanceTrader>(reportCfg, portfolio, tradingRules, riskManager);
+	return true;
+}
+
+bool UserAccount::HybridTrader::CreateFutureTrader(const tinyxml2::XMLElement* reportCfg, PortfolioManager::PortfolioInvestmentBinance* portfolio, ComplianceNRegulatory::BinanceTradingRules* tradingRules, RiskManagement::RiskManager* riskManager)
+{
+	if (!reportCfg || !portfolio || !tradingRules || !riskManager)
+	{
+		return false;
+	}
+	m_futureTrader = std::make_unique<UserAccount::FutureTrader>(reportCfg, portfolio, tradingRules, riskManager);
+	return true;
+}
+
+UserAccount::BinanceTrader* UserAccount::HybridTrader::GetSpotTrader() const
+{
+	return m_spotTrader ? nullptr : m_spotTrader.get();
+}
+
+UserAccount::FutureTrader* UserAccount::HybridTrader::GetFutureTrader() const
+{
+	return m_spotTrader ? nullptr : m_futureTrader.get();
+}
