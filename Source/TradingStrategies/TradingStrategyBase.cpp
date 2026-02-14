@@ -85,17 +85,17 @@ void TradingStrategyBase::InitQuantStrategist()
 {
 	if (m_trader)
 	{
-		if (m_spotTrader = dynamic_cast<UserAccount::BinanceTrader*>(m_trader);
+		if (m_spotTrader = dynamic_cast<UserAccount::BinanceTrader*>(m_trader); m_spotTrader &&
 			m_spotTrader->GetTraderAndStrategyMapping().IsTraderAssociatedWithStrategy(m_strategyName, m_spotTrader->GetTraderType()))
 		{
 			m_logger->Info("SpotTrader is set up successfully.");
 		}
-		else if (m_futureTrader = dynamic_cast<UserAccount::FutureTrader*>(m_trader);
+		else if (m_futureTrader = dynamic_cast<UserAccount::FutureTrader*>(m_trader); m_futureTrader &&
 			m_futureTrader->GetTraderAndStrategyMapping().IsTraderAssociatedWithStrategy(m_strategyName, m_futureTrader->GetTraderType()))
 		{
 			m_logger->Info("FutureTrader is set up successfully.");
 		}
-		else if (m_hybridTrader = dynamic_cast<UserAccount::HybridTrader*>(m_trader);
+		else if (m_hybridTrader = dynamic_cast<UserAccount::HybridTrader*>(m_trader); m_hybridTrader &&
 			m_hybridTrader->GetTraderAndStrategyMapping().IsTraderAssociatedWithStrategy(m_strategyName, m_hybridTrader->GetTraderType()))
 		{
 			m_logger->Info("HybridTrader is set up successfully.");

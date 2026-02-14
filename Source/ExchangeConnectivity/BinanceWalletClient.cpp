@@ -23,11 +23,12 @@ BinanceWalletClient::BinanceWalletClient(const tinyxml2::XMLElement* binanceWall
     : m_logger{ std::make_unique<LibraryUtils::Logger>("BinanceWalletClient") }
 {
     assert(binanceWalletClientXmlCfg);
-    const auto* walletFromMarketXml = binanceWalletClientXmlCfg->FirstChildElement("WalletFromMarket");
-    assert(walletFromMarketXml);
     const auto* connectionXml = binanceWalletClientXmlCfg->FirstChildElement("Connection");
     assert(connectionXml);
-    if (std::string(walletFromMarketXml->Attribute("Market")) == "Spot")
+
+    const auto* walletFromSpotMarketXml = binanceWalletClientXmlCfg->FirstChildElement("SpotWallet");
+    assert(walletFromSpotMarketXml);
+    if (walletFromSpotMarketXml->BoolAttribute("Enable"))
     {
 		m_logger->Info("Creating spot account gRPC connection to server.");
         m_grpcConnectionSpotAccount.m_serverIpAddress = std::string(connectionXml->Attribute("ServerIpAddress"));
@@ -36,7 +37,10 @@ BinanceWalletClient::BinanceWalletClient(const tinyxml2::XMLElement* binanceWall
         m_grpcConnectionSpotAccount.m_grpcChannel = grpc::CreateChannel(m_grpcConnectionSpotAccount.m_serverConnection, grpc::InsecureChannelCredentials());
         m_grpcConnectionSpotAccount.m_grpcStubSpotAccount = account::UserAccountService::NewStub(m_grpcConnectionSpotAccount.m_grpcChannel);
     }
-    else if (std::string(walletFromMarketXml->Attribute("Market")) == "Future")
+
+	const auto* walletFromFutureMarketXml = binanceWalletClientXmlCfg->FirstChildElement("FutureWallet");
+	assert(walletFromFutureMarketXml);
+	if (walletFromFutureMarketXml->BoolAttribute("Enable"))
     {
 		m_logger->Info("Creating future account gRPC connection to server.");
         m_grpcConnectionFutureAccount.m_serverIpAddress = std::string(connectionXml->Attribute("ServerIpAddress"));
@@ -45,10 +49,7 @@ BinanceWalletClient::BinanceWalletClient(const tinyxml2::XMLElement* binanceWall
         m_grpcConnectionFutureAccount.m_grpcChannel = grpc::CreateChannel(m_grpcConnectionFutureAccount.m_serverConnection, grpc::InsecureChannelCredentials());
         m_grpcConnectionFutureAccount.m_grpcStubFutureAccount = futureaccount::UserAccountService::NewStub(m_grpcConnectionFutureAccount.m_grpcChannel);
     }
-	else
-	{
-		throw std::runtime_error("BinanceWalletClient: Unsupported Market type in WalletFromMarket configuration.");
-	}
+
 }
 
 BinanceWalletClient::~BinanceWalletClient() {}

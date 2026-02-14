@@ -17,6 +17,7 @@ UserAccount::HybridTrader::HybridTrader(const tinyxml2::XMLElement* reportCfg, P
 	{
 		throw std::runtime_error("HybridTrader: invalid input parameters");
 	}
+	m_traderType = TraderType::HYBRID_TRADER;
 	m_spotTrader = std::make_unique<UserAccount::BinanceTrader>(reportCfg, portfolio, tradingRules, riskManager);
 	m_futureTrader = std::make_unique<UserAccount::FutureTrader>(reportCfg, portfolio, tradingRules, riskManager);
 }
@@ -43,10 +44,22 @@ bool UserAccount::HybridTrader::CreateFutureTrader(const tinyxml2::XMLElement* r
 
 UserAccount::BinanceTrader* UserAccount::HybridTrader::GetSpotTrader() const
 {
-	return m_spotTrader ? nullptr : m_spotTrader.get();
+	return m_spotTrader ? m_spotTrader.get() : nullptr;
 }
 
 UserAccount::FutureTrader* UserAccount::HybridTrader::GetFutureTrader() const
 {
-	return m_spotTrader ? nullptr : m_futureTrader.get();
+	return m_spotTrader ? m_futureTrader.get() : nullptr;
+}
+
+void UserAccount::HybridTrader::ReportTradeResults(const std::string& symbol)
+{
+	if (m_spotTrader)
+	{
+		m_spotTrader->ReportTradeResults(symbol);
+	}
+	if (m_futureTrader)
+	{
+		m_futureTrader->ReportTradeResults(symbol);
+	}
 }

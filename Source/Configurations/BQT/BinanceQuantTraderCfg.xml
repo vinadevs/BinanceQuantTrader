@@ -42,7 +42,7 @@
 </TraderAndStrategy>
 
 <TraderInfo>
-  <UsingTrader Type="SpotTrader"/>
+  <UsingTrader Type="HybridTrader"/>
   <Report TradeReport="true" OrderReport="true" BalanceReport="true" ExchangerPriceForOrdersReport="true" CalculateLossForOrdersReport="true" ReportToFilePath="[ROOT_BQT_PATH]/AppData/trade_results.txt" ReportChannel="ExternalFile"/>
 </TraderInfo>
 
@@ -64,7 +64,8 @@
 </MessageTransporter>
 
 <BinanceWalletClient>
-  <WalletFromMarket Market="Spot"/>
+  <SpotWallet Enable="true"/>
+  <FutureWallet Enable="true"/>
   <Connection ServerIpAddress="localhost" ServerPort="50051"/>
 </BinanceWalletClient>
 

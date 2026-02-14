@@ -14,12 +14,13 @@
 #include "../MarketData/RealTimeMarketData.h"
 #include "../MarketData/SynchronousMarketData.h"
 #include "../StaticData/StaticDataManager.h"
-#include "../UserAccount/FutureTrader.h"
+#include "../UserAccount/HybridTrader.h"
 #include "../ComplianceNRegulatory/BinanceTradingRules.h"
 #include "../ComplianceNRegulatory/BinanceExchangeProfile.h"
 #include "../QuantitativeModel/QuantOrderParammeter.h"
 #include "../QuantitativeModel/MarketDataAnalyzer.h"
 #include "../QuantitativeModel/QuantMarketDataAnalyzer.h"
+#include "../RiskManagement/SpotRiskEngine.h"
 #include "../RiskManagement/FutureRiskEngine.h"	
 #include "../LibraryUtils/PathUtils.h"
 #include "../LibraryUtils/FileUtils.h"
@@ -38,13 +39,13 @@ DerivativesArbitrageStrategy::DerivativesArbitrageStrategy(
 	RealTimeMarketData* marketData,
 	Trader* trader,
 	BinanceTradingRules* tradingRules)
-	: TradingStrategyBase("DerivativesArbitrageStrategy", "Create future smart orders...",
+	: TradingStrategyBase("DerivativesArbitrageStrategy", "Model Cash & Carry arbitrage principles...",
 		strategyCfgPath, marketData, trader, tradingRules),
 	AlarmSystem(LibraryUtils::DefaultAlarmInterval, AlarmSystem::AlarmMode::REPEAT)
 {
 	START_STRATEGY_INITIALIZATION_SECTION
 
-		SetStrategyType(StrategyType::FULL_AUTO);
+	SetStrategyType(StrategyType::FULL_AUTO);
 	InitializeParameters(strategyCfgPath);
 	m_logger->Info("Completed initialization for the strategy.");
 
@@ -73,9 +74,24 @@ bool DerivativesArbitrageStrategy::OnIndividualBookTickerChange(MarketDataSubjec
 	return false;
 }
 
+bool DerivativesArbitrageStrategy::OnTradeChange(MarketDataSubject* marketData, const std::string& symbol)
+{
+	return false;
+}
+
+bool DerivativesArbitrageStrategy::OnBookDataFutureChange(MarketDataSubject* marketData, const std::string& symbol)
+{
+	return false;
+}
+
+bool DerivativesArbitrageStrategy::OnTradeDataFutureChange(MarketDataSubject* marketData, const std::string& symbol)
+{
+	return false;
+}
+
 void DerivativesArbitrageStrategy::ReportTradeResults(const std::string& symbol)
 {
-	m_futureTrader->ReportTradeResults(symbol);
+	m_hybridTrader->ReportTradeResults(symbol);
 }
 
 void DerivativesArbitrageStrategy::InitializeParameters(const std::string& strategyCfgPath)
@@ -94,7 +110,7 @@ void DerivativesArbitrageStrategy::InitializeParameters(const std::string& strat
 
 void DerivativesArbitrageStrategy::InitializeMarketDataAnalyzer()
 {
-	m_marketDataAnalyzer = std::make_unique<QuantitativeModel::MarketDataAnalyzer>(m_targetFutureTradeSymbols, m_logger.get());
+	m_marketDataAnalyzer = std::make_unique<QuantitativeModel::MarketDataAnalyzer>(m_targetTradeSymbols, m_logger.get());
 }
 
 void DerivativesArbitrageStrategy::SetupOrderScheduler()
@@ -134,7 +150,7 @@ void DerivativesArbitrageStrategy::StartTrade()
 		CreatePortfolioManagement();
 		// Create risk management engine
 		m_logger->Info("Create risk management engine.");
-		CreateRiskManagementEngine();
+		CreateRiskManagementEngines();
 		// Subscribe target symbols to receive real time market data
 		m_logger->Info("Subscribe target symbols.");
 		SubscribeTargetSymbols();
@@ -162,87 +178,11 @@ void DerivativesArbitrageStrategy::StopTrade()
 
 void DerivativesArbitrageStrategy::OnAlarmTriggered(const int passToDerived)
 {
-	BEGIN_STRATEGY_ORDER_SENDING_ACTIVITY
-
-		m_logger->Info("Alarm triggered, checking oporntunities for future market based on market data signals...");
-
-	if (m_targetFutureTradeSymbols.empty())
-	{
-		m_logger->Warning("No symbols to trade.");
-		return;
-	}
-	for (const auto& symbol : m_targetFutureTradeSymbols)
-	{
-		auto* marketDataAnalyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol);
-		std::unique_lock<std::mutex> lock(marketDataAnalyzer->m_mutex);
-
-		// Test future orders
-		QuantOrderParammeter futureOrder;
-		futureOrder.m_symbol = symbol;
-		futureOrder.m_type = binapi::e_type::limit; // default to market order
-		futureOrder.m_time = binapi::e_time::GTC;// default to GTC
-		futureOrder.m_amount = 1; // default to 1 coin
-		futureOrder.m_tradeType = OrderManagement::BinanceNewOrderTradingType::FUTURE; // set to future trading type
-		futureOrder.m_stableCurrency = "USDT"; // default stable currency is USDT
-		// Set leverage ratio
-		futureOrder.m_leverageRatio = 5; // default leverage ratio is x50
-
-		QuantitativeModel::PriceTickerTrend priceTickerTrend = marketDataAnalyzer->GetMarketDataSignals().m_priceTickerTrend;
-
-		if (priceTickerTrend == QuantitativeModel::PriceTickerTrend::DOWN_TREND)
-		{
-			// If the price ticker trend is down, we will create a short position
-			futureOrder.m_side = binapi::e_side::sell;
-			futureOrder.m_price = marketDataAnalyzer->GetMarketDataSignals().m_lastBestAskPrice.convert_to<double>(); // use last price as default price
-		}
-		else if (priceTickerTrend == QuantitativeModel::PriceTickerTrend::UP_TREND)
-		{
-			// If the price ticker trend is UP_TREND, we will create a long position
-			futureOrder.m_side = binapi::e_side::buy;
-			futureOrder.m_price = marketDataAnalyzer->GetMarketDataSignals().m_lastBestBidPrice.convert_to<double>(); // use last price as default price
-		}
-		else
-		{
-			continue; // skip this symbol if no valid trend
-		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // simulate some delay
-
-		const auto newFutureOrder = m_futureTrader->CreateNewPosition(futureOrder);
-		if (newFutureOrder.first)
-		{
-			if (futureOrder.m_side == binapi::e_side::buy)
-			{
-				m_logger->Info("Created a new [Long Position] for symbol=" + symbol);
-			}
-			else if (futureOrder.m_side == binapi::e_side::sell)
-			{
-				m_logger->Info("Created a new [Short Position] for symbol=" + symbol);
-			}
-			IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
-			ReportTradeResults(symbol);
-			IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::DOUBLE_REQUEST); // register a sent http request to ComplianceNRegulatory
-
-			// test cancel order
-			//const auto newFutureCancelOrder = m_futureTrader->CancelOpenPosition(newFutureOrder.second);
-			//if (newFutureCancelOrder.first)
-			//{
-			//	m_logger->Info("Canceled the open position for symbol=" + symbol);
-			//}
-			//else
-			//{
-			//	m_logger->Error("Failed to cancel the open position for symbol=" + symbol);
-			//}
-			//IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
-		}
-	}
-
-	END_STRATEGY_ORDER_SENDING_NO_RETURN
 }
 
 void DerivativesArbitrageStrategy::CreateBinanceExchangeProfile()
 {
-	for (const auto& symbol : m_targetFutureTradeSymbols)
+	for (const auto& symbol : m_targetTradeSymbols)
 	{
 		m_tradingRules->GetExchangeProfileMgr()->UpdateRemoteExchangeProfiles(symbol, true);
 		IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
@@ -251,16 +191,24 @@ void DerivativesArbitrageStrategy::CreateBinanceExchangeProfile()
 
 void DerivativesArbitrageStrategy::CreatePortfolioManagement()
 {
-	m_futureTrader->CreatePortfolioManagement(m_targetFutureTradeSymbols);
+	m_hybridTrader->GetSpotTrader()->CreatePortfolioManagement(m_targetTradeSymbols);
+	IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
+	m_hybridTrader->GetFutureTrader()->CreatePortfolioManagement(m_targetTradeSymbols);
 	IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 }
 
-void DerivativesArbitrageStrategy::CreateRiskManagementEngine()
+void DerivativesArbitrageStrategy::CreateRiskManagementEngines()
 {
+	m_spotRiskEngine = std::make_unique<RiskManagement::SpotRiskEngine>(
+		m_hybridTrader->GetSpotTrader()->GetPortfolio(),
+		m_hybridTrader->GetSpotTrader()->GetRiskManager(),
+		m_hybridTrader->GetSpotTrader()->GetBinanceAccountInfo(),
+		m_logger.get());
+
 	m_futureRiskEngine = std::make_unique<RiskManagement::FutureRiskEngine>(
-		m_futureTrader->GetPortfolio(),
-		m_futureTrader->GetRiskManager(),
-		m_futureTrader->GetBinanceAccountInfo(),
+		m_hybridTrader->GetFutureTrader()->GetPortfolio(),
+		m_hybridTrader->GetFutureTrader()->GetRiskManager(),
+		m_hybridTrader->GetFutureTrader()->GetBinanceAccountInfo(),
 		m_logger.get());
 }
 
@@ -274,12 +222,12 @@ void DerivativesArbitrageStrategy::PrepareTargetMonitorSymbols()
 	if (useRemoteExchangeList)
 	{
 		m_logger->Info("Querying remote binance exchange listing symbols info...");
-		//m_targetFutureTradeSymbols = StaticDataMgr->GetAllRemoteListingSymbols(true);
-		m_targetFutureTradeSymbols.emplace_back("BTCUSDT");
-		m_targetFutureTradeSymbols.emplace_back("ETHUSDT");
-		m_targetFutureTradeSymbols.emplace_back("BNBUSDT");
+		//m_targetTradeSymbols = StaticDataMgr->GetAllRemoteListingSymbols(true);
+		m_targetTradeSymbols.emplace_back("BTCUSDT");
+		m_targetTradeSymbols.emplace_back("ETHUSDT");
+		m_targetTradeSymbols.emplace_back("BNBUSDT");
 #ifdef SAVE_BINANCE_LISTINGS // remove this macro to saving binance listings
-		FileUtils::FromVectorStringToFile(m_targetFutureTradeSymbols,
+		FileUtils::FromVectorStringToFile(m_targetTradeSymbols,
 			(std::filesystem::path(PathUtils::GetApplicationFolderPath()) / "Configurations" / "Common" / "BinanceListings.txt").string());
 #endif // DEBUG
 	}
@@ -287,20 +235,20 @@ void DerivativesArbitrageStrategy::PrepareTargetMonitorSymbols()
 	{
 		std::string localListingFile(symbolsXml->Attribute("LocalListingFile"));
 		PathUtils::ReplaceSubString(localListingFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
-		m_targetFutureTradeSymbols = FileUtils::ReadFileContentToLines(localListingFile, true);
+		m_targetTradeSymbols = FileUtils::ReadFileContentToLines(localListingFile, true);
 	}
 }
 
 void DerivativesArbitrageStrategy::SubscribeTargetSymbols()
 {
-	if (m_targetFutureTradeSymbols.empty())
+	if (m_targetTradeSymbols.empty())
 	{
 		throw std::runtime_error("No target symbols to subscribe market data.");
 	}
 	// register this class with market data to receive real time data
 	m_marketData->RegisterDataListener(this);
 	// subscibe all target symbols
-	for (const auto& symbol : m_targetFutureTradeSymbols)
+	for (const auto& symbol : m_targetTradeSymbols)
 	{
 		m_marketData->SubscribeSymbol(symbol);
 	}
@@ -308,7 +256,7 @@ void DerivativesArbitrageStrategy::SubscribeTargetSymbols()
 
 void DerivativesArbitrageStrategy::UnsubscribeTargetSymbols()
 {
-	for (const auto& symbol : m_targetFutureTradeSymbols)
+	for (const auto& symbol : m_targetTradeSymbols)
 	{
 		m_marketData->UnsubscribeSymbol(symbol);
 	}

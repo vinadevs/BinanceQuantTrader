@@ -34,8 +34,6 @@
 #include <set>
 #include <cstring>
 
-//#include <iostream> // TODO: comment out
-
 #define __BINAPI_CB_ON_ERROR(cb, ec) \
     cb(__FILE__ "(" BOOST_PP_STRINGIZE(__LINE__) ")", ec.value(), ec.message(), nullptr, 0);
 
@@ -414,20 +412,30 @@ struct websockets::impl {
 
 websockets::websockets(
      boost::asio::io_context &ioctx
-    ,std::string host
-    ,std::string port
+    ,std::string spotHost
+    ,std::string spotPort
+    ,std::string futureHost
+    ,std::string futurePort
     ,on_message_received_cb msg_cb
     ,on_network_stat_cb stat_cb
     ,std::size_t stat_interval
 )
-    :pimpl{std::make_unique<impl>(
+    :m_spotPimpl{ std::make_unique<impl>(
          ioctx
-        ,std::move(host)
-        ,std::move(port)
+        ,std::move(spotHost)
+        ,std::move(spotPort)
         ,std::move(msg_cb)
         ,std::move(stat_cb)
         ,stat_interval
-    )}
+    ) },
+	m_futurePimpl{ std::make_unique<impl>(
+		 ioctx
+		,std::move(futureHost)
+		,std::move(futurePort)
+		,std::move(msg_cb)
+		,std::move(stat_cb)
+		,stat_interval
+	) }
 {}
 
 websockets::~websockets()
@@ -440,14 +448,14 @@ websockets::handle websockets::part_depth(const char *pair, e_levels level, e_fr
     ch += std::to_string(static_cast<std::size_t>(level));
     ch += "@";
     ch += std::to_string(static_cast<std::size_t>(freq)) + "ms";
-    return pimpl->start_channel(pair, ch.c_str(), std::move(cb));
+    return m_spotPimpl->start_channel(pair, ch.c_str(), std::move(cb));
 }
 
 /*************************************************************************************************/
 
 websockets::handle websockets::diff_depth(const char *pair, e_freq freq, on_diff_depths_received_cb cb) {
     std::string ch = "depth@" + std::to_string(static_cast<std::size_t>(freq)) + "ms";
-    return pimpl->start_channel(pair, ch.c_str(), std::move(cb));
+    return m_spotPimpl->start_channel(pair, ch.c_str(), std::move(cb));
 }
 
 /*************************************************************************************************/
@@ -485,39 +493,39 @@ websockets::handle websockets::klines(const char *pair, const char *interval, on
     const char *p = switch_(interval);
     assert(p != nullptr);
 
-    return pimpl->start_channel(pair, p, std::move(cb));
+    return m_spotPimpl->start_channel(pair, p, std::move(cb));
 }
 
 /*************************************************************************************************/
 
 websockets::handle websockets::trade(const char *pair, on_trade_received_cb cb)
-{ return pimpl->start_channel(pair, "trade", std::move(cb)); }
+{ return m_spotPimpl->start_channel(pair, "trade", std::move(cb)); }
 
 /*************************************************************************************************/
 
 websockets::handle websockets::agg_trade(const char *pair, on_agg_trade_received_cb cb)
-{ return pimpl->start_channel(pair, "aggTrade", std::move(cb)); }
+{ return m_spotPimpl->start_channel(pair, "aggTrade", std::move(cb)); }
 
 /*************************************************************************************************/
 
 websockets::handle websockets::mini_ticker(const char *pair, on_mini_ticker_received_cb cb)
-{ return pimpl->start_channel(pair, "miniTicker", std::move(cb)); }
+{ return m_spotPimpl->start_channel(pair, "miniTicker", std::move(cb)); }
 
 websockets::handle websockets::mini_tickers(on_mini_tickers_received_cb cb)
-{ return pimpl->start_channel("!miniTicker", "arr", std::move(cb)); }
+{ return m_spotPimpl->start_channel("!miniTicker", "arr", std::move(cb)); }
 
 /*************************************************************************************************/
 
 websockets::handle websockets::market(const char *pair, on_market_received_cb cb)
-{ return pimpl->start_channel(pair, "ticker", std::move(cb)); }
+{ return m_spotPimpl->start_channel(pair, "ticker", std::move(cb)); }
 
 websockets::handle websockets::markets(on_markets_received_cb cb)
-{ return pimpl->start_channel("!ticker", "arr", std::move(cb)); }
+{ return m_spotPimpl->start_channel("!ticker", "arr", std::move(cb)); }
 
 /*************************************************************************************************/
 
 websockets::handle websockets::book(const char *pair, on_book_received_cb cb)
-{ return pimpl->start_channel(pair, "bookTicker", std::move(cb)); }
+{ return m_spotPimpl->start_channel(pair, "bookTicker", std::move(cb)); }
 
 /*************************************************************************************************/
 
@@ -569,16 +577,77 @@ websockets::handle websockets::userdata(
         return false;
     };
 
-    return pimpl->start_channel(nullptr, lkey, std::move(cb));
+    return m_spotPimpl->start_channel(nullptr, lkey, std::move(cb));
+}
+
+// BEGIN FUTURES MARKET DATA STREAMS ////////////////////////////////////////////////////////////////////
+
+/*************************************************************************************************/
+
+websockets::handle websockets::trade_future(const char* pair, on_trade_received_cb_future cb)
+{
+    return m_futurePimpl->start_channel(pair, "aggTrade", std::move(cb));
 }
 
 /*************************************************************************************************/
 
-void websockets::unsubscribe(const handle &h) { return pimpl->stop_channel(h); }
-void websockets::async_unsubscribe(const handle &h) { return pimpl->async_stop_channel(h); }
+websockets::handle websockets::book_future(const char* pair, on_book_received_cb_future cb)
+{
+    return m_futurePimpl->start_channel(pair, "depth@100ms", std::move(cb));
+}
 
-void websockets::unsubscribe_all() { return pimpl->unsubscribe_all(); }
-void websockets::async_unsubscribe_all() { return pimpl->async_unsubscribe_all(); }
+/*************************************************************************************************/
+
+websockets::handle websockets::kline_future(const char* pair, const char* interval, on_kline_received_cb_future cb)
+{
+    std::string channel = "kline_";
+    channel += interval;
+
+    return m_futurePimpl->start_channel(pair, channel.c_str(), std::move(cb));
+}
+
+/*************************************************************************************************/
+
+websockets::handle websockets::ticker_future(const char* pair, on_ticker_received_cb_future cb)
+{
+    return m_futurePimpl->start_channel(pair, "ticker", std::move(cb));
+}
+
+/*************************************************************************************************/
+
+websockets::handle websockets::mark_price_future(const char* pair, on_mark_price_received_cb_future cb)
+{
+    return m_futurePimpl->start_channel(pair, "markPrice", std::move(cb));
+}
+
+/*************************************************************************************************/
+
+websockets::handle websockets::funding_rate_future(const char* pair, on_funding_received_cb_future cb)
+{
+    return m_futurePimpl->start_channel(pair, "fundingRate", std::move(cb));
+}
+
+/*************************************************************************************************/
+
+websockets::handle websockets::liquidation_future(const char* pair, on_liquidation_received_cb_future cb)
+{
+    return m_futurePimpl->start_channel(pair, "forceOrder", std::move(cb));
+}
+
+// END FUTURES MARKET DATA STREAMS ////////////////////////////////////////////////////////////////////
+
+void websockets::unsubscribe(const handle& h) { return m_futurePimpl->stop_channel(h); }
+
+/*************************************************************************************************/
+
+void websockets::async_unsubscribe(const handle& h) { return m_futurePimpl->async_stop_channel(h); }
+
+/*************************************************************************************************/
+
+void websockets::unsubscribe_all() { return m_futurePimpl->unsubscribe_all(); }
+
+/*************************************************************************************************/
+void websockets::async_unsubscribe_all() { return m_futurePimpl->async_unsubscribe_all(); }
 
 /*************************************************************************************************/
 /*************************************************************************************************/

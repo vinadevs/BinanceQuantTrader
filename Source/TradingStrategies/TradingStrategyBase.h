@@ -25,28 +25,29 @@
 #endif
 
 namespace MarketData {
-	class RealTimeMarketData;
+	class RealTimeMarketData; // real-time market data feed
 }
 
 namespace UserAccount {
-	class Trader;
-	class BinanceTrader;
-	class FutureTrader;
-	class HybridTrader;
+	class Trader; // trader account to send orders
+	class BinanceTrader; // spot trader
+	class FutureTrader; // future trader
+	class HybridTrader; // both spot and future trader
 }
 
 namespace ComplianceNRegulatory {
-	class BinanceTradingRules;
+	class BinanceTradingRules; // trading rules from Binance exchange
 }
 
 namespace tinyxml2 {
-	class XMLDocument;
+	class XMLDocument; // configuration XML document
 }
 
 namespace OrderManagement {
-	class ParentOrderManager;
+	class ParentOrderManager; // external parent order manager
 }
 
+////////////////////////////////////////////////////////////////////////////////
 // -All Algos, Strategies should follow this base class
 // Strategy/Algo should take actions when signal/indicator event
 // triggered or alarm system is triggered after preset interval time...
@@ -55,6 +56,7 @@ namespace OrderManagement {
 // as ansynchronous with signal/indicator events
 // It means, it is running in a separared thread to have better
 // market data analysis operations when avoiding stale data
+////////////////////////////////////////////////////////////////////////////////
 
 namespace TradingStrategies {
 	// We are supporting 3 types of algorithms
@@ -122,6 +124,7 @@ namespace TradingStrategies {
 			const std::string& strategyCfgPath,
 			MarketData::RealTimeMarketData* marketData);
 
+		// Clean up resources
 		virtual ~TradingStrategyBase();
 
 		// -After this function called, then real trading will start, the preparation is finished.
@@ -196,8 +199,8 @@ protected:
 		ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr }; // exchange compliance and regulatory
 		std::unique_ptr<CompilanceChecker> m_compilanceChecker; // reset trading hard limits from exchange
 		std::unique_ptr<LibraryUtils::Logger> m_logger; // log message
-		StrategyType m_strategyType { StrategyType::UNDEF};
-		StrategyLifeTime m_StrategyLifeTime { StrategyLifeTime::INTRA_DAY };
+		StrategyType m_strategyType{ StrategyType::UNDEF }; // Which type of strategy
+		StrategyLifeTime m_StrategyLifeTime{ StrategyLifeTime::INTRA_DAY }; // Which life time strategy will run
 		// Which order scheduler will be used for this strategy
 		StrategyOrderScheduler m_strategyOrderScheduler{ StrategyOrderScheduler::UNDEF };
 		// -For strategies that need to be run in a separated thread
@@ -214,7 +217,7 @@ protected:
 		// -Parent order manager to manage all parent orders for this strategy
 		std::unique_ptr<OrderManagement::ParentOrderManager> m_parentOrderManager;
 		// -Is strategy well initiated and ready to trade, this must be accessed only by strategy thread
-		// so no need to use atomic here
+		// so no need to use atomic/lockfree here
 		bool m_isStrategyWellInitiated{ false };
 	};
 };

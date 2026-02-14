@@ -67,6 +67,8 @@ namespace UserAccount {
 		UserAccount::BinanceTrader* GetSpotTrader() const;
 
 		UserAccount::FutureTrader* GetFutureTrader() const;
+
+		void ReportTradeResults(const std::string& symbol);
 	private:
 		std::unique_ptr<UserAccount::BinanceTrader> m_spotTrader; // binance spot trader
 		std::unique_ptr<UserAccount::FutureTrader> m_futureTrader; // binance future trader
