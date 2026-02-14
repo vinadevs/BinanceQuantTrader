@@ -60,6 +60,7 @@ namespace QuantitativeModel {
 		binapi::double_type m_smaPrice{ 0.0 };
 		binapi::double_type m_lastBestBidPrice{ 0.0 };
 		binapi::double_type m_lastBestAskPrice{ 0.0 };
+
 		bool m_isInvertedTrend{ false };
 		size_t m_triggerMaxiumUpTick{ 5 };
 		size_t m_triggerMaxiumDownTick{ 5 };

@@ -12,12 +12,14 @@
 #include "../MarketData/SynchronousMarketData.h"
 #include "../MarketData/MarketDataObserver.h"
 #include "TradingStrategyBase.h"
+#include "VWAPParentOrder.h"
 
 #include <string>
 #include <memory>
 #include <vector>
 #include <chrono>
 #include <unordered_map>
+#include <mutex>
 
 namespace UserAccount {
 	class Trader;
@@ -48,10 +50,15 @@ namespace OrderManagement {
 	class AmendExternalParentOrder;
 }
 
+namespace QuantitativeModel {
+	class OrderParammeterGenerator;
+}
+
 /**
  * @class VWAPStrategy
  * @brief Implements a Volume Weighted Average Price (VWAP) trading strategy.
- *
+ * It will receive external parent orders and execute them as VWAP child orders.
+ * 
  * This class calculates the VWAP based on incoming market data (trade prices and volumes)
  * and generates order execution signals to match or beat the VWAP over a specified trading period.
  *
@@ -83,10 +90,12 @@ namespace TradingStrategies {
 
 		virtual ~VWAPStrategy();
 
+		// order book market data from exchange
+		bool OnIndividualBookTickerChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
 		// last trade market data from exchange
 		bool OnTradeChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
 
-		void ReportTradeResults(const std::string& symbol) override;
+		void ReportTradeResults(const ParentOrderId& parentOrderId) override;
 
 		void InitializeParameters(const std::string& strategyCfgPath) override;
 
@@ -96,45 +105,49 @@ namespace TradingStrategies {
 
 		// external callback for parent order event handling
 		void OnNewExternalParentOrder(
-			const OrderManagement::NewExternalParentOrder* newOrder) override;
+			 OrderManagement::NewExternalParentOrder* newOrder) override;
 
 		void OnCancelExternalParentOrder(
-			const OrderManagement::CancelExternalParentOrder* cancelOrder) override;
+			 OrderManagement::CancelExternalParentOrder* cancelOrder) override;
 
 		void OnAmendExternalParentOrder(
-			const OrderManagement::AmendExternalParentOrder* amendOrder) override;
+			 OrderManagement::AmendExternalParentOrder* amendOrder) override;
 
 		// - This function is called when the alarm is triggered, which is used to send orders
 		void OnAlarmTriggered(const int passToDerived = 0) override;
 	private:
 		void InitializeMarketDataAnalyzer();
 		void SetupOrderScheduler();
-		void SetupVWAPVolumeProfile();
-		void CreateBinanceExchangeProfile();
-		void CreatePortfolioManagement();
-		void PrepareTargetMonitorSymbols();
-		void SubscribeTargetSymbols();
+		void SetupVWAPProfileBucketSeconds();
+		void SetupVWAPRiskManagements();
+		void CreateBinanceExchangeProfile(const std::string& symbol);
+		void CreatePortfolioManagement(const std::string& symbol);
+		void CreateOrderParameterGenerator();
+		void SubscribeMarketData(const std::string& symbol);
+		void InitMarketData();
 		void UnsubscribeTargetSymbols();
-		double CalculateCurrentVWAP() const;
-		double GetOrderSizeForCurrentBucket(const std::chrono::system_clock::time_point& ts);
-		void RecordTradeExecution(double volume, const std::chrono::system_clock::time_point& ts);
-		size_t GetBucketVWAPId(const std::chrono::system_clock::time_point& ts) const;
-		void SendOrderToExchange(const double orderSize, const double limitPrice);
+		double CalculateCurrentVWAP(const ParentOrderId& parentOrderId);
+		double GetOrderSizeForCurrentBucket(const ParentOrderId& parentOrderId, const std::size_t ts);
+		void RecordTradeExecution(const ParentOrderId& parentOrderId, const double volume, const std::size_t ts);
+		size_t GetBucketVWAPId(const std::size_t ts) const;
+		void SendVWAPChildOrderToExchange(
+			const ParentOrderId& parentOrderId,
+			const std::string& symbol,
+			const double orderSize,
+			const double limitPrice,
+			const OrderManagement::ParentOrderSide side);
 		void HaltExecution();
 
-		// List of symbols that we will trade in VWAP
-		std::vector<std::string> m_targetFutureTradeSymbols;
+		std::size_t m_currentExchangeTimePointMs{ 0 };
+		int m_profileBucketMs{ 0 };
+		double m_maxParticipationRate{ 0.0 };
+		double m_averageSlippageTolerance{ 0.0 };
+		double m_maxDrawdownTolerance{ 0.0 };
+		std::unique_ptr<QuantitativeModel::OrderParammeterGenerator> m_orderParammeterGenerator;
 		std::unique_ptr<QuantitativeModel::MarketDataAnalyzer> m_marketDataAnalyzer;
-		std::unique_ptr<VWAPVolumeProfile> m_vwapVolumeProfilier; // VWAP volume profile calculator
-		std::unordered_map<size_t, double> m_executedVolume;
-		std::vector<double> m_executedPrices;
-		std::vector<double> m_vwapPrices;
-		std::vector<double> m_slippageSeries;
-		std::vector<double> m_pnlSeries;
-		double m_targetVWAPAmount{ 0.0 };
-		double m_cumPriceVolume{ 0.0 };
-		double m_totalMarketVolume{ 0.0 };
-		long m_profileBucketSeconds{ 0 };
-
+		std::unordered_map<std::string, VWAPParentOrder> m_activeVWAPOrders;
+		std::vector<std::shared_ptr<OrderManagement::CancelExternalParentOrder>> m_cancellingParentOrders;
+		std::vector<std::shared_ptr<OrderManagement::AmendExternalParentOrder>> m_amendingParentOrders;
+		std::mutex m_mutex;
 	};
 };

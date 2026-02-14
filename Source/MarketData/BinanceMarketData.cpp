@@ -1069,4 +1069,134 @@ namespace MarketData {
 		oss << *this;
 		return oss.str();
 	}
+
+	/********************************************************************************/
+	// FutureTradeData
+	/********************************************************************************/
+
+	FutureTradeData::FutureTradeData()
+		: m_aggregatedTradeId{ std::make_unique<SingleMarketDataFeed>() },
+		m_price{ std::make_unique<SingleMarketDataFeed>() },
+		m_quantity{ std::make_unique<SingleMarketDataFeed>() },
+		m_firstTradeId{ std::make_unique<SingleMarketDataFeed>() },
+		m_lastTradeId{ std::make_unique<SingleMarketDataFeed>() },
+		m_tradeTimeMs{ std::make_unique<SingleMarketDataFeed>() },
+		m_isBuyerTheMarketMaker{ std::make_unique<SingleMarketDataFeed>() },
+		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>() }
+	{
+		m_dataName = "FutureTradeData";
+	}
+
+	FutureTradeData::FutureTradeData(const FutureTradeData& other)
+		: m_aggregatedTradeId{ std::make_unique<SingleMarketDataFeed>(*other.m_aggregatedTradeId) },
+		m_price{ std::make_unique<SingleMarketDataFeed>(*other.m_price) },
+		m_quantity{ std::make_unique<SingleMarketDataFeed>(*other.m_quantity) },
+		m_firstTradeId{ std::make_unique<SingleMarketDataFeed>(*other.m_firstTradeId) },
+		m_lastTradeId{ std::make_unique<SingleMarketDataFeed>(*other.m_lastTradeId) },
+		m_tradeTimeMs{ std::make_unique<SingleMarketDataFeed>(*other.m_tradeTimeMs) },
+		m_isBuyerTheMarketMaker{ std::make_unique<SingleMarketDataFeed>(*other.m_isBuyerTheMarketMaker) },
+		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>(*other.m_eventTimeMs) }
+	{
+	}
+
+	FutureTradeData& FutureTradeData::operator=(const FutureTradeData& other)
+	{
+		if (this != &other)
+		{
+			m_aggregatedTradeId = std::make_unique<SingleMarketDataFeed>(*other.m_aggregatedTradeId);
+			m_price = std::make_unique<SingleMarketDataFeed>(*other.m_price);
+			m_quantity = std::make_unique<SingleMarketDataFeed>(*other.m_quantity);
+			m_firstTradeId = std::make_unique<SingleMarketDataFeed>(*other.m_firstTradeId);
+			m_lastTradeId = std::make_unique<SingleMarketDataFeed>(*other.m_lastTradeId);
+			m_tradeTimeMs = std::make_unique<SingleMarketDataFeed>(*other.m_tradeTimeMs);
+			m_isBuyerTheMarketMaker = std::make_unique<SingleMarketDataFeed>(*other.m_isBuyerTheMarketMaker);
+			m_eventTimeMs = std::make_unique<SingleMarketDataFeed>(*other.m_eventTimeMs);
+		}
+		return *this;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const FutureTradeData& o)
+	{
+		os
+			<< "DATA_NAME=" << o.m_dataName << "|"
+			<< "AGGREGATED_TRADE_ID=" << *o.m_aggregatedTradeId << "|"
+			<< "PRICE=" << *o.m_price << "|"
+			<< "QUANTITY=" << *o.m_quantity << "|"
+			<< "FIRST_TRADE_ID=" << *o.m_firstTradeId << "|"
+			<< "LAST_TRADE_ID=" << *o.m_lastTradeId << "|"
+			<< "TRADE_TIME_MS=" << o.m_tradeTimeMs->GetStringDataFromEventTimeMs() << "|"
+			<< "IS_BUYER_THE_MARKET_MAKER=" << *o.m_isBuyerTheMarketMaker << "|"
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs();
+		return os;
+	}
+
+	std::string FutureTradeData::ToString() {
+		std::ostringstream oss;
+		oss << *this;
+		return oss.str();
+	}
+
+	/********************************************************************************/
+	// FutureBookData
+	/********************************************************************************/
+
+	FutureBookData::FutureBookData()
+		: m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>() },
+		m_transactionTimeMs{ std::make_unique<SingleMarketDataFeed>() },
+		m_firstUpdateId{ std::make_unique<SingleMarketDataFeed>() },
+		m_finalUpdateId{ std::make_unique<SingleMarketDataFeed>() },
+		m_bids{ std::make_unique<ArrayMarketDataFeed<DepthData>>() },
+		m_asks{ std::make_unique<ArrayMarketDataFeed<DepthData>>() }
+	{
+		m_dataName = "FutureBookData";
+	}
+
+	FutureBookData::FutureBookData(const FutureBookData& other)
+		: m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>(*other.m_eventTimeMs) },
+		m_transactionTimeMs{ std::make_unique<SingleMarketDataFeed>(*other.m_transactionTimeMs) },
+		m_firstUpdateId{ std::make_unique<SingleMarketDataFeed>(*other.m_firstUpdateId) },
+		m_finalUpdateId{ std::make_unique<SingleMarketDataFeed>(*other.m_finalUpdateId) },
+		m_bids{ std::make_unique<ArrayMarketDataFeed<DepthData>>(*other.m_bids) },
+		m_asks{ std::make_unique<ArrayMarketDataFeed<DepthData>>(*other.m_asks) }
+	{
+	}
+
+	FutureBookData& FutureBookData::operator=(const FutureBookData& other)
+	{
+		if (this != &other)
+		{
+			m_eventTimeMs = std::make_unique<SingleMarketDataFeed>(*other.m_eventTimeMs);
+			m_transactionTimeMs = std::make_unique<SingleMarketDataFeed>(*other.m_transactionTimeMs);
+			m_firstUpdateId = std::make_unique<SingleMarketDataFeed>(*other.m_firstUpdateId);
+			m_finalUpdateId = std::make_unique<SingleMarketDataFeed>(*other.m_finalUpdateId);
+			m_bids = std::make_unique<ArrayMarketDataFeed<DepthData>>(*other.m_bids);
+			m_asks = std::make_unique<ArrayMarketDataFeed<DepthData>>(*other.m_asks);
+		}
+		return *this;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const FutureBookData& o)
+	{
+		os << "DATA_NAME=" << o.m_dataName << "|\n";
+		os << "{\n";
+		os << "\"eventTimeMs\": \"" << o.m_eventTimeMs->GetStringDataFromEventTimeMs() << "\",\n";
+		os << "\"transactionTimeMs\": \"" << o.m_transactionTimeMs->GetStringDataFromEventTimeMs() << "\",\n";
+		os << "\"firstUpdateID\": \"" << *o.m_firstUpdateId << "\",\n";
+		os << "\"finalUpdateID\": \"" << *o.m_finalUpdateId << "\",\n";
+		// bids
+		os << "\"bids\": ";
+		PrintArrayMarktData(o.m_bids.get(), os);
+		os << ",\n";
+		// asks
+		os << "\"asks\": ";
+		PrintArrayMarktData(o.m_asks.get(), os);
+		os << "\n}";
+		return os;
+	}
+
+	std::string FutureBookData::ToString() {
+		std::ostringstream oss;
+		oss << *this;
+		return oss.str();
+	}
 } // namespace MarketData

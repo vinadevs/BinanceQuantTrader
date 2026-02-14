@@ -51,6 +51,12 @@
     <ClInclude Include="QuantMarketDataAnalyzer.h">
       <Filter>Market Data Analyzer</Filter>
     </ClInclude>
+    <ClInclude Include="OptionPricingModels.h">
+      <Filter>Pricing Models</Filter>
+    </ClInclude>
+    <ClInclude Include="CostOfCarryFuturesPricing.h">
+      <Filter>Pricing Models</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -71,7 +77,10 @@
     <ClCompile Include="QuantMarketDataAnalyzer.cpp">
       <Filter>Market Data Analyzer</Filter>
     </ClCompile>
-    <ClCompile Include="PricingModels.cpp">
+    <ClCompile Include="OptionPricingModels.cpp">
+      <Filter>Pricing Models</Filter>
+    </ClCompile>
+    <ClCompile Include="CostOfCarryFuturesPricing.cpp">
       <Filter>Pricing Models</Filter>
     </ClCompile>
   </ItemGroup>

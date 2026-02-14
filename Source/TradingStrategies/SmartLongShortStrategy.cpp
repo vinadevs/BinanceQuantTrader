@@ -42,9 +42,13 @@ SmartLongShortStrategy::SmartLongShortStrategy(
 		strategyCfgPath, marketData, trader, tradingRules),
 	  AlarmSystem(LibraryUtils::DefaultAlarmInterval, AlarmSystem::AlarmMode::REPEAT)
 {
+	START_STRATEGY_INITIALIZATION_SECTION
+
 	SetStrategyType(StrategyType::FULL_AUTO);
 	InitializeParameters(strategyCfgPath);
 	m_logger->Info("Completed initialization for the strategy.");
+
+	END_STRATEGY_INITIALIZATION_SECTION
 }
 
 SmartLongShortStrategy::~SmartLongShortStrategy()
@@ -112,34 +116,45 @@ void SmartLongShortStrategy::SetupOrderScheduler()
 
 void SmartLongShortStrategy::StartTrade()
 {
-	// Change Strategy state to live
-	m_strategyRunStatus = StrategyRunStatus::LIVE;
-	// Prepare target symbols list
-	m_logger->Info("Prepare target symbols list.");
-	PrepareTargetMonitorSymbols();
-	// Create Market Data Analyzer
-	m_logger->Info("Create market data analyzer.");
-	InitializeMarketDataAnalyzer();
-	// Create exchange filter profile
-	m_logger->Info("Create binance exchange profile.");
-	CreateBinanceExchangeProfile();
-	// Create portfolio management
-	m_logger->Info("Create portfolio management.");
-	CreatePortfolioManagement();
-	// Create risk management engine
-	m_logger->Info("Create risk management engine.");
-	CreateRiskManagementEngine();
-	// Subscribe target symbols to receive real time market data
-	m_logger->Info("Subscribe target symbols.");
-	SubscribeTargetSymbols();
-	// Start alarm system to send orders
-	m_logger->Info("Starting live and trade.");
-	AlarmSystem::Start();
+	try
+	{
+		// Change Strategy state to live
+		m_strategyRunStatus.store(StrategyRunStatus::LIVE, std::memory_order_release);
+		// Prepare target symbols list
+		m_logger->Info("Prepare target symbols list.");
+		PrepareTargetMonitorSymbols();
+		// Create Market Data Analyzer
+		m_logger->Info("Create market data analyzer.");
+		InitializeMarketDataAnalyzer();
+		// Create exchange filter profile
+		m_logger->Info("Create binance exchange profile.");
+		CreateBinanceExchangeProfile();
+		// Create portfolio management
+		m_logger->Info("Create portfolio management.");
+		CreatePortfolioManagement();
+		// Create risk management engine
+		m_logger->Info("Create risk management engine.");
+		CreateRiskManagementEngine();
+		// Subscribe target symbols to receive real time market data
+		m_logger->Info("Subscribe target symbols.");
+		SubscribeTargetSymbols();
+		// Start alarm system to send orders
+		m_logger->Info("Starting live and trade.");
+		AlarmSystem::Start();
+	}
+	catch (const std::exception& e)
+	{
+		m_logger->Exception(std::string(e.what()));
+	}
+	catch (...)
+	{
+		m_logger->Exception("Unknown exception occurred.");
+	}
 }
 
 void SmartLongShortStrategy::StopTrade()
 {
-	m_strategyRunStatus = StrategyRunStatus::STOP;
+	m_strategyRunStatus.store(StrategyRunStatus::STOP, std::memory_order_release);
 	// Unsubscribe target symbols to stop receiving real time market data
 	m_logger->Info("Unsubscribe target symbols.");
 	UnsubscribeTargetSymbols();
@@ -147,10 +162,15 @@ void SmartLongShortStrategy::StopTrade()
 
 void SmartLongShortStrategy::OnAlarmTriggered(const int passToDerived)
 {
-	BEGIN_STRATEGY_TRADING_ACTIVITY
+	BEGIN_STRATEGY_ORDER_SENDING_ACTIVITY
 
-	m_logger->Info("Alarm triggered, start sending future orders based on market data signals...");
+	m_logger->Info("Alarm triggered, checking oporntunities for future market based on market data signals...");
 
+	if (m_targetFutureTradeSymbols.empty())
+	{
+		m_logger->Warning("No symbols to trade.");
+		return;
+	}
 	for (const auto& symbol : m_targetFutureTradeSymbols)
 	{
 		auto* marketDataAnalyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol);
@@ -217,7 +237,7 @@ void SmartLongShortStrategy::OnAlarmTriggered(const int passToDerived)
 		}
 	}
 
-	END_STRATEGY_TRADING_ACTIVITY_NO_RETURN
+	END_STRATEGY_ORDER_SENDING_NO_RETURN
 }
 
 void SmartLongShortStrategy::CreateBinanceExchangeProfile()
@@ -259,8 +279,8 @@ void SmartLongShortStrategy::PrepareTargetMonitorSymbols()
 		m_targetFutureTradeSymbols.emplace_back("ETHUSDT");
 		m_targetFutureTradeSymbols.emplace_back("BNBUSDT");
 #ifdef SAVE_BINANCE_LISTINGS // remove this macro to saving binance listings
-		FileUtils::FromVectorStringToFile(m_targetFutureTradeSymbols, PathUtils::GetApplicationFolderPath()
-			+ "\\Configurations\\Common\\BinanceListings.txt");
+		FileUtils::FromVectorStringToFile(m_targetFutureTradeSymbols, 
+			(std::filesystem::path(PathUtils::GetApplicationFolderPath()) / "Configurations" / "Common" / "BinanceListings.txt").string());
 #endif // DEBUG
 	}
 	else
@@ -284,7 +304,6 @@ void SmartLongShortStrategy::SubscribeTargetSymbols()
 	{
 		m_marketData->SubscribeSymbol(symbol);
 	}
-	m_marketData->StartIOContext();
 }
 
 void SmartLongShortStrategy::UnsubscribeTargetSymbols()

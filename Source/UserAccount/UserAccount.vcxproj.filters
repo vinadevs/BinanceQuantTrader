@@ -28,6 +28,9 @@
     <Filter Include="Report Base">
       <UniqueIdentifier>{0ce36ba9-031a-4ed1-9821-966c799e1333}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Hybrid Trader">
+      <UniqueIdentifier>{fe55cf8e-5af9-464a-90be-2ecca13fe0f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -69,6 +72,12 @@
     <ClInclude Include="BaseReporter.h">
       <Filter>Report Base</Filter>
     </ClInclude>
+    <ClInclude Include="TraderAndStrategy.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HybridTrader.h">
+      <Filter>Hybrid Trader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -97,6 +106,12 @@
     </ClCompile>
     <ClCompile Include="FutureBackTestReporter.cpp">
       <Filter>Future Report</Filter>
+    </ClCompile>
+    <ClCompile Include="TraderAndStrategy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HybridTrader.cpp">
+      <Filter>Hybrid Trader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

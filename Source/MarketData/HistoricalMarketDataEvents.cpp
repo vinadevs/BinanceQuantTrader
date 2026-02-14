@@ -113,7 +113,7 @@ HistoricalMarketDataEvents::HistoricalMarketDataEvents(
 	}
 
 	// prepare subscription types
-	const auto* subscriptionDataXml = m_marketDataConfigXml->FirstChildElement("SubscriptionData");
+	const auto* subscriptionDataXml = m_marketDataConfigXml->FirstChildElement("SpotSubscriptionData");
 	assert(subscriptionDataXml);
 	if (StringUtils::IsConfigAttributeMatched(subscriptionDataXml->Attribute("IndividualBookTickerData"), "true"))
 	{
@@ -132,6 +132,16 @@ HistoricalMarketDataEvents::HistoricalMarketDataEvents(
 		m_subscriptionTypes.emplace_back("AggregateTradeData");
 	}
 
+	const auto* subscriptionFutureDataXml = m_marketDataConfigXml->FirstChildElement("FutureSubscriptionData");
+	assert(subscriptionFutureDataXml);
+	if (StringUtils::IsConfigAttributeMatched(subscriptionFutureDataXml->Attribute("FutureTradeData"), "true"))
+	{
+		m_subscriptionTypes.emplace_back("FutureTradeData");
+	}
+	if (StringUtils::IsConfigAttributeMatched(subscriptionFutureDataXml->Attribute("FutureBookData"), "true"))
+	{
+		m_subscriptionTypes.emplace_back("FutureBookData");
+	}
 	m_logger->Info("Initialized historical market data events");
 }
 

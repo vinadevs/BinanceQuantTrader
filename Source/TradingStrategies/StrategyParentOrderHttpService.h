@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "Protobuf/strategy_parent_order.pb.h"
-#include "Protobuf/strategy_parent_order.grpc.pb.h"
+#include "protobuf/strategy_parent_order.pb.h"
+#include "protobuf/strategy_parent_order.grpc.pb.h"
 #undef max
 #undef min
 #include <grpcpp/grpcpp.h>

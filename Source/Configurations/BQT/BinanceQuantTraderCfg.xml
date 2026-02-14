@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <GlobalSettings>
-  <ApplicationDataPath Folder="[ROOT_BQT_PATH]\AppData"/>
+  <ApplicationDataPath Folder="[ROOT_BQT_PATH]/AppData"/>
 </GlobalSettings>
 
 <RealTimeMarketData>
-  <UsingMarketData Name="RealTimeData" File="[ROOT_BQT_PATH]\Configurations\MarketData\BinanceMarketDataCfg.xml"/>
+  <UsingMarketData Name="RealTimeMarketData" File="[ROOT_BQT_PATH]/Configurations/MarketData/BinanceMarketDataCfg.xml"/>
 </RealTimeMarketData>
 
 <StaticData>
@@ -22,7 +22,7 @@
 </BinanceFutureApiGateWay>
 
 <TradingStrategy>
-  <UsingStrategy Name="SmartLongShortStrategy" File="[ROOT_BQT_PATH]\Configurations\Strategy\Auto\SmartLongShortStrategy.xml"/>
+  <UsingStrategy Name="DerivativesArbitrageStrategy" File="[ROOT_BQT_PATH]/Configurations/Strategy/Auto/DerivativesArbitrageStrategy.xml"/>
 </TradingStrategy>
 
 <PortfolioInvestment>
@@ -33,14 +33,22 @@
   <ExternalControlling Enable="true"/>
 </TradingModel>
 
+<TraderAndStrategy>
+  <MarketMonitorStrategy Trader="SpotTrader"/>
+  <FomoStrategy Trader="SpotTrader"/>
+  <SmartLongShortStrategy Trader="FutureTrader"/>
+  <VWAPStrategy Trader="SpotTrader"/>
+  <DerivativesArbitrageStrategy Trader="HybridTrader"/>
+</TraderAndStrategy>
+
 <TraderInfo>
-  <UsingTrader Type="FutureTrader"/>
-  <Report TradeReport="true" OrderReport="true" BalanceReport="true" ExchangerPriceForOrdersReport="true" CalculateLossForOrdersReport="true" ReportToFilePath="[ROOT_BQT_PATH]\AppData\trade_results.txt" ReportChannel="ExternalFile"/>
+  <UsingTrader Type="HybridTrader"/>
+  <Report TradeReport="true" OrderReport="true" BalanceReport="true" ExchangerPriceForOrdersReport="true" CalculateLossForOrdersReport="true" ReportToFilePath="[ROOT_BQT_PATH]/AppData/trade_results.txt" ReportChannel="ExternalFile"/>
 </TraderInfo>
 
 <ComplianceNRegulatory>
   <TradingLimits MaxRequestWeightPerMinute="6000" MaxOrdersPerTenSeconds="100" MaxOrdersPerTwentyFourHours="200000"/>
-  <StaticExchangeProfile File="[ROOT_BQT_PATH]\Configurations\Common\BinanceStaticExchangeProfile.txt"/>
+  <StaticExchangeProfile File="[ROOT_BQT_PATH]/Configurations/Common/BinanceStaticExchangeProfile.txt"/>
 </ComplianceNRegulatory>
 
 <RiskManagement>
@@ -56,6 +64,8 @@
 </MessageTransporter>
 
 <BinanceWalletClient>
+  <SpotWallet Enable="true"/>
+  <FutureWallet Enable="true"/>
   <Connection ServerIpAddress="localhost" ServerPort="50051"/>
 </BinanceWalletClient>
 

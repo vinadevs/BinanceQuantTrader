@@ -32,9 +32,9 @@ class ParentOrder:
 def main():
     # Example NEW parent order
     order = ParentOrder(
-        symbol="BTCUSDT",
-        price=65000.0,
-        quantity=0.01,
+        symbol="BNBUSDT",
+        price=636.0,
+        quantity=1000,
         strategy="VWAPStrategy",
         start_time="2025-11-26 10:00:00",
         end_time="2025-11-26 11:00:00",

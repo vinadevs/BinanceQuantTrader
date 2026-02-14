@@ -12,6 +12,10 @@
 
 namespace StringDefinitions {
 	const std::string BinanceExchangeCancelledStatus = "CANCELED";
+	// spot trading order client order id prefixes
+	const std::string BQTNewBuyOrder = "BQTNewBuyOrder";
+	const std::string BQTNewSellOrder = "BQTNewSellOrder";
+	// future trading order client order id prefixes
 	const std::string BQTNewLongOrder = "BQTNewLongOrder";
 	const std::string BQTNewShortOrder = "BQTNewShortOrder";
 	const std::string BQTCancelOrder = "BQTCancelOrder";

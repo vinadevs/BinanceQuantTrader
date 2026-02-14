@@ -2,7 +2,7 @@
 
 <GeneralConfig>
   <LifeTime LifeTimeForStrategy="IntraDay"/>
-  <EnableComplianceChecker Enable="false"/>
+  <EnableComplianceChecker Enable="True"/>
 </GeneralConfig>
 
 <OrderScheduler>
@@ -10,10 +10,9 @@
 </OrderScheduler>
 
 <VWAPVolumeProfile>
-  <BucketTime Seconds="10"/>
+  <BucketTime Milliseconds="60000"/>
 </VWAPVolumeProfile>
 
-<TargetSymbol>
-  <AllSymbols UseRemoteExchangeList="true" LocalListingFile="[ROOT_BQT_PATH]\Configurations\Common\BinanceListings.txt"/>
-  <TradeSymbols List="BTCUSDT, ETHUSDT, BNBUSDT"/>
-</TargetSymbol>
+<RiskManagement>
+  <Metrics AverageSlippageTolerance="5" MaxDrawdownTolerance="100" ParticipationRate="0.5"/>
+</RiskManagement>

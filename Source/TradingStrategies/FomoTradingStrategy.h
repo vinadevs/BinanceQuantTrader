@@ -92,6 +92,7 @@ namespace TradingStrategies {
 		void CreateOrderParameterGenerator();
 		void CreateBinanceExchangeProfile();
 		void CreateRiskManagementEngine();
+		void LoadTargetTradeSymbols();
 		bool TradeAsHints(const IndicatorNSignals::TradingHints* hints);
 
 #if USE_MULTITHREADING

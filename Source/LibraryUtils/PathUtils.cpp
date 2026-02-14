@@ -11,51 +11,86 @@
 
 #include <filesystem>
 #include <exception>
-#ifndef _WIN32
-#include <limits.h>
+#include <limits.h>   // for PATH_MAX
+
+#ifdef _WIN32
+    #include <windows.h>
+#else
+    #include <unistd.h>   // for readlink
+    #include <cerrno>     // for errno
 #endif
 
 std::string PathUtils::GetApplicationFolderPath()
 {
 #ifdef _WIN32
     char szPath[MAX_PATH];
-#else
-    char szPath[PATH_MAX];
-#endif
-#ifdef _WIN32
     if (GetModuleFileNameA(NULL, szPath, ARRAYSIZE(szPath)) == 0)
     {
         throw std::runtime_error("Error: GetModuleFileName failed, error code:" + std::to_string(GetLastError()));
     }
-#endif
-#ifdef _DEBUG
-    return std::filesystem::path(szPath).parent_path().parent_path().parent_path().string();
 #else
-    return std::filesystem::path(szPath).parent_path().string();
+    char szPath[PATH_MAX];
+    ssize_t len = readlink("/proc/self/exe", szPath, sizeof(szPath) - 1);
+    if (len == -1)
+    {
+        throw std::runtime_error("Error: readlink failed, errno:" + std::to_string(errno));
+    }
+    szPath[len] = '\0';
+#endif
+
+    std::filesystem::path exePath(szPath);
+    
+#ifdef _DEBUG
+
+#ifdef _WIN32
+	// Debug: executable is in Build\Debug\Source\BinanceQuantTrader\
+    // Go up 3 levels to reach project root
+	return exePath.parent_path().parent_path().parent_path().string();
+#else
+    // Debug: executable is in Build/Debug/Source/BinanceQuantTrader/
+    // Go up 4 levels to reach project root
+    return exePath.parent_path().parent_path().parent_path().parent_path().string();
+#endif
+
+#else
+    // Release: executable is in bin/ folder
+    return exePath.parent_path().string();
 #endif
 }
 
 std::string PathUtils::GetConfigFolderPath(const Path_Type type)
 {
+    std::filesystem::path basePath = PathUtils::GetApplicationFolderPath();
+    std::filesystem::path configPath;
+    
     switch (type)
     {
     case Path_Type::ROOT:
-        return PathUtils::GetApplicationFolderPath() + "\\Configurations";
+        configPath = basePath / "Configurations";
+        break;
     case Path_Type::BQT:
-        return PathUtils::GetApplicationFolderPath() + "\\Configurations\\BQT";
+        configPath = basePath / "Configurations" / "BQT";
+        break;
     case Path_Type::COMMON:
-        return PathUtils::GetApplicationFolderPath() + "\\Configurations\\Common";
+        configPath = basePath / "Configurations" / "Common";
+        break;
     case Path_Type::STRATEGY:
-        return PathUtils::GetApplicationFolderPath() + "\\Configurations\\Strategy";
+        configPath = basePath / "Configurations" / "Strategy";
+        break;
     case Path_Type::SIMULATOR:
-        return PathUtils::GetApplicationFolderPath() + "\\Configurations\\Simulator";
+        configPath = basePath / "Configurations" / "Simulator";
+        break;
     case Path_Type::MESSAGE_SERVER:
-        return PathUtils::GetApplicationFolderPath() + "\\Configurations\\MessageServer";
+        configPath = basePath / "Configurations" / "MessageServer";
+        break;
     case Path_Type::MARKET_DATA_CAPTURE:
-        return PathUtils::GetApplicationFolderPath() + "\\Configurations\\MarketData";
+        configPath = basePath / "Configurations" / "MarketData";
+        break;
     default:
         throw std::runtime_error("Error: GetConfigFolderPath failed, wrong path type.");
     }
+    
+    return configPath.string();
 }
 
 void PathUtils::ReplaceSubString(

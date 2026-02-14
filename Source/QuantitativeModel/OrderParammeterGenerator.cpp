@@ -40,7 +40,7 @@ OrderParammeterGenerator::OrderParammeterGenerator(
 
 OrderParammeterGenerator::~OrderParammeterGenerator() {}
 
-OrderQuantList OrderParammeterGenerator::GenerateFomoOrders(
+std::optional<OrderQuantList> OrderParammeterGenerator::GenerateFomoOrders(
 	const TradingHints* hints)
 {
 	OrderQuantList orderList;
@@ -50,6 +50,11 @@ OrderQuantList OrderParammeterGenerator::GenerateFomoOrders(
 		= m_tradingRules->GetExchangeProfileMgr()->AccessRemoteExchangeProfile(hints->symbol);
 	if (symbolProfile)
 	{
+		if (!symbolProfile->is_valid_symbol(hints->symbol))
+		{
+			m_logger->Info("Symbol " + hints->symbol + " is not available in exchange profile.");
+			return std::nullopt;
+		}
 		// Retrieve exchange information for the specific symbol
 		const auto& symbolExchangeInfo = symbolProfile->get_by_symbol(hints->symbol);
 
@@ -224,11 +229,13 @@ OrderQuantList OrderParammeterGenerator::GenerateFomoOrders(
 			else
 			{
 				m_logger->Info("user account has no asset available, could not generate order parameters for symbol=" + hints->symbol);
+				return std::nullopt;
 			}
 		}
 		else
 		{
 			m_logger->Info("unclear opportunity, could not generate order parameters for symbol=" + hints->symbol);
+			return std::nullopt;
 		}
 	}
 	else
@@ -237,5 +244,29 @@ OrderQuantList OrderParammeterGenerator::GenerateFomoOrders(
 		throw std::runtime_error("could not lookup Exchange Profile for symbol=" + hints->symbol);
 	}
 	return orderList;
+}
+
+std::optional<QuantOrderParammeter> OrderParammeterGenerator::GenerateVWAPChildOrder(
+	const std::string& parentOrderId,
+	const std::string& symbol,
+	const double limitPrice,
+	const double orderSize,
+	const binapi::e_side side)
+{
+	QuantOrderParammeter order;
+	// Set order parameters for a buy order
+	order.m_symbol = symbol;
+	order.m_side = side;
+	order.m_type = binapi::e_type::limit;
+	order.m_time = binapi::e_time::IOC;
+	order.m_tradeType = OrderManagement::BinanceNewOrderTradingType::SPOT;
+	order.m_stableCurrency = "USDT"; // Default stable currency, can be changed as needed
+	order.m_price = limitPrice;
+	order.m_amount = orderSize;
+	order.m_parentOrderId = parentOrderId;
+
+	m_logger->Info(order.AsString());
+
+	return order;
 }
 

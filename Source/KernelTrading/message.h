@@ -6,8 +6,8 @@
 # This source code can be used, distributed or modified under Apache license
 #*******************************************************************************/ 
 
-#ifndef __binapi__message_hpp
-#define __binapi__message_hpp
+#ifndef _MESSAGE_HPP_
+#define _MESSAGE_HPP_
 
 #define __STRINGIZE_I(x) #x
 #define __STRINGIZE(x) __STRINGIZE_I(x)
@@ -23,4 +23,4 @@
     res.errmsg += ": "; \
     res.errmsg += msg;
 
-#endif // __binapi__message_hpp
+#endif // _MESSAGE_HPP_

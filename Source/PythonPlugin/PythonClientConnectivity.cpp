@@ -40,7 +40,6 @@ void PythonClientConnectivity::StopMessageTransporter()
     }
 }
 
-
 MiddlewareMQ::MiddlewareMQResult
 PythonClientConnectivity::SendBqtJsonMessage(const MiddlewareMQ::BqtJsonMessage& message)
 {

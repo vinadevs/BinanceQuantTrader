@@ -81,7 +81,7 @@ BINANCE_MESSAGE_HUB_SERVER
 		const auto config_message_hub_server_path = program.get<std::string>("--config_message_hub_server_path");
 #endif
 		// APPLICATION
-		auto messageHubBroker = std::make_unique<MessageBroker>(config_message_hub_server_path);
+ 		auto messageHubBroker = std::make_unique<MessageBroker>(config_message_hub_server_path);
 		messageHubBroker->Run(); // this is a wait call, so should not return
 	}
 	catch (const std::exception& e)

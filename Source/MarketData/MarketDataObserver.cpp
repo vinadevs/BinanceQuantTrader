@@ -75,3 +75,13 @@ bool MarketDataObserver::OnUserDataOrderUpdateChange(MarketDataSubject* marketDa
 {
 	return false;
 }
+
+bool MarketDataObserver::OnTradeDataFutureChange(MarketDataSubject* marketData, const std::string& symbol)
+{
+	return false;
+}
+
+bool MarketDataObserver::OnBookDataFutureChange(MarketDataSubject* marketData, const std::string& symbol)
+{
+	return false;
+}

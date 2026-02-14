@@ -25,27 +25,29 @@
 #endif
 
 namespace MarketData {
-	class RealTimeMarketData;
+	class RealTimeMarketData; // real-time market data feed
 }
 
 namespace UserAccount {
-	class Trader;
-	class BinanceTrader;
-	class FutureTrader;
+	class Trader; // trader account to send orders
+	class BinanceTrader; // spot trader
+	class FutureTrader; // future trader
+	class HybridTrader; // both spot and future trader
 }
 
 namespace ComplianceNRegulatory {
-	class BinanceTradingRules;
+	class BinanceTradingRules; // trading rules from Binance exchange
 }
 
 namespace tinyxml2 {
-	class XMLDocument;
+	class XMLDocument; // configuration XML document
 }
 
 namespace OrderManagement {
-	class ParentOrderManager;
+	class ParentOrderManager; // external parent order manager
 }
 
+////////////////////////////////////////////////////////////////////////////////
 // -All Algos, Strategies should follow this base class
 // Strategy/Algo should take actions when signal/indicator event
 // triggered or alarm system is triggered after preset interval time...
@@ -54,6 +56,7 @@ namespace OrderManagement {
 // as ansynchronous with signal/indicator events
 // It means, it is running in a separared thread to have better
 // market data analysis operations when avoiding stale data
+////////////////////////////////////////////////////////////////////////////////
 
 namespace TradingStrategies {
 	// We are supporting 3 types of algorithms
@@ -101,11 +104,11 @@ namespace TradingStrategies {
 #if USE_BACK_TEST_TRADING
 		public MiddlewareMQ::MessageHandler, // to receive messages from exchange simulator
 #endif
-		public OrderRouting::OrderAckEventHandler, // to receive order acks from trader
+		public OrderRouting::OrderAckEventHandler, // to receive order acks for sent orders
 		public TradingStrategies::ExternalRequestReceiver // to receive external parent orders
 	{
 	public:
-		// This construcor is used for strategies that needs to send order to exchange
+		// This construtcor is used for strategies that needs to send order to exchange
 		TradingStrategyBase(
 			const std::string& strategyName,
 			const std::string& strategyDescription,
@@ -121,6 +124,7 @@ namespace TradingStrategies {
 			const std::string& strategyCfgPath,
 			MarketData::RealTimeMarketData* marketData);
 
+		// Clean up resources
 		virtual ~TradingStrategyBase();
 
 		// -After this function called, then real trading will start, the preparation is finished.
@@ -165,10 +169,9 @@ namespace TradingStrategies {
 		// This helps monitor and limit the number of requests to avoid exceeding API rate limits.
 		void IncreaseComplianceRestAPIRequestCounter(const size_t noOfRequests);
 		// -Get parent order manager to manage all parent orders for this strategy
-		OrderManagement::ParentOrderManager* GetParentOrderManager() const {
-			return m_parentOrderManager.get();
-		}
-
+		const OrderManagement::ParentOrderManager* GetParentOrderManager() const;
+		// -Is strategy well initiated and ready to trade
+		bool IsStrategyWellInitiated() const;
 protected:
 		// -Logs the hard limits for trading, such as maximum orders or API requests allowed.
 		// This is useful for debugging and ensuring the strategy operates within defined constraints.
@@ -192,41 +195,45 @@ protected:
 		UserAccount::Trader* m_trader{ nullptr }; // user account and trade actions
 		UserAccount::BinanceTrader* m_spotTrader{ nullptr }; // binance spot trader
 		UserAccount::FutureTrader* m_futureTrader{ nullptr }; // binance future trader
+		UserAccount::HybridTrader* m_hybridTrader{ nullptr }; // binance hybrid trader
 		ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr }; // exchange compliance and regulatory
 		std::unique_ptr<CompilanceChecker> m_compilanceChecker; // reset trading hard limits from exchange
 		std::unique_ptr<LibraryUtils::Logger> m_logger; // log message
-		StrategyType m_strategyType { StrategyType::UNDEF};
-		StrategyLifeTime m_StrategyLifeTime { StrategyLifeTime::INTRA_DAY };
-		// -For strategies that run in a same thread with main thread
-		// then we can check this flag to know if the strategy is still live
-		StrategyRunStatus m_strategyRunStatus{ StrategyRunStatus::UNDEF };
+		StrategyType m_strategyType{ StrategyType::UNDEF }; // Which type of strategy
+		StrategyLifeTime m_StrategyLifeTime{ StrategyLifeTime::INTRA_DAY }; // Which life time strategy will run
 		// Which order scheduler will be used for this strategy
 		StrategyOrderScheduler m_strategyOrderScheduler{ StrategyOrderScheduler::UNDEF };
 		// -For strategies that need to be run in a separated thread
 		// then it will need to maintain a TradingLoop() function to 
 		// keep the thread live, this hack will help to keep the while loop running
 #if USE_MULTITHREADING
+		// -For strategies that run in a same thread with main thread
+		// then we can check this flag to know if the strategy is still live
+		std::atomic<StrategyRunStatus> m_strategyRunStatus{ StrategyRunStatus::UNDEF };
 		std::atomic<bool> m_isThreadTradeOngoing; // non blocking
 #endif
 		// -Config for strategy, we will use it to setup strategy parameters
 		std::unique_ptr<tinyxml2::XMLDocument> m_strategyCfgXml;
 		// -Parent order manager to manage all parent orders for this strategy
 		std::unique_ptr<OrderManagement::ParentOrderManager> m_parentOrderManager;
+		// -Is strategy well initiated and ready to trade, this must be accessed only by strategy thread
+		// so no need to use atomic/lockfree here
+		bool m_isStrategyWellInitiated{ false };
 	};
 };
 
 //---------------------------------------------------------------------------------------------
 // This pair of macros should be used to wrap all trading activities
 // start of trading activity macro
-#define BEGIN_STRATEGY_TRADING_ACTIVITY \
+#define BEGIN_STRATEGY_ORDER_SENDING_ACTIVITY \
 try \
 { \
-	if (m_strategyRunStatus == StrategyRunStatus::LIVE) \
+	if (m_strategyRunStatus.load(std::memory_order_acquire) == StrategyRunStatus::LIVE) \
 	{ \
 		if (IsNotIsNotExceededTradingRules()) \
 		{
 // end of trading activity macro with return value
-#define END_STRATEGY_TRADING_ACTIVITY_RETURN \
+#define END_STRATEGY_ORDER_SENDING_RETURN \
 } \
 		else \
 		{ \
@@ -249,7 +256,7 @@ catch (...) \
 	return false; \
 }
 // end of trading activity macro without return value
-#define END_STRATEGY_TRADING_ACTIVITY_NO_RETURN \
+#define END_STRATEGY_ORDER_SENDING_NO_RETURN \
 } \
 		else \
 		{ \
@@ -272,3 +279,21 @@ catch (...) \
 	return; \
 }
 //---------------------------------------------------------------------------------------------
+// This pair of macros should be used to wrap all strategy initialization section
+#define START_STRATEGY_INITIALIZATION_SECTION \
+try \
+{
+
+#define END_STRATEGY_INITIALIZATION_SECTION \
+m_isStrategyWellInitiated = true; \
+} \
+catch (const std::exception& e) \
+{ \
+	m_logger->Exception(std::string(e.what())); \
+	m_isStrategyWellInitiated = false; \
+} \
+catch (...) \
+{ \
+	m_logger->Exception("Unknown exception occurred."); \
+	m_isStrategyWellInitiated = false; \
+}

@@ -63,7 +63,7 @@ namespace ExchangeSimulator {
 		 * @param symbol The trading symbol (e.g., "BTCUSDT").
 		 * @return The SymbolMarginRateInfo for the given symbol.
 		 */
-		const CurlAPI::SymbolMarginRateInfo& GetFutureMarginRateInfo(const std::string& symbol) const;
+		const CurlAPI::SymbolMarginRateInfo GetFutureMarginRateInfo(const std::string& symbol) const;
 		/**
 		 * @brief Get the leverage bracket for a specific symbol and position notional.
 		 * @param symbol The trading symbol (e.g., "BTCUSDT").

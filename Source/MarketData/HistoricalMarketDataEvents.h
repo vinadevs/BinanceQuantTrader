@@ -82,7 +82,6 @@ namespace MarketData {
 		bool IsSubscribed(const std::string& symbol) override;
 
 		void Wait() override;
-		void StartIOContext() override {} // dont need IO context in historical data replay
 
 	private:
 		HistoricalMarketDataFeedHandler* m_feedHandler{ nullptr };

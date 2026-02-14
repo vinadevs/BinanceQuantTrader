@@ -46,6 +46,13 @@ struct mini_tickers_t;
 struct market_ticker_t;
 struct markets_tickers_t;
 struct book_ticker_t;
+struct future_trade_t;
+struct future_book_t;
+struct future_kline_t;
+struct future_ticker_t;
+struct future_mark_price_t;
+struct future_funding_rate_t;
+struct future_liquidation_t;
 
 /*************************************************************************************************/
 
@@ -62,8 +69,10 @@ struct DLL_CLASS_REALTIMESOCKET_EXPORTS websockets final {
 
     websockets(
          boost::asio::io_context &ioctx
-        ,std::string host
-        ,std::string port
+        ,std::string spotHost
+        ,std::string spotPort
+		,std::string futureHost
+		,std::string futurePort
         ,on_message_received_cb msg_cb = {}
         ,on_network_stat_cb stat_cb = {}
         ,std::size_t stat_interval = 1 // in seconds
@@ -123,6 +132,38 @@ struct DLL_CLASS_REALTIMESOCKET_EXPORTS websockets final {
         ,on_order_update_cb order_update
     );
 
+    // BEGIN FUTURES MARKET DATA STREAMS ////////////////////////////////////////////////////////////////////
+    
+    // https://developers.binance.com/docs/derivatives/usds-margined-futures/websocket-market-streams#aggregate-trade-streams
+    using on_trade_received_cb_future = std::function<bool(const char* fl, int ec, std::string errmsg, future_trade_t msg)>;
+    handle trade_future(const char* pair, on_trade_received_cb_future cb);
+
+    // https://developers.binance.com/docs/derivatives/usds-margined-futures/websocket-market-streams#partial-book-depth-streams
+    using on_book_received_cb_future = std::function<bool(const char* fl, int ec, std::string errmsg, future_book_t msg)>;
+    handle book_future(const char* pair, on_book_received_cb_future cb);
+
+    // https://developers.binance.com/docs/derivatives/usds-margined-futures/websocket-market-streams#klinecandlestick-streams
+    using on_kline_received_cb_future = std::function<bool(const char* fl, int ec, std::string errmsg, future_kline_t msg)>;
+    handle kline_future(const char* pair, const char* interval, on_kline_received_cb_future cb);
+
+    // https://developers.binance.com/docs/derivatives/usds-margined-futures/websocket-market-streams#individual-symbol-ticker-streams
+    using on_ticker_received_cb_future = std::function<bool(const char* fl, int ec, std::string errmsg, future_ticker_t msg)>;
+    handle ticker_future(const char* pair, on_ticker_received_cb_future cb);
+
+    // https://developers.binance.com/docs/derivatives/usds-margined-futures/websocket-market-streams#mark-price-stream
+    using on_mark_price_received_cb_future = std::function<bool(const char* fl, int ec, std::string errmsg, future_mark_price_t msg)>;
+    handle mark_price_future(const char* pair, on_mark_price_received_cb_future cb);
+
+    // https://developers.binance.com/docs/derivatives/usds-margined-futures/websocket-market-streams#funding-rate-stream
+    using on_funding_received_cb_future = std::function<bool(const char* fl, int ec, std::string errmsg, future_funding_rate_t msg)>;
+    handle funding_rate_future(const char* pair, on_funding_received_cb_future cb);
+
+    // https://developers.binance.com/docs/derivatives/usds-margined-futures/websocket-market-streams#liquidation-order-streams
+    using on_liquidation_received_cb_future = std::function<bool(const char* fl, int ec, std::string errmsg, future_liquidation_t msg)>;
+    handle liquidation_future(const char* pair, on_liquidation_received_cb_future cb);
+
+    // END FUTURES MARKET DATA STREAMS ////////////////////////////////////////////////////////////////////
+
     void unsubscribe(const handle &h);
     void async_unsubscribe(const handle &h);
     void unsubscribe_all();
@@ -130,7 +171,8 @@ struct DLL_CLASS_REALTIMESOCKET_EXPORTS websockets final {
 
 private:
     struct impl;
-    std::unique_ptr<impl> pimpl;
+    std::unique_ptr<impl> m_spotPimpl;
+	std::unique_ptr<impl> m_futurePimpl;
 };
 
 /*************************************************************************************************/

@@ -24,7 +24,15 @@
 
 namespace MarketData {
 
-	// Class base for Binance Synchronous Market Data
+	//////////////////////////////////////////////////////////////////////////////////////
+	// This is a wrapper layer for different market data types from kernel trading
+	// The pupose is to have a common interface for different market data types
+	// So the raw market data from Binanace Exchange will be used as SingleMarketDataFeed
+	// and SynchronousMarketData will contain all of SingleMarketDataFeeds
+	// TODO: Create another low latency version without wrapper layer
+	//////////////////////////////////////////////////////////////////////////////////////
+
+	// Class base for Binance Market Data
 	class BinanceMarketData
 	{
 		virtual std::string ToString() = 0;
@@ -133,7 +141,7 @@ namespace MarketData {
 
 		std::string ToString() override;
 
-		std::unique_ptr <TableMarketDataFeed<IndividualMarketTickerData>> m_allIndividualMarketTicker;
+		std::unique_ptr<TableMarketDataFeed<IndividualMarketTickerData>> m_allIndividualMarketTicker;
 		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
 
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const AllMarketTickerData& o);
@@ -176,8 +184,8 @@ namespace MarketData {
 
 		std::string ToString() override;
 
-		std::unique_ptr <TableMarketDataFeed<IndividualMiniTickerData>> m_tableMarketTicker;
 		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
+		std::unique_ptr<TableMarketDataFeed<IndividualMiniTickerData>> m_tableMarketTicker;
 
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const AllMiniTickerData& o);
 	};
@@ -296,8 +304,8 @@ namespace MarketData {
 
 		std::unique_ptr<SingleMarketDataFeed> m_firstUpdateID;
 		std::unique_ptr<SingleMarketDataFeed> m_finalUpdateID;
-		std::unique_ptr <ArrayMarketDataFeed<DepthData>> m_bids;
-		std::unique_ptr <ArrayMarketDataFeed<DepthData>> m_asks;
+		std::unique_ptr<ArrayMarketDataFeed<DepthData>> m_bids;
+		std::unique_ptr<ArrayMarketDataFeed<DepthData>> m_asks;
 		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
 
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const AllDiffDepthData& o);
@@ -463,5 +471,51 @@ namespace MarketData {
         std::unique_ptr<SingleMarketDataFeed> m_selfTradePreventionMode;  // "V": SelfTradePreventionMode
 
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const UserDataOrder& o);
+	};
+
+	class DLL_CLASS_MARKETDATA_EXPORTS FutureTradeData : public BinanceMarketData // future_trade_t
+	{
+	public:
+		// Rule of 5, for class containing unique pointers
+		FutureTradeData();
+		FutureTradeData(const FutureTradeData& other);
+		FutureTradeData& operator=(const FutureTradeData& other);
+		FutureTradeData(FutureTradeData&& other) noexcept = default;
+		FutureTradeData& operator=(FutureTradeData&& other) noexcept = default;
+		~FutureTradeData() = default;
+		std::string ToString() override;
+
+		std::unique_ptr<SingleMarketDataFeed> m_aggregatedTradeId;
+		std::unique_ptr<SingleMarketDataFeed> m_price;
+		std::unique_ptr<SingleMarketDataFeed> m_quantity;
+		std::unique_ptr<SingleMarketDataFeed> m_firstTradeId;
+		std::unique_ptr<SingleMarketDataFeed> m_lastTradeId;
+		std::unique_ptr<SingleMarketDataFeed> m_tradeTimeMs;
+		std::unique_ptr<SingleMarketDataFeed> m_isBuyerTheMarketMaker;
+		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
+
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const FutureTradeData& o);
+	};
+
+	class DLL_CLASS_MARKETDATA_EXPORTS FutureBookData : public BinanceMarketData // future_book_t
+	{
+	public:
+		// Rule of 5, for class containing unique pointers
+		FutureBookData();
+		FutureBookData(const FutureBookData& other);
+		FutureBookData& operator=(const FutureBookData& other);
+		FutureBookData(FutureBookData&& other) noexcept = default;
+		FutureBookData& operator=(FutureBookData&& other) noexcept = default;
+		~FutureBookData() = default;
+		std::string ToString() override;
+
+		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
+		std::unique_ptr<SingleMarketDataFeed> m_transactionTimeMs;
+		std::unique_ptr<SingleMarketDataFeed> m_firstUpdateId;
+		std::unique_ptr<SingleMarketDataFeed> m_finalUpdateId;
+		std::unique_ptr<ArrayMarketDataFeed<DepthData>> m_bids;
+		std::unique_ptr<ArrayMarketDataFeed<DepthData>> m_asks;
+
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const FutureBookData& o);
 	};
 };

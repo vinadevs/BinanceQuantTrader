@@ -54,6 +54,8 @@ namespace UserAccount {
 
 		void CreatePortfolioManagement(const std::vector<std::string>& targetTradeSymbols) override;
 
+		void CreatePortfolioManagement(const std::string& symbol) override;
+
 		binapi::rest::account_info_t* GetBinanceAccountInfo() const { return m_binanceAccountInfo.get(); }
 
 		std::vector<double> GetOrderExecutedPrices(const std::string& symbol) const;

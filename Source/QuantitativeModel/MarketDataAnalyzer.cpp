@@ -28,6 +28,12 @@ MarketDataAnalyzer::MarketDataAnalyzer(
 	}
 }
 
+MarketDataAnalyzer::MarketDataAnalyzer(
+	LibraryUtils::Logger* logger)
+	: m_logger(logger)
+{
+}
+
 MarketDataAnalyzer::~MarketDataAnalyzer()
 {
 }
@@ -39,4 +45,19 @@ QuantMarketDataAnalyzer* MarketDataAnalyzer::GetQuantMarketDataAnalyzer(const st
 		return it->second.get();
 	}
 	return nullptr;
+}
+
+bool MarketDataAnalyzer::HasQuantMarketDataAnalyzer(const std::string& symbol) const
+{
+	return m_quantMarketDataAnalyzers.find(symbol) != m_quantMarketDataAnalyzers.end();
+}
+
+bool MarketDataAnalyzer::AddQuantMarketDataAnalyzer(const std::string& symbol)
+{
+	if (!HasQuantMarketDataAnalyzer(symbol))
+	{
+		m_quantMarketDataAnalyzers[symbol] = std::make_shared<QuantMarketDataAnalyzer>(symbol);
+		return true;
+	}
+	return false;
 }

@@ -6,7 +6,7 @@
 </GeneralConfig>
 
 <TargetSymbol>
-  <AllSymbols UseRemoteExchangeList="true" LocalListingFile="[ROOT_BQT_PATH]\Configurations\Common\BinanceListings.txt"/>
+  <AllSymbols UseRemoteExchangeList="true" LocalListingFile="[ROOT_BQT_PATH]/Configurations/Common/BinanceListings.txt"/>
   <TradeSymbols List="BTCUSDT, ETHUSDT, BNBUSDT"/>
 </TargetSymbol>
   

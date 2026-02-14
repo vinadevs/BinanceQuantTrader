@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<GlobalSettings>
+  <ApplicationDataPath Folder="[ROOT_BQT_PATH]/AppData"/>
+</GlobalSettings>
+
+<RealTimeMarketData>
+  <UsingMarketData Name="RealTimeMarketData" File="[ROOT_BQT_PATH]/Configurations/MarketData/BinanceMarketDataCfg-US.xml"/>
+</RealTimeMarketData>
+
+<StaticData>
+</StaticData>
+
+<HistoricalData>
+</HistoricalData>
+
+<BinanceSpotApiGateWay>
+  <Connection Enable="true" SpotApiBinanceUrl="api.binance.us" ApiBinancePort="443" ConnectionTimeoutMs="10000"/>
+</BinanceSpotApiGateWay>
+
+<BinanceFutureApiGateWay>
+  <Connection Enable="false" FutureApiBinanceUrl="fapi.binance.us" ApiBinancePort="443" ConnectionTimeoutMs="10000"/>
+</BinanceFutureApiGateWay>
+
+<TradingStrategy>
+  <UsingStrategy Name="FomoStrategy" File="[ROOT_BQT_PATH]/Configurations/Strategy/Auto/FomoStrategy.xml"/>
+</TradingStrategy>
+
+<PortfolioInvestment>
+</PortfolioInvestment>
+
+<TradingModel>
+  <MultipleThreads Enable="true"/>
+  <ExternalControlling Enable="true"/>
+</TradingModel>
+
+<TraderInfo>
+  <UsingTrader Type="SpotTrader"/>
+  <Report TradeReport="true" OrderReport="true" BalanceReport="true" ExchangerPriceForOrdersReport="true" CalculateLossForOrdersReport="true" ReportToFilePath="[ROOT_BQT_PATH]/AppData/trade_results.txt" ReportChannel="ExternalFile"/>
+</TraderInfo>
+
+<ComplianceNRegulatory>
+  <TradingLimits MaxRequestWeightPerMinute="6000" MaxOrdersPerTenSeconds="100" MaxOrdersPerTwentyFourHours="200000"/>
+  <StaticExchangeProfile File="[ROOT_BQT_PATH]/Configurations/Common/BinanceStaticExchangeProfile.txt"/>
+</ComplianceNRegulatory>
+
+<RiskManagement>
+  <StopLossManagement RiskPerTradePercent="1"/>
+</RiskManagement>
+
+<MessageServer>
+  <CommunicationChannel TopicName="ExchangeSimulatorToAlgos" SubscriberAddress="tcp://localhost:5556"/>
+</MessageServer>
+
+<MessageTransporter>
+  <CommunicationChannel TopicName="AlgosToExchangeSimulator" PublisherAddress="tcp://localhost:5558"/>
+</MessageTransporter>
+
+<BinanceWalletClient>
+  <WalletFromMarket Market="Spot"/>
+  <Connection ServerIpAddress="localhost" ServerPort="50051"/>
+</BinanceWalletClient>
+
+<BinanceExchangeClient>
+  <Connection ServerIpAddress="localhost" ServerPort="50051"/>
+</BinanceExchangeClient>
+
+<BinanceTradeProfile>
+  <Connection ServerIpAddress="localhost" ServerPort="50051"/>
+</BinanceTradeProfile>
+
+<ExternalController>
+  <Connection ServerIpAddress="0.0.0.0" ServerPort="50061"/>
+</ExternalController>

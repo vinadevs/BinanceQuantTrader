@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<MarketDataCaptureSource>
+  <Source Type="RealTimeMarketData"/>
+</MarketDataCaptureSource>
+
+<RealTimeMarketData>
+  <Connection SpotEndpointUrl="stream.binance.us" SpotEndpoinPort="9443" FutureEndpointUrl="fstream.binance.us" FutureEndpoinPort="443"/>
+  <SpotSubscriptionData IndividualBookTickerData="true" TradeData="true" IndividualMarketTickerData="false" AllMarketTickersData="false" IndividualMiniTickerData="false" AllMiniTickersData="false" AggregateTradeData="false" KlineCandleStickData="false" PartDepthData="false" DiffDepthData="false" UserData="false"/>
+  <FutureSubscriptionData FutureTradeData="true" FutureBookData="true"/>
+</RealTimeMarketData>
+
+<HistoricalMarketData>
+  <ReplayData FilePath="[ROOT_BQT_PATH]/AppData/2026-01-12_12-42-44_MarketData.txt" DataType="TextFile" AllowRepeat="true"/>
+  <LoadEvent Type="TickByTick" IntervalSeconds="1"/>
+  <SpotSubscriptionData IndividualBookTickerData="true" TradeData="true" IndividualMiniTickerData="true" AggregateTradeData="true"/>
+  <FutureSubscriptionData FutureTradeData="true" FutureBookData="true"/>
+</HistoricalMarketData>
+
+<MarketDataCapture>
+  <DataCaptureMode Mode="ConsoleLog"/>
+  <DataRepository Path="[ROOT_BQT_PATH]/AppData/"/>
+</MarketDataCapture>
+
+<ExchangeSimulatorMarketData>
+  <MatchingForSymbols List="BTCUSDT,ETHUSDT,BNBUSDT"/>
+</ExchangeSimulatorMarketData>
+
+<SubscribingSymbol>
+  <Symbols List="BTCUSDT,ETHUSDT,BNBUSDT"/>
+</SubscribingSymbol>
+
+<MessageTransporter>
+  <CommunicationChannel TopicName="AlgosToPythonClient" PublisherAddress="tcp://localhost:5555"/>
+</MessageTransporter>

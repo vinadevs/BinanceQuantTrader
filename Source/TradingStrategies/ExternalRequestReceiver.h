@@ -45,9 +45,9 @@ namespace TradingStrategies {
 
 	protected:
 		// List of parent order callbacks for derived class to implement to handle external parent order events
-		virtual void OnNewExternalParentOrder(const OrderManagement::NewExternalParentOrder* newOrder) {}
-		virtual void OnCancelExternalParentOrder(const OrderManagement::CancelExternalParentOrder* cancelOrder) {}
-		virtual void OnAmendExternalParentOrder(const OrderManagement::AmendExternalParentOrder* amendOrder) {}
+		virtual void OnNewExternalParentOrder(OrderManagement::NewExternalParentOrder* newOrder) {}
+		virtual void OnCancelExternalParentOrder(OrderManagement::CancelExternalParentOrder* cancelOrder) {}
+		virtual void OnAmendExternalParentOrder(OrderManagement::AmendExternalParentOrder* amendOrder) {}
 
 	private:
 

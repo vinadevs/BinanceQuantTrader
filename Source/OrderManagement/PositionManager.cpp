@@ -32,7 +32,7 @@ std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewPositionUpstreamOrder(
     const QuantitativeModel::QuantOrderParammeter& param)
 {
 	const auto clientOrderId = GeneralUtils::GenerateUniqueID(
-		param.m_side == binapi::e_side::buy ? StringDefinitions::BQTNewLongOrder : StringDefinitions::BQTNewShortOrder);
+		param.m_side == binapi::e_side::buy ? StringDefinitions::BQTNewBuyOrder : StringDefinitions::BQTNewSellOrder);
     return m_orderCreator->CreateNewBinanceOrderFull(
           clientOrderId
         , param.m_symbol
@@ -51,7 +51,7 @@ std::unique_ptr<BinanceNewOrder> PositionManager::OpenNewTestPositionUpstreamOrd
     const QuantitativeModel::QuantOrderParammeter& param)
 {
 	const auto clientOrderId = GeneralUtils::GenerateUniqueID(
-		param.m_side == binapi::e_side::buy ? StringDefinitions::BQTNewLongOrder : StringDefinitions::BQTNewShortOrder);
+		param.m_side == binapi::e_side::buy ? StringDefinitions::BQTNewBuyOrder : StringDefinitions::BQTNewSellOrder);
     return m_orderCreator->CreateNewBinanceTestOrderFull(
         clientOrderId
         , param.m_symbol

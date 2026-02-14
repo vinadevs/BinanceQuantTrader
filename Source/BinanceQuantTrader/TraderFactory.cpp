@@ -10,6 +10,7 @@
 
 #include "../UserAccount/BinanceTrader.h"
 #include "../UserAccount/FutureTrader.h"
+#include "../UserAccount/HybridTrader.h"
 #include "../PortfolioManager/PortfolioInvestmentBinance.h"
 #include "../RiskManagement/RiskManager.h"
 #include "../SettingNConfig/tinyxml2.h"
@@ -44,6 +45,12 @@ std::unique_ptr<Trader> TraderFactory::CreateSmartTrader(
 		const auto* reportXml = traderXmlCfg->FirstChildElement("Report");
 		assert(reportXml);
 		return std::make_unique<UserAccount::FutureTrader>(reportXml, portfolio, tradingRules, riskManager);
+	}
+	else if (StringUtils::IsConfigAttributeMatched(usingTraderXml->Attribute("Type"), "HybridTrader"))
+	{
+		const auto* reportXml = traderXmlCfg->FirstChildElement("Report");
+		assert(reportXml);
+		return std::make_unique<UserAccount::HybridTrader>(reportXml, portfolio, tradingRules, riskManager);
 	}
 	else
 	{

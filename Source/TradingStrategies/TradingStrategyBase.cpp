@@ -17,6 +17,7 @@
 #include "../ComplianceNRegulatory/HardTradingLimits.h"
 #include "../UserAccount/BinanceTrader.h"
 #include "../UserAccount/FutureTrader.h"
+#include "../UserAccount/HybridTrader.h"
 
 using namespace TradingStrategies;
 using namespace UserAccount;
@@ -46,8 +47,11 @@ TradingStrategyBase::TradingStrategyBase(
 	m_logger = std::make_unique<Logger>(m_strategyName);
 	m_logger->Info("Trading strategy name=" + m_strategyName);
 	m_logger->Info("Trading strategy description=" + m_strategyDescription);
-	InitQuantStrategist();
-	InitParentOrderManager();
+	if (m_strategyType != StrategyType::ADVISING) // advising strategy does not need trader or parent order manager
+	{
+		InitQuantStrategist();
+		InitParentOrderManager();
+	}
 }
 
 TradingStrategyBase::TradingStrategyBase(
@@ -63,8 +67,6 @@ TradingStrategyBase::TradingStrategyBase(
 	m_logger = std::make_unique<Logger>(m_strategyName);
 	m_logger->Info("Trading strategy name=" + m_strategyName);
 	m_logger->Info("Trading strategy description=" + m_strategyDescription);
-	InitQuantStrategist();
-	InitParentOrderManager();
 }
 
 TradingStrategyBase::~TradingStrategyBase() {}
@@ -83,17 +85,25 @@ void TradingStrategyBase::InitQuantStrategist()
 {
 	if (m_trader)
 	{
-		if (m_spotTrader = dynamic_cast<UserAccount::BinanceTrader*>(m_trader))
+		if (m_spotTrader = dynamic_cast<UserAccount::BinanceTrader*>(m_trader); m_spotTrader &&
+			m_spotTrader->GetTraderAndStrategyMapping().IsTraderAssociatedWithStrategy(m_strategyName, m_spotTrader->GetTraderType()))
 		{
 			m_logger->Info("SpotTrader is set up successfully.");
 		}
-		else if (m_futureTrader = dynamic_cast<UserAccount::FutureTrader*>(m_trader))
+		else if (m_futureTrader = dynamic_cast<UserAccount::FutureTrader*>(m_trader); m_futureTrader &&
+			m_futureTrader->GetTraderAndStrategyMapping().IsTraderAssociatedWithStrategy(m_strategyName, m_futureTrader->GetTraderType()))
 		{
 			m_logger->Info("FutureTrader is set up successfully.");
 		}
+		else if (m_hybridTrader = dynamic_cast<UserAccount::HybridTrader*>(m_trader); m_hybridTrader &&
+			m_hybridTrader->GetTraderAndStrategyMapping().IsTraderAssociatedWithStrategy(m_strategyName, m_hybridTrader->GetTraderType()))
+		{
+			m_logger->Info("HybridTrader is set up successfully.");
+		}
 		else
 		{
-			throw std::runtime_error("TradingStrategyBase: Trader must be spot or future.");
+			const auto trader = m_spotTrader->GetTraderAndStrategyMapping().GetTraderAsString(m_strategyName);
+			throw std::runtime_error("TradingStrategyBase: Trader must be " + trader + " for strategy=" + m_strategyName);
 		}
 		// register this strategy with trader to trade
 		m_logger->Info("Quant trader will use strategy=" + m_strategyName);
@@ -115,7 +125,7 @@ void TradingStrategyBase::InitParentOrderManager()
 
 StrategyRunStatus TradingStrategyBase::GetStrategyRunStatus() const
 {
-	return m_strategyRunStatus;
+	return m_strategyRunStatus.load(std::memory_order_acquire);
 }
 
 StrategyType TradingStrategyBase::GetStrategyType() const
@@ -183,7 +193,7 @@ void TradingStrategyBase::SetupStrategyLifeTime(tinyxml2::XMLDocument* strategyC
 	}
 	const XMLElement* enableComplianceCheckerXml = generalConfigXml->FirstChildElement("EnableComplianceChecker");
 	assert(enableComplianceCheckerXml);
-	if (enableComplianceCheckerXml->BoolAttribute("Enable"))
+	if (enableComplianceCheckerXml->BoolAttribute("Enable")) // should always enable compliance checker for real trading
 	{
 		LogTradingHardLimits();
 		m_compilanceChecker = std::make_unique<CompilanceChecker>();
@@ -225,6 +235,16 @@ void TradingStrategyBase::IncreaseComplianceRestAPIRequestCounter(const size_t n
 	{
 		m_tradingRules->IncreaseOrdersPerTwentyFourHours(noOfRequests);
 	}
+}
+
+bool TradingStrategyBase::IsStrategyWellInitiated() const
+{
+	return m_isStrategyWellInitiated;
+}
+
+const OrderManagement::ParentOrderManager* TradingStrategyBase::GetParentOrderManager() const
+{
+	return m_parentOrderManager.get();
 }
 
 #if USE_BACK_TEST_TRADING  

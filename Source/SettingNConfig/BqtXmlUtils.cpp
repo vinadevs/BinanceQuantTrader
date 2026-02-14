@@ -41,9 +41,9 @@ std::pair<std::string, std::unique_ptr<tinyxml2::XMLDocument>> BqtXmlUtils::GetM
     PathUtils::ReplaceSubString(marketDataCfgFile, PathUtils::RootBQTPath, PathUtils::GetApplicationFolderPath());
     if (std::filesystem::exists(marketDataCfgFile))
     {
-        if (StringUtils::IsConfigAttributeMatched(usingMarketDataXml->Attribute("Name"), "RealTimeData"))
+        if (StringUtils::IsConfigAttributeMatched(usingMarketDataXml->Attribute("Name"), "RealTimeMarketData"))
         {
-			return GetConfigAsType("RealTimeData", marketDataCfgFile);
+			return GetConfigAsType("RealTimeMarketData", marketDataCfgFile);
         }
         if (StringUtils::IsConfigAttributeMatched(usingMarketDataXml->Attribute("Name"), "HistoricalMarketData"))
         {

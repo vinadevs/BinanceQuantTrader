@@ -28,6 +28,7 @@ PRIVATE
     SettingNConfig
     KernelTrading
     RealTimeSocket
+    HistoricalData
     Boost::asio
     Boost::multiprecision
 )

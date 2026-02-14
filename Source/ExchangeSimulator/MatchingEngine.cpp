@@ -122,7 +122,6 @@ void MatchingEngine::SubscribeTargetSymbols(const tinyxml2::XMLDocument* realTim
 	{
 		m_marketData->SubscribeSymbol(symbol);
 	}
-	m_marketData->StartIOContext();
 }
 
 void MatchingEngine::Start()

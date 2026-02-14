@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "Protobuf/user_account_data.pb.h"
-#include "Protobuf/user_account_data.grpc.pb.h"
+#include "protobuf/user_account_data.pb.h"
+#include "protobuf/user_account_data.grpc.pb.h"
 
 #include <grpcpp/grpcpp.h>
 #include <memory>

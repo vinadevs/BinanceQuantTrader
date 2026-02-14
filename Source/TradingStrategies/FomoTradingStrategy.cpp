@@ -38,12 +38,13 @@ FomoTradingStrategy::FomoTradingStrategy(
 	: TradingStrategyBase("FomoTradingStrategy", "The fear of missing out...",
 		strategyCfgPath, marketData, trader, tradingRules)
 {
+	START_STRATEGY_INITIALIZATION_SECTION
+
 	SetStrategyType(StrategyType::FULL_AUTO);
 	InitializeParameters(strategyCfgPath);
-	// Subscribe target symbols to receive real time market data
-	m_logger->Info("Subscribe target symbols.");
-	SubscribeTargetSymbols();
 	m_logger->Info("Completed initialization for the strategy.");
+
+	END_STRATEGY_INITIALIZATION_SECTION
 }
 
 void FomoTradingStrategy::InitializeParameters(const std::string& strategyCfgPath)
@@ -85,7 +86,7 @@ void FomoTradingStrategy::CreateTradingSignalServices()
 	m_tradingSignalService->RegisterTradingHintsListener(this);
 }
 
-void FomoTradingStrategy::SubscribeTargetSymbols()
+void FomoTradingStrategy::LoadTargetTradeSymbols()
 {
 	const auto* targetSymbolXml = m_strategyCfgXml->FirstChildElement("TargetSymbol");
 	assert(targetSymbolXml);
@@ -96,6 +97,10 @@ void FomoTradingStrategy::SubscribeTargetSymbols()
 	{
 		throw std::runtime_error("No target symbols to subscribe market data.");
 	}
+}
+
+void FomoTradingStrategy::SubscribeTargetSymbols()
+{
 	// register TradingSignalService class with market data to receive real time data
 	m_marketData->RegisterDataListener(m_tradingSignalService.get());
 	// subscibe all target symbols
@@ -103,7 +108,6 @@ void FomoTradingStrategy::SubscribeTargetSymbols()
 	{
 		m_marketData->SubscribeSymbol(symbol);
 	}
-	m_marketData->StartIOContext();
 }
 
 void FomoTradingStrategy::UnsubscribeTargetSymbols()
@@ -150,29 +154,31 @@ void FomoTradingStrategy::CreateRiskManagementEngine()
 
 bool FomoTradingStrategy::TradeAsHints(const TradingHints* hints)
 {
-	BEGIN_STRATEGY_TRADING_ACTIVITY
+	BEGIN_STRATEGY_ORDER_SENDING_ACTIVITY
 
 	m_logger->Info("Creating order parameters for symbol=" + hints->symbol);
 	const auto orderList = m_orderParammeterGenerator->GenerateFomoOrders(hints);
-	for (const auto& order : orderList)
+	if (orderList.has_value()) 
 	{
-		if (m_spotTrader->CreateNewPosition(order).first)
+		for (const auto& order : orderList.value())
 		{
-			if (order.m_side == binapi::e_side::buy)
+			if (m_spotTrader->CreateNewPosition(order).first)
 			{
-				m_logger->Info("Created a new [Long Position] for symbol=" + hints->symbol);
+				if (order.m_side == binapi::e_side::buy)
+				{
+					m_logger->Info("Created a new [Long Position] for symbol=" + hints->symbol);
+				}
+				else if (order.m_side == binapi::e_side::sell)
+				{
+					m_logger->Info("Created a new [Short Position] for symbol=" + hints->symbol);
+				}
+				IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
+				ReportTradeResults(hints->symbol);
+				IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::DOUBLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 			}
-			else if (order.m_side == binapi::e_side::sell)
-			{
-				m_logger->Info("Created a new [Short Position] for symbol=" + hints->symbol);
-			}
-			IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::SINGLE_REQUEST); // register a sent http request to ComplianceNRegulatory
-			ReportTradeResults(hints->symbol);
-			IncreaseComplianceRestAPIRequestCounter(BinanceTradingRules::DOUBLE_REQUEST); // register a sent http request to ComplianceNRegulatory
 		}
-	}		
-
-	END_STRATEGY_TRADING_ACTIVITY_RETURN
+	}
+	END_STRATEGY_ORDER_SENDING_RETURN
 
 	return true;
 }
@@ -184,25 +190,41 @@ void FomoTradingStrategy::ReportTradeResults(const std::string& symbol)
 
 void FomoTradingStrategy::StartTrade()
 {
-	// Change Strategy state to live
-	m_strategyRunStatus = StrategyRunStatus::LIVE;
-	// Create exchange filter profile
-	m_logger->Info("Create binance exchange profile.");
-	CreateBinanceExchangeProfile();
-	// Create portfolio management
-	m_logger->Info("Create portfolio management.");
-	CreatePortfolioManagement();
-	// Creating trending services
-	m_logger->Info("Creating trending services.");
-	CreateTradingSignalServices();
-	// Create order parammeter generator
-	m_logger->Info("Create order parammeter generator.");
-	CreateOrderParameterGenerator();
-	// Listen on trading hints
-	m_logger->Info("Starting live and trade.");
+	try
+	{
+		// Change Strategy state to live
+		m_strategyRunStatus.store(StrategyRunStatus::LIVE, std::memory_order_release);
+		// Load target symbols list
+		LoadTargetTradeSymbols();
+		// Create exchange filter profile
+		m_logger->Info("Create binance exchange profile.");
+		CreateBinanceExchangeProfile();
+		// Create portfolio management
+		m_logger->Info("Create portfolio management.");
+		CreatePortfolioManagement();
+		// Creating trending services
+		m_logger->Info("Creating trending services.");
+		CreateTradingSignalServices();
+		// Subscribe target symbols to receive real time market data
+		m_logger->Info("Subscribe target symbols.");
+		SubscribeTargetSymbols();
+		// Create order parammeter generator
+		m_logger->Info("Create order parammeter generator.");
+		CreateOrderParameterGenerator();
+		// Listen on trading hints
+		m_logger->Info("Starting live and trade.");
 #if USE_MULTITHREADING
-	TradingLoop();
+		TradingLoop();
 #endif
+	}
+	catch (const std::exception& e)
+	{
+		m_logger->Exception(std::string(e.what()));
+	}
+	catch (...)
+	{
+		m_logger->Exception("Unknown exception occurred.");
+	}
 }
 
 void FomoTradingStrategy::StopTrade()
@@ -211,7 +233,7 @@ void FomoTradingStrategy::StopTrade()
 	m_isThreadTradeOngoing.store(false); // break while loop
 #endif
 	// Change Strategy state to stop
-	m_strategyRunStatus = StrategyRunStatus::STOP;
+	m_strategyRunStatus.store(StrategyRunStatus::STOP, std::memory_order_release);
 	// Unsubscribe target symbols to stop receiving real time market data
 	m_logger->Info("Unsubscribe target symbols.");
 	UnsubscribeTargetSymbols();

@@ -16,8 +16,8 @@
 #include "../TradingStrategies/TradingStrategyBase.h"
 #include "../TradingStrategies/FomoTradingStrategy.h"
 #include "../TradingStrategies/MarketMonitorStrategy.h"
-#include "../TradingStrategies/StopLossStrategy.h"
 #include "../TradingStrategies/SmartLongShortStrategy.h"
+#include "../TradingStrategies/DerivativesArbitrageStrategy.h"
 #include "../TradingStrategies/VWAPStrategy.h"
 
 #include "../LibraryUtils/PathUtils.h"
@@ -56,10 +56,6 @@ StrategyFactory::CreateTargetStrategy(
 		{
 			return std::make_unique<MarketMonitorStrategy>(strategyCfgFile, marketData);
 		}
-		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "StopLossStrategy"))
-		{
-			return std::make_unique<StopLossStrategy>(strategyCfgFile, marketData, trader, tradingRules);
-		}
 		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "SmartLongShortStrategy"))
 		{
 			return std::make_unique<SmartLongShortStrategy>(strategyCfgFile, marketData, trader, tradingRules);
@@ -67,6 +63,10 @@ StrategyFactory::CreateTargetStrategy(
 		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "VWAPStrategy"))
 		{
 			return std::make_unique<VWAPStrategy>(strategyCfgFile, marketData, trader, tradingRules);
+		}
+		else if(StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "DerivativesArbitrageStrategy"))
+		{
+			return std::make_unique<DerivativesArbitrageStrategy>(strategyCfgFile, marketData, trader, tradingRules);
 		}
 		else if (StringUtils::IsConfigAttributeMatched(usingStrategyXml->Attribute("Name"), "TestStrategy"))
 		{

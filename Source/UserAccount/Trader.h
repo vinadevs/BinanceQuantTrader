@@ -22,6 +22,8 @@
 #include "../MiddlewareMQ/BqtJsonMessage.h"
 #endif
 
+#include "TraderAndStrategy.h"
+
 namespace tinyxml2 {
 	class XMLElement;
 };
@@ -56,12 +58,6 @@ namespace UserAccount {
 	// - second element is a string that can be an client order ID
 	using WorkedOrderIdentification = std::pair<bool, std::string>;
 
-	enum class TraderType : unsigned
-	{
-		SPOT_TRADER = 0,
-		FUTURE_TRADER = 1
-	};
-
 	class DLL_CLASS_USERACCOUNT_EXPORTS Trader
 	{
 	public:
@@ -79,23 +75,31 @@ namespace UserAccount {
 
 		// Create new position based on the provided quantitative parameters.
 		virtual WorkedOrderIdentification CreateNewPosition(
-			const QuantitativeModel::QuantOrderParammeter& param) = 0;
+			const QuantitativeModel::QuantOrderParammeter& param) {
+			return WorkedOrderIdentification();
+		}
 
 		// Cancel all open positions for the given symbol.
 		virtual bool CancelAllOpenPositions(
-			const std::string& symbol) = 0;
+			const std::string& symbol) { return false; }
 
 		// Cancel an open position by its client order ID.
 		virtual WorkedOrderIdentification CancelOpenPosition(
-			const std::string& clientOrderId) = 0;
+			const std::string& clientOrderId) {
+			return WorkedOrderIdentification();
+		}
 
 		// Update account information, such as balances and positions.
 		virtual void CreatePortfolioManagement(
-			const std::vector<std::string>& targetTradeSymbols) = 0;
+			const std::vector<std::string>& targetTradeSymbols) {}
+
+		// Create portfolio management for a specific symbol.
+		virtual void CreatePortfolioManagement(
+			const std::string& symbol) {}
 
 		// Set up the trading strategy to be used for trading.
 		// This method has to be called at strategy initialization time.
-		virtual void UseThisStrategyToTrade(TradingStrategies::TradingStrategyBase* strategy) = 0;
+		virtual void UseThisStrategyToTrade(TradingStrategies::TradingStrategyBase* strategy) {}
 
 		PortfolioManager::PortfolioInvestmentBinance* GetPortfolio() const { return m_portfolio; }
 
@@ -107,18 +111,21 @@ namespace UserAccount {
 
 		TraderType GetTraderType() const { return m_traderType; }
 
+		TraderAndStrategy& GetTraderAndStrategyMapping() { return m_traderAndStrategy; }
 #if USE_BACK_TEST_TRADING  
 		// Handle downstream acknowledgment messages from the simulator.
 		virtual void HandleDownstreamAckMessage(
-			const MiddlewareMQ::BqtJsonMessage& message) = 0;
+			const MiddlewareMQ::BqtJsonMessage& message) {}
 #endif
 	protected:
-		TraderType m_traderType{ TraderType::SPOT_TRADER }; // type of trader
+		TraderType m_traderType{ TraderType::UNDEFINED_TRADER }; // type of trader
 		std::unique_ptr<LibraryUtils::Logger> m_logger; // log message
 		TradingStrategies::TradingStrategyBase* m_tradingStrategy{ nullptr }; // trading strategy to use
 		PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr }; // list of assets to trade
 		ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr }; // exchange compliance and regulatory
 		RiskManagement::RiskManager* m_riskManager{ nullptr };  // manage trading risks
 		std::unique_ptr<OrderManagement::PositionManager> m_positionManager; // manage worked trading positions
+		// trader and strategy mapping
+		TraderAndStrategy m_traderAndStrategy;
 	};
 };

@@ -56,10 +56,19 @@ namespace QuantitativeModel {
 			const OrderManagement::PositionManager* positionManager,
             LibraryUtils::Logger* logger);
         ~OrderParammeterGenerator();
+
 		// Generate order parammeter based on the trading hints and binance exchange rules
         // https://developers.binance.com/docs/binance-spot-api-docs/filters
-        OrderQuantList GenerateFomoOrders(
+        std::optional<OrderQuantList> GenerateFomoOrders(
             const IndicatorNSignals::TradingHints* hints);
+
+		// Generate VWAP child orders based on limit price, order size, and side
+        std::optional<QuantOrderParammeter> GenerateVWAPChildOrder(
+			const std::string& parentOrderId,
+            const std::string& symbol,
+			const double limitPrice,
+			const double orderSize,
+            const binapi::e_side side);
     private:
         const ComplianceNRegulatory::BinanceTradingRules* m_tradingRules{ nullptr };
         const PortfolioManager::PortfolioInvestmentBinance* m_portfolio{ nullptr };

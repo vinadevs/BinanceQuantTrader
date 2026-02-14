@@ -11,6 +11,7 @@
 #include "../KernelTrading/double_type.h"
 #include "../KernelTrading/types.h"
 #include "../KernelTrading/enums.h"
+#include "../OrderManagement/OrderDefinitions.h"
 
 #include <string>
 #include <sstream>
@@ -34,12 +35,24 @@ namespace OrderManagement {
             else if constexpr (std::is_same_v<T, binapi::e_trade_resp_type>) {
                 return binapi::e_trade_resp_type_to_string(val);
             }
-            if constexpr (std::is_arithmetic_v<T>) {
+			else if constexpr (std::is_same_v<T, OrderManagement::BinanceNewOrderTradingType>) {
+				switch (val) {
+				case OrderManagement::BinanceNewOrderTradingType::UNDEF:
+					return "UNDEF";
+				case OrderManagement::BinanceNewOrderTradingType::SPOT:
+					return "SPOT";
+				case OrderManagement::BinanceNewOrderTradingType::FUTURE:
+					return "FUTURE";
+				default:
+					return "UNKNOWN";
+				}
+			}
+            else if constexpr (std::is_arithmetic_v<T>) {
                 // For arithmetic types (int, float, double, etc.)
                 return std::to_string(val);
             }
             else {
-                throw std::runtime_error("Unsupported type.");
+                throw std::runtime_error("OrderManagement::TypeToStringUtils: Unsupported type.");
             }
         }
 	};

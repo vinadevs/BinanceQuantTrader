@@ -80,10 +80,7 @@ TradingSignalService::TradingSignalService(PortfolioInvestmentBinance* portfolio
     m_logger->Info("Creating trending services.");
     if (IsInvestmentPortfolioAssetEmpty())
     {
-        // WE MUST START EXCHANGE SIMULATOR TO BY PASS THIS EXCEPTION IN BACK TESTING TRADE
-        throw std::runtime_error(
-            "TradingSignalService: Investment portfolio asset basket is empty."
-            "Could not query remote binance info or have no available asset.");
+		throw std::runtime_error("TradingSignalService: Investment portfolio asset is empty.");
     }
     for (const auto& pairs : m_portfolio->GetBinanceTradingPairManager().GetTradingPairs())
     {

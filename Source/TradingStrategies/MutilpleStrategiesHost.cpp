@@ -42,7 +42,7 @@ void MutilpleStrategiesHost::StopStrategyThread()
 {
     if (!m_threadStarted)
     {
-        m_logger->Info("Strategy thread has not started yet.");
+        m_logger->Warning("Strategy thread has not started yet.");
         return;
     }
     m_strategyController->StopStrategy();

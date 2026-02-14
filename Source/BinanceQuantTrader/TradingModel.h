@@ -70,10 +70,15 @@ namespace BinanceQuantTrader {
 		// indicators/signals events (market data, macro data,...)
 		// This is infinitive wait loop, TODO: so need to implement a way to shut down system...
 		void RunModel();
+
+		// Is trading model well prepared
+		bool IsModelWellPrepared() const { return m_isModelWellPrepared; }
 	private:
 		// -All trading components will be initiated in this function
 		// -When we add new modules, it should be initiated here
-		void PrepareTradingComponents(
+		// -This function will return false if any trading component fails to be prepared
+		// and return true if all trading components are prepared successfully
+		bool PrepareTradingComponents(
 			const tinyxml2::XMLDocument* configBQTXml,
 			const tinyxml2::XMLDocument* configAccessKeyXml);
 
@@ -93,6 +98,7 @@ namespace BinanceQuantTrader {
 #endif
 		bool m_allowMutipleThreadTrade{ false };
 		bool m_allowExternalControlling{ false };
+		bool m_isModelWellPrepared{ false };
 		std::unique_ptr<TradingStrategies::StrategyManager> m_strategyManager{ nullptr };
 	};
 };
