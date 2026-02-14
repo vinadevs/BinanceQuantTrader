@@ -46,6 +46,10 @@ bool MarketDataSubscriptionManager::AddHandle(
         return m_diffDepthPool.try_emplace(symbol, h).second;
     case SubscriptionHandleType::USER_DATA:
         return m_userDataPool.try_emplace(symbol, h).second;
+	case SubscriptionHandleType::FUTURE_TRADE:
+		return m_futureTradePool.try_emplace(symbol, h).second;
+	case SubscriptionHandleType::FUTURE_BOOK:
+		return m_futureBookPool.try_emplace(symbol, h).second;
     default:
         throw std::runtime_error("MarketDataSubscriptionManager: unsupported SubscriptionHandleType.");
     }
@@ -105,6 +109,12 @@ void MarketDataSubscriptionManager::RemoveHandle(
     case SubscriptionHandleType::USER_DATA:
         RemoveFromPool(m_individualBookTickerPool, symbol);
         break;
+	case SubscriptionHandleType::FUTURE_TRADE:
+		RemoveFromPool(m_individualBookTickerPool, symbol);
+		break;
+	case SubscriptionHandleType::FUTURE_BOOK:
+		RemoveFromPool(m_individualBookTickerPool, symbol);
+		break;
     default:
         throw std::runtime_error("MarketDataSubscriptionManager: unsupported SubscriptionHandleType.");
     }
@@ -163,6 +173,12 @@ binapi::ws::websockets::handle MarketDataSubscriptionManager::GetHandle(
     case SubscriptionHandleType::USER_DATA:
         return LookupFromPool(m_individualBookTickerPool, symbol);
         break;
+	case SubscriptionHandleType::FUTURE_TRADE:
+		return LookupFromPool(m_individualBookTickerPool, symbol);
+		break;
+	case SubscriptionHandleType::FUTURE_BOOK:
+		return LookupFromPool(m_individualBookTickerPool, symbol);
+		break;
     default:
         throw std::runtime_error("MarketDataSubscriptionManager: unsupported SubscriptionHandleType.");
     }

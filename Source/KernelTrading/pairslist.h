@@ -6,8 +6,8 @@
 # This source code can be used, distributed or modified under Apache license
 #*******************************************************************************/ 
 
-#ifndef __binapi__pairslist_hpp
-#define __binapi__pairslist_hpp
+#ifndef _PAIRSLIST_HPP_
+#define _PAIRSLIST_HPP_
 
 #include <string>
 #include <set>
@@ -15,27 +15,27 @@
 #include "dlldefine.h"
 
 namespace binapi {
-namespace rest {
+    namespace rest {
 
-struct exchange_info_t;
+        struct exchange_info_t;
 
-} // ns rest
+    } // ns rest
 
-/*************************************************************************************************/
+    /*************************************************************************************************/
 
-// create the exchange available pairs list according to black and white lists
-std::set<std::string> DLL_CLASS process_pairs(
-     const std::string &whitelist
-    ,const std::string &blacklist
-    ,const binapi::rest::exchange_info_t &exinfo
-);
+    // create the exchange available pairs list according to black and white lists
+    std::set<std::string> DLL_CLASS process_pairs(
+        const std::string& whitelist
+        , const std::string& blacklist
+        , const binapi::rest::exchange_info_t& exinfo
+    );
 
-bool DLL_CLASS pair_in_pairs(const std::set<std::string> &pairs, const std::string &pair);
+    bool DLL_CLASS pair_in_pairs(const std::set<std::string>& pairs, const std::string& pair);
 
-void DLL_CLASS test_blackwhite_list();
+    void DLL_CLASS test_blackwhite_list();
 
-/*************************************************************************************************/
+    /*************************************************************************************************/
 
 } // ns binapi
 
-#endif // __binapi__pairslist_hpp
+#endif // _PAIRSLIST_HPP_

@@ -125,3 +125,13 @@ int MarketDataSubject::NotifyUserDataOrderUpdateChange(const std::string& symbol
 {
 	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnUserDataOrderUpdateChange);
 }
+
+int MarketData::MarketDataSubject::NotifyFutureTradeChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnTradeDataFutureChange);
+}
+
+int MarketData::MarketDataSubject::NotifyFutureBookChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnBookDataFutureChange);
+}

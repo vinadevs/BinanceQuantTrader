@@ -6,15 +6,15 @@
 # This source code can be used, distributed or modified under Apache license
 #*******************************************************************************/ 
 
-#ifndef __binapi__iofmt_hpp
-#define __binapi__iofmt_hpp
+#ifndef _IOFMT_HPP_
+#define _IOFMT_HPP_
 
 #include <iomanip>
 
 namespace binapi {
 
-constexpr std::ios_base::fmtflags iofmt = std::ios_base::fixed|std::ios_base::showpoint|std::ios_base::showbase;
+	constexpr std::ios_base::fmtflags iofmt = std::ios_base::fixed | std::ios_base::showpoint | std::ios_base::showbase;
 
 } // ns binapi
 
-#endif // __binapi__iofmt_hpp
+#endif // _IOFMT_HPP_

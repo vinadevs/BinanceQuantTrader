@@ -118,6 +118,29 @@ namespace MarketData
 		EVENT_TIME_MS // This is internal update time and always the last one in the enum
 	};
 
+	enum class FutureTradeID : unsigned
+	{
+		TRADE_ID,
+		PRICE,
+		QUANTITY,
+		BUYER_ORDER_ID,
+		SELLER_ORDER_ID,
+		TRADE_TIME,
+		IS_BUYER_MARKET_MAKER,
+		EVENT_TIME_MS
+	};
+
+	enum class FutureBookTickerID : unsigned
+	{
+		BEST_BID_PRICE,
+		BEST_BID_QUANTITY,
+		BEST_ASK_PRICE,
+		BEST_ASK_QUANTITY,
+		FIRST_UPDATE_ID,
+		FINAL_UPDATE_ID,
+		EVENT_TIME_MS
+	};
+
 	inline constexpr std::ostream &operator<<(std::ostream &os, const IndividualBookTickerID id)
 	{
 		switch (id)
@@ -252,6 +275,39 @@ namespace MarketData
 			case KlineCandleStickID::TAKER_BUY_BASE_ASSET_VOLUME: os << "TAKER_BUY_BASE_ASSET_VOLUME"; break;
 			case KlineCandleStickID::TAKER_BUY_QUOTE_ASSET_VOLUME: os << "TAKER_BUY_QUOTE_ASSET_VOLUME"; break;
 			case KlineCandleStickID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
+			default: os << "UNKNOWN_ID"; break;
+		}
+		return os;
+	}
+
+	inline constexpr std::ostream& operator<<(std::ostream& os, const FutureTradeID id)
+	{
+		switch (id)
+		{
+			case FutureTradeID::TRADE_ID: os << "TRADE_ID"; break;
+			case FutureTradeID::PRICE: os << "PRICE"; break;
+			case FutureTradeID::QUANTITY: os << "QUANTITY"; break;
+			case FutureTradeID::BUYER_ORDER_ID: os << "BUYER_ORDER_ID"; break;
+			case FutureTradeID::SELLER_ORDER_ID: os << "SELLER_ORDER_ID"; break;
+			case FutureTradeID::TRADE_TIME: os << "TRADE_TIME"; break;
+			case FutureTradeID::IS_BUYER_MARKET_MAKER: os << "IS_BUYER_MARKET_MAKER"; break;
+			case FutureTradeID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
+			default: os << "UNKNOWN_ID"; break;
+		}
+		return os;
+	}
+
+	inline constexpr std::ostream& operator<<(std::ostream& os, const FutureBookTickerID id)
+	{
+		switch (id)
+		{
+			case FutureBookTickerID::BEST_BID_PRICE: os << "BEST_BID_PRICE"; break;
+			case FutureBookTickerID::BEST_BID_QUANTITY: os << "BEST_BID_QUANTITY"; break;
+			case FutureBookTickerID::BEST_ASK_PRICE: os << "BEST_ASK_PRICE"; break;
+			case FutureBookTickerID::BEST_ASK_QUANTITY: os << "BEST_ASK_QUANTITY"; break;
+			case FutureBookTickerID::FIRST_UPDATE_ID: os << "FIRST_UPDATE_ID"; break;
+			case FutureBookTickerID::FINAL_UPDATE_ID: os << "FINAL_UPDATE_ID"; break;
+			case FutureBookTickerID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
 			default: os << "UNKNOWN_ID"; break;
 		}
 		return os;

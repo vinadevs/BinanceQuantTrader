@@ -136,6 +136,44 @@ void SynchronousMarketDataFeed::UpdateUserDataOrderUpdate(const binapi::userdata
 {
 }
 
+void SynchronousMarketDataFeed::UpdateFutureTradeData(const binapi::ws::future_trade_t& trade)
+{
+	m_syncMarketData->m_futureTradeData.m_eventTimeMs->SetData(trade.E);
+	m_syncMarketData->m_futureTradeData.m_aggregatedTradeId->SetData(trade.a);
+	m_syncMarketData->m_futureTradeData.m_price->SetData(trade.p);
+	m_syncMarketData->m_futureTradeData.m_quantity->SetData(trade.q);
+	m_syncMarketData->m_futureTradeData.m_firstTradeId->SetData(trade.f);
+	m_syncMarketData->m_futureTradeData.m_lastTradeId->SetData(trade.l);
+	m_syncMarketData->m_futureTradeData.m_tradeTimeMs->SetData(trade.T);
+	m_syncMarketData->m_futureTradeData.m_isBuyerTheMarketMaker->SetData(trade.m);
+}
+
+void SynchronousMarketDataFeed::UpdateFutureBookData(const binapi::ws::future_book_t& book)
+{
+	m_syncMarketData->m_futureBookData.m_eventTimeMs->SetData(book.E);
+	m_syncMarketData->m_futureBookData.m_transactionTimeMs->SetData(book.T);
+	m_syncMarketData->m_futureBookData.m_firstUpdateId->SetData(book.U);
+	m_syncMarketData->m_futureBookData.m_finalUpdateId->SetData(book.u);
+	ArrayMarketData<DepthData> asks;
+	ArrayMarketData<DepthData> bids;
+	std::transform(std::begin(book.a), std::end(book.a), std::back_inserter(asks),
+		[](const binapi::ws::future_book_t::level_t d) {
+			DepthData ask;
+			ask.m_price->SetData(d.price);
+			ask.m_amount->SetData(d.qty);
+			return ask;
+		});
+	std::transform(std::begin(book.b), std::end(book.b), std::back_inserter(bids),
+		[](const binapi::ws::future_book_t::level_t d) {
+			DepthData bid;
+			bid.m_price->SetData(d.price);
+			bid.m_amount->SetData(d.qty);
+			return bid;
+		});
+	m_syncMarketData->m_futureBookData.m_bids->SetData(bids);
+	m_syncMarketData->m_futureBookData.m_asks->SetData(asks);
+}
+
 void SynchronousMarketDataFeed::UpdateMiniTickerData(const binapi::ws::mini_ticker_t& mini)
 {
 	m_syncMarketData->m_individualMiniTickerData.m_eventTimeMs->SetData(mini.E);

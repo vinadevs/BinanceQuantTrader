@@ -56,12 +56,16 @@ void BinanceMarketDataEvents::CreateWebSocketConnection()
 {
     const auto* connectionXml = m_marketDataConfigXml->FirstChildElement("Connection");
     assert(connectionXml);
-    const auto streamBinanceCom = connectionXml->Attribute("StreamBinanceCom");
-    const auto streamConnectionPort = connectionXml->Attribute("StreamConnectionPort");
+    const auto spotEndpointUrl = connectionXml->Attribute("SpotEndpointUrl");
+    const auto spotEndpoinPort = connectionXml->Attribute("SpotEndpoinPort");
+	const auto futureEndpointUrl = connectionXml->Attribute("FutureEndpointUrl");
+	const auto futureEndpoinPort = connectionXml->Attribute("FutureEndpoinPort");
     m_webSocketRealTime = std::make_unique<binapi::ws::websockets>(
         m_ioContext
-        , streamBinanceCom
-        , streamConnectionPort);
+        , spotEndpointUrl
+        , spotEndpoinPort
+        , futureEndpointUrl
+        , futureEndpoinPort);
     m_logger->Info("Binance web socket created.");
 }
 
@@ -112,52 +116,63 @@ bool BinanceMarketDataEvents::Subscribe(const std::string& symbol)
     m_logger->Info("Starting subscribing real time market data for symbol=" + symbol);
     if (m_feedHandler->CreateNewMarketDataFeed(symbol))
     {
-        const auto* dataTypeSubscriptionXml = m_marketDataConfigXml->FirstChildElement("SubscriptionData");
-        assert(dataTypeSubscriptionXml);
-        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("IndividualBookTickerData"), "true"))
+        const auto* dataTypeSpotSubscriptionXml = m_marketDataConfigXml->FirstChildElement("SpotSubscriptionData");
+        assert(dataTypeSpotSubscriptionXml);
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSpotSubscriptionXml->Attribute("IndividualBookTickerData"), "true"))
         {
             SubscibeIndividualBookTicker(symbol);
         }
-        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("TradeData"), "true"))
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSpotSubscriptionXml->Attribute("TradeData"), "true"))
         {
             SubscibeTrade(symbol);
         }
-        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("IndividualMarketTickerData"), "true"))
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSpotSubscriptionXml->Attribute("IndividualMarketTickerData"), "true"))
         {
             SubscibeIndividualMarketTicker(symbol);
         }
-        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("AllMarketTickersData"), "true"))
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSpotSubscriptionXml->Attribute("AllMarketTickersData"), "true"))
         {
             SubscibeAllMarketTickers(symbol);
         }
-        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("IndividualMiniTickerData"), "true"))
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSpotSubscriptionXml->Attribute("IndividualMiniTickerData"), "true"))
         {
             SubscibeIndividualMiniTicker(symbol);
         }
-        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("AllMiniTickersData"), "true"))
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSpotSubscriptionXml->Attribute("AllMiniTickersData"), "true"))
         {
             SubscibeAllMiniTickers(symbol);
         }
-        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("AggregateTradeData"), "true"))
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSpotSubscriptionXml->Attribute("AggregateTradeData"), "true"))
         {
             SubscibeAggregateTrade(symbol);
         }
-        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("KlineCandleStickData"), "true"))
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSpotSubscriptionXml->Attribute("KlineCandleStickData"), "true"))
         {
 			const std::string interval = "1m";
             SubscibeKlineCandleStick(symbol, interval);
         }  
-        if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("DiffDepthData"), "true"))
+        if (StringUtils::IsConfigAttributeMatched(dataTypeSpotSubscriptionXml->Attribute("DiffDepthData"), "true"))
         {
             SubscibeDiffDepth(symbol);
         }
-		if (StringUtils::IsConfigAttributeMatched(dataTypeSubscriptionXml->Attribute("UserData"), "true"))
+		if (StringUtils::IsConfigAttributeMatched(dataTypeSpotSubscriptionXml->Attribute("UserData"), "true"))
 		{
 			const auto* userDataXml = m_marketDataConfigXml->FirstChildElement("UserData");
 			assert(userDataXml);
 			const auto apiKey = userDataXml->Attribute("ApiKey");
 			SubscibeUserData(apiKey, symbol);
 		}
+
+		const auto* dataTypeFutureSubscriptionXml = m_marketDataConfigXml->FirstChildElement("FutureSubscriptionData");
+		assert(dataTypeFutureSubscriptionXml);
+        if (StringUtils::IsConfigAttributeMatched(dataTypeFutureSubscriptionXml->Attribute("FutureTradeData"), "true"))
+        {
+			SubscibeTradeFuture(symbol);
+        }
+        if (StringUtils::IsConfigAttributeMatched(dataTypeFutureSubscriptionXml->Attribute("FutureBookData"), "true"))
+        {
+			SubscibeBookDataFuture(symbol);
+        }
         // stores subscribed symbol
         m_subscribedSymbols.emplace(symbol);
         return true;
@@ -401,6 +416,32 @@ void BinanceMarketDataEvents::SubscibeUserData(const std::string& apiKey, const 
 			std::placeholders::_4));
 	VerifySubscriptionHandle(symbol, "user data", handle,
 		SubscriptionHandleType::USER_DATA);
+}
+
+void BinanceMarketDataEvents::SubscibeTradeFuture(const std::string& symbol)
+{
+	const auto handle = m_webSocketRealTime->trade_future(symbol.c_str(),
+		std::bind(&BinanceMarketDataFeedHandler::HandleTradeDataFuture,
+			m_feedHandler,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4));
+	VerifySubscriptionHandle(symbol, "future trade", handle,
+		SubscriptionHandleType::FUTURE_TRADE);
+}
+
+void BinanceMarketDataEvents::SubscibeBookDataFuture(const std::string& symbol)
+{
+	const auto handle = m_webSocketRealTime->book_future(symbol.c_str(),
+		std::bind(&BinanceMarketDataFeedHandler::HandleBookDataFuture,
+			m_feedHandler,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4));
+	VerifySubscriptionHandle(symbol, "future book data", handle,
+		SubscriptionHandleType::FUTURE_BOOK);
 }
 
 void BinanceMarketDataEvents::Unsubscribe(const binapi::ws::websockets::handle& h)

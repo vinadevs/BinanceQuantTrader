@@ -12,9 +12,6 @@
 #include "../KernelTrading/double_type.h"
 
 #include "BinanceMarketData.h"
-#include "SingleMarketDataFeed.h"
-#include "TableMarketDataFeed.h"
-#include "ArrayMarketDtaFeed.h"
 
 #include <iostream>
 #include <memory>
@@ -27,8 +24,14 @@
 
 namespace MarketData {
 
-	///////////////////////////////////////////////////////////////
-	// This class contains all of single feed data is available from the exchange
+	//////////////////////////////////////////////////////////////////////////////////////
+    // This is a wrapper layer for different market data types from kernel trading
+	// The pupose is to have a common interface for different market data types
+	// So the raw market data from Binanace Exchange will be used as SingleMarketDataFeed
+	// and SynchronousMarketData will contain all of SingleMarketDataFeeds
+	// TODO: Create another low latency version without wrapper layer
+	//////////////////////////////////////////////////////////////////////////////////////
+
 	class DLL_CLASS_MARKETDATA_EXPORTS SynchronousMarketData final
 	{
 	public:
@@ -47,6 +50,8 @@ namespace MarketData {
 		UserDataAccount m_userDataAccount;
 		UserDataBalance m_userDataBalance;
 		UserDataOrder m_userDataOrder;
+		FutureTradeData m_futureTradeData;
+		FutureBookData m_futureBookData;
 
 		template <typename FeedType>
 		SingleMarketDataFeed* GetSingleFeed(const FeedType id) const;

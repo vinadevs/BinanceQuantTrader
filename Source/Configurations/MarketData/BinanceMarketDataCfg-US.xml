@@ -5,14 +5,16 @@
 </MarketDataCaptureSource>
 
 <RealTimeMarketData>
-  <Connection StreamBinanceCom="stream.binance.us" StreamConnectionPort="9443"/>
-  <SubscriptionData IndividualBookTickerData="true" TradeData="true" IndividualMarketTickerData="true" AllMarketTickersData="true" IndividualMiniTickerData="true" AllMiniTickersData="false" AggregateTradeData="false" KlineCandleStickData="false" PartDepthData="false" DiffDepthData="false" UserData="false"/>
+  <Connection SpotEndpointUrl="stream.binance.us" SpotEndpoinPort="9443" FutureEndpointUrl="fstream.binance.us" FutureEndpoinPort="443"/>
+  <SpotSubscriptionData IndividualBookTickerData="true" TradeData="true" IndividualMarketTickerData="false" AllMarketTickersData="false" IndividualMiniTickerData="false" AllMiniTickersData="false" AggregateTradeData="false" KlineCandleStickData="false" PartDepthData="false" DiffDepthData="false" UserData="false"/>
+  <FutureSubscriptionData FutureTradeData="true" FutureBookData="true"/>
 </RealTimeMarketData>
 
 <HistoricalMarketData>
   <ReplayData FilePath="[ROOT_BQT_PATH]/AppData/2026-01-12_12-42-44_MarketData.txt" DataType="TextFile" AllowRepeat="true"/>
   <LoadEvent Type="TickByTick" IntervalSeconds="1"/>
-  <SubscriptionData IndividualBookTickerData="true" TradeData="true" IndividualMiniTickerData="true" AggregateTradeData="true"/>
+  <SpotSubscriptionData IndividualBookTickerData="true" TradeData="true" IndividualMiniTickerData="true" AggregateTradeData="true"/>
+  <FutureSubscriptionData FutureTradeData="true" FutureBookData="true"/>
 </HistoricalMarketData>
 
 <MarketDataCapture>

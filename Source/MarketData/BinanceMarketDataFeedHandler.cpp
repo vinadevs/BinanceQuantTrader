@@ -324,6 +324,46 @@ bool BinanceMarketDataFeedHandler::HandleUserDataOrderUpdate(const char* fl, int
 	return false;
 }
 
+bool BinanceMarketDataFeedHandler::HandleTradeDataFuture(const char* fl, int ec, std::string emsg, binapi::ws::future_trade_t trade)
+{
+	if (ec)
+	{
+		std::cerr << "subscribe future trade error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		return false;
+	}
+	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(trade.s))
+	{
+		feed->UpdateFutureTradeData(trade);
+		MarketDataSubject::NotifyFutureTradeChange(trade.s);
+		return true;
+	}
+	else
+	{
+		throw std::runtime_error("BinanceMarketDataFeedHandler: sycnchronous feed could not found with symbol=" + trade.s);
+	}
+	return false;
+}
+
+bool BinanceMarketDataFeedHandler::HandleBookDataFuture(const char* fl, int ec, std::string emsg, binapi::ws::future_book_t book)
+{
+	if (ec)
+	{
+		std::cerr << "subscribe future book data error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		return false;
+	}
+	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(book.s))
+	{
+		feed->UpdateFutureBookData(book);
+		MarketDataSubject::NotifyFutureBookChange(book.s);
+		return true;
+	}
+	else
+	{
+		throw std::runtime_error("BinanceMarketDataFeedHandler: sycnchronous feed could not found with symbol=" + book.s);
+	}
+	return false;
+}
+
 
 SynchronousMarketData* BinanceMarketDataFeedHandler::GetSynchronousMarketData(const std::string& symbol)
 {

@@ -255,5 +255,24 @@ public:
     virtual bool OnUserDataOrderUpdateChange(
         MarketDataSubject* marketData,
         const std::string& symbol);
+
+    /**
+     * @brief future trade execution event for a single symbol.
+     *
+     * Fired for every matched future trade on the exchange.
+     *
+     */
+	virtual bool OnTradeDataFutureChange(
+		MarketDataSubject* marketData,
+		const std::string& symbol);
+
+    /**
+     * @brief future book execution event for a single symbol.
+     *
+     * Fired for every matched future trade on the exchange.
+     */
+	virtual bool OnBookDataFutureChange(
+		MarketDataSubject* marketData,
+		const std::string& symbol);
 };
 };

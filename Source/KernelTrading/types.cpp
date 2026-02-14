@@ -16,6 +16,9 @@
 // Copyright (c) 2019-2021 niXman (github dot nixman dog pm.me). All rights reserved.
 // ----------------------------------------------------------------------------
 
+// Updated and modified by vinadevs for Binance Quant Trader Project.
+// Port code base to windows platform and add some new features (future market data, order types, etc).
+
 #include "pch.h"
 
 #include "types.h"
@@ -2368,6 +2371,288 @@ std::ostream& operator<<(std::ostream &os, const book_ticker_t &o) {
 }
 
 /*************************************************************************************************/
+
+future_trade_t future_trade_t::construct(const flatjson::fjson& json)
+{
+    assert(json.is_valid());
+
+    future_trade_t res{};
+
+    __BINAPI_GET(E);
+    __BINAPI_GET(s);
+    __BINAPI_GET(a);
+    __BINAPI_GET(p);
+    __BINAPI_GET(q);
+    __BINAPI_GET(f);
+    __BINAPI_GET(l);
+    __BINAPI_GET(T);
+    __BINAPI_GET(m);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream& os, const future_trade_t& o)
+{
+    os
+        << "{"
+        << "\"E\":" << o.E << ","
+        << "\"s\":\"" << o.s << "\","
+        << "\"a\":" << o.a << ","
+        << "\"p\":\"" << o.p << "\","
+        << "\"q\":\"" << o.q << "\","
+        << "\"f\":" << o.f << ","
+        << "\"l\":" << o.l << ","
+        << "\"T\":" << o.T << ","
+        << "\"m\":" << (o.m ? "true" : "false")
+        << "}";
+    return os;
+}
+
+/*************************************************************************************************/
+
+future_book_t future_book_t::construct(const flatjson::fjson& json)
+{
+    assert(json.is_valid());
+    future_book_t res{};
+
+    __BINAPI_GET(E);
+    __BINAPI_GET(T);
+    __BINAPI_GET(s);
+    __BINAPI_GET(U);
+    __BINAPI_GET(u);
+    const auto b = json.at("b");
+    for (auto idx = 0u; idx < b.size(); ++idx) {
+        future_book_t::level_t item{};
+        const auto it = b.at(idx);
+        item.price.assign(it.at(0).to_string());
+        item.qty.assign(it.at(1).to_string());
+        res.b.emplace_back(std::move(item));
+    }
+    const auto a = json.at("a");
+    for (auto idx = 0u; idx < a.size(); ++idx) {
+        future_book_t::level_t item{};
+        const auto it = a.at(idx);
+        item.price.assign(it.at(0).to_string());
+        item.qty.assign(it.at(1).to_string());
+        res.a.emplace_back(std::move(item));
+    }
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream& os, const future_book_t& o)
+{
+    os
+        << "{"
+        << "\"E\":" << o.E << ","
+        << "\"T\":" << o.T << ","
+        << "\"s\":\"" << o.s << "\","
+        << "\"U\":" << o.U << ","
+        << "\"u\":" << o.u << ","
+        << "\"b\":[";
+    for (auto it = o.b.begin(); it != o.b.end(); ++it) {
+        os << "[\"" << it->price << "\", \"" << it->qty << "\"]";
+        if (std::next(it) != o.b.end()) {
+            os << ",";
+        }
+    }
+    os
+        << "],"
+        << "\"a\":[";
+    for (auto it = o.a.begin(); it != o.a.end(); ++it) {
+        os << "[\"" << it->price << "\", \"" << it->qty << "\"]";
+        if (std::next(it) != o.a.end()) {
+            os << ",";
+        }
+    }
+    os
+        << "]}";
+    return os;
+}
+
+/*************************************************************************************************/
+
+future_kline_t future_kline_t::construct(const flatjson::fjson& json)
+{
+    future_kline_t res{};
+
+    __BINAPI_GET(E);
+    __BINAPI_GET(s);
+
+    const auto& k = json.at("k");
+
+    __get_json(res.t, "t", k);
+    __get_json(res.T, "T", k);
+    __get_json(res.o, "o", k);
+    __get_json(res.c, "c", k);
+    __get_json(res.h, "h", k);
+    __get_json(res.l, "l", k);
+    __get_json(res.v, "v", k);
+    __get_json(res.n, "n", k);
+    __get_json(res.x, "x", k);
+    __get_json(res.q, "q", k);
+    __get_json(res.V, "V", k);
+    __get_json(res.Q, "Q", k);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream& os, const future_kline_t& o)
+{
+    os
+        << "{"
+        << "\"E\":" << o.E << ","
+        << "\"s\":\"" << o.s << "\","
+        << "\"t\":" << o.t << ","
+        << "\"T\":" << o.T << ","
+        << "\"o\":\"" << o.o << "\","
+        << "\"c\":\"" << o.c << "\","
+        << "\"h\":\"" << o.h << "\","
+        << "\"l\":\"" << o.l << "\","
+        << "\"v\":\"" << o.v << "\","
+        << "\"n\":" << o.n << ","
+        << "\"x\":" << (o.x ? "true" : "false") << ","
+        << "\"q\":\"" << o.q << "\","
+        << "\"V\":\"" << o.V << "\","
+        << "\"Q\":\"" << o.Q << "\""
+        << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+future_ticker_t future_ticker_t::construct(const flatjson::fjson& json)
+{
+    future_ticker_t res{};
+
+    __BINAPI_GET(E);
+    __BINAPI_GET(s);
+    __BINAPI_GET(p);
+    __BINAPI_GET(P);
+    __BINAPI_GET(c);
+    __BINAPI_GET(h);
+    __BINAPI_GET(l);
+    __BINAPI_GET(v);
+    __BINAPI_GET(q);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream& os, const future_ticker_t& o)
+{
+    os
+        << "{"
+        << "\"E\":" << o.E << ","
+        << "\"s\":\"" << o.s << "\","
+        << "\"p\":\"" << o.p << "\","
+        << "\"P\":\"" << o.P << "\","
+        << "\"c\":\"" << o.c << "\","
+        << "\"h\":\"" << o.h << "\","
+        << "\"l\":\"" << o.l << "\","
+        << "\"v\":\"" << o.v << "\","
+        << "\"q\":\"" << o.q << "\""
+        << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+future_mark_price_t future_mark_price_t::construct(const flatjson::fjson& json)
+{
+    future_mark_price_t res{};
+
+    __BINAPI_GET(E);
+    __BINAPI_GET(s);
+    __BINAPI_GET(p);
+    __BINAPI_GET(i);
+    __BINAPI_GET(P);
+    __BINAPI_GET(r);
+    __BINAPI_GET(T);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream& os, const future_mark_price_t& o)
+{
+    os
+        << "{"
+        << "\"E\":" << o.E << ","
+        << "\"s\":\"" << o.s << "\","
+        << "\"p\":\"" << o.p << "\","
+        << "\"i\":\"" << o.i << "\","
+        << "\"P\":\"" << o.P << "\","
+        << "\"r\":\"" << o.r << "\","
+        << "\"T\":" << o.T
+        << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+future_funding_rate_t future_funding_rate_t::construct(const flatjson::fjson& json)
+{
+    future_funding_rate_t res{};
+
+    __BINAPI_GET(E);
+    __BINAPI_GET(s);
+    __BINAPI_GET(r);
+    __BINAPI_GET(T);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream& os, const future_funding_rate_t& o)
+{
+    os
+        << "{"
+        << "\"E\":" << o.E << ","
+        << "\"s\":\"" << o.s << "\","
+        << "\"r\":\"" << o.r << "\","
+        << "\"T\":" << o.T
+        << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
+future_liquidation_t future_liquidation_t::construct(const flatjson::fjson& json)
+{
+    future_liquidation_t res{};
+
+    __BINAPI_GET(E);
+
+    const auto& o = json.at("o");
+
+    __get_json(res.s, "s", o);
+    __get_json(res.S, "S", o);
+    __get_json(res.p, "p", o);
+    __get_json(res.q, "q", o);
+    __get_json(res.T, "T", o);
+
+    return res;
+}
+
+std::ostream& operator<<(std::ostream& os, const future_liquidation_t& o)
+{
+    os
+        << "{"
+        << "\"E\":" << o.E << ","
+        << "\"s\":\"" << o.s << "\","
+        << "\"S\":\"" << o.S << "\","
+        << "\"p\":\"" << o.p << "\","
+        << "\"q\":\"" << o.q << "\","
+        << "\"T\":" << o.T
+        << "}";
+
+    return os;
+}
+
+/*************************************************************************************************/
+
 /*************************************************************************************************/
 /*************************************************************************************************/
 
@@ -2530,7 +2815,6 @@ std::ostream& operator<<(std::ostream &os, const order_update_t &o) {
     << "\"O\":"   << o.O << ","
     << "\"Z\":\"" << o.Z << "\""
     << "}";
-
 
     return os;
 }

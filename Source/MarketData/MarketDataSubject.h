@@ -73,9 +73,6 @@ public:
     /**
      * @brief Notify observers that best bid/ask (top-of-book) changed.
      *
-     * Highest frequency path.
-     * Must remain extremely low latency.
-     *
      * @return number of observers that handled event successfully.
      */
     virtual int NotifyIndividualBookTickerChange(const std::string& symbol);
@@ -183,6 +180,22 @@ public:
      */
     virtual int NotifyUserDataOrderUpdateChange(const std::string& symbol);
 
+    /**
+     * @brief Notify observers of a raw future trade execution.
+     *
+     * Fired for every future trade.
+     *
+     * @return success count.
+     */
+	virtual int NotifyFutureTradeChange(const std::string& symbol);
+
+
+    /**
+     * @brief Notify observers that best bid/ask (top-of-book) future changed.
+     * 
+     * @return number of observers that handled event successfully.
+     */
+	virtual int NotifyFutureBookChange(const std::string& symbol);
 
     // ============================================================
     //  Synchronous data access

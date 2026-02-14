@@ -32,6 +32,8 @@ namespace MarketData {
 		PART_DEPTH,
 		DIFF_DEPTH,
 		USER_DATA,
+		FUTURE_TRADE,
+		FUTURE_BOOK,
 		END_NOT_USING  // Add this to define the range
 	};
 
@@ -59,5 +61,7 @@ namespace MarketData {
 		SubscriptionHandlePool m_partDepthPool;
 		SubscriptionHandlePool m_diffDepthPool;
 		SubscriptionHandlePool m_userDataPool;
+		SubscriptionHandlePool m_futureTradePool;
+		SubscriptionHandlePool m_futureBookPool;
 	};
 };
