@@ -17,7 +17,6 @@ namespace LibraryUtils {
 	class Logger;
 };
 
-
 namespace RiskManagement {
 	class RiskManager;
 }

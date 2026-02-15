@@ -13,4 +13,7 @@
   <AllSymbols UseRemoteExchangeList="true" LocalListingFile="[ROOT_BQT_PATH]/Configurations/Common/BinanceListings.txt"/>
   <TradeSymbols List="BTCUSDT, ETHUSDT, BNBUSDT"/>
 </TargetSymbol>
-  
+
+<RiskTradingLimits>
+  <Metrics MaxPositionSize="100" MaxDelta="10" MaxTheta="1" MaxGamma="1" MaxLoss="1000" MinEdge="1" MaxVolume="1000"/>
+</RiskTradingLimits>

@@ -35,8 +35,7 @@ namespace QuantitativeModel {
 }
 
 namespace RiskManagement {
-	class SpotRiskEngine;
-	class FutureRiskEngine;
+	class DerivativesRiskModel;
 }
 
 // The DerivativesArbitrageStrategy class is an automated trading strategy designed to exploit future market arbitrage opportunities.
@@ -112,7 +111,6 @@ namespace TradingStrategies {
 		// List of symbols that we will trade in future market
 		std::vector<std::string> m_targetTradeSymbols;
 		std::unique_ptr<QuantitativeModel::MarketDataAnalyzer> m_marketDataAnalyzer;
-		std::unique_ptr < RiskManagement::SpotRiskEngine> m_spotRiskEngine;
-		std::unique_ptr<RiskManagement::FutureRiskEngine> m_futureRiskEngine;
+		std::unique_ptr < RiskManagement::DerivativesRiskModel> m_riskModel;
 	};
 };

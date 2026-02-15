@@ -20,8 +20,7 @@
 #include "../QuantitativeModel/QuantOrderParammeter.h"
 #include "../QuantitativeModel/MarketDataAnalyzer.h"
 #include "../QuantitativeModel/QuantMarketDataAnalyzer.h"
-#include "../RiskManagement/SpotRiskEngine.h"
-#include "../RiskManagement/FutureRiskEngine.h"	
+#include "../RiskManagement/DerivativesRiskModel.h"
 #include "../LibraryUtils/PathUtils.h"
 #include "../LibraryUtils/FileUtils.h"
 
@@ -199,17 +198,10 @@ void DerivativesArbitrageStrategy::CreatePortfolioManagement()
 
 void DerivativesArbitrageStrategy::CreateRiskManagementEngines()
 {
-	m_spotRiskEngine = std::make_unique<RiskManagement::SpotRiskEngine>(
-		m_hybridTrader->GetSpotTrader()->GetPortfolio(),
-		m_hybridTrader->GetSpotTrader()->GetRiskManager(),
-		m_hybridTrader->GetSpotTrader()->GetBinanceAccountInfo(),
-		m_logger.get());
-
-	m_futureRiskEngine = std::make_unique<RiskManagement::FutureRiskEngine>(
-		m_hybridTrader->GetFutureTrader()->GetPortfolio(),
-		m_hybridTrader->GetFutureTrader()->GetRiskManager(),
-		m_hybridTrader->GetFutureTrader()->GetBinanceAccountInfo(),
-		m_logger.get());
+	const auto* riskModelXml = m_strategyCfgXml->FirstChildElement("RiskTradingLimits");
+	assert(riskModelXml);
+	const auto* metrics = riskModelXml->FirstChildElement("Metrics");
+	m_riskModel = std::make_unique<RiskManagement::DerivativesRiskModel>(metrics);
 }
 
 void DerivativesArbitrageStrategy::PrepareTargetMonitorSymbols()
@@ -266,7 +258,6 @@ void DerivativesArbitrageStrategy::UnsubscribeTargetSymbols()
 
 void DerivativesArbitrageStrategy::OnOrderOpeningPositionAck(const OrderManagement::BinanceNewOrder* openingOrder)
 {
-	const auto orderRiskReport = m_futureRiskEngine->AssessTradingRisk(openingOrder);
 }
 
 void DerivativesArbitrageStrategy::OnOrderClosedPositionAck(const OrderManagement::BinanceNewOrder* closedOrder)
