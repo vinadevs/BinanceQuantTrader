@@ -274,10 +274,7 @@ void SmartLongShortStrategy::PrepareTargetMonitorSymbols()
 	if (useRemoteExchangeList)
 	{
 		m_logger->Info("Querying remote binance exchange listing symbols info...");
-		//m_targetFutureTradeSymbols = StaticDataMgr->GetAllRemoteListingSymbols(true);
-		m_targetFutureTradeSymbols.emplace_back("BTCUSDT");
-		m_targetFutureTradeSymbols.emplace_back("ETHUSDT");
-		m_targetFutureTradeSymbols.emplace_back("BNBUSDT");
+		m_targetFutureTradeSymbols = StaticDataMgr->GetAllRemoteListingSymbols(true);
 #ifdef SAVE_BINANCE_LISTINGS // remove this macro to saving binance listings
 		FileUtils::FromVectorStringToFile(m_targetFutureTradeSymbols, 
 			(std::filesystem::path(PathUtils::GetApplicationFolderPath()) / "Configurations" / "Common" / "BinanceListings.txt").string());

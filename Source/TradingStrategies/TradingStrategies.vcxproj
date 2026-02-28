@@ -162,6 +162,7 @@
     <ClInclude Include="protobuf\strategy_control_request.pb.h" />
     <ClInclude Include="protobuf\strategy_parent_order.grpc.pb.h" />
     <ClInclude Include="protobuf\strategy_parent_order.pb.h" />
+    <ClInclude Include="MarketQuoter.h" />
     <ClInclude Include="SmartLongShortStrategy.h" />
     <ClInclude Include="StrategyController.h" />
     <ClInclude Include="StrategyMessageServer.h" />
@@ -186,6 +187,7 @@
     <ClCompile Include="DerivativesArbitrageStrategy.cpp" />
     <ClCompile Include="ExternalController.cpp" />
     <ClCompile Include="MarketMonitorStrategy.cpp" />
+    <ClCompile Include="MarketQuoter.cpp" />
     <ClCompile Include="protobuf\strategy_control_request.grpc.pb.cc" />
     <ClCompile Include="protobuf\strategy_control_request.pb.cc" />
     <ClCompile Include="protobuf\strategy_parent_order.grpc.pb.cc" />
