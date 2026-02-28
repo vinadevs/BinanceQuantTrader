@@ -274,5 +274,14 @@ public:
 	virtual bool OnBookDataFutureChange(
 		MarketDataSubject* marketData,
 		const std::string& symbol);
+
+	/**
+	 * @brief future funding rate update for a single symbol.
+	 *
+	 * Fired whenever the funding rate changes on the exchange.
+	 */
+    virtual bool OnFutureFundingDataChange(
+		MarketDataSubject* marketData,
+		const std::string& symbol);
 };
 };

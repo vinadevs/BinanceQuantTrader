@@ -141,6 +141,14 @@ namespace MarketData
 		EVENT_TIME_MS
 	};
 
+	enum class FutureFundingRateID : unsigned
+	{
+		SYMBOL,
+		FUNDING_RATE,
+		FUNDING_TIME,
+		EVENT_TIME_MS
+	};
+
 	inline constexpr std::ostream &operator<<(std::ostream &os, const IndividualBookTickerID id)
 	{
 		switch (id)
@@ -308,6 +316,19 @@ namespace MarketData
 			case FutureBookTickerID::FIRST_UPDATE_ID: os << "FIRST_UPDATE_ID"; break;
 			case FutureBookTickerID::FINAL_UPDATE_ID: os << "FINAL_UPDATE_ID"; break;
 			case FutureBookTickerID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
+			default: os << "UNKNOWN_ID"; break;
+		}
+		return os;
+	}
+
+	inline constexpr std::ostream& operator<<(std::ostream& os, const FutureFundingRateID id)
+	{
+		switch (id)
+		{
+			case FutureFundingRateID::SYMBOL: os << "SYMBOL"; break;
+			case FutureFundingRateID::FUNDING_RATE: os << "FUNDING_RATE"; break;
+			case FutureFundingRateID::FUNDING_TIME: os << "FUNDING_TIME"; break;
+			case FutureFundingRateID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
 			default: os << "UNKNOWN_ID"; break;
 		}
 		return os;

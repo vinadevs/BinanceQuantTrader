@@ -8,14 +8,17 @@
 
 #include "pch.h"
 
+#include "../LibraryUtils/Logger.h"
 #include "BinanceMarketDataFeedHandler.h"
 
 #include <iostream>
 
 using namespace MarketData;
 
-BinanceMarketDataFeedHandler::BinanceMarketDataFeedHandler()
-    : m_synchronousFeedMgr{ std::make_unique<MarketDataFeedManager>() } {}
+BinanceMarketDataFeedHandler::BinanceMarketDataFeedHandler(LibraryUtils::Logger* logger)
+	: m_synchronousFeedMgr{ std::make_unique<MarketDataFeedManager>() },
+	m_logger(logger) {
+}
 
 bool BinanceMarketDataFeedHandler::CreateNewMarketDataFeed(const std::string& symbol)
 {
@@ -32,7 +35,7 @@ bool BinanceMarketDataFeedHandler::HandleIndividualBookTickerData(const char* fl
 {
     if (ec) 
     {
-        std::cerr << "subscribe book error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		m_logger->Error("subscribe book error: fl=" + std::string(fl) + ", ec=" + std::to_string(ec) + ", emsg=" + emsg);
         return false;
     }
     if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(book.s))
@@ -52,7 +55,7 @@ bool BinanceMarketDataFeedHandler::HandleTradeData(const char* fl, int ec, std::
 {
     if (ec)
     {
-        std::cerr << "subscribe trade error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		m_logger->Error("subscribe trade error: fl=" + std::string(fl) + ", ec=" + std::to_string(ec) + ", emsg=" + emsg);
         return false;
     }
     if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(trade.s))
@@ -72,7 +75,7 @@ bool BinanceMarketDataFeedHandler::HandleIndividualMarketTickerData(const char* 
 {
 	if (ec)
 	{
-		std::cerr << "subscribe market ticker error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		m_logger->Error("subscribe market ticker error: fl=" + std::string(fl) + ", ec=" + std::to_string(ec) + ", emsg=" + emsg);
 		return false;
 	}
 
@@ -94,7 +97,7 @@ bool BinanceMarketDataFeedHandler::HandleMiniTickerData(const char* fl, int ec, 
 {
 	if (ec)
 	{
-		std::cerr << "subscribe mini ticker error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		m_logger->Error("subscribe mini ticker error: fl=" + std::string(fl) + ", ec=" + std::to_string(ec) + ", emsg=" + emsg);
 		return false;
 	}
 
@@ -116,7 +119,7 @@ bool BinanceMarketDataFeedHandler::HandleAggregateTradeData(const char* fl, int 
 {
 	if (ec)
 	{
-		std::cerr << "subscribe aggregate trade error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		m_logger->Error("subscribe aggregate trade error: fl=" + std::string(fl) + ", ec=" + std::to_string(ec) + ", emsg=" + emsg);
 		return false;
 	}
 
@@ -138,7 +141,8 @@ bool BinanceMarketDataFeedHandler::HandleKlineCandleStickData(const char* fl, in
 {
     if (ec)
     {
-        std::cerr << "subscribe kline candle stick error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		m_logger->Error("subscribe kline candle stick error: fl=" + std::string(fl) + ", ec=" + std::to_string(ec) + ", emsg=" + emsg);
+		return false;
     }
 
 	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(kline.s))
@@ -158,7 +162,7 @@ bool BinanceMarketDataFeedHandler::HandleAllMiniTickerData(const char* fl, int e
 {
 	if (ec)
 	{
-		std::cerr << "subscribe all mini tickers error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		m_logger->Error("subscribe all mini tickers error: fl=" + std::string(fl) + ", ec=" + std::to_string(ec) + ", emsg=" + emsg);
 		return false;
 	}
 	for (const auto& ticker : mini.tickers)
@@ -196,7 +200,7 @@ bool BinanceMarketDataFeedHandler::HandleAllMarketTickersData(const char* fl, in
 {
 	if (ec)
 	{
-		std::cerr << "subscribe all market tickers error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		m_logger->Error("subscribe all market tickers error: fl=" + std::string(fl) + ", ec=" + std::to_string(ec) + ", emsg=" + emsg);
 		return false;
 	}
 	for (const auto& ticker : market.tickers)
@@ -233,7 +237,7 @@ bool BinanceMarketDataFeedHandler::HandlePartDepthData(const char* fl, int ec, s
 {
 	if (ec)
 	{
-		std::cerr << "subscribe part depth error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		m_logger->Error("subscribe part depth error: fl=" + std::string(fl) + ", ec=" + std::to_string(ec) + ", emsg=" + emsg);
 		return false;
 	}
 	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(m_partDiffSymbol))
@@ -253,7 +257,7 @@ bool BinanceMarketDataFeedHandler::HandleDiffDepthData(const char* fl, int ec, s
 {
 	if (ec)
 	{
-		std::cerr << "subscribe diff depth error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		m_logger->Error("subscribe diff depth error: fl=" + std::string(fl) + ", ec=" + std::to_string(ec) + ", emsg=" + emsg);
 		return false;
 	}
 
@@ -293,7 +297,7 @@ bool BinanceMarketDataFeedHandler::HandleUserDataBalanceUpdate(const char* fl, i
 {
 	if (ec)
 	{
-		std::cerr << "subscribe user data balance update error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		m_logger->Error("subscribe user data balance update error: fl=" + std::string(fl) + ", ec=" + std::to_string(ec) + ", emsg=" + emsg);
 		return false;
 	}
 	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(balanceUpdate.a))
@@ -308,7 +312,7 @@ bool BinanceMarketDataFeedHandler::HandleUserDataOrderUpdate(const char* fl, int
 {
 	if (ec)
 	{
-		std::cerr << "subscribe user data order update error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		m_logger->Error("subscribe user data order update error: fl=" + std::string(fl) + ", ec=" + std::to_string(ec) + ", emsg=" + emsg);
 		return false;
 	}
 	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(orderUpdate.s))
@@ -328,7 +332,7 @@ bool BinanceMarketDataFeedHandler::HandleTradeDataFuture(const char* fl, int ec,
 {
 	if (ec)
 	{
-		std::cerr << "subscribe future trade error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		m_logger->Error("subscribe future trade error: fl=" + std::string(fl) + ", ec=" + std::to_string(ec) + ", emsg=" + emsg);
 		return false;
 	}
 	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(trade.s))
@@ -348,7 +352,7 @@ bool BinanceMarketDataFeedHandler::HandleBookDataFuture(const char* fl, int ec, 
 {
 	if (ec)
 	{
-		std::cerr << "subscribe future book data error: fl=" << fl << ", ec=" << ec << ", emsg=" << emsg << std::endl;
+		m_logger->Error("subscribe future book data error: fl=" + std::string(fl) + ", ec=" + std::to_string(ec) + ", emsg=" + emsg);
 		return false;
 	}
 	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(book.s))
@@ -364,6 +368,25 @@ bool BinanceMarketDataFeedHandler::HandleBookDataFuture(const char* fl, int ec, 
 	return false;
 }
 
+bool BinanceMarketDataFeedHandler::HandleFundingDataFuture(const char* fl, int ec, std::string emsg, binapi::ws::future_funding_rate_t funding)
+{
+	if (ec)
+	{
+		m_logger->Error("subscribe future funding data error: fl=" + std::string(fl) + ", ec=" + std::to_string(ec) + ", emsg=" + emsg);
+		return false;
+	}
+	if (auto* feed = m_synchronousFeedMgr->GetSynchronousFeed(funding.s))
+	{
+		feed->UpdateFutureFundingData(funding);
+		MarketDataSubject::NotifyFutureFundingChange(funding.s);
+		return true;
+	}
+	else
+	{
+		throw std::runtime_error("BinanceMarketDataFeedHandler: sycnchronous feed could not found with symbol=" + funding.s);
+	}
+	return false;
+}
 
 SynchronousMarketData* BinanceMarketDataFeedHandler::GetSynchronousMarketData(const std::string& symbol)
 {

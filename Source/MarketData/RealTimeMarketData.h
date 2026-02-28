@@ -98,5 +98,6 @@ private:
 	std::unique_ptr<MarketDataEventBase> m_marketDataEvents;
 	std::unique_ptr<MarketDataFeedHanlder> m_marketDataFeedHandler;
 	const std::string m_mkDataTypeName;
+	std::unique_ptr<LibraryUtils::Logger> m_logger;
 };
 };

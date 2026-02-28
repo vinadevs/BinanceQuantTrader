@@ -1199,4 +1199,51 @@ namespace MarketData {
 		oss << *this;
 		return oss.str();
 	}
+
+	/********************************************************************************/
+	// FutureFundingData
+	/********************************************************************************/
+
+	FutureFundingData::FutureFundingData()
+		: m_fundingRate{ std::make_unique<SingleMarketDataFeed>() },
+		m_fundingTimeMs{ std::make_unique<SingleMarketDataFeed>() },
+		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>() }
+	{
+		m_dataName = "FutureFundingData";
+	}
+
+	FutureFundingData::FutureFundingData(const FutureFundingData& other)
+		: m_fundingRate{ std::make_unique<SingleMarketDataFeed>(*other.m_fundingRate) },
+		m_fundingTimeMs{ std::make_unique<SingleMarketDataFeed>(*other.m_fundingTimeMs) },
+		m_eventTimeMs{ std::make_unique<SingleMarketDataFeed>(*other.m_eventTimeMs) }
+	{
+	}
+
+	FutureFundingData& FutureFundingData::operator=(const FutureFundingData& other)
+	{
+		if (this != &other)
+		{
+			m_fundingRate = std::make_unique<SingleMarketDataFeed>(*other.m_fundingRate);
+			m_fundingTimeMs = std::make_unique<SingleMarketDataFeed>(*other.m_fundingTimeMs);
+			m_eventTimeMs = std::make_unique<SingleMarketDataFeed>(*other.m_eventTimeMs);
+		}
+		return *this;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const FutureFundingData& o)
+	{
+		os
+			<< "DATA_NAME=" << o.m_dataName << "|"
+			<< "FUNDING_RATE=" << *o.m_fundingRate << "|"
+			<< "FUNDING_TIME_MS=" << o.m_fundingTimeMs->GetStringDataFromEventTimeMs() << "|"
+			<< "EVENT_TIME_MS=" << o.m_eventTimeMs->GetStringDataFromEventTimeMs();
+		return os;
+	}
+
+	std::string FutureFundingData::ToString()
+	{
+		std::ostringstream oss;
+		oss << *this;
+		return oss.str();
+	}
 } // namespace MarketData

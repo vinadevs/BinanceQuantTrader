@@ -135,3 +135,8 @@ int MarketData::MarketDataSubject::NotifyFutureBookChange(const std::string& sym
 {
 	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnBookDataFutureChange);
 }
+
+int MarketData::MarketDataSubject::NotifyFutureFundingChange(const std::string& symbol)
+{
+	IMPLEMENT_NOTIFY_MARKET_DATA_CHANGE(OnFutureFundingDataChange);	return 0;
+}

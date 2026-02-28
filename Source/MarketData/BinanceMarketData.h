@@ -518,4 +518,24 @@ namespace MarketData {
 
 		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const FutureBookData& o);
 	};
+
+	class DLL_CLASS_MARKETDATA_EXPORTS FutureFundingData : public BinanceMarketData // future_funding_rate_t
+	{
+	public:
+		// Rule of 5, for class containing unique pointers
+		FutureFundingData();
+		FutureFundingData(const FutureFundingData& other);
+		FutureFundingData& operator=(const FutureFundingData& other);
+		FutureFundingData(FutureFundingData&& other) noexcept = default;
+		FutureFundingData& operator=(FutureFundingData&& other) noexcept = default;
+		~FutureFundingData() = default;
+		std::string ToString() override;
+
+		std::unique_ptr<SingleMarketDataFeed> m_symbol;
+		std::unique_ptr<SingleMarketDataFeed> m_fundingRate;
+		std::unique_ptr<SingleMarketDataFeed> m_fundingTimeMs;
+		std::unique_ptr<SingleMarketDataFeed> m_eventTimeMs;
+
+		friend DLL_CLASS_MARKETDATA_EXPORTS std::ostream& operator<<(std::ostream& os, const FutureFundingData& o);
+	};
 };

@@ -85,3 +85,8 @@ bool MarketDataObserver::OnBookDataFutureChange(MarketDataSubject* marketData, c
 {
 	return false;
 }
+
+bool MarketDataObserver::OnFutureFundingDataChange(MarketDataSubject* marketData, const std::string& symbol)
+{
+	return false;
+}

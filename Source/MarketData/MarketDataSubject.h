@@ -197,6 +197,15 @@ public:
      */
 	virtual int NotifyFutureBookChange(const std::string& symbol);
 
+	/**
+	 * @brief Notify observers of a future funding rate update.
+	 *
+	 * Triggered at regular intervals (e.g., every 8 hours).
+	 *
+	 * @return success count.
+	 */
+	virtual int NotifyFutureFundingChange(const std::string& symbol);
+
     // ============================================================
     //  Synchronous data access
     // ============================================================

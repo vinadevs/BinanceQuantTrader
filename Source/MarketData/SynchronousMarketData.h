@@ -52,6 +52,7 @@ namespace MarketData {
 		UserDataOrder m_userDataOrder;
 		FutureTradeData m_futureTradeData;
 		FutureBookData m_futureBookData;
+		FutureFundingData m_futureFundingData;
 
 		template <typename FeedType>
 		SingleMarketDataFeed* GetSingleFeed(const FeedType id) const;

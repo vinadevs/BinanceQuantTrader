@@ -174,6 +174,13 @@ void SynchronousMarketDataFeed::UpdateFutureBookData(const binapi::ws::future_bo
 	m_syncMarketData->m_futureBookData.m_asks->SetData(asks);
 }
 
+void SynchronousMarketDataFeed::UpdateFutureFundingData(const binapi::ws::future_funding_rate_t& funding)
+{
+	m_syncMarketData->m_futureFundingData.m_eventTimeMs->SetData(funding.E);
+	m_syncMarketData->m_futureFundingData.m_fundingRate->SetData(funding.r);
+	m_syncMarketData->m_futureFundingData.m_fundingTimeMs->SetData(funding.T);
+}
+
 void SynchronousMarketDataFeed::UpdateMiniTickerData(const binapi::ws::mini_ticker_t& mini)
 {
 	m_syncMarketData->m_individualMiniTickerData.m_eventTimeMs->SetData(mini.E);
