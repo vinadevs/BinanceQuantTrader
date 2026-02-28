@@ -90,9 +90,13 @@ namespace QuantitativeModel {
 		void AnalysisAllBookTickers(const MarketData::AllMarketTickerData& data);
 		void AnalysisAllMarketDepth(const MarketData::AllPartDepthData& data);
 		void AnalysisAllMarketDepthDiff(const MarketData::AllDiffDepthData& data);
+		void AnalysisFutureTrade(const MarketData::FutureTradeData& data);
+		void AnalysisFutureBook(const MarketData::FutureBookData& data);
+		void AnalysisFutureFunding(const MarketData::FutureFundingData& data);
 
 		// not thread safe, must be called with a lock on m_mutex
-		const MarketDataSignals& GetMarketDataSignals() const {
+		const MarketDataSignals& GetMarketDataSignals() const
+		{
 			return m_marketDataSignals;
 		}
 

@@ -15,7 +15,7 @@
 
 using namespace RiskManagement;
 
-RiskManagement::DerivativesRiskModel::DerivativesRiskModel(const tinyxml2::XMLElement* riskManagementConfigXml)
+DerivativesRiskModel::DerivativesRiskModel(const tinyxml2::XMLElement* riskManagementConfigXml)
 {
 	assert(riskManagementConfigXml);
 	// Load risk limits from XML configuration
@@ -28,15 +28,15 @@ RiskManagement::DerivativesRiskModel::DerivativesRiskModel(const tinyxml2::XMLEl
 	m_riskLimits.m_maxVolume = riskManagementConfigXml->DoubleAttribute("MaxVolume");
 }
 
-bool RiskManagement::DerivativesRiskModel::CanTradeNow(
-	const const RiskTradingGreeks& g,
+bool DerivativesRiskModel::CanTradeNow(
+	const const RiskTradingGreeks& geeks,
 	const double pos, 
 	const double edge,
 	const double pnl,
 	const double vol) const noexcept
 {
 	if (std::abs(pos) > m_riskLimits.m_maxPositionSize) return false;
-	if (std::abs(g.m_delta) > m_riskLimits.m_maxDelta) return false;
+	if (std::abs(geeks.m_delta) > m_riskLimits.m_maxDelta) return false;
 	if (pnl < -m_riskLimits.m_maxLoss) return false;
 	if (edge < m_riskLimits.m_minEdge) return false;
 	if (vol > m_riskLimits.m_maxVolume) return false;

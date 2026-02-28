@@ -24,7 +24,7 @@ namespace QuantitativeModel {
        {
            double m_spotMiddlePrice; // 0.5*(spot.bid.price + spot.ask.price);
            double m_fundingRate; // per year
-           double m_timeToExpiry; // year fraction
+           std::size_t m_timeToExpiry; // year fraction
        };
 
        double Compute(const ModelParams& param) const noexcept;

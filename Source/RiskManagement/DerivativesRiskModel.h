@@ -28,19 +28,20 @@ namespace RiskManagement {
     class DLL_CLASS_RISKMANAGEMENT_EXPORTS GreeksCalculator final
     {
     public:
-        inline RiskTradingGreeks Spot(double qty) const noexcept
+        static inline RiskTradingGreeks Spot(const double qty) noexcept
         {
             return { qty, 0.0, 0.0 };
         }
 
-        inline RiskTradingGreeks Futures(double qty, double carry) const noexcept
+        static inline RiskTradingGreeks Futures(const double qty, const double carry) noexcept
         {
             return { -qty, 0.0, carry * qty };
         }
 
-        inline RiskTradingGreeks Combine(const RiskTradingGreeks& a, const RiskTradingGreeks& b) const noexcept
+        static inline RiskTradingGreeks Combine(const RiskTradingGreeks& a, const RiskTradingGreeks& b) noexcept
         {
-            return {
+            return
+            {
                 a.m_delta + b.m_delta,
                 a.m_gamma + b.m_gamma,
                 a.m_theta + b.m_theta
@@ -48,20 +49,33 @@ namespace RiskManagement {
         }
     };
 
+    // DerivativesRiskModel encapsulates risk management logic for derivatives trading.
+    // Responsibilities:
+    // - Initializes risk trading limits from an XML configuration (riskManagementConfigXml).
+    // - Provides CanTradeNow method to evaluate if a trade can be executed based on:
+    //   - RiskTradingGreeks (g): Position greeks (delta, gamma, theta).
+    //   - pos: Current position size.
+    //   - edge: Expected trading edge (alpha).
+    //   - pnl: Current profit and loss.
+    //   - vol: Market volatility.
+    // - Maintains internal risk limits (m_riskLimits) for decision-making.
+    // Usage:
+    // - Constructed with XML config for flexible risk parameterization.
+    // - Used in risk management modules to enforce trading constraints and prevent excessive risk.
     class DLL_CLASS_RISKMANAGEMENT_EXPORTS DerivativesRiskModel final
     {
     public:
         explicit DerivativesRiskModel(const tinyxml2::XMLElement* riskManagementConfigXml);
 
         bool CanTradeNow(
-            const const RiskTradingGreeks& g,
+            const const RiskTradingGreeks& geeks,
             const double pos,
             const double edge,
             const double pnl,
             const double vol) const noexcept;
 
     private:
-		RiskTradingLimits m_riskLimits;
+    RiskTradingLimits m_riskLimits;
     };
 };
 
