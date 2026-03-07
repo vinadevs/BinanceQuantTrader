@@ -123,8 +123,8 @@ namespace MarketData
 		TRADE_ID,
 		PRICE,
 		QUANTITY,
-		BUYER_ORDER_ID,
-		SELLER_ORDER_ID,
+		FIRST_TRADE_ID,
+		LAST_TRADE_ID,
 		TRADE_TIME,
 		IS_BUYER_MARKET_MAKER,
 		EVENT_TIME_MS
@@ -295,8 +295,8 @@ namespace MarketData
 			case FutureTradeID::TRADE_ID: os << "TRADE_ID"; break;
 			case FutureTradeID::PRICE: os << "PRICE"; break;
 			case FutureTradeID::QUANTITY: os << "QUANTITY"; break;
-			case FutureTradeID::BUYER_ORDER_ID: os << "BUYER_ORDER_ID"; break;
-			case FutureTradeID::SELLER_ORDER_ID: os << "SELLER_ORDER_ID"; break;
+			case FutureTradeID::FIRST_TRADE_ID: os << "FIRST_TRADE_ID"; break;
+			case FutureTradeID::LAST_TRADE_ID: os << "LAST_TRADE_ID"; break;
 			case FutureTradeID::TRADE_TIME: os << "TRADE_TIME"; break;
 			case FutureTradeID::IS_BUYER_MARKET_MAKER: os << "IS_BUYER_MARKET_MAKER"; break;
 			case FutureTradeID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
