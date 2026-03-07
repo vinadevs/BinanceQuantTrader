@@ -1,54 +1,69 @@
 # Binance Quantitative Trader Framework
 
-A **complete, extensible, and low-latency quantitative trading framework for cryptocurrency** built on **Modern C++**, designed for researchers and developers to implement and deploy custom crypto trading strategies on the **Binance Exchange**.
+A **complete, extensible, cross platforms and low-latency quantitative trading engine/framework/library for cryptocurrency** built on **Modern C++**, designed for researchers, developers, quants to implement and deploy custom crypto trading strategies on the **Binance Exchange**.
 
-This framework handles all core components of a production trading system—including real-time market data, execution, risk management, and backtesting—allowing developers to focus solely on building strategy logic.
+This framework handles all core components of a production trading system—including real-time market data pine line, order execution, quantitative modeling, risk management, historical replay and backtesting simulators, allowing developers to focus solely on building strategy logic.
 
 ---
 
 ## 📈 Why This Framework?
-- Ideal for developers and learners who want to study quantitative trading, market microstructure, and algo/HFT system design through a real, production-style framework.
+- Ideal for people who want to study quantitative finance, asset trading, market microstructure, and algo/HFT system design through a real, production-style framework.
 - Built for **speed**, **stability**, and **extensibility**.
-- Abstracts away exchange complexity and system plumbing.
+- Abstracts away exchange complexity and system plumbing, it is runnable from order upstream (OMS) to getting ack by downstream (Exchange).
 - Lets developers focus 100% on **alpha generation**.
-- Suitable for research, live trading, and HFT experimentation.
+- Suitable for study, research, live trading, and algo experimentation.
 
 ---
 
 ## 🚀 Key Features
 
 ### **1. Modular Strategy Plug-In Architecture**
-- Clean, event-driven interface for adding custom strategies.
-- Developers only write trading logic; infrastructure is fully handled.
-- Suitable for rapid prototyping and deployment of low-latency trading algos.
+- Clean, event-driven interface for adding custom strategies (Auto, Full-Auto, Semi-Auto)
+- Developers only write trading logic while infrastructure is fully handled by the engine.
+- Suitable for rapid prototyping and deployment of beta trading algorithms.
 
 ### **2. High-Performance Low-Latency Core**
-- Millisecond-level processing speeds.
-- Optimized concurrency model for high-frequency trading.
-- Efficient handling of order book updates, execution events, and tick data.
+- Millisecond-level processing speeds with mordern C++ standards.
+- Optimized concurrency model by separated trading tasks.
+- Applied HFT techniques like lock free, compile-time dispatch, constexpr.
 
 ### **3. Real-Time Market Data Integration**
-- Full integration with **Binance WebSocket streams** (depth, trades, klines, system events).
+- Full integration with **Binance WebSocket streams** (book depth, aggregate trade, candle line, funding rate).
 - Normalized data models to ensure consistency across all strategy modules.
+- Low-latency tick by tick feeding system.
 
 ### **4. Backtesting & Simulation Engine**
-- Integrates an advanced Exchange simulator (Matching Engine) which provides liquidity for strategy's order.
-- Supports historical simulations with realistic fill modeling.
-- Models latency, queue position, slippage, and market microstructure.
-- Provides Sharpe ratio, drawdown, win rate, PnL curves, volatility metrics, and more.
+- Integrates an Exchange Simulator (Matching Engine) which provides liquidity to test strategy's orders.
+- Supports historical simulations with realistic execution modeling.
+- Best price matching, queue position and market microstructure.
+- Storing historical market data and replay systems.
 
-### **5. Robust Risk Management Layer**
+### **5. Quantitative models & libraries**
+- Integrates quantlib library and basic quantitative components.
+- Pricing models for cash, future and option trading.
+
+### **6. Robust Risk Management Layer**
+- Exchange compliance rule bypass.
 - Position limits, stop-loss rules, leverage caps, and exposure constraints.
-- Real-time capital protection and algorithm oversight.
+- Real-time algorithm oversight, trading guard.
+- Risk models with sharpe ratio, drawdown, win rate, PnL curves, volatility metrics, and more.
 
-### **6. Machine Learning & Analytics Integration**
+### **7. Machine Learning & Analytics Integration**
 - Optional ML modules for prediction, trend detection, and volatility forecasting.
 - Supports offline training and online adaptation.
 
-### **7. Production-Ready Infrastructure**
-- Built-in logging, error recovery, reconnect logic, and monitoring.
+### **8. Full strategy samples**
+- A set of strategy/algorithm from spot to future markets.
+- Supports many strategy types from excecution (VWAP), market monitoring (trend following), derivatives (price arbitrage) and more.
+
+### **9. Python plug-in system**
+- Allows python developers receive normalized market data through socket connection.
+- Supports external large order using python protobuf message for execution strategy like VWAP/TWAP/PV.
+
+### **10. Production-Ready Infrastructure**
+- Built-in logging, error recovery, failure handling, and monitoring.
 - Designed for 24/7 crypto trading operations.
-- Clear separation of concerns: framework handles core mechanics; developers handle strategy logic.
+- Clear separation of concerns: engine handles core mechanics; developers/quants handle strategy logic.
 
 ---
 
@@ -57,27 +72,34 @@ This framework handles all core components of a production trading system—incl
 ### **Modern C++ Foundation**
 - Written in **C++17/20**.
 
+### **Python As Plugin**
+- Using python for alpha reseaching and strategy prototype.
+
 ---
 
-## 🧪 Strategy Development
+## 🧪 Example how a strategy will be created
 Implement your strategy by inheriting and overriding core virtual callbacks:
 
 ```cpp
-class SmartLongShortStrategy :
-    public TradingStrategyBase,
-    public MarketData::MarketDataObserver
+class SmartLongShortStrategy : // your strategy
+    public TradingStrategyBase, // strategy core by the engine
+    public MarketData::MarketDataObserver // market data updater
 {
 public:
-    explicit SmartLongShortStrategy(const std::string& cfgPath,
-                                    MarketData::RealTimeMarketData* marketData,
-                                    UserAccount::Trader* trader,
-                                    ComplianceNRegulatory::BinanceTradingRules* rules);
-
-    void StartLive() override;
-    void StopLive() override;
-
+    explicit SmartLongShortStrategy(const std::string& cfgPath, // strategy config file
+                                    MarketData::RealTimeMarketData* marketData, // market data
+                                    UserAccount::Trader* trader, // order sender
+                                    ComplianceNRegulatory::BinanceTradingRules* rules); // exchange rule bypass engine
+    // Future order book depth event
+    bool OnBookDataFutureChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+    // Future trade data update event
+    bool OnTradeDataFutureChange(MarketData::MarketDataSubject* marketData, const std::string& symbol) override;
+    // Start strategy and send order
+    void StartTrade() override;
+    // Leave the market and calculate PNL
+    void StopTrade() override;
 private:
-    std::vector<std::string> m_targetSymbols;
+    // Quantitative models
     std::unique_ptr<QuantitativeModel::MarketDataAnalyzer> m_analyzer;
 };
 ```
@@ -86,17 +108,14 @@ private:
 
 ## 📊 Backtesting Example
 ```cpp
-BQTBacktestEngine bt;
-bt.loadHistoricalData("BTCUSDT");
-bt.setStrategy(std::make_unique<SmartLongShortStrategy>());
-bt.run();
-bt.report();
+auto simulator = std::make_unique<BinanceExchangeSimulator>(configSimulatorXml.get());
+simulator->Run();
 ```
 
 ---
 
 ## 📜 License
- Apache-2.0 license
+ Apache-2.0 license.
 
 
 
