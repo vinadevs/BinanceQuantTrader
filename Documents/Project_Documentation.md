@@ -117,13 +117,15 @@ flowchart LR
 
 | Module | Description |
 |---------|--------------|
+| **AlphaResearch** | Using python for alpha prototying. |
+| **AnalysisTools** | Using python for data analysing. |
 | **AppData** | Handles local storage, logs, and runtime configuration caches. |
 | **ApplicationTest / UnitTest** | Test harness for integration and functional validation. |
 | **BackTesting** | Historical simulation engine for strategy performance evaluation. |
 | **BinanceQuantTrader** | Main executable entry point; system bootstrapper. |
 | **BQTViewer** | GUI or visualization client for monitoring strategy behavior. |
 | **ComplianceNRegulatory** | Trade rule validation and exchange compliance layer. |
-| **Configurations / SettingNConfig** | Loads system and strategy-level configurations (JSON/YAML). |
+| **Configurations / SettingNConfig** | Engine and strategy-level configurations (XML). |
 | **CurlAPI** | Base HTTP client wrapper around libcurl for REST calls. |
 | **Database / SqlDatabase** | Trade and market data persistence layer (SQLite / MySQL). |
 | **ExchangeConnectivity** | Manages WebSocket and REST API connectivity to Binance. |
@@ -139,6 +141,7 @@ flowchart LR
 | **MiddlewareMQ** | Asynchronous message queue connecting components. |
 | **OrderManagement** | Constructs and validates trade orders. |
 | **OrderRouting** | Routes validated orders to appropriate exchange endpoints. |
+| **ParentOrderOMS** | External parent order sender by python. |
 | **PortfolioManager** | Maintains account positions, PnL, and margin calculations. |
 | **PythonPlugin** | Provides Python-based extensions or strategy scripting. |
 | **QuantitativeModel / QuantLibrary** | Core quantitative logic, signal scoring, and modeling. |
@@ -146,7 +149,7 @@ flowchart LR
 | **RestAPI** | REST-based trade and account operations. |
 | **RiskManagement** | Enforces per-symbol and per-account risk limits. |
 | **StaticData** | Loads instrument metadata (symbols, tick sizes, leverage). |
-| **TradingStrategies** | Strategy layer (e.g., SmartLongShort, MeanReversion, VWAP). |
+| **TradingStrategies** | Strategy layer (e.g., SmartLongShort, Arbitrage, VWAP). |
 | **UserAccount** | Trade user profile, balance tracking, and credential management. |
 | **WindowsService** | Windows service runner for 24/7 deployment. |
 
@@ -176,61 +179,25 @@ flowchart LR
 
 | Layer | Technology |
 |-------|-------------|
-| Programming Language | C++17 / C++20 |
-| Messaging | ZeroMQ (internal) |
+| Programming Language | C++17 / C++20 / Python3 |
+| Messaging | ZeroMQ (internal)/boostasio(external) |
 | RPC Interface | gRPC / Protobuf |
 | HTTP/REST | libcurl |
 | Database | SQLite / MySQL |
-| Build System | CMake |
-| Unit Testing | GoogleTest |
-| Platform | Windows / Linux (service mode supported) |
+| Build System | CMake/Visual Studio |
+| Unit Testing | GoogleTest/BoostTest | 
+| Platform | Windows / Linux / Mac (service mode supported) |
 
 ---
 
-## 5. Folder Structure
+## 5. Documents
 
-```
-/src
- ├── AppData/
- ├── ApplicationTest/
- ├── BackTesting/
- ├── BinanceQuantTrader/
- ├── BQTViewer/
- ├── ComplianceNRegulatory/
- ├── Configurations/
- ├── Database/
- ├── ExchangeConnectivity/
- ├── GrpcProtobufMessage/
- ├── IndicatorNSignals/
- ├── KernelTrading/
- ├── MarketData/
- ├── MessageHubServer/
- ├── MiddlewareMQ/
- ├── OrderManagement/
- ├── OrderRouting/
- ├── PortfolioManager/
- ├── QuantitativeModel/
- ├── RiskManagement/
- ├── TradingStrategies/
- ├── UserAccount/
- ├── WindowsService/
- ├── tests/
- └── docs/
-      ├── CodingStyleGuide.md
-      └── ProjectDocumentation.md
-```
-
----
-
-## 6. Summary
-
-✅ Modular, multi-threaded architecture  
-✅ Real-time and backtesting unified pipeline  
-✅ gRPC external control & ZeroMQ internal bus  
-✅ REST/WebSocket connectivity to Binance  
-✅ Extensible quantitative model layer  
-✅ Clean coding style and documentation consistency  
-
-> **Binance Quant Trader** is engineered for robust, extensible, and maintainable quantitative trading at institutional quality.
+| File | Description |
+|-------|-------------|
+| Bounce_BQT_instances.txt | How to run applications |
+| BQT_Coding_Style.md | How to write and read code |
+| HOW_TO_BUILD.md | Building source code guide |
+| Project_Documentation.md | Detail about this repository |
+| Strategy_Documentaion.md | explain about sample strategies |
 
 ---
