@@ -147,7 +147,7 @@
     <ClInclude Include="DerivativesArbitrageStrategy.h">
       <Filter>Derivatives Arbitrage</Filter>
     </ClInclude>
-    <ClInclude Include="MarketQuoter.h">
+    <ClInclude Include="InstrumentQuoter.h">
       <Filter>Derivatives Arbitrage</Filter>
     </ClInclude>
   </ItemGroup>
@@ -218,7 +218,7 @@
     <ClCompile Include="DerivativesArbitrageStrategy.cpp">
       <Filter>Derivatives Arbitrage</Filter>
     </ClCompile>
-    <ClCompile Include="MarketQuoter.cpp">
+    <ClCompile Include="InstrumentQuoter.cpp">
       <Filter>Derivatives Arbitrage</Filter>
     </ClCompile>
   </ItemGroup>

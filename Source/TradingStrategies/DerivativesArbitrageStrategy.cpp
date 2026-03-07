@@ -197,13 +197,29 @@ void DerivativesArbitrageStrategy::InitializeParameters(const std::string& strat
 		throw std::runtime_error("DerivativesArbitrageStrategy: Invalid arbitrage type="
 			+ std::string(arbitrageTypeXml->Attribute("Value")));
 	}
-	const XMLElement* entryThresholdXml = algorithmConfigXml->FirstChildElement("EntryEdgePriceThreshold");
-	assert(entryThresholdXml);
-	m_entryThreshold = entryThresholdXml->DoubleAttribute("Value");
-	if (m_entryThreshold <= 0)
+	const XMLElement* entryThresholdDiffXml = algorithmConfigXml->FirstChildElement("EntryEdgePriceThresholdDiff");
+	assert(entryThresholdDiffXml);
+	m_entryThresholdDiff = entryThresholdDiffXml->DoubleAttribute("Value");
+	if (m_entryThresholdDiff <= 0)
 	{
 		throw std::runtime_error("DerivativesArbitrageStrategy: Invalid entry edge price threshold="
-			+ std::to_string(m_entryThreshold) + ", must be greater than 0.");
+								 + std::to_string(m_entryThresholdDiff) + ", must be greater than 0.");
+	}
+	const XMLElement* quoteOffsetXml = algorithmConfigXml->FirstChildElement("QuoteOffset");
+	assert(quoteOffsetXml);
+	m_quoteOffset = quoteOffsetXml->DoubleAttribute("Value");
+	if (m_quoteOffset <= 0)
+	{
+		throw std::runtime_error("DerivativesArbitrageStrategy: Invalid quote offset="
+								 + std::to_string(m_quoteOffset) + ", must be greater than 0.");
+	}
+	const XMLElement* tickWidthXml = algorithmConfigXml->FirstChildElement("TickWidth");
+	assert(tickWidthXml);
+	m_tickWidth = tickWidthXml->DoubleAttribute("Value");
+	if (m_tickWidth <= 0)
+	{
+		throw std::runtime_error("DerivativesArbitrageStrategy: Invalid tick width="
+								 + std::to_string(m_tickWidth) + ", must be greater than 0.");
 	}
 	SetupStrategyLifeTime(m_strategyCfgXml.get());
 	// when we use alarm system, we need to set up the order scheduler
@@ -223,6 +239,14 @@ void DerivativesArbitrageStrategy::InitializeMarketDataSnapshots()
 	}
 }
 
+void DerivativesArbitrageStrategy::InitializeInstrumentQuoters()
+{
+	for (const auto& symbol : m_targetTradeSymbols)
+	{
+		m_instrumentQuoters.emplace(symbol, InstrumentQuoter(symbol, m_quoteOffset, m_tickWidth));
+	}
+}
+
 void DerivativesArbitrageStrategy::SetupOrderScheduler()
 {
 	m_logger->Info("Setting up alarm system for order sending interval.");
@@ -234,7 +258,7 @@ void DerivativesArbitrageStrategy::SetupOrderScheduler()
 	if (alarmIntervalSecond <= 0)
 	{
 		throw std::runtime_error("DerivativesArbitrageStrategy: Invalid alarm interval second="
-			+ std::to_string(alarmIntervalSecond) + ", must be greater than 0.");
+								 + std::to_string(alarmIntervalSecond) + ", must be greater than 0.");
 	}
 	AlarmSystem::SetRepeatInterval(alarmIntervalSecond);
 	m_strategyOrderScheduler = StrategyOrderScheduler::ALARM_BASED;
@@ -294,7 +318,7 @@ void DerivativesArbitrageStrategy::OnAlarmTriggered(const int passToDerived)
 
 	m_logger->Info("Alarm triggered, start sending orders based on fair pricing model...");
 
-	std::lock_guard lock(m_marketDataMutex); // only lock here and dont add any blocking code inside child functions
+	std::lock_guard lock(m_marketDataMutex);  // only lock here and dont add any blocking code inside child functions
 
 	for (const auto& symbol : m_targetTradeSymbols)
 	{
@@ -304,40 +328,44 @@ void DerivativesArbitrageStrategy::OnAlarmTriggered(const int passToDerived)
 		m_logger->Info("Trading for symbol=" + symbol);
 
 		// Calculate the mid price of the spot as the reference price for fair value calculation,
-		// we can also use other price like last price or mark price, but mid price is more commonly 
+		// we can also use other price like last price or mark price, but mid price is more commonly
 		// used in arbitrage strategy as it represents the current market consensus price and is
 		// less likely to be manipulated by large orders
 		const double spotMid = 0.5 * (snapshot->m_spotBestBidPrice + snapshot->m_spotBestAskPrice);
 
-		// Fair value calculation based on cost of carry model, which takes into account the spot price, 
+		// Fair value calculation based on cost of carry model, which takes into account the spot price,
 		// funding rate and time to expiry of the future contract
-		const double fairPrice = m_fairValueModel->Compute({ spotMid, snapshot->m_fundingRate, snapshot->m_timeToExpiry });
+		const double fairPrice = m_fairValueModel->Compute({spotMid, snapshot->m_fundingRate, snapshot->m_timeToExpiry});
 
-		// Calculate the edge of the trade, which is the price difference between the future and the fair value, 
+		// Calculate the edge of the trade, which is the price difference between the future and the fair value,
 		// this edge should be greater than the entry threshold from external config to enter a trade
 		const double edgeDiff = snapshot->m_futureBestBidPrice - fairPrice;
 
 		// Risk management calculation, we calculate the greeks for both spot and future positions and combine them
 		// to get the overall risk exposure of the trade
 
-		auto symbolInfo = GetSymbolInfo(symbol);
+		auto&	   symbolInfo = GetSymbolInfo(symbol);
 		const auto totalTradedVolumeForSymbol = symbolInfo.GetTotalTradedVolume();
-		auto geeksSpot = GreeksCalculator::Spot(totalTradedVolumeForSymbol);
-		auto geeksFuture = GreeksCalculator::Futures(totalTradedVolumeForSymbol, snapshot->m_fundingRate);
-		auto geeksAggregate = GreeksCalculator::Combine(geeksSpot, geeksFuture);
+		auto	   geeksSpot = GreeksCalculator::Spot(totalTradedVolumeForSymbol);
+		auto	   geeksFuture = GreeksCalculator::Futures(totalTradedVolumeForSymbol, snapshot->m_fundingRate);
+		auto	   geeksAggregate = GreeksCalculator::Combine(geeksSpot, geeksFuture);
 
 		// Risk check
-		const double pnl = { 0 }; // TODO - we can also calculate the current pnl based on the market data snapshot and the position information from portfolio management
+		const double pnl = {0};	 // TODO - we can also calculate the current pnl based on the market data snapshot and the position information from portfolio management
 		if (m_riskModel->CanTradeNow(geeksAggregate, totalTradedVolumeForSymbol, edgeDiff, pnl, snapshot->m_marketSpotCummulativeVolume) == false)
-			return; // if risk check failed, skip sending orders and wait for next alarm trigger
+			return;	 // if risk check failed, skip sending orders and wait for next alarm trigger
 
 		// Generate orders based on edge and risk check, here we simply use a fixed threshold for demo, but in real case
 		// we can dynamically adjust the threshold based on market conditions and risk level
-		if (edgeDiff > m_entryThreshold)
+		if (edgeDiff > m_entryThresholdDiff)
 		{
 			double qty = 0.01;
-			// Send orders to open positions, we can also use different order types like limit order or market order based on the market conditions and risk level
-			symbolInfo.SetTotalTradedVolume(totalTradedVolumeForSymbol + qty);
+			// Send orders to open positions, we can also use different order types like limit order or market order based on the market conditions and risk level		
+			if (auto quoter = m_instrumentQuoters.find(symbol); quoter != m_instrumentQuoters.end())
+			{
+				quoter->second.OnQuoteAndHedgeOrder(fairPrice, qty, snapshot->m_spotBestBidPrice, snapshot->m_spotBestAskPrice);
+				symbolInfo.SetTotalTradedVolume(totalTradedVolumeForSymbol + qty);
+			}
 		}
 	}
 

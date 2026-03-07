@@ -16,7 +16,9 @@
 
 <Algorithm>
   <ArbitrageType Type="QuoteFutureAndHedgeSpot">
-  <EntryEdgePriceThreshold Diff="100">
+  <EntryEdgePriceThreshold Diff="100">  
+  <QuoteOffset Value="0.5">
+  <TickWidth Value="100">
 </Algorithm>
 
 <RiskTradingLimits>

@@ -15,6 +15,7 @@
 #include "../KernelTrading/bqt_symbol.h"
 
 #include "TradingStrategyBase.h"
+#include "InstrumentQuoter.h"
 
 #include <string>
 #include <memory>
@@ -89,7 +90,7 @@ namespace TradingStrategies {
 		double m_fundingRate{ 0.0 };
 		double m_marketSpotCummulativeVolume{ 0.0 };
 		double m_marketFutureCummulativeVolume{ 0.0 };
-		std::size_t m_timeToExpiry{ 0.0 };
+		double m_timeToExpiry{ 0.0 };
 	};
 
 	struct SymbolMononitorInfo final
@@ -147,6 +148,7 @@ namespace TradingStrategies {
 	private:
 		void InitializeMarketDataAnalyzer();
 		void InitializeMarketDataSnapshots();
+		void InitializeInstrumentQuoters();
 		void SetupOrderScheduler();
 		void CreateBinanceExchangeProfile();
 		void CreatePortfolioManagement();
@@ -161,13 +163,18 @@ namespace TradingStrategies {
 		// The minimum price difference between the futures and the spot to enter a trade
 		// This threshold should be greater than the transaction costs (including trading fees,
 		// funding fees, and slippage) to ensure profitability
-		double m_entryThreshold{ 0.0 };
+		double m_entryThresholdDiff{ 0.0 };
+		// The offset for quoting, which is the minimum distance between our theoretical price and the bid/offer prices of our orders,
+		double m_quoteOffset{0.0};
+		// The tick width of the trading instrument, which is the minimum price increment allowed by the exchange, used for aligning our order prices to valid levels
+		double m_tickWidth{0.0};
 		// How to quote and hedge, either quote the spot and hedge with future, or quote the future and hedge with spot, 
 		// or dynamically choose to quote and hedge based on market conditions
 		ArbitrageType m_arbitrageType{ ArbitrageType::QUOTE_SPOT_AND_HEDGE_FUTURE };
 		std::vector<std::string> m_targetTradeSymbols;
 		std::unordered_map<std::string, KernelTrading::BqtSymbol> m_symbolMonitorInfos; // symbol info for monitoring and trading, including whether it's spot or future symbol
 		std::unordered_map<std::string, std::unique_ptr<MarketDataSnapshot>> m_marketDataSnapshots; // latest market data snapshot for each symbol
+		std::unordered_map<std::string, InstrumentQuoter> m_instrumentQuoters;	 // instrument quoter for each symbol, responsible for quoting for the symbol
 		std::unique_ptr<QuantitativeModel::MarketDataAnalyzer> m_marketDataAnalyzer;
 		std::unique_ptr <RiskManagement::DerivativesRiskModel> m_riskModel;
 		std::unique_ptr<QuantitativeModel::CostOfCarryFuturesPricer> m_fairValueModel;
