@@ -68,7 +68,7 @@ namespace RiskManagement {
         explicit DerivativesRiskModel(const tinyxml2::XMLElement* riskManagementConfigXml);
 
         bool CanTradeNow(
-            const const RiskTradingGreeks& geeks,
+            const RiskTradingGreeks& geeks,
             const double pos,
             const double edge,
             const double pnl,

@@ -13,11 +13,11 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Risk Metrics">
-      <UniqueIdentifier>{e2430303-294f-4a20-a029-4a811924b050}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Risk Engine">
       <UniqueIdentifier>{22ac1ca8-fdb1-4765-bc1f-63b1b96939b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Strategy Metrics">
+      <UniqueIdentifier>{e2430303-294f-4a20-a029-4a811924b050}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,7 +34,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VWAPOrderExecutionRiskMetrics.h">
-      <Filter>Risk Metrics</Filter>
+      <Filter>Strategy Metrics</Filter>
     </ClInclude>
     <ClInclude Include="RiskManager.h">
       <Filter>Risk Engine</Filter>
@@ -63,7 +63,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VWAPOrderExecutionRiskMetrics.cpp">
-      <Filter>Risk Metrics</Filter>
+      <Filter>Strategy Metrics</Filter>
     </ClCompile>
     <ClCompile Include="RiskManager.cpp">
       <Filter>Risk Engine</Filter>
