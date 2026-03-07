@@ -155,6 +155,7 @@
     <ClInclude Include="dlldefine.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="FutureRiskEngine.h" />
+    <ClInclude Include="DerivativesRiskModel.h" />
     <ClInclude Include="RiskDefinitions.h" />
     <ClInclude Include="SpotRiskEngine.h" />
     <ClInclude Include="VWAPOrderExecutionRiskMetrics.h" />
@@ -165,6 +166,7 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FutureRiskEngine.cpp" />
+    <ClCompile Include="DerivativesRiskModel.cpp" />
     <ClCompile Include="SpotRiskEngine.cpp" />
     <ClCompile Include="VWAPOrderExecutionRiskMetrics.cpp" />
     <ClCompile Include="pch.cpp">

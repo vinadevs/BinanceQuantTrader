@@ -147,6 +147,9 @@
     <ClInclude Include="DerivativesArbitrageStrategy.h">
       <Filter>Derivatives Arbitrage</Filter>
     </ClInclude>
+    <ClInclude Include="InstrumentQuoter.h">
+      <Filter>Derivatives Arbitrage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -213,6 +216,9 @@
       <Filter>Strategy Host</Filter>
     </ClCompile>
     <ClCompile Include="DerivativesArbitrageStrategy.cpp">
+      <Filter>Derivatives Arbitrage</Filter>
+    </ClCompile>
+    <ClCompile Include="InstrumentQuoter.cpp">
       <Filter>Derivatives Arbitrage</Filter>
     </ClCompile>
   </ItemGroup>

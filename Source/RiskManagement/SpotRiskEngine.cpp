@@ -34,5 +34,31 @@ SpotRiskEngine::~SpotRiskEngine()
 
 RiskReport SpotRiskEngine::AssessTradingRisk(const OrderManagement::Order* order)
 {
-	return RiskReport();
+	RiskReport report;
+	// 1. Check if the order exceeds the max position size limit
+	//double currentPositionSize = m_portfolio->GetSpotPositionSize(order->GetSymbol());
+	//double newPositionSize = currentPositionSize + order->GetQuantity();
+	//double maxPositionSize = m_riskManager->GetMaxPositionSize();
+	//if (std::abs(newPositionSize) > maxPositionSize)
+	//{
+	//	report.m_isRisky = true;
+	//	report.m_riskReason = "Exceeds max position size limit";
+	//	m_logger->Warn("Risk assessment failed for order: " + order->GetOrderId() + ". Reason: " + report.m_riskReason);
+	//	return report;
+	//}
+	//// 2. Check if the order would cause the account to exceed risk limits
+	//double accountBalance = m_riskManager->GetAccountBalance();
+	//double riskPerTradePercent = m_riskManager->GetRiskPerTradePercent();
+	//double riskAmount = accountBalance * riskPerTradePercent / 100.0;
+	//double potentialLoss = std::abs(order->GetQuantity() * order->GetPrice() - currentPositionSize * order->GetPrice());
+	//if (potentialLoss > riskAmount)
+	//{
+	//	report.m_isRisky = true;
+	//	report.m_riskReason = "Potential loss exceeds risk per trade limit";
+	//	m_logger->Warn("Risk assessment failed for order: " + order->GetOrderId() + ". Reason: " + report.m_riskReason);
+	//	return report;
+	//}
+	//// If all checks pass, the order is not considered risky
+	//report.m_isRisky = false;
+	return report;
 }

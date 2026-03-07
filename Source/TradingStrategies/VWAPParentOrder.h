@@ -24,7 +24,7 @@ namespace TradingStrategies {
 	struct VWAPComponents final
 	{
 		std::unique_ptr<VWAPVolumeProfile> m_vwapVolumeProfilier; // VWAP volume profile calculator
-		std::unordered_map<size_t, double> m_executedVolume;
+		std::unordered_map<std::size_t, double> m_executedVolume;
 		std::vector<double> m_executedPrices;
 		std::vector<double> m_vwapPrices;
 		std::vector<double> m_slippageSeries;

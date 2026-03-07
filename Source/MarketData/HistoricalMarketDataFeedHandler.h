@@ -13,6 +13,10 @@
 #include "MarketDataSubject.h"
 #include "SynchronousMarketDataFeed.h"
 
+namespace LibraryUtils {
+	class Logger;
+}
+
 // A feed handler for historical market data, this class is responsible for receiving,
 // processing, and distributing historical market data from historical data sources
 
@@ -21,7 +25,7 @@ namespace MarketData {
 	class HistoricalMarketDataFeedHandler : public MarketDataSubject
 	{
 	public:
-		HistoricalMarketDataFeedHandler();
+		HistoricalMarketDataFeedHandler(LibraryUtils::Logger* logger);
 
 		// market data feed access
 		bool CreateNewMarketDataFeed(const std::string& symbol);
@@ -36,5 +40,6 @@ namespace MarketData {
 		binapi::ws::agg_trade_t BuildAggregateTradeData(const std::string& symbol, const std::unordered_map<std::string, std::string>& dataItem);
 
 		std::unique_ptr<MarketDataFeedManager> m_synchronousFeedMgr;
+		LibraryUtils::Logger* m_logger{ nullptr };
 	};
 };

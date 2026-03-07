@@ -129,3 +129,18 @@ void QuantMarketDataAnalyzer::AnalysisAllMarketDepth(const MarketData::AllPartDe
 void QuantMarketDataAnalyzer::AnalysisAllMarketDepthDiff(const MarketData::AllDiffDepthData& data)
 {
 }
+
+void QuantMarketDataAnalyzer::AnalysisFutureTrade(const MarketData::FutureTradeData& data)
+{
+
+}
+
+void QuantMarketDataAnalyzer::AnalysisFutureBook(const MarketData::FutureBookData& data)
+{
+
+}
+
+void QuantMarketDataAnalyzer::AnalysisFutureFunding(const MarketData::FutureFundingData& data)
+{
+
+}

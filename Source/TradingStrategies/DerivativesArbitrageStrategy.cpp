@@ -20,8 +20,8 @@
 #include "../QuantitativeModel/QuantOrderParammeter.h"
 #include "../QuantitativeModel/MarketDataAnalyzer.h"
 #include "../QuantitativeModel/QuantMarketDataAnalyzer.h"
-#include "../RiskManagement/SpotRiskEngine.h"
-#include "../RiskManagement/FutureRiskEngine.h"	
+#include "../QuantitativeModel/CostOfCarryFuturesPricing.h"
+#include "../RiskManagement/DerivativesRiskModel.h"
 #include "../LibraryUtils/PathUtils.h"
 #include "../LibraryUtils/FileUtils.h"
 
@@ -64,6 +64,10 @@ bool DerivativesArbitrageStrategy::OnIndividualBookTickerChange(MarketDataSubjec
 		if (auto* analyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol))
 		{
 			analyzer->AnalysisIndividualBookTicker(syncedData->m_individualBookTickerData);
+			std::lock_guard lock(m_marketDataMutex);
+			auto& snapshot = m_marketDataSnapshots[symbol];
+			snapshot->m_spotBestBidPrice = syncedData->GetSingleFeed(IndividualBookTickerID::BEST_BID_PRICE)->GetDoubleData();
+			snapshot->m_spotBestAskPrice = syncedData->GetSingleFeed(IndividualBookTickerID::BEST_ASK_PRICE)->GetDoubleData();
 			return true;
 		}
 	}
@@ -76,16 +80,85 @@ bool DerivativesArbitrageStrategy::OnIndividualBookTickerChange(MarketDataSubjec
 
 bool DerivativesArbitrageStrategy::OnTradeChange(MarketDataSubject* marketData, const std::string& symbol)
 {
+	if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
+	{
+		if (auto* analyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol))
+		{
+			analyzer->AnalysisTrade(syncedData->m_tradeData);
+			std::lock_guard lock(m_marketDataMutex);
+			auto& snapshot = m_marketDataSnapshots[symbol];
+			snapshot->m_spotLastPrice = syncedData->GetSingleFeed(TradeID::PRICE)->GetDoubleData();
+			snapshot->m_spotLastTradeVolume = syncedData->GetSingleFeed(TradeID::QUANTITY)->GetDoubleData();
+			return true;
+		}
+	}
+	else
+	{
+		m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
+	}
 	return false;
 }
 
 bool DerivativesArbitrageStrategy::OnBookDataFutureChange(MarketDataSubject* marketData, const std::string& symbol)
 {
+	if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
+	{
+		if (auto* analyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol))
+		{
+			analyzer->AnalysisFutureBook(syncedData->m_futureBookData);
+			std::lock_guard lock(m_marketDataMutex);
+			auto& snapshot = m_marketDataSnapshots[symbol];
+			snapshot->m_futureBestBidPrice = syncedData->GetSingleFeed(FutureBookTickerID::BEST_BID_PRICE)->GetDoubleData();
+			snapshot->m_futureBestAskPrice = syncedData->GetSingleFeed(FutureBookTickerID::BEST_ASK_PRICE)->GetDoubleData();
+			return true;
+		}
+	}
+	else
+	{
+		m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
+	}
 	return false;
 }
 
 bool DerivativesArbitrageStrategy::OnTradeDataFutureChange(MarketDataSubject* marketData, const std::string& symbol)
 {
+	if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
+	{
+		if (auto* analyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol))
+		{
+			analyzer->AnalysisFutureTrade(syncedData->m_futureTradeData);
+			std::lock_guard lock(m_marketDataMutex);
+			auto& snapshot = m_marketDataSnapshots[symbol];
+			snapshot->m_futureLastPrice = syncedData->GetSingleFeed(FutureTradeID::PRICE)->GetDoubleData();
+			snapshot->m_futureLastTradeVolume = syncedData->GetSingleFeed(FutureTradeID::QUANTITY)->GetDoubleData();
+			return true;
+		}
+	}
+	else
+	{
+		m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
+	}
+	return false;
+}
+
+bool DerivativesArbitrageStrategy::OnFutureFundingDataChange(MarketData::MarketDataSubject* marketData, const std::string& symbol)
+{
+	if (const auto* syncedData = marketData->GetSynchronousMarketData(symbol))
+	{
+		if (auto* analyzer = m_marketDataAnalyzer->GetQuantMarketDataAnalyzer(symbol))
+		{
+			analyzer->AnalysisFutureFunding(syncedData->m_futureFundingData);
+			std::lock_guard lock(m_marketDataMutex);
+			auto& snapshot = m_marketDataSnapshots[symbol];
+			snapshot->m_fundingRate = syncedData->GetSingleFeed(FutureFundingRateID::FUNDING_RATE)->GetDoubleData();
+			snapshot->m_timeToExpiry = syncedData->GetSingleFeed(FutureFundingRateID::FUNDING_TIME)->GetUnsignedIntData();
+			return true;
+		}
+	}
+	else
+	{
+		m_logger->Warning("Could not found synchronized market data for symbol=" + symbol);
+	}
 	return false;
 }
 
@@ -103,6 +176,51 @@ void DerivativesArbitrageStrategy::InitializeParameters(const std::string& strat
 		throw std::runtime_error("DerivativesArbitrageStrategy: Load file Xml error="
 			+ std::string(XMLDocument::ErrorIDToName(errLoadFileXml)) + ", error path:" + strategyCfgPath);
 	}
+	const XMLElement* algorithmConfigXml = m_strategyCfgXml->FirstChildElement("Algorithm");
+	assert(algorithmConfigXml);
+	const XMLElement* arbitrageTypeXml = algorithmConfigXml->FirstChildElement("ArbitrageType");
+	assert(arbitrageTypeXml);
+	if (arbitrageTypeXml->Attribute("Value") == "QuoteSpotAndHedgeFuture")
+	{
+		m_arbitrageType = ArbitrageType::QUOTE_SPOT_AND_HEDGE_FUTURE;
+	}
+	else if (arbitrageTypeXml->Attribute("Value") == "QuoteFutureAndHedgeSpot")
+	{
+		m_arbitrageType = ArbitrageType::QUOTE_FUTURE_AND_HEDGE_SPOT;
+	}
+	else if (arbitrageTypeXml->Attribute("Value") == "DynamicQuoteAndHedge")
+	{
+		m_arbitrageType = ArbitrageType::DYNAMIC_QUOTE_AND_HEDGE;
+	}
+	else
+	{
+		throw std::runtime_error("DerivativesArbitrageStrategy: Invalid arbitrage type="
+			+ std::string(arbitrageTypeXml->Attribute("Value")));
+	}
+	const XMLElement* entryThresholdDiffXml = algorithmConfigXml->FirstChildElement("EntryEdgePriceThresholdDiff");
+	assert(entryThresholdDiffXml);
+	m_entryThresholdDiff = entryThresholdDiffXml->DoubleAttribute("Value");
+	if (m_entryThresholdDiff <= 0)
+	{
+		throw std::runtime_error("DerivativesArbitrageStrategy: Invalid entry edge price threshold="
+								 + std::to_string(m_entryThresholdDiff) + ", must be greater than 0.");
+	}
+	const XMLElement* quoteOffsetXml = algorithmConfigXml->FirstChildElement("QuoteOffset");
+	assert(quoteOffsetXml);
+	m_quoteOffset = quoteOffsetXml->DoubleAttribute("Value");
+	if (m_quoteOffset <= 0)
+	{
+		throw std::runtime_error("DerivativesArbitrageStrategy: Invalid quote offset="
+								 + std::to_string(m_quoteOffset) + ", must be greater than 0.");
+	}
+	const XMLElement* tickWidthXml = algorithmConfigXml->FirstChildElement("TickWidth");
+	assert(tickWidthXml);
+	m_tickWidth = tickWidthXml->DoubleAttribute("Value");
+	if (m_tickWidth <= 0)
+	{
+		throw std::runtime_error("DerivativesArbitrageStrategy: Invalid tick width="
+								 + std::to_string(m_tickWidth) + ", must be greater than 0.");
+	}
 	SetupStrategyLifeTime(m_strategyCfgXml.get());
 	// when we use alarm system, we need to set up the order scheduler
 	SetupOrderScheduler();
@@ -111,6 +229,22 @@ void DerivativesArbitrageStrategy::InitializeParameters(const std::string& strat
 void DerivativesArbitrageStrategy::InitializeMarketDataAnalyzer()
 {
 	m_marketDataAnalyzer = std::make_unique<QuantitativeModel::MarketDataAnalyzer>(m_targetTradeSymbols, m_logger.get());
+}
+
+void DerivativesArbitrageStrategy::InitializeMarketDataSnapshots()
+{
+	for (const auto& symbol : m_targetTradeSymbols)
+	{
+		m_marketDataSnapshots.emplace(symbol, std::make_unique<MarketDataSnapshot>());
+	}
+}
+
+void DerivativesArbitrageStrategy::InitializeInstrumentQuoters()
+{
+	for (const auto& symbol : m_targetTradeSymbols)
+	{
+		m_instrumentQuoters.emplace(symbol, InstrumentQuoter(symbol, m_quoteOffset, m_tickWidth));
+	}
 }
 
 void DerivativesArbitrageStrategy::SetupOrderScheduler()
@@ -124,7 +258,7 @@ void DerivativesArbitrageStrategy::SetupOrderScheduler()
 	if (alarmIntervalSecond <= 0)
 	{
 		throw std::runtime_error("DerivativesArbitrageStrategy: Invalid alarm interval second="
-			+ std::to_string(alarmIntervalSecond) + ", must be greater than 0.");
+								 + std::to_string(alarmIntervalSecond) + ", must be greater than 0.");
 	}
 	AlarmSystem::SetRepeatInterval(alarmIntervalSecond);
 	m_strategyOrderScheduler = StrategyOrderScheduler::ALARM_BASED;
@@ -151,6 +285,8 @@ void DerivativesArbitrageStrategy::StartTrade()
 		// Create risk management engine
 		m_logger->Info("Create risk management engine.");
 		CreateRiskManagementEngines();
+		// Create pricing model
+		CreatePricingModels();
 		// Subscribe target symbols to receive real time market data
 		m_logger->Info("Subscribe target symbols.");
 		SubscribeTargetSymbols();
@@ -178,6 +314,62 @@ void DerivativesArbitrageStrategy::StopTrade()
 
 void DerivativesArbitrageStrategy::OnAlarmTriggered(const int passToDerived)
 {
+	BEGIN_STRATEGY_ORDER_SENDING_ACTIVITY
+
+	m_logger->Info("Alarm triggered, start sending orders based on fair pricing model...");
+
+	std::lock_guard lock(m_marketDataMutex);  // only lock here and dont add any blocking code inside child functions
+
+	for (const auto& symbol : m_targetTradeSymbols)
+	{
+		// Get the latest market data snapshot for the symbol, which is updated in real time by the market data event handlers,
+		// and we use this snapshot to calculate the fair value and edge for order sending
+		const auto& snapshot = m_marketDataSnapshots[symbol];
+		m_logger->Info("Trading for symbol=" + symbol);
+
+		// Calculate the mid price of the spot as the reference price for fair value calculation,
+		// we can also use other price like last price or mark price, but mid price is more commonly
+		// used in arbitrage strategy as it represents the current market consensus price and is
+		// less likely to be manipulated by large orders
+		const double spotMid = 0.5 * (snapshot->m_spotBestBidPrice + snapshot->m_spotBestAskPrice);
+
+		// Fair value calculation based on cost of carry model, which takes into account the spot price,
+		// funding rate and time to expiry of the future contract
+		const double fairPrice = m_fairValueModel->Compute({spotMid, snapshot->m_fundingRate, snapshot->m_timeToExpiry});
+
+		// Calculate the edge of the trade, which is the price difference between the future and the fair value,
+		// this edge should be greater than the entry threshold from external config to enter a trade
+		const double edgeDiff = snapshot->m_futureBestBidPrice - fairPrice;
+
+		// Risk management calculation, we calculate the greeks for both spot and future positions and combine them
+		// to get the overall risk exposure of the trade
+
+		auto&	   symbolInfo = GetSymbolInfo(symbol);
+		const auto totalTradedVolumeForSymbol = symbolInfo.GetTotalTradedVolume();
+		auto	   geeksSpot = GreeksCalculator::Spot(totalTradedVolumeForSymbol);
+		auto	   geeksFuture = GreeksCalculator::Futures(totalTradedVolumeForSymbol, snapshot->m_fundingRate);
+		auto	   geeksAggregate = GreeksCalculator::Combine(geeksSpot, geeksFuture);
+
+		// Risk check
+		const double pnl = {0};	 // TODO - we can also calculate the current pnl based on the market data snapshot and the position information from portfolio management
+		if (m_riskModel->CanTradeNow(geeksAggregate, totalTradedVolumeForSymbol, edgeDiff, pnl, snapshot->m_marketSpotCummulativeVolume) == false)
+			return;	 // if risk check failed, skip sending orders and wait for next alarm trigger
+
+		// Generate orders based on edge and risk check, here we simply use a fixed threshold for demo, but in real case
+		// we can dynamically adjust the threshold based on market conditions and risk level
+		if (edgeDiff > m_entryThresholdDiff)
+		{
+			double qty = 0.01;
+			// Send orders to open positions, we can also use different order types like limit order or market order based on the market conditions and risk level		
+			if (auto quoter = m_instrumentQuoters.find(symbol); quoter != m_instrumentQuoters.end())
+			{
+				quoter->second.OnQuoteAndHedgeOrder(fairPrice, qty, snapshot->m_spotBestBidPrice, snapshot->m_spotBestAskPrice);
+				symbolInfo.SetTotalTradedVolume(totalTradedVolumeForSymbol + qty);
+			}
+		}
+	}
+
+	END_STRATEGY_ORDER_SENDING_NO_RETURN
 }
 
 void DerivativesArbitrageStrategy::CreateBinanceExchangeProfile()
@@ -199,17 +391,15 @@ void DerivativesArbitrageStrategy::CreatePortfolioManagement()
 
 void DerivativesArbitrageStrategy::CreateRiskManagementEngines()
 {
-	m_spotRiskEngine = std::make_unique<RiskManagement::SpotRiskEngine>(
-		m_hybridTrader->GetSpotTrader()->GetPortfolio(),
-		m_hybridTrader->GetSpotTrader()->GetRiskManager(),
-		m_hybridTrader->GetSpotTrader()->GetBinanceAccountInfo(),
-		m_logger.get());
+	const auto* riskModelXml = m_strategyCfgXml->FirstChildElement("RiskTradingLimits");
+	assert(riskModelXml);
+	const auto* metrics = riskModelXml->FirstChildElement("Metrics");
+	m_riskModel = std::make_unique<RiskManagement::DerivativesRiskModel>(metrics);
+}
 
-	m_futureRiskEngine = std::make_unique<RiskManagement::FutureRiskEngine>(
-		m_hybridTrader->GetFutureTrader()->GetPortfolio(),
-		m_hybridTrader->GetFutureTrader()->GetRiskManager(),
-		m_hybridTrader->GetFutureTrader()->GetBinanceAccountInfo(),
-		m_logger.get());
+void DerivativesArbitrageStrategy::CreatePricingModels()
+{
+	m_fairValueModel = std::make_unique<QuantitativeModel::CostOfCarryFuturesPricer>();
 }
 
 void DerivativesArbitrageStrategy::PrepareTargetMonitorSymbols()
@@ -222,10 +412,7 @@ void DerivativesArbitrageStrategy::PrepareTargetMonitorSymbols()
 	if (useRemoteExchangeList)
 	{
 		m_logger->Info("Querying remote binance exchange listing symbols info...");
-		//m_targetTradeSymbols = StaticDataMgr->GetAllRemoteListingSymbols(true);
-		m_targetTradeSymbols.emplace_back("BTCUSDT");
-		m_targetTradeSymbols.emplace_back("ETHUSDT");
-		m_targetTradeSymbols.emplace_back("BNBUSDT");
+		m_targetTradeSymbols = StaticDataMgr->GetAllRemoteListingSymbols(true);
 #ifdef SAVE_BINANCE_LISTINGS // remove this macro to saving binance listings
 		FileUtils::FromVectorStringToFile(m_targetTradeSymbols,
 			(std::filesystem::path(PathUtils::GetApplicationFolderPath()) / "Configurations" / "Common" / "BinanceListings.txt").string());
@@ -250,7 +437,10 @@ void DerivativesArbitrageStrategy::SubscribeTargetSymbols()
 	// subscibe all target symbols
 	for (const auto& symbol : m_targetTradeSymbols)
 	{
-		m_marketData->SubscribeSymbol(symbol);
+		if (m_marketData->SubscribeSymbol(symbol))
+		{
+			m_symbolMonitorInfos.emplace(symbol, KernelTrading::BqtSymbol(symbol, KernelTrading::SymbolType::SPOT));
+		}
 	}
 }
 
@@ -262,11 +452,20 @@ void DerivativesArbitrageStrategy::UnsubscribeTargetSymbols()
 	}
 }
 
+KernelTrading::BqtSymbol& DerivativesArbitrageStrategy::GetSymbolInfo(const std::string& symbol)
+{
+	auto iter = m_symbolMonitorInfos.find(symbol);
+	if (iter == m_symbolMonitorInfos.end())
+	{
+		throw std::runtime_error("Symbol info not found for symbol=" + symbol);
+	}
+	return iter->second;
+}
+
 // DOWNSTREAM ACKS --------------------------------------------------------------------------------------------------
 
 void DerivativesArbitrageStrategy::OnOrderOpeningPositionAck(const OrderManagement::BinanceNewOrder* openingOrder)
 {
-	const auto orderRiskReport = m_futureRiskEngine->AssessTradingRisk(openingOrder);
 }
 
 void DerivativesArbitrageStrategy::OnOrderClosedPositionAck(const OrderManagement::BinanceNewOrder* closedOrder)

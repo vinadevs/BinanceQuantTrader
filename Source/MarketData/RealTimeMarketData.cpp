@@ -18,11 +18,12 @@ using namespace tinyxml2;
 RealTimeMarketData::RealTimeMarketData(
 	const XMLDocument* mkDataConfigXml,
 	const std::string& mkDataTypeName)
-	: m_mkDataTypeName(mkDataTypeName)
+	: m_mkDataTypeName(mkDataTypeName),
+	m_logger(std::make_unique<LibraryUtils::Logger>("RealTimeMarketData"))
 {
 	if (m_mkDataTypeName == "RealTimeMarketData")
 	{
-		m_marketDataFeedHandler = std::make_unique<BinanceMarketDataFeedHandler>();
+		m_marketDataFeedHandler = std::make_unique<BinanceMarketDataFeedHandler>(m_logger.get());
 		const auto* binanceRealTimeMarketDataCfg = mkDataConfigXml->FirstChildElement("RealTimeMarketData");
 		assert(binanceRealTimeMarketDataCfg);
 		m_marketDataEvents = std::make_unique<BinanceMarketDataEvents>(
@@ -31,7 +32,7 @@ RealTimeMarketData::RealTimeMarketData(
 	}
 	else if (m_mkDataTypeName == "HistoricalMarketData")
 	{
-		m_marketDataFeedHandler = std::make_unique<HistoricalMarketDataFeedHandler>();
+		m_marketDataFeedHandler = std::make_unique<HistoricalMarketDataFeedHandler>(m_logger.get());
 		const auto* historicalMarketDataCfg = mkDataConfigXml->FirstChildElement("HistoricalMarketData");
 		assert(historicalMarketDataCfg);
 		m_marketDataEvents = std::make_unique<HistoricalMarketDataEvents>(

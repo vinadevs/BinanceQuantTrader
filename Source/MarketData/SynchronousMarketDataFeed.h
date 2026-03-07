@@ -38,6 +38,7 @@ namespace MarketData {
 		void UpdateUserDataOrderUpdate(const binapi::userdata::order_update_t& orderUpdate);
 		void UpdateFutureTradeData(const binapi::ws::future_trade_t& trade);
 		void UpdateFutureBookData(const binapi::ws::future_book_t& book);
+		void UpdateFutureFundingData(const binapi::ws::future_funding_rate_t& funding);
 
 		SynchronousMarketData* GetSynchronousData();
 

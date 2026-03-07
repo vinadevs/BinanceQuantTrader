@@ -66,6 +66,9 @@
     <ClInclude Include="user_future_account.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="bqt_symbol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

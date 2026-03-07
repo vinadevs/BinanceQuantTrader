@@ -10,13 +10,15 @@
 
 #include "HistoricalMarketDataFeedHandler.h"
 #include "../LibraryUtils/TimeUtils.h"
+#include "../LibraryUtils/Logger.h"
 
 #include <iostream>
 
 using namespace MarketData;
 
-HistoricalMarketDataFeedHandler::HistoricalMarketDataFeedHandler()
-	: m_synchronousFeedMgr{ std::make_unique<MarketDataFeedManager>() } {
+HistoricalMarketDataFeedHandler::HistoricalMarketDataFeedHandler(LibraryUtils::Logger* logger)
+	: m_synchronousFeedMgr{ std::make_unique<MarketDataFeedManager>() },
+      m_logger(logger) {
 }
 
 bool HistoricalMarketDataFeedHandler::CreateNewMarketDataFeed(const std::string& symbol)

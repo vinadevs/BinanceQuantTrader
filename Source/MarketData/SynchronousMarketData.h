@@ -52,6 +52,7 @@ namespace MarketData {
 		UserDataOrder m_userDataOrder;
 		FutureTradeData m_futureTradeData;
 		FutureBookData m_futureBookData;
+		FutureFundingData m_futureFundingData;
 
 		template <typename FeedType>
 		SingleMarketDataFeed* GetSingleFeed(const FeedType id) const;
@@ -246,6 +247,75 @@ namespace MarketData {
 			return m_klineCandleStickData.m_takerBuyBaseAssetVolume.get();
 		case KlineCandleStickID::TAKER_BUY_QUOTE_ASSET_VOLUME:
 			return m_klineCandleStickData.m_takerBuyQuoteAssetVolume.get();
+		default:
+			break;
+		}
+		return nullptr;
+	}
+
+	template <>
+	inline SingleMarketDataFeed* SynchronousMarketData::GetSingleFeed(const FutureTradeID id) const
+	{
+		switch (id)
+		{
+		case FutureTradeID::TRADE_ID:
+			return m_futureTradeData.m_aggregatedTradeId.get();
+		case FutureTradeID::PRICE:
+			return m_futureTradeData.m_price.get();
+		case FutureTradeID::QUANTITY:
+			return m_futureTradeData.m_quantity.get();
+		case FutureTradeID::FIRST_TRADE_ID:
+			return m_futureTradeData.m_firstTradeId.get();
+		case FutureTradeID::LAST_TRADE_ID:
+			return m_futureTradeData.m_lastTradeId.get();
+		case FutureTradeID::TRADE_TIME:
+			return m_futureTradeData.m_tradeTimeMs.get();
+		case FutureTradeID::IS_BUYER_MARKET_MAKER:
+			return m_futureTradeData.m_isBuyerTheMarketMaker.get();
+		case FutureTradeID::EVENT_TIME_MS:
+			return m_futureTradeData.m_eventTimeMs.get();
+		default:
+			break;
+		}
+		return nullptr;
+	}
+
+	template <>
+	inline SingleMarketDataFeed* SynchronousMarketData::GetSingleFeed(const FutureBookTickerID id) const
+	{
+		switch (id)
+		{
+		case FutureBookTickerID::BEST_BID_PRICE:
+			return m_futureBookData.m_bids->GetData().at(0).m_price.get();
+		case FutureBookTickerID::BEST_BID_QUANTITY:
+			return m_futureBookData.m_bids->GetData().at(0).m_amount.get();
+		case FutureBookTickerID::BEST_ASK_PRICE:
+			return m_futureBookData.m_asks->GetData().at(0).m_price.get();
+		case FutureBookTickerID::BEST_ASK_QUANTITY:
+			return m_futureBookData.m_asks->GetData().at(0).m_amount.get();
+		case FutureBookTickerID::FIRST_UPDATE_ID:
+			return m_futureBookData.m_firstUpdateId.get();
+		case FutureBookTickerID::FINAL_UPDATE_ID:
+			return m_futureBookData.m_finalUpdateId.get();
+		case FutureBookTickerID::EVENT_TIME_MS:
+			return m_futureBookData.m_eventTimeMs.get();
+		default:
+			break;
+		}
+		return nullptr;
+	}
+
+	template <>
+	inline SingleMarketDataFeed* SynchronousMarketData::GetSingleFeed(const FutureFundingRateID id) const
+	{
+		switch (id)
+		{
+		case FutureFundingRateID::FUNDING_RATE:
+			return m_futureFundingData.m_fundingRate.get();
+		case FutureFundingRateID::FUNDING_TIME:
+			return m_futureFundingData.m_fundingTimeMs.get();
+		case FutureFundingRateID::EVENT_TIME_MS:
+			return m_futureFundingData.m_eventTimeMs.get();
 		default:
 			break;
 		}

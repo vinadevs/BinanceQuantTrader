@@ -16,6 +16,10 @@
 #include "MarketDataSubject.h"
 #include "SynchronousMarketDataFeed.h"
 
+namespace LibraryUtils {
+	class Logger;
+}
+
 // A feed handler is a critical component in financial trading systems,
 // responsible for receiving, processing, and distributing real - time market data 
 // from exchanges or data providers to various systems, traders, and applications.
@@ -27,7 +31,7 @@ namespace MarketData {
 	class BinanceMarketDataFeedHandler : public MarketDataSubject
 	{
 	public:
-		BinanceMarketDataFeedHandler();
+		BinanceMarketDataFeedHandler(LibraryUtils::Logger* logger);
 
 		// market data feed access
 		bool CreateNewMarketDataFeed(const std::string& symbol);
@@ -53,6 +57,7 @@ namespace MarketData {
 		bool HandleUserDataOrderUpdate(const char* fl, int ec, std::string emsg, binapi::userdata::order_update_t orderUpdate);
 		bool HandleTradeDataFuture(const char* fl, int ec, std::string emsg, binapi::ws::future_trade_t trade);
 		bool HandleBookDataFuture(const char* fl, int ec, std::string emsg, binapi::ws::future_book_t book);
+		bool HandleFundingDataFuture(const char* fl, int ec, std::string emsg, binapi::ws::future_funding_rate_t funding);
 
 		// Set and get part diff symbol, this is used to store the symbol of part diff depth data
 		void SetPartDiffSymbol(const std::string& symbol) { m_partDiffSymbol = symbol; }
@@ -60,5 +65,6 @@ namespace MarketData {
 	private:
 		std::unique_ptr<MarketDataFeedManager> m_synchronousFeedMgr;
 		std::string m_partDiffSymbol; // this is used to store the symbol of part diff depth data
+		LibraryUtils::Logger* m_logger{ nullptr };
 	};
 };

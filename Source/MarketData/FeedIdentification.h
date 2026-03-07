@@ -123,8 +123,8 @@ namespace MarketData
 		TRADE_ID,
 		PRICE,
 		QUANTITY,
-		BUYER_ORDER_ID,
-		SELLER_ORDER_ID,
+		FIRST_TRADE_ID,
+		LAST_TRADE_ID,
 		TRADE_TIME,
 		IS_BUYER_MARKET_MAKER,
 		EVENT_TIME_MS
@@ -138,6 +138,14 @@ namespace MarketData
 		BEST_ASK_QUANTITY,
 		FIRST_UPDATE_ID,
 		FINAL_UPDATE_ID,
+		EVENT_TIME_MS
+	};
+
+	enum class FutureFundingRateID : unsigned
+	{
+		SYMBOL,
+		FUNDING_RATE,
+		FUNDING_TIME,
 		EVENT_TIME_MS
 	};
 
@@ -287,8 +295,8 @@ namespace MarketData
 			case FutureTradeID::TRADE_ID: os << "TRADE_ID"; break;
 			case FutureTradeID::PRICE: os << "PRICE"; break;
 			case FutureTradeID::QUANTITY: os << "QUANTITY"; break;
-			case FutureTradeID::BUYER_ORDER_ID: os << "BUYER_ORDER_ID"; break;
-			case FutureTradeID::SELLER_ORDER_ID: os << "SELLER_ORDER_ID"; break;
+			case FutureTradeID::FIRST_TRADE_ID: os << "FIRST_TRADE_ID"; break;
+			case FutureTradeID::LAST_TRADE_ID: os << "LAST_TRADE_ID"; break;
 			case FutureTradeID::TRADE_TIME: os << "TRADE_TIME"; break;
 			case FutureTradeID::IS_BUYER_MARKET_MAKER: os << "IS_BUYER_MARKET_MAKER"; break;
 			case FutureTradeID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
@@ -308,6 +316,19 @@ namespace MarketData
 			case FutureBookTickerID::FIRST_UPDATE_ID: os << "FIRST_UPDATE_ID"; break;
 			case FutureBookTickerID::FINAL_UPDATE_ID: os << "FINAL_UPDATE_ID"; break;
 			case FutureBookTickerID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
+			default: os << "UNKNOWN_ID"; break;
+		}
+		return os;
+	}
+
+	inline constexpr std::ostream& operator<<(std::ostream& os, const FutureFundingRateID id)
+	{
+		switch (id)
+		{
+			case FutureFundingRateID::SYMBOL: os << "SYMBOL"; break;
+			case FutureFundingRateID::FUNDING_RATE: os << "FUNDING_RATE"; break;
+			case FutureFundingRateID::FUNDING_TIME: os << "FUNDING_TIME"; break;
+			case FutureFundingRateID::EVENT_TIME_MS: os << "EVENT_TIME_MS"; break;
 			default: os << "UNKNOWN_ID"; break;
 		}
 		return os;

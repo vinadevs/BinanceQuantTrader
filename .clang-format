@@ -1,0 +1,104 @@
+# .clang-format
+
+# AStyle-compatible options
+---
+Language: Cpp
+BasedOnStyle: Google
+
+Standard: c++20
+
+# Indentation
+ColumnLimit: 0 # Not format blocks comments by devs
+UseTab: Always
+IncludeBlocks: Regroup
+IndentCaseBlocks: true
+IndentCaseLabels: false
+AccessModifierOffset: -4
+IndentWidth: 4
+TabWidth: 4
+ContinuationIndentWidth: 8
+ConstructorInitializerIndentWidth: 6
+# SpacesBeforeTrailingComments: 2
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+AlwaysBreakTemplateDeclarations: Yes
+BinPackParameters: false
+BinPackArguments: false
+# Namespace indentation
+# NamespaceIndentation: All
+
+# Brace style
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  # AfterNamespace: true
+  AfterObjCDeclaration: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: true
+  BeforeElse: true
+  IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyNamespace: true
+  SplitEmptyRecord: true
+
+BreakAfterJavaFieldAnnotations: true
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeInheritanceComma: true
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeColon
+BreakConstructorInitializersBeforeComma: false
+BreakStringLiterals: true
+
+AllowAllConstructorInitializersOnNextLine: true
+AllowShortBlocksOnASingleLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowAllArgumentsOnNextLine: false
+AllowShortFunctionsOnASingleLine: InlineOnly
+
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: true
+# Alignment
+AlignOperands: false
+AlignTrailingComments: true
+AlignConsecutiveDeclarations: true
+AlignAfterOpenBracket: Align
+
+SeparateDefinitionBlocks: Always
+ReflowComments: false
+# sort
+SortUsingDeclarations: Lexicographic
+SortIncludes: CaseSensitive
+ShortNamespaceLines: 0
+IncludeCategories:
+  - Regex: "DllApiDef.h"
+    Priority: -1
+  # pch.h always first.
+  - Regex:           "pch.h"
+    Priority:        -1
+  # Headers in <> without extension.
+  - Regex:           '<([A-Za-z0-9\Q/-_\E])+>'
+    Priority:        3
+  # Headers in <> with extension.
+  - Regex:           '<([A-Za-z0-9.\Q/-_\E])+>'
+    Priority:        2
+  # Headers in "" with extension.
+  - Regex:           '"([A-Za-z0-9.\Q/-_\E])+"'
+    Priority:        1
+
+---
+Language: Java
+DisableFormat: true
+SortIncludes: false
+---
+Language: Proto
+BasedOnStyle: Google
+---
+Language: Json
+BasedOnStyle: llvm
