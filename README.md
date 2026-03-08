@@ -10,7 +10,7 @@ This framework handles all core components of a production trading system—incl
 - Ideal for people who want to study quantitative finance, asset trading, market microstructure, and algo/HFT system design through a real, production-style framework.
 - Built for **speed**, **stability**, and **extensibility**.
 - Abstracts away exchange complexity and system plumbing, it is runnable from order upstream (OMS) to getting ack by downstream (Exchange).
-- Lets developers focus 100% on **alpha generation**.
+- Let's developers focus 100% on **alpha generation**.
 - Suitable for study, research, live trading, and algo experimentation.
 
 ---
@@ -73,7 +73,7 @@ This framework handles all core components of a production trading system—incl
 - Written in **C++17/20**.
 
 ### **Python As Plugin**
-- Using python for alpha reseaching and strategy prototype.
+- Using python for alpha research and strategy prototype.
 
 ---
 
