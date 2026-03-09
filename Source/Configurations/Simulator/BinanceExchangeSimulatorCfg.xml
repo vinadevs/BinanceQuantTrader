@@ -26,8 +26,8 @@
 <UserAccountManager>
   <GeneralSetting MaximumAccount="1"/>
   <SpotAccountInfo File="[ROOT_BQT_PATH]/Configurations/StaticData/spot_account_info_t.json"/>
-  <FutureAccountInfo File="[ROOT_BQT_PATH]/Configurations/StaticData/future_account_info_t.json"/>
-  <TestUserAccount ListUserID="{user_id,path_to_config};{user_id,path_to_config}"/>
+  <FutureAccountInfo File="[ROOT_BQT_PATH]/Configurations/StaticData/future_account_info_t.json"/>  <TestUserAccount ListUserID="{123456789, [ROOT_BQT_PATH]/Configurations/Simulator/UserAccountSimulator.xml};"/>
+  <TestUserAccount ListUserID="{123456789, [ROOT_BQT_PATH]/Configurations/Simulator/UserAccountSimulator.xml};"/>
 </UserAccountManager>
 
 <ExchangeRuleAndCompliance>

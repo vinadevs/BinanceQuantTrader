@@ -29,7 +29,7 @@ DerivativesRiskModel::DerivativesRiskModel(const tinyxml2::XMLElement* riskManag
 }
 
 bool DerivativesRiskModel::CanTradeNow(
-	const const RiskTradingGreeks& geeks,
+	const RiskTradingGreeks& geeks,
 	const double pos, 
 	const double edge,
 	const double pnl,

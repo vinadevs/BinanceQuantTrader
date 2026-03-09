@@ -83,27 +83,32 @@ void TradingStrategyBase::LogTradingHardLimits()
 
 void TradingStrategyBase::InitQuantStrategist()
 {
+	// NOTES:
+	// <TraderInfo> and <TraderAndStrategy> configs must have same trader type, otherwise it will throw error. 
+	// For example, if <TraderInfo> is spot trader, then <TraderAndStrategy> must also use spot trader, 
+	// and the strategy can only be associated with spot trader.
 	if (m_trader)
 	{
 		if (m_spotTrader = dynamic_cast<UserAccount::BinanceTrader*>(m_trader); m_spotTrader &&
-			m_spotTrader->GetTraderAndStrategyMapping().IsTraderAssociatedWithStrategy(m_strategyName, m_spotTrader->GetTraderType()))
+			m_trader->GetTraderAndStrategyMapping().IsTraderAssociatedWithStrategy(m_strategyName, m_trader->GetTraderType()))
 		{
 			m_logger->Info("SpotTrader is set up successfully.");
 		}
 		else if (m_futureTrader = dynamic_cast<UserAccount::FutureTrader*>(m_trader); m_futureTrader &&
-			m_futureTrader->GetTraderAndStrategyMapping().IsTraderAssociatedWithStrategy(m_strategyName, m_futureTrader->GetTraderType()))
+			m_trader->GetTraderAndStrategyMapping().IsTraderAssociatedWithStrategy(m_strategyName, m_trader->GetTraderType()))
 		{
 			m_logger->Info("FutureTrader is set up successfully.");
 		}
-		else if (m_hybridTrader = dynamic_cast<UserAccount::HybridTrader*>(m_trader); m_hybridTrader &&
-			m_hybridTrader->GetTraderAndStrategyMapping().IsTraderAssociatedWithStrategy(m_strategyName, m_hybridTrader->GetTraderType()))
+		else if (m_hybridTrader = dynamic_cast<UserAccount::HybridTrader*>(m_trader); m_hybridTrader && 
+			m_trader->GetTraderAndStrategyMapping().IsTraderAssociatedWithStrategy(m_strategyName, m_trader->GetTraderType()))
 		{
 			m_logger->Info("HybridTrader is set up successfully.");
 		}
 		else
 		{
-			const auto trader = m_spotTrader->GetTraderAndStrategyMapping().GetTraderAsString(m_strategyName);
-			throw std::runtime_error("TradingStrategyBase: Trader must be " + trader + " for strategy=" + m_strategyName);
+			const auto trader = m_trader->GetTraderAndStrategyMapping().GetTraderAsString(m_strategyName);
+			throw std::runtime_error("TradingStrategyBase: Trader must be " + trader + " for strategy=" + m_strategyName +
+				", <TraderInfo> and <TraderAndStrategy> configs must have same trader type, otherwise it will throw error.");
 		}
 		// register this strategy with trader to trade
 		m_logger->Info("Quant trader will use strategy=" + m_strategyName);
