@@ -27,32 +27,38 @@ grpc::Status UserAccountHttpService::GetUserAccountData(
     const account::UserAccountDataRequest* request,
     account::UserAccountDataResponse* response)
 {
-    m_logger->Info("Received account_info_t request for User ID=" + request->user_id());
-   
-    const auto* userAccount = m_userAccountManager->LookupSpotUserAccount(request->user_id());
+	try
+	{
+		m_logger->Info("Received account_info_t request for User ID=" + request->user_id());
 
-    // Populate response
-    response->set_user_id(request->user_id());
-    response->set_update_time(userAccount->GetUpdateTime());
-    response->set_can_trade(userAccount->IsAccountEligibleToTrade());
-    response->set_can_withdraw(userAccount->IsAccountEligibleToTrade());
-    response->set_can_deposit(userAccount->IsAccountEligibleToDeposit());
-    response->set_stable_coin_amount(userAccount->m_usdtBalance.m_usdtAmount);
-    response->set_maker_commission(ExchangeRuleMgr->GetMakerCommission());
-    response->set_taker_commission(ExchangeRuleMgr->GetTakerCommission());
-    response->set_buyer_commission(ExchangeRuleMgr->GetBuyerCommission());
-    response->set_seller_commission(ExchangeRuleMgr->GetSellerCommission());
+		const auto* userAccount = m_userAccountManager->LookupSpotUserAccount(request->user_id());
 
-    for (const auto& asset : userAccount->m_assetBalances)
-    {
-        account::Balance balance;
-        balance.set_asset_symbol(asset.second.m_symbol);
-        balance.set_free_amount(asset.second.m_free);
-        balance.set_locked_amount(asset.second.m_locked);
-        response->mutable_balances()->emplace(asset.second.m_symbol, balance);
-    }
+		// Populate response
+		response->set_user_id(request->user_id());
+		response->set_update_time(userAccount->GetUpdateTime());
+		response->set_can_trade(userAccount->IsAccountEligibleToTrade());
+		response->set_can_withdraw(userAccount->IsAccountEligibleToTrade());
+		response->set_can_deposit(userAccount->IsAccountEligibleToDeposit());
+		response->set_stable_coin_amount(userAccount->m_usdtBalance.m_usdtAmount);
+		response->set_maker_commission(ExchangeRuleMgr->GetMakerCommission());
+		response->set_taker_commission(ExchangeRuleMgr->GetTakerCommission());
+		response->set_buyer_commission(ExchangeRuleMgr->GetBuyerCommission());
+		response->set_seller_commission(ExchangeRuleMgr->GetSellerCommission());
 
-    m_logger->Info("Sending account_info_t response for User ID=" + request->user_id());
+		for (const auto& asset : userAccount->m_assetBalances)
+		{
+			account::Balance balance;
+			balance.set_asset_symbol(asset.second.m_symbol);
+			balance.set_free_amount(asset.second.m_free);
+			balance.set_locked_amount(asset.second.m_locked);
+			response->mutable_balances()->emplace(asset.second.m_symbol, balance);
+		}
 
+		m_logger->Info("Sending account_info_t response for User ID=" + request->user_id());
+	}
+	catch (const std::exception& ex)
+	{
+		m_logger->Error("Exception in GetUserAccountData: " + std::string(ex.what()));
+	}
     return grpc::Status::OK;
 }

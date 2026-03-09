@@ -35,7 +35,7 @@ FomoTradingStrategy::FomoTradingStrategy(
 	RealTimeMarketData* marketData,
 	Trader* trader,
 	BinanceTradingRules* tradingRules)
-	: TradingStrategyBase("FomoTradingStrategy", "The fear of missing out...",
+	: TradingStrategyBase("FomoStrategy", "The fear of missing out...",
 		strategyCfgPath, marketData, trader, tradingRules)
 {
 	START_STRATEGY_INITIALIZATION_SECTION
