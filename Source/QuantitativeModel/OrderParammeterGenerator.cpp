@@ -71,7 +71,7 @@ std::optional<OrderQuantList> OrderParammeterGenerator::GenerateFomoOrders(
 			orderParammeter.m_type = binapi::e_type::limit;
 			orderParammeter.m_time = hints->timeInForce;
 			orderParammeter.m_tradeType = OrderManagement::BinanceNewOrderTradingType::SPOT;
-			orderParammeter.m_stableCurrency = "USDT"; // Default stable currency, can be changed as needed
+			orderParammeter.m_stableCurrency = StaticDataMgr->GetStableCoinUSDTSymbol();
 
 			// Retrieve price filters for the symbol
 			const auto& percentPriceBySideFilter = symbolExchangeInfo.get_filter_percent_price_by_side();
@@ -197,7 +197,7 @@ std::optional<OrderQuantList> OrderParammeterGenerator::GenerateFomoOrders(
 					orderParammeter.m_side = binapi::e_side::sell;
 					orderParammeter.m_type = binapi::e_type::limit;
 					orderParammeter.m_time = hints->timeInForce;
-					orderParammeter.m_stableCurrency = "USDT"; // Default stable currency, can be changed as needed
+					orderParammeter.m_stableCurrency = StaticDataMgr->GetStableCoinUSDTSymbol();
 
 					// Retrieve price filters for the symbol
 					const auto& percentPriceBySideFilter = symbolExchangeInfo.get_filter_percent_price_by_side();
@@ -260,7 +260,7 @@ std::optional<QuantOrderParammeter> OrderParammeterGenerator::GenerateVWAPChildO
 	order.m_type = binapi::e_type::limit;
 	order.m_time = binapi::e_time::IOC;
 	order.m_tradeType = OrderManagement::BinanceNewOrderTradingType::SPOT;
-	order.m_stableCurrency = "USDT"; // Default stable currency, can be changed as needed
+	order.m_stableCurrency = StaticDataMgr->GetStableCoinUSDTSymbol();
 	order.m_price = limitPrice;
 	order.m_amount = orderSize;
 	order.m_parentOrderId = parentOrderId;
