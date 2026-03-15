@@ -2,7 +2,7 @@
 
 A **complete, extensible, cross platforms and low-latency quantitative trading engine/framework/library for cryptocurrency** built on **Modern C++**, designed for researchers, developers, quants to implement and deploy custom crypto trading strategies on the **Binance Exchange**.
 
-This framework handles all core components of a production trading system—including real-time market data pine line, order execution, quantitative modeling, risk management, historical replay and backtesting simulators, allowing developers to focus solely on building strategy logic.
+This framework handles all core components of a production trading system—including real-time market data pipe line, order execution, quantitative modeling, risk management, historical replay and backtesting simulators, allowing developers to focus solely on building strategy logic.
 
 ---
 
@@ -110,6 +110,15 @@ private:
 ```cpp
 auto simulator = std::make_unique<BinanceExchangeSimulator>(configSimulatorXml.get());
 simulator->Run();
+```
+
+---
+
+## 📊 Historical Market Data Capture Example
+```cpp
+auto marketDataService = std::make_unique<MarketDataService>(config_market_data_path);
+marketDataService->SubscribeTargetSymbols();
+marketDataService->Run();
 ```
 
 ---
