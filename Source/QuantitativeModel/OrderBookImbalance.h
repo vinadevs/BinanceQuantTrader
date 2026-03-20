@@ -21,7 +21,7 @@ namespace QuantitativeModel {
 	//	-1  -> all sell orders
 	//  0  -> balanced order book
 	//  +1  -> all buy orders
-	struct IncrementalOrderBookImbalance final
+	struct DLL_CLASS_QUANTITATIVEMODEL_EXPORTS IncrementalOrderBookImbalance final
 	{
 		double m_bidVolume = 0;
 		double m_askVolume = 0;
@@ -58,7 +58,7 @@ namespace QuantitativeModel {
 
 	// LevelPrice represents a price level in the order book, including the price and 
 	// the quantity available at that price level.
-	struct LevelPrice final
+	struct DLL_CLASS_QUANTITATIVEMODEL_EXPORTS LevelPrice final
 	{
 		double price;
 		double quantity;
@@ -66,7 +66,7 @@ namespace QuantitativeModel {
 
 	// CalculateOrderBookImbalance computes the order book imbalance 
 	// based on the bid and ask volumes at a specified depth.
-	inline double CalculateOrderBookImbalance(
+	inline double DLL_CLASS_QUANTITATIVEMODEL_EXPORTS CalculateOrderBookImbalance(
 		const std::vector<LevelPrice>& bids,
 		const std::vector<LevelPrice>& asks,
 		size_t depth) noexcept
