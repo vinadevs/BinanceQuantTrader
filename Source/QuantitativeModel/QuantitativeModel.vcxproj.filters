@@ -25,6 +25,9 @@
     <Filter Include="Pricing Models">
       <UniqueIdentifier>{b73616a2-8abe-477f-9891-a57a266af687}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Market Microstructure">
+      <UniqueIdentifier>{58255354-ff14-43e5-973a-4093ff65e729}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -56,6 +59,15 @@
     </ClInclude>
     <ClInclude Include="CostOfCarryFuturesPricing.h">
       <Filter>Pricing Models</Filter>
+    </ClInclude>
+    <ClInclude Include="OrderBookImbalance.h">
+      <Filter>Market Microstructure</Filter>
+    </ClInclude>
+    <ClInclude Include="MicroPriceImbalance.h">
+      <Filter>Market Microstructure</Filter>
+    </ClInclude>
+    <ClInclude Include="TradeFlowImbalance.h">
+      <Filter>Market Microstructure</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
