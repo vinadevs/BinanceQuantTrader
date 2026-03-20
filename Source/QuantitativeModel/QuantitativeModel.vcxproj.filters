@@ -66,6 +66,9 @@
     <ClInclude Include="MicroPriceImbalance.h">
       <Filter>Market Microstructure</Filter>
     </ClInclude>
+    <ClInclude Include="TradeFlowImbalance.h">
+      <Filter>Market Microstructure</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

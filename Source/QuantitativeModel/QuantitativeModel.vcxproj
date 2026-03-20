@@ -164,6 +164,7 @@
     <ClInclude Include="QuantOrderParammeter.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="OrderParammeterGenerator.h" />
+    <ClInclude Include="TradeFlowImbalance.h" />
     <ClInclude Include="TradingRulesByPassEngine.h" />
   </ItemGroup>
   <ItemGroup>
