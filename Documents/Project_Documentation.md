@@ -194,7 +194,7 @@ flowchart LR
 
 | File | Description |
 |-------|-------------|
-| Bounce_BQT_instances.txt | How to run applications |
+| How_To_Run_Applications.txt | How to run applications |
 | BQT_Coding_Style.md | How to write and read code |
 | HOW_TO_BUILD.md | Building source code guide |
 | Project_Documentation.md | Detail about this repository |
