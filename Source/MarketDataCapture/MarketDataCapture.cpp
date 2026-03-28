@@ -69,7 +69,7 @@ BINANCE_MARKET_DATA_CAPTURE_TOOL
 #else
 		// ARGUMENTS
 		argparse::ArgumentParser program(BINANCE_MESSAGE_HUB_SERVER_TITLE);
-		program.add_argument("--config_market_data_path").help("Configuration file : RealtimeMarketDataCfg.xml");
+		program.add_argument("--config_market_data_path").help("Configuration file : BinanceMarketDataCfg.xml");
 		program.parse_args(argc, argv);
 		const auto config_market_data_path = program.get<std::string>("--config_market_data_path");
 #endif

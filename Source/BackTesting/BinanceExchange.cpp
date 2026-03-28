@@ -75,7 +75,7 @@ BINANCE_EXCHANGE_SIMULATOR
 	{
 	#ifdef _DEBUG
 		const auto config_exchange_simulator_path
-			= PathUtils::GetConfigFolderPath(PathUtils::Path_Type::SIMULATOR) + "\\BinanceExchangeSimulatorCfgTest.xml";
+			= PathUtils::GetConfigFolderPath(PathUtils::Path_Type::SIMULATOR) + "\\BinanceExchangeSimulatorCfg.xml";
 	#else
 		// ARGUMENTS
 		argparse::ArgumentParser program(BINANCE_EXCHANGE_SIMULATOR_TITLE);
