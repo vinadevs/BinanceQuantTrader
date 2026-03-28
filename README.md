@@ -121,6 +121,10 @@ marketDataService->SubscribeTargetSymbols();
 marketDataService->Run();
 ```
 
+## 📊 Trading Simulation Between AlgoEngine and Simulator Example
+
+<img width="2548" height="636" alt="image" src="https://github.com/user-attachments/assets/4d66ff23-85bb-4662-b435-c955cbf50181" />
+
 ---
 
 ## 📜 License
