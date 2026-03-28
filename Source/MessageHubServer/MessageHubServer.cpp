@@ -76,7 +76,7 @@ BINANCE_MESSAGE_HUB_SERVER
 #else
 		// ARGUMENTS
 		argparse::ArgumentParser program(BINANCE_MESSAGE_HUB_SERVER_TITLE);
-		program.add_argument("--config_message_hub_server_path").help("Configuration file : MessageHubServerCfg.xml");
+		program.add_argument("--config_message_hub_server_path").help("Configuration file : MessageBrokerCfg.xml");
 		program.parse_args(argc, argv);
 		const auto config_message_hub_server_path = program.get<std::string>("--config_message_hub_server_path");
 #endif
