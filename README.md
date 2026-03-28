@@ -1,69 +1,70 @@
 # Binance Quantitative Trader Framework
 
-A **complete, extensible, cross platforms and low-latency quantitative trading engine/framework/library for cryptocurrency** built on **Modern C++**, designed for researchers, developers, quants to implement and deploy custom crypto trading strategies on the **Binance Exchange**.
+A **complete, extensible, cross-platform, low-latency quantitative trading engine/framework/library for cryptocurrency**, built with **modern C++**, designed for researchers, developers, and quants to implement and deploy custom crypto trading strategies on the **Binance Exchange**.
 
-This framework handles all core components of a production trading system—including real-time market data pipe line, order execution, quantitative modeling, risk management, historical replay and backtesting simulators, allowing developers to focus solely on building strategy logic.
+This framework handles all core components of a production trading system—including real-time market data pipelines, order execution, quantitative modeling, risk management, historical replay, and backtesting simulators—allowing developers to focus solely on building strategy logic.
 
 ---
 
 ## 📈 Why This Framework?
-- Ideal for people who want to study quantitative finance, asset trading, market microstructure, and algo/HFT system design through a real, production-style framework.
+
+- Ideal for those who want to study quantitative finance, asset trading, market microstructure, and algo/HFT system design through a real, production-style framework.
 - Built for **speed**, **stability**, and **extensibility**.
-- Abstracts away exchange complexity and system plumbing, it is runnable from order upstream (OMS) to getting ack by downstream (Exchange).
-- Let's developers focus 100% on **alpha generation**.
-- Suitable for study, research, live trading, and algo experimentation.
+- Abstracts away exchange complexity and system plumbing. It is runnable end-to-end—from order upstream (OMS) to downstream exchange acknowledgments.
+- Allows developers to focus 100% on **alpha generation**.
+- Suitable for study, research, live trading, and algorithmic experimentation.
 
 ---
 
 ## 🚀 Key Features
 
 ### **1. Modular Strategy Plug-In Architecture**
-- Clean, event-driven interface for adding custom strategies (Auto, Full-Auto, Semi-Auto)
+- Clean, event-driven interface for adding custom strategies (Auto, Full-Auto, Semi-Auto).
 - Developers only write trading logic while infrastructure is fully handled by the engine.
 - Suitable for rapid prototyping and deployment of beta trading algorithms.
 
 ### **2. High-Performance Low-Latency Core**
-- Millisecond-level processing speeds with mordern C++ standards.
-- Optimized concurrency model by separated trading tasks.
-- Applied HFT techniques like lock free, compile-time dispatch, constexpr.
+- Millisecond-level processing speeds with modern C++ standards.
+- Optimized concurrency model with separated trading tasks.
+- Applies HFT techniques such as lock-free structures, compile-time dispatch, and `constexpr`.
 
 ### **3. Real-Time Market Data Integration**
-- Full integration with **Binance WebSocket streams** (book depth, aggregate trade, candle line, funding rate).
+- Full integration with **Binance WebSocket streams** (order book depth, aggregate trades, candlesticks, funding rates).
 - Normalized data models to ensure consistency across all strategy modules.
-- Low-latency tick by tick feeding system.
+- Low-latency tick-by-tick data feed.
 
 ### **4. Backtesting & Simulation Engine**
-- Integrates an Exchange Simulator (Matching Engine) which provides liquidity to test strategy's orders.
+- Integrates an Exchange Simulator (matching engine) that provides liquidity for testing strategy orders.
 - Supports historical simulations with realistic execution modeling.
-- Best price matching, queue position and market microstructure.
-- Storing historical market data and replay systems.
+- Includes best-price matching, queue position modeling, and market microstructure simulation.
+- Supports historical market data storage and replay.
 
-### **5. Quantitative models & libraries**
-- Integrates quantlib library and basic quantitative components.
-- Pricing models for cash, future and option trading.
+### **5. Quantitative Models & Libraries**
+- Integrates QuantLib and basic quantitative components.
+- Supports pricing models for spot, futures, and options trading.
 
 ### **6. Robust Risk Management Layer**
-- Exchange compliance rule bypass.
+- Exchange compliance rule bypass mechanisms.
 - Position limits, stop-loss rules, leverage caps, and exposure constraints.
-- Real-time algorithm oversight, trading guard.
-- Risk models with sharpe ratio, drawdown, win rate, PnL curves, volatility metrics, and more.
+- Real-time algorithm oversight via a trading guard.
+- Risk analytics including Sharpe ratio, drawdown, win rate, PnL curves, volatility metrics, and more.
 
 ### **7. Machine Learning & Analytics Integration**
 - Optional ML modules for prediction, trend detection, and volatility forecasting.
 - Supports offline training and online adaptation.
 
-### **8. Full strategy samples**
-- A set of strategy/algorithm from spot to future markets.
-- Supports many strategy types from excecution (VWAP), market monitoring (trend following), derivatives (price arbitrage) and more.
+### **8. Full Strategy Samples**
+- A collection of strategies across spot and futures markets.
+- Covers multiple strategy types including execution (VWAP), market monitoring (trend following), derivatives (price arbitrage), and more.
 
-### **9. Python plug-in system**
-- Allows python developers receive normalized market data through socket connection.
-- Supports external large order using python protobuf message for execution strategy like VWAP/TWAP/PV.
+### **9. Python Plug-In System**
+- Allows Python developers to receive normalized market data via socket connections.
+- Supports external order execution using Python protobuf messages (e.g., VWAP, TWAP, POV strategies).
 
 ### **10. Production-Ready Infrastructure**
 - Built-in logging, error recovery, failure handling, and monitoring.
 - Designed for 24/7 crypto trading operations.
-- Clear separation of concerns: engine handles core mechanics; developers/quants handle strategy logic.
+- Clear separation of concerns: the engine handles core mechanics; developers/quants focus on strategy logic.
 
 ---
 
@@ -72,8 +73,8 @@ This framework handles all core components of a production trading system—incl
 ### **Modern C++ Foundation**
 - Written in **C++17/20**.
 
-### **Python As Plugin**
-- Using python for alpha research and strategy prototype.
+### **Python as a Plug-In**
+- Used for alpha research and strategy prototyping.
 
 ---
 
