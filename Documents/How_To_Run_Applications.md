@@ -32,9 +32,9 @@ After a short wait, the trading simulation should look like this:
 If you are using **Linux or macOS**, run the applications from the terminal:
 
 ```bash
-cd build/   # directory where all binaries are built
+cd build/ # directory where all binaries are built (we need to open 3 terminals)
 
-MessageHubServer.exe ----config_message_hub_server_path="Configurations\MessageBrokerCfg.xml" # Start Message Broker Application first
+MessageHubServer.exe --config_message_hub_server_path="Configurations\MessageBrokerCfg.xml" # Start Message Broker Application first
 
 BackTesting.exe --config_exchange_simulator_path="Configurations\BinanceExchangeSimulatorCfg.xml" # Next start Exchange Simulator Application
 
